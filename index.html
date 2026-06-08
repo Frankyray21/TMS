@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevention des TMS - Machines Roger International</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e17;--bg-2:#0d1320;--card:#111827;--card-2:#1a2332;
+  --brand:#d22325;--brand-d:#a81a1c;--accent:#d22325;--accent-l:#ef5a5c;
+  --danger:#ef4444;--success:#10b981;--info:#3b82f6;--purple:#8b5cf6;
+  --text:#f1f5f9;--muted:#94a3b8;--dim:#64748b;--border:#1e293b;
+  --g-brand:linear-gradient(135deg,#ef4444,#b3151f);
+  --g-amber:linear-gradient(135deg,#e23a3c,#a81a1c);
+  --g-blue:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  --g-green:linear-gradient(135deg,#10b981,#3b82f6);
+}
+html,body{height:100%}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;line-height:1.6}
+
+/* ===== APP SHELL ===== */
+.app{display:flex;height:100vh;width:100%}
+.sidebar{width:266px;flex-shrink:0;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.1rem 1rem}
+.brand{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:.5rem .5rem 1rem;border-bottom:1px solid var(--border);position:relative}
+.brand img{width:100%;max-width:190px;border-radius:8px;background:#000;padding:.3rem}
+.brand .brand-sub{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-align:center}
+.fs-btn{position:absolute;top:.3rem;right:.3rem;background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.fs-btn:hover{border-color:var(--accent);color:var(--accent-l)}
+.theme-nav{flex:1;display:flex;flex-direction:column;gap:.25rem;margin-top:1rem;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:.7rem;width:100%;text-align:left;background:none;border:none;border-left:3px solid transparent;color:var(--muted);padding:.6rem .7rem;border-radius:0 8px 8px 0;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:500;transition:all .2s}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.nav-item.active{background:rgba(225,29,42,.12);border-left-color:var(--brand);color:#fff}
+.nav-item .ni-num{font-size:.7rem;font-weight:800;color:var(--dim);min-width:18px}
+.nav-item.active .ni-num{color:var(--brand)}
+.sidebar-foot{padding-top:.9rem;border-top:1px solid var(--border);font-size:.66rem;color:var(--dim);line-height:1.5}
+
+.stage{flex:1;display:flex;flex-direction:column;position:relative;min-width:0}
+.stage-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
+.stage-inner{padding:2.2rem 3rem 2rem;max-width:1180px;margin:0 auto}
+
+.theme{display:none}
+.theme.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes animIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.anim{animation:animIn .55s cubic-bezier(.2,.7,.2,1) both}
+@keyframes slNext{from{opacity:0;transform:translateX(44px) scale(.99)}to{opacity:1;transform:none}}
+@keyframes slPrev{from{opacity:0;transform:translateX(-44px) scale(.99)}to{opacity:1;transform:none}}
+.stage-inner.sl-next{animation:slNext .34s cubic-bezier(.2,.7,.2,1)}
+.stage-inner.sl-prev{animation:slPrev .34s cubic-bezier(.2,.7,.2,1)}
+@keyframes qpop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes qshake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(3px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
+.quiz-opt.correct{animation:qpop .45s ease}
+.quiz-opt.wrong{animation:qshake .5s ease}
+.card-icon{transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.card:hover .card-icon{transform:scale(1.12) rotate(-4deg)}
+.stat .v{display:inline-block;transition:transform .35s}
+.stat:hover .v{transform:scale(1.08)}
+.theme-title{transition:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-delay:0!important;transition-duration:.01ms!important}}
+.theme-kicker{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin-bottom:.5rem}
+.theme-kicker::before{content:'';width:22px;height:2px;background:var(--brand)}
+.theme-title{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;margin-bottom:.3rem}
+.theme-lead{color:var(--muted);font-size:1rem;max-width:760px;margin-bottom:1.5rem}
+
+.subtabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:.9rem}
+.subtab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:.5rem 1rem;border-radius:50px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:600;transition:all .2s;white-space:nowrap}
+.subtab:hover{color:var(--text);border-color:var(--dim)}
+.subtab.active{background:var(--g-amber);border-color:transparent;color:#1a0f02}
+.subpanel{display:none}
+.subpanel.active{display:block}
+
+.stage-nav{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem 2rem;background:var(--bg-2);border-top:1px solid var(--border)}
+.snav-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--border);color:var(--text);padding:.55rem 1.1rem;border-radius:10px;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:600;transition:all .2s}
+.snav-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent-l);transform:translateY(-1px)}
+.snav-btn:disabled{opacity:.35;cursor:not-allowed}
+.stage-center{display:flex;flex-direction:column;align-items:center;gap:.45rem}
+.slide-counter{font-size:.72rem;font-weight:700;color:var(--dim);letter-spacing:.12em}
+.slide-counter b{color:var(--brand)}
+.stage-dots{display:flex;gap:.45rem;align-items:center}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--border);border:none;cursor:pointer;padding:0;transition:all .25s}
+.dot:hover{background:var(--dim)}
+.dot.active{background:var(--brand);width:24px;border-radius:6px}
+
+/* ===== COMPONENTS ===== */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.3rem}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:1.3rem}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1.2rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;transition:all .3s}
+.card:hover{border-color:rgba(210,35,37,.3);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+.card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:.9rem}
+.card h3{font-size:1.02rem;font-weight:700;margin-bottom:.4rem}
+.card p{color:var(--muted);font-size:.86rem}
+.ic-amber{background:rgba(210,35,37,.12);color:var(--accent)}
+.ic-red{background:rgba(239,68,68,.12);color:var(--danger)}
+.ic-blue{background:rgba(59,130,246,.12);color:var(--info)}
+.ic-green{background:rgba(16,185,129,.12);color:var(--success)}
+.ic-purple{background:rgba(139,92,246,.12);color:var(--purple)}
+
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:1rem;margin-top:2rem}
+.prog-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem;cursor:pointer;text-align:left;transition:all .3s;border-top:3px solid;color:var(--text)}
+.prog-card:hover{transform:translateY(-5px);box-shadow:0 14px 38px rgba(0,0,0,.4)}
+.prog-card .pc-num{font-size:1.7rem;font-weight:900;line-height:1;margin-bottom:.5rem}
+.prog-card h4{font-size:1rem;font-weight:700;margin-bottom:.25rem;color:var(--text)}
+.prog-card p{color:var(--muted);font-size:.8rem}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.3rem}
+.stat{background:var(--card-2);border:1px solid var(--border);border-radius:14px;padding:1.7rem;text-align:center}
+.stat .v{font-size:2.2rem;font-weight:900;background:var(--g-amber);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem}
+.stat .l{color:var(--muted);font-size:.82rem}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.3rem}
+.step{background:var(--card);border:1px solid var(--border);border-top:3px solid;border-radius:14px;padding:1.5rem;position:relative}
+.step .sn{position:absolute;top:-16px;right:1.3rem;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem}
+.step h3{font-size:1.02rem;margin-bottom:.5rem}
+.step ul{list-style:none}
+.step li{color:var(--muted);font-size:.84rem;padding:.25rem 0 .25rem 1.1rem;position:relative}
+.step li::before{content:'';position:absolute;left:0;top:.6rem;width:5px;height:5px;border-radius:50%;background:var(--dim)}
+
+.alert{background:rgba(210,35,37,.08);border:1px solid rgba(210,35,37,.2);border-radius:12px;padding:1.1rem 1.4rem;margin:1.4rem 0;display:flex;gap:1rem;align-items:flex-start}
+.alert.danger{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2)}
+.alert .ai{font-size:1.3rem;flex-shrink:0}
+.alert p{font-size:.9rem;font-weight:500}
+.alert strong{color:var(--accent)}
+.alert.danger strong{color:var(--danger)}
+
+.piliers{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:1.5rem}
+.pilier{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.9rem;position:relative;overflow:hidden}
+.pilier::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.pilier.p1::before{background:var(--g-amber)}
+.pilier.p2::before{background:var(--g-green)}
+.pilier h3{font-size:1.18rem;font-weight:800;margin-bottom:1rem}
+.pilier ul{list-style:none}
+.pilier li{padding:.5rem 0 .5rem 1.8rem;position:relative;color:var(--muted);font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.04)}
+.pilier li:last-child{border-bottom:none}
+.pilier li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:2px}
+.pilier.p1 li::before{background:var(--accent)}
+.pilier.p2 li::before{background:var(--success)}
+
+.checklist{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+.checklist h4{font-weight:700;margin-bottom:.9rem;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+.checklist ul{list-style:none}
+.checklist li{padding:.4rem 0 .4rem 1.7rem;position:relative;color:var(--muted);font-size:.87rem}
+.checklist li::before{content:'\2713';position:absolute;left:0;top:.4rem;color:var(--success);font-weight:700;font-size:.8rem}
+.checklist.x li::before{content:'\2717';color:var(--danger)}
+
+.sleepbar{background:var(--card-2);border:1px solid var(--border);border-radius:14px;padding:1.4rem 2rem;display:flex;align-items:center;gap:2rem;margin:1.4rem 0}
+.sleepbar .t{font-size:2.5rem;font-weight:900;background:var(--g-green);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.sleepbar .u{font-size:1rem;-webkit-text-fill-color:var(--muted)}
+
+.chrono{display:flex;border-radius:12px;overflow:hidden;margin:1.4rem 0;height:72px}
+.chrono div{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.5rem}
+.chrono span:first-child{font-weight:700;font-size:.86rem}
+.chrono span:last-child{font-size:.72rem;opacity:.8}
+.c1{background:rgba(16,185,129,.2);color:var(--success);flex:3}
+.c2{background:rgba(245,158,11,.2);color:#f59e0b;flex:3}
+.c3{background:rgba(239,68,68,.2);color:var(--danger);flex:6}
+
+.mine{background:var(--card-2);border:1px solid var(--border);border-radius:14px;padding:1.3rem;transition:all .3s}
+.mine:hover{border-color:rgba(210,35,37,.2);transform:translateY(-3px)}
+.mine h4{display:flex;align-items:center;gap:.5rem;font-weight:700;margin-bottom:.4rem;font-size:.96rem}
+.mine p{color:var(--muted);font-size:.84rem}
+
+/* interactive image cards */
+.img-cards{display:grid;gap:1.3rem}
+.tms-cards{grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+.zone-cards{grid-template-columns:repeat(auto-fit,minmax(235px,1fr))}
+.imgcard{position:relative;border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;background:var(--card);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s,border-color .35s;outline:none}
+.imgcard:hover,.imgcard:focus-visible{transform:translateY(-6px);border-color:rgba(239,68,68,.45);box-shadow:0 18px 45px rgba(0,0,0,.5)}
+.imgcard-media{position:relative;aspect-ratio:4/3;background:#000;overflow:hidden}
+.imgcard-media img{width:100%;height:100%;object-fit:contain;transition:transform .5s,filter .5s;filter:saturate(.9) brightness(.9)}
+.imgcard:hover .imgcard-media img,.imgcard:focus-visible .imgcard-media img{transform:scale(1.07);filter:saturate(1.3) brightness(1.08)}
+.imgcard-media::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 55%,rgba(239,68,68,.28),transparent 62%);opacity:0;transition:opacity .5s;mix-blend-mode:screen}
+.imgcard:hover .imgcard-media::after,.imgcard:focus-visible .imgcard-media::after{opacity:1}
+.imgcard-badge{position:absolute;top:.6rem;right:.6rem;z-index:3;width:28px;height:28px;border-radius:50%;background:rgba(239,68,68,.92);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:300;opacity:0;transform:scale(.6) rotate(-90deg);transition:all .35s}
+.imgcard:hover .imgcard-badge,.imgcard:focus-visible .imgcard-badge{opacity:1;transform:scale(1) rotate(0)}
+.imgcard-body{padding:.9rem 1.05rem 1.1rem}
+.imgcard-body h3{font-size:1rem;font-weight:700;margin-bottom:.2rem}
+.imgcard-body p{color:var(--muted);font-size:.8rem;line-height:1.4}
+.imgcard-cta{display:inline-flex;align-items:center;gap:.3rem;margin-top:.6rem;font-size:.76rem;font-weight:600;color:var(--accent)}
+.imgcard-cta svg{transition:transform .3s}
+.imgcard:hover .imgcard-cta svg,.imgcard:focus-visible .imgcard-cta svg{transform:translateX(3px)}
+
+/* infographic */
+.info-stack{display:flex;flex-direction:column;gap:1.4rem}
+.infographic{position:relative;border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:zoom-in;background:#000;transition:border-color .3s,box-shadow .3s}
+.infographic:hover{border-color:rgba(210,35,37,.4);box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.infographic img{width:100%;display:block}
+.infographic .zoom-hint{position:absolute;bottom:.8rem;right:.8rem;background:rgba(0,0,0,.65);color:#fff;font-size:.74rem;font-weight:600;padding:.35rem .7rem;border-radius:50px;display:flex;align-items:center;gap:.35rem;opacity:0;transition:opacity .3s}
+.infographic:hover .zoom-hint{opacity:1}
+.info-caption{color:var(--muted);font-size:.85rem;margin-top:.7rem;text-align:center}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;z-index:2000;background:rgba(5,7,12,.82);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{position:relative;background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:840px;width:100%;max-height:88vh;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;transform:translateY(24px) scale(.97);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.modal-overlay.open .modal{transform:none}
+.modal-img{background:#000;min-height:320px}
+.modal-img img{width:100%;height:100%;object-fit:contain}
+.modal-body{padding:2rem;overflow-y:auto}
+.modal-tag{display:inline-block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.3rem .75rem;border-radius:50px;margin-bottom:.9rem;background:rgba(239,68,68,.12);color:var(--danger)}
+.modal-body h3{font-size:1.45rem;font-weight:800;margin-bottom:.6rem}
+.modal-desc{color:var(--muted);font-size:.92rem;line-height:1.6;margin-bottom:1.3rem}
+.modal-section{margin-bottom:1.1rem}
+.modal-section h4{font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.modal-section ul{list-style:none}
+.modal-section li{padding:.27rem 0 .27rem 1.4rem;position:relative;font-size:.87rem}
+.modal-section li::before{content:'';position:absolute;left:2px;top:.7rem;width:6px;height:6px;border-radius:50%}
+.modal-risk li::before{background:var(--danger)}
+.modal-prev li::before{background:var(--success)}
+.modal-close{position:absolute;top:1rem;right:1rem;z-index:5;width:38px;height:38px;border-radius:50%;border:none;background:rgba(0,0,0,.55);color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:var(--danger);transform:rotate(90deg)}
+
+/* lightbox */
+.lightbox{position:fixed;inset:0;z-index:2100;background:rgba(3,5,10,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:2rem;opacity:0;pointer-events:none;transition:opacity .3s}
+.lightbox.open{opacity:1;pointer-events:auto}
+.lightbox img{max-width:96vw;max-height:90vh;border-radius:10px;box-shadow:0 20px 70px rgba(0,0,0,.6);transform:scale(.96);transition:transform .35s}
+.lightbox.open img{transform:none}
+.lb-close{position:absolute;top:1.2rem;right:1.4rem;width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:1.7rem;cursor:pointer;transition:all .2s}
+.lb-close:hover{background:var(--brand);transform:rotate(90deg)}
+
+/* quiz */
+.quiz-wrap{max-width:720px;margin:0 auto}
+.quiz-progress{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem;font-size:.85rem;color:var(--muted);font-weight:600}
+.quiz-bar{height:6px;background:var(--card);border-radius:50px;overflow:hidden;margin-bottom:1.5rem}
+.quiz-bar i{display:block;height:100%;width:0;background:var(--g-amber);transition:width .4s}
+.quiz-q{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.9rem}
+.quiz-q h3{font-size:1.18rem;font-weight:700;margin-bottom:1.3rem}
+.quiz-opts{display:flex;flex-direction:column;gap:.7rem}
+.quiz-opt{text-align:left;background:var(--card-2);border:1px solid var(--border);color:var(--text);padding:.85rem 1.1rem;border-radius:10px;cursor:pointer;font-family:inherit;font-size:.91rem;transition:all .2s;display:flex;align-items:center;gap:.7rem}
+.quiz-opt:hover:not(:disabled){border-color:var(--accent);transform:translateX(3px)}
+.quiz-opt .qo-mark{width:22px;height:22px;border-radius:50%;border:2px solid var(--dim);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff}
+.quiz-opt.correct{border-color:var(--success);background:rgba(16,185,129,.12)}
+.quiz-opt.correct .qo-mark{border-color:var(--success);background:var(--success)}
+.quiz-opt.wrong{border-color:var(--danger);background:rgba(239,68,68,.12)}
+.quiz-opt.wrong .qo-mark{border-color:var(--danger);background:var(--danger)}
+.quiz-opt:disabled{cursor:default}
+.quiz-explain{margin-top:1.2rem;padding:.9rem 1.1rem;border-radius:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);font-size:.86rem;color:var(--muted);display:none}
+.quiz-explain.show{display:block}
+.quiz-explain strong{color:var(--info)}
+.quiz-foot{margin-top:1.3rem;display:flex;justify-content:flex-end}
+.quiz-result{text-align:center;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.8rem 2rem}
+.quiz-result .score{font-size:3.4rem;font-weight:900;background:var(--g-amber);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.quiz-result h3{font-size:1.35rem;margin:.6rem 0 .8rem}
+.quiz-result p{color:var(--muted);margin-bottom:1.5rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--g-amber);color:#1a0f02;border:none;font-weight:700;padding:.75rem 1.5rem;border-radius:10px;cursor:pointer;font-family:inherit;font-size:.9rem;transition:all .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(210,35,37,.3)}
+
+/* ===== body map ===== */
+.bodymap{display:flex;flex-direction:column;align-items:center;gap:.6rem;margin-bottom:1.6rem}
+.bm-stage{position:relative;width:230px;max-width:66vw}
+.bm-fig{width:100%;height:auto;display:block;filter:drop-shadow(0 8px 26px rgba(0,0,0,.45))}
+.bm-fig .seg{fill:url(#bmGrad);stroke:#334155;stroke-width:2}
+.bm-hot{position:absolute;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:rgba(225,29,42,.9);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;animation:bmpulse 2.2s infinite}
+.bm-hot::after{content:'+';color:#fff;font-weight:700;font-size:.95rem;line-height:1}
+.bm-hot:hover,.bm-hot:focus-visible{background:var(--brand);transform:translate(-50%,-50%) scale(1.25);z-index:4;animation:none;outline:none}
+.bm-tip{position:absolute;bottom:140%;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:.68rem;font-weight:600;white-space:nowrap;padding:.25rem .55rem;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .2s}
+.bm-hot:hover .bm-tip,.bm-hot:focus-visible .bm-tip{opacity:1}
+@keyframes bmpulse{0%{box-shadow:0 0 0 0 rgba(225,29,42,.5)}70%{box-shadow:0 0 0 13px rgba(225,29,42,0)}100%{box-shadow:0 0 0 0 rgba(225,29,42,0)}}
+.bm-hint{color:var(--dim);font-size:.82rem}
+
+/* ===== angle simulator ===== */
+.sim{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem;display:grid;grid-template-columns:280px 1fr;gap:1.6rem;align-items:center;margin-bottom:1.4rem}
+.sim-stage svg{width:100%;height:auto;display:block}
+.sim-controls{display:flex;flex-direction:column;gap:1rem}
+.sim-read{display:flex;align-items:center;gap:1rem}
+.sim-deg{font-size:2.6rem;font-weight:900;min-width:95px}
+.sim-badge{padding:.45rem .95rem;border-radius:50px;font-weight:700;font-size:.85rem}
+.sim-range{width:100%;-webkit-appearance:none;appearance:none;height:8px;border-radius:50px;background:linear-gradient(90deg,#10b981 0 22%,#f59e0b 22% 50%,#ef4444 50%);outline:none}
+.sim-range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--brand);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.sim-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--brand);cursor:pointer}
+.sim-legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+.sim-legend span{display:flex;align-items:center;gap:.35rem}
+.sim-legend i{width:11px;height:11px;border-radius:3px}
+@media(max-width:680px){.sim{grid-template-columns:1fr}}
+
+/* ===== Borg scale (perception de l'effort) ===== */
+.borg{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:1.4rem}
+.borg-scale{display:flex;flex-direction:column;gap:4px}
+.borg-row{display:flex;align-items:center;gap:.7rem;padding:.42rem .7rem;border-radius:9px;cursor:pointer;border:1px solid var(--border);background:var(--card-2);color:var(--text);font-family:inherit;text-align:left;transition:transform .15s,border-color .15s,box-shadow .15s}
+.borg-row:hover{transform:translateX(4px);border-color:var(--dim)}
+.borg-row.active{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.18)}
+.borg-num{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0a0e17;font-size:.82rem;flex-shrink:0}
+.borg-row .bl{font-weight:700;font-size:.82rem}
+.borg-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.5rem}
+.borg-emo{font-size:4rem;line-height:1;transition:transform .3s}
+.borg-gauge{width:100%;max-width:250px;height:auto}
+.borg-big{font-size:2.6rem;font-weight:900;line-height:1}
+.borg-lbl{font-weight:800;font-size:1.05rem;text-transform:uppercase;letter-spacing:.04em}
+.borg-desc{color:var(--muted);font-size:.9rem}
+.borg-act{font-size:.84rem;background:var(--card-2);padding:.4rem .9rem;border-radius:50px;border:1px solid var(--border)}
+.borg-heart{display:flex;align-items:center;gap:.45rem;color:var(--muted);font-size:.82rem;font-weight:600;margin-top:.2rem}
+.borg-heart .hb{color:var(--danger);font-size:1.25rem;animation:beat 1s infinite}
+@keyframes beat{0%,100%{transform:scale(1)}30%{transform:scale(1.28)}}
+.borg-range{width:100%;-webkit-appearance:none;appearance:none;height:8px;border-radius:50px;background:linear-gradient(90deg,#16a34a,#eab308,#f97316,#dc2626);outline:none;margin-top:.5rem}
+.borg-range::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--text);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.borg-range::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--text);cursor:pointer}
+@media(max-width:680px){.borg{grid-template-columns:1fr}}
+
+/* ===== progression ===== */
+.ni-frac{margin-left:auto;font-size:.66rem;font-weight:800;color:var(--dim)}
+.ni-frac.done{color:var(--success);font-size:.8rem}
+.stage-track{width:180px;height:6px;background:var(--card);border-radius:50px;overflow:hidden}
+.stage-track i{display:block;height:100%;width:0;background:var(--g-amber);transition:width .45s}
+.start-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin:.4rem 0 1.8rem}
+.btn-lg{font-size:1rem;padding:.9rem 1.8rem}
+.start-note{color:var(--dim);font-size:.85rem;max-width:400px;line-height:1.5}
+.start-h{font-size:1.02rem;font-weight:700;margin-bottom:.2rem;color:var(--muted)}
+/* ===== Hero signature (accueil) ===== */
+.hero{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--border);min-height:clamp(360px,56vh,560px);display:flex;align-items:center;margin-bottom:1.8rem}
+.hero-media{position:absolute;inset:0;z-index:0}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(120% 85% at 78% 18%, rgba(226,58,60,.30), transparent 58%),radial-gradient(100% 70% at 8% 92%, rgba(59,130,246,.14), transparent 55%),radial-gradient(90% 60% at 55% 85%, rgba(245,158,11,.10), transparent 60%),linear-gradient(160deg,#0b0f19 0%,#0d1320 55%,#07090f 100%);background-size:200% 200%;animation:heroAurora 20s ease-in-out infinite alternate}
+.hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:24px 24px;-webkit-mask-image:radial-gradient(120% 100% at 72% 28%,#000,transparent 75%);mask-image:radial-gradient(120% 100% at 72% 28%,#000,transparent 75%)}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+.hero-scrim{position:absolute;inset:0;z-index:3;background:linear-gradient(90deg,rgba(7,9,15,.94) 0%,rgba(7,9,15,.72) 36%,rgba(7,9,15,.28) 68%,rgba(7,9,15,0) 100%),linear-gradient(0deg,rgba(7,9,15,.8) 0%,transparent 45%)}
+.hero-content{position:relative;z-index:4;padding:clamp(1.6rem,4vw,3.2rem);max-width:700px}
+.hero-content .theme-lead{color:#cbd5e1}
+@keyframes heroAurora{0%{background-position:0% 0%}100%{background-position:100% 100%}}
+@media(max-width:900px){.hero{min-height:auto}.hero-video{display:none}.hero-scrim{background:linear-gradient(0deg,rgba(7,9,15,.92) 0%,rgba(7,9,15,.5) 60%,rgba(7,9,15,.55) 100%)}.hero-content{padding:1.6rem 1.2rem}}
+/* ===== Horizontal journey stepper ===== */
+.stepper{display:flex;align-items:flex-start;padding:.85rem 2rem .7rem;background:var(--bg-2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0}
+.step-node{flex:1 0 auto;min-width:80px;display:flex;flex-direction:column;align-items:center;position:relative;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.step-node::before{content:'';position:absolute;top:13px;left:calc(-50% + 14px);width:calc(100% - 28px);height:2px;background:var(--border);z-index:0;transition:background .3s}
+.step-node:first-child::before{display:none}
+.step-node.reached::before{background:var(--accent)}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--bg-2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:var(--dim);z-index:1;transition:all .3s}
+.step-node.reached .step-dot{border-color:var(--accent);color:var(--accent-l)}
+.step-node.current .step-dot{background:var(--g-amber);border-color:transparent;color:#1a0f02;box-shadow:0 0 0 4px rgba(210,35,37,.18)}
+.step-node.done .step-dot{background:var(--success);border-color:transparent;color:#06140d}
+.step-lbl{font-size:.63rem;color:var(--dim);margin-top:.35rem;white-space:nowrap;font-weight:600;transition:color .3s}
+.step-node.current .step-lbl{color:var(--text)}
+.step-node.done .step-lbl{color:var(--muted)}
+.step-node:hover .step-lbl{color:var(--text)}
+.nb-lab{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle}
+@media(max-width:900px){.stepper{padding:.7rem 1rem}}
+.sb-prog{margin-top:.8rem}
+.sb-prog b{color:var(--success)}
+.sb-prog-bar{height:6px;background:var(--card);border-radius:50px;overflow:hidden;margin-top:.35rem}
+.sb-prog-bar i{display:block;height:100%;width:0;background:var(--g-green);transition:width .45s}
+
+/* ===== attestation + certificate ===== */
+.attest{margin-top:2rem;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem}
+.attest h3{font-size:1.2rem;font-weight:800;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.attest p{color:var(--muted);font-size:.9rem;margin-bottom:1rem}
+.attest-row{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
+.attest input{flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.7rem 1rem;border-radius:10px;font-family:inherit;font-size:.95rem}
+.attest input:focus{outline:none;border-color:var(--accent)}
+#certPreview{margin-top:1.4rem}
+#printLayer{display:none}
+.cert{background:#fff;color:#1a2332;border-radius:10px;padding:2.6rem;text-align:center;border:6px solid var(--brand);max-width:680px;margin:0 auto}
+.cert img{width:190px;margin:0 auto 1.3rem;display:block;background:#000;border-radius:6px;padding:.3rem}
+.cert .cert-k{letter-spacing:.2em;text-transform:uppercase;color:var(--brand);font-weight:800;font-size:.78rem}
+.cert h2{font-size:1.9rem;margin:.3rem 0 1.2rem;color:#0a0e17}
+.cert .cert-name{font-size:1.7rem;font-weight:800;color:#0a0e17;border-bottom:2px solid #cbd5e1;display:inline-block;padding:.2rem 2.5rem .35rem;margin:.5rem 0}
+.cert .cert-body{font-size:.98rem;color:#475569;max-width:520px;margin:.8rem auto;line-height:1.6}
+.cert .cert-note{display:inline-block;margin:.4rem auto 0;background:#fff5e6;border:2px solid var(--brand);border-radius:50px;padding:.4rem 1.4rem;font-size:1rem;color:#1a2332}
+.cert .cert-note b{color:var(--brand-d);font-size:1.3rem;margin-left:.3rem}
+.cert .cert-foot{display:flex;justify-content:space-between;margin-top:2rem;font-size:.85rem;color:#475569;font-weight:600}
+.print-doc{color:#111}
+.print-doc .pd-head{display:flex;align-items:center;gap:1rem;border-bottom:3px solid #d22325;padding-bottom:.7rem;margin-bottom:1rem}
+.print-doc .pd-head img{width:150px;background:#000;border-radius:6px;padding:.2rem}
+.print-doc .pd-k{color:#d22325;font-weight:800;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase}
+.print-doc h1{font-size:1.6rem;color:#111;margin:.1rem 0}
+.print-doc .pd-date{color:#555;font-size:.85rem}
+.print-doc .pd-part{margin-bottom:.9rem;page-break-inside:avoid}
+.print-doc h2{font-size:1.1rem;color:#d22325;border-left:4px solid #d22325;padding-left:.5rem;margin:.7rem 0 .35rem}
+.print-doc h3{font-size:.95rem;margin:.3rem 0;color:#111}
+.print-doc ul{margin:0 0 0 1.1rem}
+.print-doc li{font-size:.9rem;margin:.15rem 0;color:#222}
+.print-doc .pd-tip{font-size:.85rem;color:#555;font-style:italic;margin-top:.3rem}
+.print-doc .pd-cols{display:flex;gap:2rem}
+.print-doc .pd-cols3{display:flex;gap:1.4rem}
+.print-doc .pd-cols>div,.print-doc .pd-cols3>div{flex:1}
+.print-doc .pd-foot{margin-top:1rem;border-top:1px solid #ccc;padding-top:.5rem;color:#666;font-size:.8rem;text-align:center}
+@media print{@page{size:landscape;margin:1.2cm}body>*{display:none!important}#printLayer{display:block!important}}
+
+/* ===== locked / linear path ===== */
+.nav-item.locked,.step-node.locked{opacity:.4;cursor:not-allowed;pointer-events:none}
+.nav-item .ni-lock,.prog-card .pc-lock{display:none}
+.nav-item.locked .ni-frac{display:none}
+.nav-item.locked .ni-lock{display:inline;margin-left:auto;font-size:.7rem}
+.subtab.locked{opacity:.38;cursor:not-allowed;pointer-events:none}
+.prog-card.locked{opacity:.55;cursor:not-allowed;filter:grayscale(.5)}
+.prog-card.locked .pc-lock{display:inline}
+
+/* ===== gamification ===== */
+.sb-score{position:relative;margin-top:.6rem;display:flex;align-items:center;gap:.45rem;background:rgba(210,35,37,.12);border:1px solid rgba(210,35,37,.32);border-radius:10px;padding:.55rem .8rem;font-size:.78rem;color:var(--text);font-weight:700}
+.sb-score .st{font-size:1.1rem}
+.sb-score b{color:var(--accent);font-size:1.35rem;margin-left:auto;display:inline-block}
+.sb-score b.bump{animation:scoreBump .5s ease}
+@keyframes scoreBump{0%{transform:scale(1)}40%{transform:scale(1.4);color:var(--accent-l)}100%{transform:scale(1)}}
+.score-pop{position:absolute;right:.7rem;top:.2rem;color:var(--success);font-weight:800;font-size:.9rem;pointer-events:none;animation:scorePop 1s ease forwards}
+@keyframes scorePop{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}100%{opacity:0;transform:translateY(-20px)}}
+/* primary "Suivant" CTA */
+#nextBtn{background:var(--g-amber);border-color:transparent;color:#1a0f02;font-weight:800;padding:.7rem 1.6rem;font-size:.95rem;box-shadow:0 6px 20px rgba(210,35,37,.3)}
+#nextBtn:hover:not(:disabled){color:#1a0f02;transform:translateY(-2px);box-shadow:0 10px 30px rgba(210,35,37,.5)}
+#nextBtn:disabled{background:var(--card);color:var(--dim);box-shadow:none}
+#nextBtn.bump{animation:nextBump .5s ease}
+@keyframes nextBump{0%,100%{transform:none}50%{transform:scale(1.07)}}
+#nextBtn.reading{background:var(--card);color:var(--muted);box-shadow:none;cursor:wait;animation:none;font-weight:600}
+/* end-of-part recap */
+.recap{background:linear-gradient(160deg,rgba(210,35,37,.09),var(--card));border:1px solid rgba(210,35,37,.25);border-radius:16px;padding:1.8rem;max-width:760px}
+.recap h3{display:flex;align-items:center;gap:.5rem;font-size:1.12rem;font-weight:800;margin-bottom:1rem}
+.recap ul{list-style:none}
+.recap li{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text);font-size:.94rem;line-height:1.5}
+.recap li:last-child{border-bottom:none}
+.recap li .rk{color:var(--accent);font-weight:800;flex-shrink:0}
+.recap-tip{margin-top:1.1rem;color:var(--muted);font-size:.86rem;font-style:italic}
+.toast-wrap{position:fixed;top:1rem;right:1rem;z-index:3000;display:flex;flex-direction:column;gap:.5rem}
+.toast{background:var(--card);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:12px;padding:.8rem 1.1rem;display:flex;align-items:center;gap:.7rem;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:toastIn .4s cubic-bezier(.2,.7,.2,1);max-width:300px}
+.toast .ti{font-size:1.6rem;flex-shrink:0}
+.toast .tt{font-weight:700;font-size:.88rem}
+.toast .td{color:var(--muted);font-size:.76rem}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+.confetti{position:fixed;top:-12px;width:9px;height:14px;z-index:3500;pointer-events:none;border-radius:2px;will-change:transform,opacity}
+@keyframes confFall{to{transform:translateY(106vh) rotate(720deg);opacity:.15}}
+
+/* ===== requirements (attestation gate) ===== */
+.reqs{list-style:none;margin:.2rem 0 1.1rem}
+.reqs li{display:flex;align-items:center;gap:.6rem;padding:.4rem 0;color:var(--muted);font-size:.9rem}
+.reqs .rq{width:22px;height:22px;border-radius:50%;border:2px solid var(--dim);display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;color:#06140d}
+.reqs li.ok{color:var(--text)}
+.reqs li.ok .rq{background:var(--success);border-color:var(--success)}
+.attest .btn:disabled,.attest input:disabled{opacity:.45;cursor:not-allowed}
+
+/* brand: white text on red CTAs */
+#nextBtn:not(:disabled),.btn,.subtab.active,.step-node.current .step-dot{color:#fff}
+
+/* sidebar tool buttons */
+.brand-tools{display:flex;gap:.4rem;margin-top:.8rem;justify-content:center;flex-wrap:wrap}
+.tool-btn{display:flex;flex-direction:column;align-items:center;gap:.25rem;background:var(--card-2);border:1px solid var(--border);color:#cbd5e1;width:62px;min-height:54px;padding:.45rem .25rem;border-radius:10px;cursor:pointer;transition:all .2s;font-family:inherit}
+.tool-btn svg{width:18px;height:18px}
+.tool-btn .tl{font-size:.55rem;font-weight:700;line-height:1.1;text-align:center;color:var(--muted)}
+.tool-btn:hover{border-color:var(--brand);background:var(--brand);color:#fff;transform:translateY(-2px);box-shadow:0 6px 16px rgba(210,35,37,.35)}
+.tool-btn:hover .tl{color:#fff}
+
+/* command palette */
+.cmdk{position:fixed;inset:0;z-index:2200;background:rgba(3,5,10,.7);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding-top:11vh;opacity:0;pointer-events:none;transition:opacity .2s}
+.cmdk.open{opacity:1;pointer-events:auto}
+.cmdk-box{width:min(560px,92vw);background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);transform:translateY(-12px);transition:transform .25s}
+.cmdk.open .cmdk-box{transform:none}
+#cmdkInput{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:inherit;font-size:1.05rem;padding:1rem 1.2rem;outline:none}
+.cmdk-list{max-height:46vh;overflow-y:auto;padding:.4rem}
+.cmdk-item{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;border-radius:9px;cursor:pointer;font-size:.96rem;color:var(--text)}
+.cmdk-item .ci-n{font-size:.68rem;font-weight:800;color:var(--dim);min-width:24px}
+.cmdk-item .ci-sub{color:var(--muted);font-size:.82rem;margin-left:auto}
+.cmdk-item.active{background:rgba(210,35,37,.16)}
+.cmdk-empty{padding:1rem 1.2rem;color:var(--muted)}
+.cmdk-foot{padding:.55rem 1rem;border-top:1px solid var(--border);color:var(--dim);font-size:.72rem;display:flex;gap:1.2rem;flex-wrap:wrap}
+
+/* results dashboard (bilan) */
+.dash{display:flex;gap:2rem;align-items:center;flex-wrap:wrap;background:linear-gradient(160deg,rgba(210,35,37,.08),var(--card));border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.8rem;margin-bottom:1.6rem}
+.dash-ring{position:relative;width:120px;height:120px;flex-shrink:0}
+.dash-ring .dr-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dash-ring .dr-num{font-size:1.5rem;font-weight:900;color:var(--text)}
+.dash-ring .dr-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:.1rem}
+.dash-info{flex:1;min-width:230px}
+.dash-row{display:flex;gap:1.8rem;margin-bottom:1rem;flex-wrap:wrap}
+.dash-kpi .v{font-size:1.6rem;font-weight:900;color:var(--accent)}
+.dash-kpi .l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dash-badges{display:flex;gap:.5rem;flex-wrap:wrap}
+.dash-badge{display:flex;align-items:center;gap:.4rem;background:var(--card-2);border:1px solid var(--border);border-radius:50px;padding:.35rem .8rem;font-size:.82rem;color:var(--dim);transition:all .3s}
+.dash-badge.earned{border-color:var(--accent);color:var(--text)}
+.dash-badge .db-i{filter:grayscale(1) opacity(.45)}
+.dash-badge.earned .db-i{filter:none}
+
+/* espace formateur */
+.coach{position:fixed;inset:0;z-index:2300;background:rgba(3,5,10,.8);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .25s}
+.coach.open{opacity:1;pointer-events:auto}
+.coach-box{position:relative;background:var(--card);border:1px solid var(--border);border-radius:18px;width:min(640px,94vw);max-height:88vh;overflow-y:auto;padding:2rem;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.coach-box h3{font-size:1.3rem;font-weight:800;margin-bottom:.3rem}
+.coach-box .coach-sub{color:var(--muted);font-size:.85rem;margin-bottom:1.2rem}
+.coach-close{position:absolute;top:1rem;right:1rem;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:1.4rem;cursor:pointer;transition:all .2s}
+.coach-close:hover{background:var(--brand);transform:rotate(90deg)}
+.coach-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.7rem;margin-bottom:1.2rem}
+.coach-kpi{background:var(--card-2);border:1px solid var(--border);border-radius:12px;padding:.9rem;text-align:center}
+.coach-kpi .v{font-size:1.5rem;font-weight:900;color:var(--accent)}
+.coach-kpi .l{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.coach-table{width:100%;border-collapse:collapse;font-size:.9rem;margin-bottom:1.3rem}
+.coach-table th,.coach-table td{text-align:left;padding:.5rem .55rem;border-bottom:1px solid var(--border)}
+.coach-table th{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}
+.coach-ok{color:var(--success);font-weight:700}
+.coach-no{color:var(--dim)}
+.coach-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn.ghost{background:var(--card-2);color:var(--text);border:1px solid var(--border)}
+
+/* larger, more readable body text */
+.info-caption{font-size:1.02rem;color:#aeb9cb;line-height:1.55}
+.theme-lead{font-size:1.12rem;line-height:1.65}
+.card h3,.imgcard-body h3,.mine h4,.step h3{font-size:1.1rem}
+.card p,.mine p,.step li,.checklist li,.imgcard-body p,.recap-tip,.stat .l{font-size:.96rem}
+.pilier li,.recap li,.modal-desc,.modal-section li,.alert p{font-size:1.02rem}
+.quiz-opt{font-size:1.02rem}
+.quiz-q h3{font-size:1.25rem}
+.subtab{font-size:.9rem}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:900px){
+  body{overflow:auto}
+  .app{flex-direction:column;height:auto}
+  .sidebar{width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;position:sticky;top:0;z-index:50;padding:.6rem 1rem;gap:.6rem}
+  .brand{flex-direction:row;border:none;padding:0;gap:.5rem;flex-shrink:0}
+  .brand img{max-width:120px}
+  .brand .brand-sub,.fs-btn{display:none}
+  .theme-nav{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;margin:0;gap:.3rem;width:100%;order:3}
+  .nav-item{border-left:none;border-bottom:3px solid transparent;border-radius:8px;padding:.45rem .6rem;white-space:nowrap}
+  .nav-item.active{border-left:none;border-bottom-color:var(--brand)}
+  .sidebar-foot{display:none}
+  .stage{height:auto}.stage-scroll{overflow:visible}
+  .stage-inner{padding:1.6rem 1.2rem}
+  .modal{grid-template-columns:1fr;max-height:90vh}.modal-img{min-height:200px;max-height:230px}
+}
+@media (max-width:560px){.stage-nav{padding:.6rem 1rem}.snav-btn span{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="images/logo_roger.png" alt="Machines Roger International">
+      <div class="brand-sub">Prevention des TMS</div>
+      <div class="brand-tools">
+        <button class="tool-btn" id="searchBtn" title="Rechercher (Ctrl+K)" aria-label="Rechercher"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span class="tl">Recherche</span></button>
+        <button class="tool-btn" id="coachBtn" title="Espace formateur (resultats)" aria-label="Espace formateur"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/></svg><span class="tl">Formateur</span></button>
+        <button class="tool-btn" id="soundBtn" title="Son" aria-label="Son"></button>
+        <button class="tool-btn" id="fsBtn" title="Plein ecran (F)" aria-label="Plein ecran"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3"/></svg><span class="tl">Plein ecran</span></button>
+        <button class="tool-btn" id="resetBtn" title="Reinitialiser la formation" aria-label="Reinitialiser"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8"/><path d="M3 3v5h5"/></svg><span class="tl">Reinit.</span></button>
+      </div>
+    </div>
+    <nav class="theme-nav" id="themeNav">
+      <button class="nav-item active" data-theme="0"><span class="ni-num">00</span><span class="ni-label">Accueil</span></button>
+      <button class="nav-item" data-theme="1"><span class="ni-num">01</span><span class="ni-label">Comprendre les TMS</span></button>
+      <button class="nav-item" data-theme="2"><span class="ni-num">02</span><span class="ni-label">Charge &amp; recuperation</span></button>
+      <button class="nav-item" data-theme="3"><span class="ni-num">03</span><span class="ni-label">Le sommeil</span></button>
+      <button class="nav-item" data-theme="4"><span class="ni-num">04</span><span class="ni-label">Hygiene de vie</span></button>
+      <button class="nav-item" data-theme="5"><span class="ni-num">05</span><span class="ni-label">Reflexes au poste</span></button>
+      <button class="nav-item" data-theme="6"><span class="ni-num">06</span><span class="ni-label">A retenir</span></button>
+      <button class="nav-item" data-theme="7"><span class="ni-num">07</span><span class="ni-label">Quiz</span></button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="sb-score"><span class="st">&#11088;</span> Score <b id="scoreTxt">0</b> pts</div>
+      <div class="sb-prog">Progression globale <b id="progTxt">0%</b><div class="sb-prog-bar"><i id="progBar"></i></div></div>
+      <div style="margin-top:.7rem">Formation Nouveaux Travailleurs<br>Sources : CNESST (2023) &middot; INSPQ</div>
+    </div>
+  </aside>
+
+  <!-- STAGE -->
+  <div class="stage">
+    <div class="stepper" id="stepper"></div>
+    <div class="stage-scroll" id="stageScroll">
+      <div class="stage-inner">
+
+        <!-- THEME 0 -->
+        <section class="theme active" data-theme="0">
+          <div class="hero">
+            <div class="hero-media">
+              <div class="hero-bg"></div>
+              <img class="hero-img" src="images/hero.jpg" alt="" onerror="this.style.display='none'">
+              <video class="hero-video" autoplay muted loop playsinline><source src="images/hero.mp4" type="video/mp4"></video>
+              <div class="hero-scrim"></div>
+            </div>
+            <div class="hero-content">
+          <div class="theme-kicker">Formation &middot; Nouveaux travailleurs</div>
+          <h1 class="theme-title" style="font-size:clamp(2rem,4vw,3rem);max-width:780px">Ton corps, c'est ton <span style="background:var(--g-amber);-webkit-background-clip:text;-webkit-text-fill-color:transparent">premier outil</span> de travail.</h1>
+          <p class="theme-lead">Un outil brise se remplace. Ton dos, tes epaules et tes genoux doivent durer. Cette formation couvre la prevention des troubles musculosquelettiques (TMS) en mine souterraine.</p>
+          <div class="start-row">
+            <button class="btn btn-lg" id="startBtn">Commencer la formation <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            <span class="start-note"><strong style="color:var(--accent)">Suis le parcours avec &laquo; Suivant &raquo;</strong>, ou clique une partie pour y aller directement. Ta progression est enregistree automatiquement.</span>
+          </div>
+            </div>
+          </div>
+          <h3 class="start-h">Les 5 parties de la formation</h3>
+          <div class="prog-grid">
+            <button class="prog-card" data-theme="1" style="border-top-color:#f59e0b"><div class="pc-num" style="color:#f59e0b">01</div><h4>Comprendre les TMS</h4><p>Ce que c'est, ou ca frappe, comment ca s'installe</p></button>
+            <button class="prog-card" data-theme="2" style="border-top-color:#3b82f6"><div class="pc-num" style="color:#3b82f6">02</div><h4>Charge &amp; recuperation</h4><p>L'equation qui explique presque tout</p></button>
+            <button class="prog-card" data-theme="3" style="border-top-color:#8b5cf6"><div class="pc-num" style="color:#8b5cf6">03</div><h4>Le sommeil</h4><p>Le reparateur numero un de ton corps</p></button>
+            <button class="prog-card" data-theme="4" style="border-top-color:#10b981"><div class="pc-num" style="color:#10b981">04</div><h4>Hygiene de vie</h4><p>Eau, alimentation, mouvement, habitudes</p></button>
+            <button class="prog-card" data-theme="5" style="border-top-color:#e11d2a"><div class="pc-num" style="color:#e11d2a">05</div><h4>Reflexes au poste</h4><p>Ce que tu peux appliquer des demain</p></button>
+          </div>
+          <h3 class="start-h" style="margin-top:1.8rem">Les TMS au Quebec, en chiffres</h3>
+          <div class="stats-grid">
+            <div class="stat"><div class="v">1 / 4</div><div class="l">Travailleur quebecois touche par un TMS lie au travail</div></div>
+            <div class="stat"><div class="v">~26 600</div><div class="l">Lesions de type TMS acceptees par la CNESST en 2023</div></div>
+            <div class="stat"><div class="v">23,3%</div><div class="l">Des lesions professionnelles 2023 sont des TMS</div></div>
+            <div class="stat"><div class="v">Top 3</div><div class="l">Des causes d'absence et de reaffectation au travail</div></div>
+          </div>
+        </section>
+
+        <!-- THEME 1 : COMPRENDRE -->
+        <section class="theme" data-theme="1">
+          <div class="theme-kicker">Partie 01</div>
+          <h2 class="theme-title">Comprendre les TMS</h2>
+          <p class="theme-lead">Trouble musculosquelettique : une atteinte des muscles, tendons, nerfs, ligaments ou articulations, causee ou aggravee par le travail.</p>
+          <div class="subtabs">
+            <button class="subtab active" data-sub="def">Definition &amp; types</button>
+            <button class="subtab" data-sub="zones">Zones a risque</button>
+            <button class="subtab" data-sub="decl">Declencheurs</button>
+            <button class="subtab" data-sub="fact">Facteurs de risque</button>
+            <button class="subtab" data-sub="evo">Evolution</button>
+            <button class="subtab" data-sub="chiffres">Chiffres</button>
+          </div>
+
+          <div class="subpanel active" data-sub="def">
+            <p style="text-align:center;color:var(--dim);font-size:.83rem;margin-bottom:1.2rem">Cliquez sur une carte pour les details</p>
+            <div class="img-cards tms-cards">
+              <article class="imgcard" data-modal="lombalgie" tabindex="0" role="button" aria-label="Lombalgie"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/tms_lombalgie.jpeg" alt="Lombalgie" loading="lazy"></div><div class="imgcard-body"><h3>Lombalgie</h3><p>Douleur du bas du dos, le TMS le plus frequent.</p><span class="imgcard-cta">En savoir plus <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+              <article class="imgcard" data-modal="tendinite" tabindex="0" role="button" aria-label="Tendinite"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/tms_tendinite.jpeg" alt="Tendinite" loading="lazy"></div><div class="imgcard-body"><h3>Tendinite</h3><p>Inflammation d'un tendon : epaule, coude, poignet.</p><span class="imgcard-cta">En savoir plus <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+              <article class="imgcard" data-modal="bursite" tabindex="0" role="button" aria-label="Bursite"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/tms_bursite.jpeg" alt="Bursite" loading="lazy"></div><div class="imgcard-body"><h3>Bursite</h3><p>Inflammation des bourses sereuses : genoux, epaules.</p><span class="imgcard-cta">En savoir plus <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+              <article class="imgcard" data-modal="carpien" tabindex="0" role="button" aria-label="Canal carpien"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/tms_carpien.jpeg" alt="Canal carpien" loading="lazy"></div><div class="imgcard-body"><h3>Canal carpien</h3><p>Compression du nerf median au poignet.</p><span class="imgcard-cta">En savoir plus <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+            </div>
+            <div class="alert"><div class="ai">&#9888;</div><p><strong>Ce n'est pas seulement une blessure soudaine.</strong> La plupart des TMS s'installent par usure, a force de repetition, de force ou de mauvaises postures sur de longues periodes.</p></div>
+          </div>
+
+          <div class="subpanel" data-sub="zones">
+            <p style="text-align:center;color:var(--dim);font-size:.83rem;margin-bottom:1.2rem">Ou ca frappe le plus &mdash; clique la silhouette ou une carte</p>
+            <div class="bodymap">
+              <div class="bm-stage">
+                <svg class="bm-fig" viewBox="0 0 220 400" xmlns="http://www.w3.org/2000/svg" aria-label="Silhouette du corps humain">
+                  <defs><linearGradient id="bmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#243044"/><stop offset="1" stop-color="#151d2c"/></linearGradient></defs>
+                  <circle class="seg" cx="110" cy="40" r="27"/>
+                  <rect class="seg" x="99" y="62" width="22" height="20" rx="7"/>
+                  <rect class="seg" x="70" y="80" width="80" height="132" rx="22"/>
+                  <rect class="seg" x="46" y="88" width="22" height="136" rx="11"/>
+                  <rect class="seg" x="152" y="88" width="22" height="136" rx="11"/>
+                  <rect class="seg" x="78" y="202" width="30" height="164" rx="13"/>
+                  <rect class="seg" x="112" y="202" width="30" height="164" rx="13"/>
+                </svg>
+                <button class="bm-hot" style="left:50%;top:19%" data-modal="cou" aria-label="Cou et nuque"><span class="bm-tip">Cou et nuque</span></button>
+                <button class="bm-hot" style="left:29%;top:24%" data-modal="epaules" aria-label="Epaules"><span class="bm-tip">Epaules</span></button>
+                <button class="bm-hot" style="left:71%;top:24%" data-modal="epaules" aria-label="Epaules"><span class="bm-tip">Epaules</span></button>
+                <button class="bm-hot" style="left:50%;top:45%" data-modal="dos" aria-label="Dos et bas du dos"><span class="bm-tip">Dos et bas du dos</span></button>
+                <button class="bm-hot" style="left:26%;top:40%" data-modal="coudes" aria-label="Coudes"><span class="bm-tip">Coudes</span></button>
+                <button class="bm-hot" style="left:74%;top:40%" data-modal="coudes" aria-label="Coudes"><span class="bm-tip">Coudes</span></button>
+                <button class="bm-hot" style="left:25%;top:53%" data-modal="poignets" aria-label="Poignets et mains"><span class="bm-tip">Poignets et mains</span></button>
+                <button class="bm-hot" style="left:75%;top:53%" data-modal="poignets" aria-label="Poignets et mains"><span class="bm-tip">Poignets et mains</span></button>
+                <button class="bm-hot" style="left:42%;top:76%" data-modal="genoux" aria-label="Genoux"><span class="bm-tip">Genoux</span></button>
+                <button class="bm-hot" style="left:58%;top:76%" data-modal="genoux" aria-label="Genoux"><span class="bm-tip">Genoux</span></button>
+              </div>
+              <p class="bm-hint">Clique un point rouge pour ouvrir la fiche de la zone</p>
+            </div>
+            <div class="img-cards zone-cards">
+              <article class="imgcard" data-modal="dos" tabindex="0" role="button" aria-label="Dos"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/zone_dos.jpeg" alt="Dos et bas du dos" loading="lazy"></div><div class="imgcard-body"><h3>Dos et bas du dos</h3><p>Manutention, flexions, torsions, charges lourdes</p><span class="imgcard-cta">Facteurs &amp; prevention <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+              <article class="imgcard" data-modal="epaules" tabindex="0" role="button" aria-label="Epaules"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/zone_epaules.jpeg" alt="Epaules" loading="lazy"></div><div class="imgcard-body"><h3>Epaules</h3><p>Travail bras leves, vibrations, charges en hauteur</p><span class="imgcard-cta">Facteurs &amp; prevention <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+              <article class="imgcard" data-modal="cou" tabindex="0" role="button" aria-label="Cou et nuque"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/zone_cou.jpeg" alt="Cou et nuque" loading="lazy"></div><div class="imgcard-body"><h3>Cou et nuque</h3><p>Postures statiques, tete penchee, casque et lampe</p><span class="imgcard-cta">Facteurs &amp; prevention <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+              <article class="imgcard" data-modal="poignets" tabindex="0" role="button" aria-label="Poignets et mains"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/zone_poignets.jpeg" alt="Poignets et mains" loading="lazy"></div><div class="imgcard-body"><h3>Poignets et mains</h3><p>Mouvements repetes, force en torsion</p><span class="imgcard-cta">Facteurs &amp; prevention <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+              <article class="imgcard" data-modal="coudes" tabindex="0" role="button" aria-label="Coudes"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/zone_coudes.jpeg" alt="Coudes" loading="lazy"></div><div class="imgcard-body"><h3>Coudes</h3><p>Outils vibrants, prises repetees, serrage</p><span class="imgcard-cta">Facteurs &amp; prevention <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+              <article class="imgcard" data-modal="genoux" tabindex="0" role="button" aria-label="Genoux"><div class="imgcard-badge">+</div><div class="imgcard-media"><img src="images/zone_genoux.jpeg" alt="Genoux" loading="lazy"></div><div class="imgcard-body"><h3>Genoux</h3><p>Position accroupie, a genoux, sol inegal</p><span class="imgcard-cta">Facteurs &amp; prevention <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></article>
+            </div>
+          </div>
+
+          <div class="subpanel" data-sub="decl">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.2rem">Les facteurs de risque au travail</h3>
+            <div class="grid-3">
+              <div class="card"><div class="card-icon ic-red"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5l11 11M6.5 17.5l11-11"/></svg></div><h3>Force</h3><p>Charges lourdes, efforts intenses.</p></div>
+              <div class="card"><div class="card-icon ic-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></div><h3>Repetition</h3><p>Memes gestes, encore et encore.</p></div>
+              <div class="card"><div class="card-icon ic-purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><h3>Postures contraignantes</h3><p>Dos courbe, bras leves, torsions.</p></div>
+              <div class="card"><div class="card-icon ic-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><h3>Vibrations</h3><p>Outils et machines vibrants.</p></div>
+              <div class="card"><div class="card-icon ic-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 17.58A5 5 0 0018 8h-1.26A8 8 0 104 16.25"/><path d="M8 16l-2 2 2 2"/></svg></div><h3>Froid et humidite</h3><p>Reduit la souplesse des tissus.</p></div>
+              <div class="card"><div class="card-icon ic-red"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><h3>Postures statiques</h3><p>Rester fige longtemps.</p></div>
+            </div>
+          </div>
+
+          <div class="subpanel" data-sub="fact">
+            <div class="infographic" data-img="images/info_facteurs.jpeg"><img src="images/info_facteurs.jpeg" alt="Les facteurs de risque : biomecaniques, individuels, environnement"><span class="zoom-hint">&#128269; Agrandir</span></div>
+            <p class="info-caption">Un TMS n'a pas une seule cause : c'est un melange d'effort, de posture, de repetition, de fatigue et d'environnement. Agir tot aide a eviter que le probleme s'installe.</p>
+            <h3 style="font-size:1.12rem;font-weight:700;margin:1.8rem 0 1rem">Sous terre, le risque se cumule</h3>
+            <div class="grid-4">
+              <div class="mine"><h4><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>Quarts longs</h4><p>Fatigue accumulee, vigilance qui baisse en fin de quart.</p></div>
+              <div class="mine"><h4><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Manutention</h4><p>Tiges, boyaux, equipements lourds a deplacer souvent a la main.</p></div>
+              <div class="mine"><h4><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>Espaces restreints</h4><p>Travailler plie, accroupi ou a genoux, dans des positions imposees.</p></div>
+              <div class="mine"><h4><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Sol inegal</h4><p>Deplacements instables, charge supplementaire pour le dos et les genoux.</p></div>
+            </div>
+          </div>
+
+          <div class="subpanel" data-sub="evo">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.3rem">La progression silencieuse</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.3rem">Les symptomes apparaissent progressivement. Quand la maladie est bien declaree, il est deja tard pour intervenir.</p>
+            <div class="steps">
+              <div class="step" style="border-top-color:var(--accent)"><div class="sn ic-amber">1</div><h3>Inconfort</h3><ul><li>Douleur pendant le travail, disparaissant au repos</li><li>Fatigue localisee, malaise intermittent</li><li>Raideur, tension en fin de quart</li></ul></div>
+              <div class="step" style="border-top-color:var(--danger)"><div class="sn ic-red">2</div><h3>Douleur</h3><ul><li>Survient tot au debut du travail et persiste plus longtemps</li><li>Met plus de temps a disparaitre</li><li>Sommeil perturbe, rendement reduit</li></ul></div>
+              <div class="step" style="border-top-color:#dc2626"><div class="sn" style="background:rgba(220,38,38,.2);color:#dc2626">3</div><h3>Lesion</h3><ul><li>Douleur persistante pendant les activites et au repos</li><li>Troubles qui durent des semaines</li><li>Incapacite fonctionnelle importante</li></ul></div>
+            </div>
+            <div class="alert"><div class="ai">&#9888;</div><p><strong>Le bon moment pour agir, c'est a l'etape 1.</strong> Plus on attend, plus la recuperation est longue et incertaine.</p></div>
+            <h3 style="font-size:1.1rem;font-weight:700;margin:1.8rem 0 1rem">Les microlesions, mecanisme de l'usure</h3>
+            <div class="infographic" data-img="images/info_microlesions.jpeg"><img src="images/info_microlesions.jpeg" alt="Les microlesions : depassement de la capacite de reparation des tissus" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div>
+            <h3 style="font-size:1.1rem;font-weight:700;margin:1.8rem 0 .3rem">Chronicisation de la douleur</h3>
+            <div class="chrono"><div class="c1"><span>Aigue</span><span>0 a 6 semaines</span></div><div class="c2"><span>Subaigue</span><span>6 a 12 semaines</span></div><div class="c3"><span>Chronique</span><span>&gt; 12 semaines (3+ mois)</span></div></div>
+            <div class="alert danger"><div class="ai">&#9888;</div><p><strong>Plus la douleur dure, plus la recuperation devient complexe.</strong> Les douleurs chroniques sont rares mais associees a un mauvais pronostic. Une prise en charge est alors necessaire.</p></div>
+          </div>
+
+          <div class="subpanel" data-sub="chiffres">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.2rem">Les TMS au Quebec, en chiffres</h3>
+            <div class="stats-grid">
+              <div class="stat"><div class="v">1 / 4</div><div class="l">Travailleur quebecois touche par un TMS d'origine non traumatique lie au travail</div></div>
+              <div class="stat"><div class="v">~26 600</div><div class="l">Lesions de type TMS acceptees par la CNESST en 2023</div></div>
+              <div class="stat"><div class="v">23,3%</div><div class="l">Des lesions professionnelles 2023 sont des TMS</div></div>
+              <div class="stat"><div class="v">Top 3</div><div class="l">Des causes d'absence et de reaffectation en milieu de travail</div></div>
+            </div>
+            <p class="info-caption" style="margin-top:1.5rem">Les TMS lies au travail font partie des troubles professionnels les plus courants. Sources : CNESST (2023) &middot; INSPQ, Troubles musculosquelettiques lies au travail.</p>
+          </div>
+        </section>
+
+        <!-- THEME 2 : CHARGE -->
+        <section class="theme" data-theme="2">
+          <div class="theme-kicker">Partie 02</div>
+          <h2 class="theme-title">Charge de travail et recuperation</h2>
+          <p class="theme-lead">Un TMS apparait quand la charge imposee au corps depasse, de facon repetee, sa capacite a recuperer.</p>
+          <div class="subtabs">
+            <button class="subtab active" data-sub="eq">L'equation</button>
+            <button class="subtab" data-sub="perc">Perception de l'effort</button>
+            <button class="subtab" data-sub="fat">Fatigue musculaire</button>
+            <button class="subtab" data-sub="dynstat">Statique vs dynamique</button>
+            <button class="subtab" data-sub="assis">Travail assis prolonge</button>
+          </div>
+          <div class="subpanel active" data-sub="eq">
+            <div class="piliers">
+              <div class="pilier p1"><h3>Ce qui augmente la charge</h3><ul><li>Force, charges lourdes</li><li>Gestes repetes, longues heures</li><li>Postures contraignantes, vibrations</li><li>Froid, stress, cadence elevee</li></ul></div>
+              <div class="pilier p2"><h3>Ce qui restaure la capacite</h3><ul><li>Sommeil suffisant et de qualite</li><li>Hydratation et alimentation</li><li>Activite physique, mobilite</li><li>Pauses, gestion du stress</li></ul></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="perc">
+            <p style="color:var(--muted);font-size:.92rem;margin-bottom:1.2rem">La perception de l'effort represente l'intensite relative du travail musculaire selon les capacites maximales du travailleur. Clique un niveau ou fais glisser pour explorer l'echelle de Borg.</p>
+            <div class="borg">
+              <div class="borg-scale">
+                <button class="borg-row" data-l="0"><span class="borg-num" style="background:#16a34a">0</span><span class="bl">Aucun effort</span></button>
+                <button class="borg-row" data-l="1"><span class="borg-num" style="background:#22c55e">1</span><span class="bl">Tres tres facile</span></button>
+                <button class="borg-row" data-l="2"><span class="borg-num" style="background:#4ade80">2</span><span class="bl">Tres facile</span></button>
+                <button class="borg-row" data-l="3"><span class="borg-num" style="background:#84cc16">3</span><span class="bl">Facile</span></button>
+                <button class="borg-row" data-l="4"><span class="borg-num" style="background:#eab308">4</span><span class="bl">Effort modere</span></button>
+                <button class="borg-row" data-l="5"><span class="borg-num" style="background:#f59e0b">5</span><span class="bl">Moyen</span></button>
+                <button class="borg-row" data-l="6"><span class="borg-num" style="background:#f97316">6</span><span class="bl">Un peu dur</span></button>
+                <button class="borg-row" data-l="7"><span class="borg-num" style="background:#ea580c">7</span><span class="bl">Dur</span></button>
+                <button class="borg-row" data-l="8"><span class="borg-num" style="background:#dc2626">8</span><span class="bl">Tres dur</span></button>
+                <button class="borg-row" data-l="9"><span class="borg-num" style="background:#dc2626">9</span><span class="bl">Tres tres dur</span></button>
+                <button class="borg-row" data-l="10"><span class="borg-num" style="background:#b91c1c">10</span><span class="bl">Maximal</span></button>
+              </div>
+              <div class="borg-panel">
+                <div class="borg-emo" id="borgEmo">&#128564;</div>
+                <svg class="borg-gauge" viewBox="0 0 200 116" xmlns="http://www.w3.org/2000/svg">
+                  <defs><linearGradient id="borgGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#16a34a"/><stop offset="0.45" stop-color="#eab308"/><stop offset="0.75" stop-color="#f97316"/><stop offset="1" stop-color="#dc2626"/></linearGradient></defs>
+                  <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="url(#borgGrad)" stroke-width="15" stroke-linecap="round"/>
+                  <g id="borgNeedle" transform="rotate(0 100 100)"><line x1="100" y1="100" x2="34" y2="100" stroke="#fff" stroke-width="4" stroke-linecap="round"/></g>
+                  <circle cx="100" cy="100" r="7" fill="#fff"/>
+                </svg>
+                <div class="borg-big" id="borgBig" style="color:#16a34a">0</div>
+                <div class="borg-lbl" id="borgLbl" style="color:#16a34a">Aucun effort</div>
+                <div class="borg-desc" id="borgDesc">Pas d'effort.</div>
+                <div class="borg-act" id="borgAct">Au repos complet</div>
+                <div class="borg-heart"><span class="hb" id="borgHb">&#9829;</span> <span id="borgHr">Rythme au repos</span></div>
+                <input class="borg-range" type="range" id="borgRange" min="0" max="10" value="0" aria-label="Niveau d'effort">
+              </div>
+            </div>
+            <div class="infographic" data-img="images/info_perception.jpeg" style="margin-top:.4rem"><img src="images/info_perception.jpeg" alt="Echelle de Borg - perception de l'effort"><span class="zoom-hint">&#128269; Agrandir</span></div>
+            <p class="info-caption">Une meme force peut representer un effort relatif tres different pour deux individus.</p>
+          </div>
+          <div class="subpanel" data-sub="fat">
+            <div class="info-stack">
+              <div><div class="infographic" data-img="images/info_fatigue.jpeg"><img src="images/info_fatigue.jpeg" alt="Fatigue musculaire et production d'energie (ATP)" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div><p class="info-caption">Le muscle a besoin d'energie (ATP) pour se contracter. Moins l'energie est disponible, plus la fatigue apparait vite.</p></div>
+              <div><div class="infographic" data-img="images/info_fatigue2.jpeg"><img src="images/info_fatigue2.jpeg" alt="Fatigue musculaire : effort et recuperation" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="dynstat">
+            <div class="info-stack">
+              <div><div class="infographic" data-img="images/info_statique.jpeg"><img src="images/info_statique.jpeg" alt="Travail musculaire statique : flot sanguin comprime" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div><p class="info-caption">Travail statique : le muscle reste contracte, le flot sanguin est comprime, la fatigue arrive plus vite.</p></div>
+              <div><div class="infographic" data-img="images/info_dynamique.jpeg"><img src="images/info_dynamique.jpeg" alt="Travail musculaire dynamique : meilleur flot sanguin" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div><p class="info-caption">Travail dynamique : contraction et relachement alternent, le sang circule mieux, l'effort est plus facile a soutenir.</p></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="assis">
+            <p style="color:var(--muted);font-size:.92rem;margin-bottom:1.2rem">Le statisme musculaire fatigue le corps. Meme assis, les muscles travaillent. Quand le muscle reste contracte, ca peut causer fatigue, inconfort et douleurs.</p>
+            <div class="info-stack">
+              <div><div class="infographic" data-img="images/info_assis_muscles.jpeg"><img src="images/info_assis_muscles.jpeg" alt="Travail assis prolonge : meme assis les muscles travaillent" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div></div>
+              <div><div class="infographic" data-img="images/info_assis_disque.jpeg"><img src="images/info_assis_disque.jpeg" alt="Pourquoi rester assis longtemps peut fatiguer le dos" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div></div>
+            </div>
+            <div class="alert"><div class="ai">&#128161;</div><p><strong>Varier la posture et prendre des micro-pauses</strong> reduit la fatigue musculaire. Bouger souvent aide a proteger les disques du bas du dos.</p></div>
+          </div>
+        </section>
+
+        <!-- THEME 3 : SOMMEIL -->
+        <section class="theme" data-theme="3">
+          <div class="theme-kicker">Partie 03</div>
+          <h2 class="theme-title">Le sommeil</h2>
+          <p class="theme-lead">Le reparateur numero un de ton corps. Pendant que tu dors, ton corps se repare.</p>
+          <div class="subtabs">
+            <button class="subtab active" data-sub="rep">Le reparateur</button>
+            <button class="subtab" data-sub="lien">Manque de sommeil</button>
+            <button class="subtab" data-sub="nuit">Travailler de nuit</button>
+            <button class="subtab" data-sub="ref">Les reflexes</button>
+          </div>
+          <div class="subpanel active" data-sub="rep">
+            <div class="grid-4">
+              <div class="card"><div class="card-icon ic-purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><h3>Reparation des tissus</h3><p>Muscles, tendons et articulations se reconstruisent surtout la nuit.</p></div>
+              <div class="card"><div class="card-icon ic-green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><h3>Hormones de recuperation</h3><p>L'hormone de croissance, liberee en sommeil profond, repare les tissus.</p></div>
+              <div class="card"><div class="card-icon ic-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>Gestion de la douleur</h3><p>Bien dormir abaisse la sensibilite a la douleur et a l'inflammation.</p></div>
+              <div class="card"><div class="card-icon ic-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>Cerveau et vigilance</h3><p>Memoire et concentration se consolident. On reste alerte au quart suivant.</p></div>
+            </div>
+            <div class="sleepbar"><div class="t">7-9h<span class="u"> /24h</span></div><div><p style="font-weight:600;margin-bottom:.2rem">La cible de sommeil recommandee</p><p style="color:var(--muted);font-size:.88rem">La fatigue ne se rattrape pas en une seule grasse matinee. Elle s'accumule comme une dette.</p></div></div>
+          </div>
+          <div class="subpanel" data-sub="lien">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.3rem">Manque de sommeil = plus de risques</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.3rem">Quand tu manques de sommeil, tout le corps en paie le prix.</p>
+            <div class="grid-2">
+              <div class="card"><h3 style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--danger)">&#9888;</span> Ce qui se degrade</h3><ul style="list-style:none;margin-top:.6rem"><li style="padding:.3rem 0 .3rem 1.3rem;position:relative;color:var(--muted);font-size:.88rem"><span style="position:absolute;left:0;color:var(--danger)">&bull;</span>Temps de reaction plus lent</li><li style="padding:.3rem 0 .3rem 1.3rem;position:relative;color:var(--muted);font-size:.88rem"><span style="position:absolute;left:0;color:var(--danger)">&bull;</span>Concentration et jugement reduits</li><li style="padding:.3rem 0 .3rem 1.3rem;position:relative;color:var(--muted);font-size:.88rem"><span style="position:absolute;left:0;color:var(--danger)">&bull;</span>Douleur ressentie plus forte</li><li style="padding:.3rem 0 .3rem 1.3rem;position:relative;color:var(--muted);font-size:.88rem"><span style="position:absolute;left:0;color:var(--danger)">&bull;</span>Recuperation musculaire incomplete</li><li style="padding:.3rem 0 .3rem 1.3rem;position:relative;color:var(--muted);font-size:.88rem"><span style="position:absolute;left:0;color:var(--danger)">&bull;</span>Plus de faux mouvements et d'accidents</li></ul></div>
+              <div class="card" style="display:flex;flex-direction:column;justify-content:center"><div class="card-icon ic-red"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg></div><h3>La fatigue conduit comme l'alcool</h3><p>Rester eveille 17 a 19h d'affilee affecte la vigilance autant qu'un taux d'alcool de 0,05.</p></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="nuit">
+            <p style="color:var(--muted);font-size:.92rem;margin-bottom:1.2rem">Le corps n'aime pas naturellement dormir le jour. Ces reflexes aident a mieux recuperer entre les quarts.</p>
+            <div class="grid-3">
+              <div class="card"><div class="card-icon ic-purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div><h3>Chambre noire et fraiche</h3><p>Rideaux opaques, bouchons, masque. Le noir imite la nuit.</p></div>
+              <div class="card"><div class="card-icon ic-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></div><h3>Routine fixe</h3><p>Meme rituel avant de dormir, meme si c'est le matin.</p></div>
+              <div class="card"><div class="card-icon ic-red"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg></div><h3>Cafeine maitrisee</h3><p>Pas de cafe dans les 6h avant le sommeil prevu.</p></div>
+              <div class="card"><div class="card-icon ic-green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><h3>Sieste strategique</h3><p>Une courte sieste de 20 a 30 min avant un quart de nuit.</p></div>
+              <div class="card"><div class="card-icon ic-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div><h3>Lumiere au reveil</h3><p>S'exposer a la lumiere vive pour relancer la vigilance.</p></div>
+              <div class="card"><div class="card-icon ic-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div><h3>Proteger son sommeil</h3><p>Avertir l'entourage, couper les notifications.</p></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="ref">
+            <div class="grid-2">
+              <div class="checklist"><h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>A faire</h4><ul><li>Vise 7 a 9h de sommeil par 24h</li><li>Garde des heures de coucher regulieres</li><li>Coupe les ecrans 30 a 60 min avant</li><li>Chambre fraiche, sombre et silencieuse</li><li>Bouge dans la journee, pas juste avant de dormir</li></ul></div>
+              <div class="checklist x"><h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>A eviter</h4><ul><li>L'alcool pour t'endormir</li><li>Le cafe en fin de quart</li><li>Les repas lourds avant le sommeil</li><li>Les ecrans tard le soir</li></ul></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- THEME 4 : HYGIENE -->
+        <section class="theme" data-theme="4">
+          <div class="theme-kicker">Partie 04</div>
+          <h2 class="theme-title">L'hygiene de vie</h2>
+          <p class="theme-lead">Quatre leviers du quotidien : eau, alimentation, mouvement et habitudes.</p>
+          <div class="subtabs">
+            <button class="subtab active" data-sub="hydra">Levier 1 &middot; Hydratation</button>
+            <button class="subtab" data-sub="alim">Levier 2 &middot; Alimentation</button>
+            <button class="subtab" data-sub="mouv">Levier 3 &middot; Mouvement</button>
+            <button class="subtab" data-sub="subs">Levier 4 &middot; Substances</button>
+          </div>
+          <div class="subpanel active" data-sub="hydra">
+            <p style="color:var(--muted);font-size:.92rem;margin-bottom:1.2rem">Un muscle deshydrate fatigue plus vite, devient plus raide et crampe plus facilement. Sous terre, dans la chaleur et avec l'effort, on perd beaucoup d'eau sans s'en rendre compte. La deshydratation reduit la concentration et augmente le risque de faux mouvement.</p>
+            <div class="grid-3">
+              <div class="card"><div class="card-icon ic-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></div><h3>Bois avant d'avoir soif</h3><p>La soif est deja un signe de deshydratation.</p></div>
+              <div class="card"><div class="card-icon ic-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg></div><h3>Garde une gourde au poste</h3><p>A portee de main, tu bois plus souvent.</p></div>
+              <div class="card"><div class="card-icon ic-green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>Surveille la couleur</h3><p>Urine claire = bien hydrate. Foncee = bois plus.</p></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="alim">
+            <p style="color:var(--muted);font-size:.92rem;margin-bottom:1.2rem">L'alimentation, c'est du carburant.</p>
+            <div class="grid-2">
+              <div class="card"><div class="card-icon ic-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><h3>Energie stable</h3><p>Repas complets : grains entiers, legumes, proteines. Ils evitent les chutes d'energie en milieu de quart.</p></div>
+              <div class="card"><div class="card-icon ic-red"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg></div><h3>Proteines pour reparer</h3><p>Viande, poisson, oeufs, legumineuses : les briques qui reconstruisent les muscles sollicites.</p></div>
+              <div class="card"><div class="card-icon ic-purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3>Limiter le sucre rapide</h3><p>Boissons et collations sucrees : un coup vite suivi d'une baisse. Vigilance en dents de scie.</p></div>
+              <div class="card"><div class="card-icon ic-green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>Manger anti-inflammatoire</h3><p>Fruits, legumes, poissons gras aident le corps a gerer l'inflammation liee a l'effort.</p></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="mouv">
+            <p style="color:var(--muted);font-size:.92rem;margin-bottom:1.2rem">Bouger et garder la mobilite. Un corps fort et souple encaisse mieux la charge du travail. Le mouvement hors travail fait partie de la prevention.</p>
+            <div class="grid-3">
+              <div class="card"><div class="card-icon ic-green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 4a3 3 0 00-3 3v4H9V7a3 3 0 00-6 0v6a6 6 0 006 6h6a6 6 0 006-6V7a3 3 0 00-3-3z"/></svg></div><h3>Renforcer le tronc et le dos</h3><p>Un dos et des abdominaux solides protegent la colonne pendant la manutention.</p></div>
+              <div class="card"><div class="card-icon ic-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><h3>Garder la souplesse</h3><p>Des muscles souples bougent dans une plus grande amplitude sans se blesser.</p></div>
+              <div class="card"><div class="card-icon ic-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></div><h3>Contrer la sedentarite</h3><p>Marcher, bouger les jours de conge. Rester assis longtemps raidit aussi le corps.</p></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="subs">
+            <p style="color:var(--muted);font-size:.92rem;margin-bottom:1.2rem">Tabac, alcool, cannabis : leurs effets sur la recuperation.</p>
+            <div class="grid-3">
+              <div class="card" style="border-top:3px solid var(--danger)"><h3>Tabac</h3><p>Reduit la circulation vers les tissus, donc une guerison plus lente des muscles et tendons sollicites.</p></div>
+              <div class="card" style="border-top:3px solid var(--accent)"><h3>Alcool</h3><p>Aide a s'endormir mais fragmente le sommeil profond. Moins de reparation, plus de fatigue le lendemain.</p></div>
+              <div class="card" style="border-top:3px solid var(--purple)"><h3>Cannabis</h3><p>Affecte la vigilance, la coordination et le temps de reaction. Effet possible plusieurs heures apres.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- THEME 5 : REFLEXES -->
+        <section class="theme" data-theme="5">
+          <div class="theme-kicker">Partie 05</div>
+          <h2 class="theme-title">Les bons reflexes au poste</h2>
+          <p class="theme-lead">Ce que tu peux appliquer des demain pour proteger ton dos, tes epaules et tes articulations.</p>
+          <div class="subtabs">
+            <button class="subtab active" data-sub="regles">Les 4 regles</button>
+            <button class="subtab" data-sub="eviter">Postures a eviter</button>
+            <button class="subtab" data-sub="contraignantes">Positions contraignantes</button>
+            <button class="subtab" data-sub="echauf">Echauffement</button>
+            <button class="subtab" data-sub="quart">Pendant le quart</button>
+            <button class="subtab" data-sub="signal">Signaler</button>
+          </div>
+          <div class="subpanel active" data-sub="regles">
+            <div class="infographic" data-img="images/info_regles.jpeg"><img src="images/info_regles.jpeg" alt="Les 4 regles simples pour proteger votre dos" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div>
+            <p class="info-caption">Charge pres du corps, respecter les courbes naturelles du dos, pivoter avec les pieds, hauteur de travail adaptee : adopter de bonnes postures reduit la pression sur la colonne, les muscles et les articulations.</p>
+          </div>
+          <div class="subpanel" data-sub="eviter">
+            <div class="infographic" data-img="images/info_postures_eviter.jpeg"><img src="images/info_postures_eviter.jpeg" alt="Les postures contraignantes a eviter en manutention" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div>
+            <p class="info-caption">Charge loin du corps, dos arrondi sous effort, torsion du tronc et bras en extension prolongee : les postures qui augmentent la pression sur la colonne.</p>
+          </div>
+          <div class="subpanel" data-sub="contraignantes">
+            <div class="sim">
+              <div class="sim-stage">
+                <svg viewBox="0 0 240 230" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M95 80 L95 200 A120 120 0 0 0 136.0 192.8 Z" fill="rgba(16,185,129,.35)"/>
+                  <path d="M95 80 L136.0 192.8 A120 120 0 0 0 179.8 164.8 Z" fill="rgba(210,35,37,.35)"/>
+                  <path d="M95 80 L179.8 164.8 A120 120 0 0 0 215 80 Z" fill="rgba(239,68,68,.35)"/>
+                  <line x1="95" y1="66" x2="95" y2="205" stroke="#334155" stroke-width="14" stroke-linecap="round"/>
+                  <circle cx="95" cy="48" r="15" fill="#334155"/>
+                  <line id="simArm" x1="95" y1="80" x2="95" y2="188" stroke="#e11d2a" stroke-width="12" stroke-linecap="round"/>
+                  <circle id="simHand" cx="95" cy="188" r="11" fill="#fff" stroke="#e11d2a" stroke-width="3"/>
+                  <circle cx="95" cy="80" r="6" fill="#fff"/>
+                </svg>
+              </div>
+              <div class="sim-controls">
+                <div class="sim-read"><span class="sim-deg" id="simDeg">0&deg;</span><span class="sim-badge" id="simBadge" style="background:#10b981;color:#06140d">Zone de confort</span></div>
+                <input class="sim-range" type="range" id="simRange" min="0" max="90" value="0" aria-label="Angle du bras">
+                <div class="sim-legend"><span><i style="background:#10b981"></i>0-20&deg; confort</span><span><i style="background:#f59e0b"></i>20-45&deg; a surveiller</span><span><i style="background:#ef4444"></i>&gt;45&deg; contraignant</span></div>
+                <p style="color:var(--muted);font-size:.83rem;margin:0">Fais glisser pour simuler l'angle du bras par rapport au corps. Plus l'angle augmente, plus la contrainte sur l'epaule est elevee. Au-dela de 60&deg; soutenu, le risque augmente fortement.</p>
+              </div>
+            </div>
+            <div class="infographic" data-img="images/info_angles.jpeg"><img src="images/info_angles.jpeg" alt="Positions contraignantes : angles de travail des bras et du tronc" loading="lazy"><span class="zoom-hint">&#128269; Agrandir</span></div>
+            <p class="info-caption">Epaules, poignets et mains : plus la position s'eloigne de la position neutre, plus la contrainte augmente. 0 a 20 degres = confort, 20 a 45 = a surveiller, plus de 45 = contraignant.</p>
+          </div>
+          <div class="subpanel" data-sub="echauf">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.3rem">Preparer le corps avant le quart</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.3rem">Un muscle froid se blesse plus facilement. 5 minutes d'echauffement valent mieux que des semaines d'arret.</p>
+            <div class="steps">
+              <div class="step" style="border-top-color:var(--success)"><div class="sn ic-green">1</div><h3>Mobiliser les articulations</h3><ul><li>Cou, epaules, poignets, hanches, genoux</li><li>Quelques rotations douces</li></ul></div>
+              <div class="step" style="border-top-color:var(--info)"><div class="sn ic-blue">2</div><h3>Activer le dos et les jambes</h3><ul><li>Flexions legeres, fentes</li><li>Etirements du bas du dos</li></ul></div>
+              <div class="step" style="border-top-color:var(--accent)"><div class="sn ic-amber">3</div><h3>Monter en intensite</h3><ul><li>Commencer doucement</li><li>Laisser le corps se rechauffer avant l'effort lourd</li></ul></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="quart">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.2rem">Micro-pauses et rotation</h3>
+            <div class="grid-2">
+              <div class="card"><div class="card-icon ic-green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></div><h3>Varie tes postures</h3><p>Alterne debout, accroupi, en mouvement. Aucune posture n'est bonne trop longtemps.</p></div>
+              <div class="card"><div class="card-icon ic-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><h3>Micro-pauses</h3><p>Quelques secondes pour relacher les muscles avant qu'ils ne se crispent.</p></div>
+              <div class="card"><div class="card-icon ic-purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16,8 20,5 20,16 16,13"/></svg></div><h3>Alterne les taches</h3><p>Quand c'est possible, change de geste pour reposer les zones sollicitees.</p></div>
+              <div class="card"><div class="card-icon ic-blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><h3>Etirements courts</h3><p>Quelques etirements cibles au fil du quart gardent les muscles souples.</p></div>
+            </div>
+          </div>
+          <div class="subpanel" data-sub="signal">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.3rem">Ecoute les signaux, signale tot</h3>
+            <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.3rem">Un inconfort qui revient n'est pas une faiblesse a cacher. C'est une information a partager vite.</p>
+            <div class="grid-2">
+              <div class="card" style="border-left:4px solid var(--accent)"><h3>Pourquoi signaler tot</h3><ul style="list-style:none;margin-top:.7rem"><li style="padding:.35rem 0 .35rem 1.4rem;position:relative;color:var(--muted);font-size:.9rem"><span style="position:absolute;left:0;color:var(--accent)">&#8250;</span>Un TMS pris tot se soigne vite</li><li style="padding:.35rem 0 .35rem 1.4rem;position:relative;color:var(--muted);font-size:.9rem"><span style="position:absolute;left:0;color:var(--accent)">&#8250;</span>On peut ajuster le poste ou la tache</li><li style="padding:.35rem 0 .35rem 1.4rem;position:relative;color:var(--muted);font-size:.9rem"><span style="position:absolute;left:0;color:var(--accent)">&#8250;</span>On evite que ca devienne chronique</li><li style="padding:.35rem 0 .35rem 1.4rem;position:relative;color:var(--muted);font-size:.9rem"><span style="position:absolute;left:0;color:var(--accent)">&#8250;</span>Ton signalement protege tes collegues</li></ul></div>
+              <div class="card" style="border-left:4px solid var(--success)"><h3>A qui en parler</h3><ul style="list-style:none;margin-top:.7rem"><li style="padding:.35rem 0 .35rem 1.4rem;position:relative;color:var(--muted);font-size:.9rem"><span style="position:absolute;left:0;color:var(--success)">&#8250;</span>Ton superviseur immediat</li><li style="padding:.35rem 0 .35rem 1.4rem;position:relative;color:var(--muted);font-size:.9rem"><span style="position:absolute;left:0;color:var(--success)">&#8250;</span>Le conseiller ou comite sante-securite</li><li style="padding:.35rem 0 .35rem 1.4rem;position:relative;color:var(--muted);font-size:.9rem"><span style="position:absolute;left:0;color:var(--success)">&#8250;</span>Les secouristes du site au besoin</li><li style="padding:.35rem 0 .35rem 1.4rem;position:relative;color:var(--muted);font-size:.9rem"><span style="position:absolute;left:0;color:var(--success)">&#8250;</span>N'attends pas que ca empire</li></ul></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- THEME 6 : A RETENIR -->
+        <section class="theme" data-theme="6">
+          <div class="theme-kicker">Conclusion</div>
+          <h2 class="theme-title">Ce qu'il faut retenir</h2>
+          <p class="theme-lead">Toute la prevention des TMS tient en deux piliers.</p>
+          <div class="dash">
+            <div class="dash-ring">
+              <svg width="120" height="120" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" stroke-width="10"/>
+                <circle id="dashRing" cx="60" cy="60" r="52" fill="none" stroke="url(#dashGrad)" stroke-width="10" stroke-linecap="round" style="stroke-dasharray:327;stroke-dashoffset:327;transition:stroke-dashoffset 1s ease"/>
+                <defs><linearGradient id="dashGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e23a3c"/><stop offset="1" stop-color="#a81a1c"/></linearGradient></defs>
+              </svg>
+              <div class="dr-val"><span class="dr-num"><span id="dashNum">0</span>/100</span><span class="dr-lbl">Note</span></div>
+            </div>
+            <div class="dash-info">
+              <div class="dash-row">
+                <div class="dash-kpi"><div class="v" id="dashScore">0</div><div class="l">Points</div></div>
+                <div class="dash-kpi"><div class="v" id="dashProg">0%</div><div class="l">Progression</div></div>
+              </div>
+              <div class="dash-badges">
+                <span class="dash-badge" data-part="1"><span class="db-i">&#127941;</span> Comprendre</span>
+                <span class="dash-badge" data-part="2"><span class="db-i">&#127941;</span> Charge</span>
+                <span class="dash-badge" data-part="3"><span class="db-i">&#127941;</span> Sommeil</span>
+                <span class="dash-badge" data-part="4"><span class="db-i">&#127941;</span> Hygiene</span>
+                <span class="dash-badge" data-part="5"><span class="db-i">&#127941;</span> Reflexes</span>
+              </div>
+            </div>
+          </div>
+          <div class="piliers">
+            <div class="pilier p1"><h3>Pilier 1 &mdash; Reduire la charge</h3><ul><li>Bons gestes de manutention</li><li>Echauffement et micro-pauses</li><li>Varier postures et taches</li><li>Aides mecaniques, demander de l'aide</li></ul></div>
+            <div class="pilier p2"><h3>Pilier 2 &mdash; Maximiser la recuperation</h3><ul><li>Sommeil de 7 a 9h, regulier</li><li>Bien s'hydrater, bien manger</li><li>Bouger, garder force et souplesse</li><li>Habitudes qui aident la reparation</li></ul></div>
+          </div>
+          <div class="grid-3" style="margin-top:1.6rem">
+            <div class="checklist"><h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>Sommeil</h4><ul><li>Heure de coucher fixe</li><li>Chambre noire et fraiche</li><li>Pas de cafe en fin de quart</li></ul></div>
+            <div class="checklist"><h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>Hygiene de vie</h4><ul><li>Gourde au poste chaque jour</li><li>Une collation qui tient</li><li>Bouger 20 min un jour de conge</li></ul></div>
+            <div class="checklist"><h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Au poste</h4><ul><li>5 min d'echauffement</li><li>Plier les genoux, pas de torsion</li><li>Signaler tout inconfort</li></ul></div>
+          </div>
+          <div class="alert" style="margin-top:1.8rem"><div class="ai">&#128170;</div><p><strong>Ton corps, c'est ton premier outil de travail.</strong> Prends-en soin aujourd'hui pour qu'il dure toute ta carriere.</p></div>
+
+          <div style="margin-top:1.6rem"><button class="btn" id="recapPrintBtn" style="background:var(--card-2);color:var(--text);border:1px solid var(--border)">&#128424; Imprimer le recapitulatif de la formation</button></div>
+
+          <div class="attest">
+            <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Attestation de formation</h3>
+            <p>L'attestation se debloque une fois la formation complete et le quiz reussi.</p>
+            <ul class="reqs" id="attReqs">
+              <li data-req="parts"><span class="rq"></span> Avoir consulte les 5 parties de la formation</li>
+              <li data-req="quiz"><span class="rq"></span> Reussir le quiz final (6 / 8 minimum)</li>
+              <li data-req="note"><span class="rq"></span> <span class="rq-txt">Obtenir une note d'au moins 70/100</span></li>
+            </ul>
+            <div class="attest-row">
+              <input id="attName" type="text" placeholder="Nom et prenom" autocomplete="name" disabled>
+              <button class="btn" id="attBtn" disabled>Generer l'attestation</button>
+              <button class="btn" id="attPrint" style="display:none;background:var(--card-2);color:var(--text);border:1px solid var(--border)">&#128424; Imprimer / PDF</button>
+            </div>
+            <div id="certPreview"></div>
+          </div>
+        </section>
+
+        <!-- THEME 7 : QUIZ -->
+        <section class="theme" data-theme="7">
+          <div class="theme-kicker">Evaluation</div>
+          <h2 class="theme-title">Quiz : teste tes connaissances</h2>
+          <p class="theme-lead">8 questions pour valider l'essentiel de la formation. Choisis une reponse pour voir l'explication.</p>
+          <div class="quiz-wrap" id="quizWrap">
+            <div class="quiz-progress"><span id="quizProg">Question 1 / 8</span><span id="quizScore">Score : 0</span></div>
+            <div class="quiz-bar"><i id="quizBar"></i></div>
+            <div id="quizArea"></div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- STAGE NAV -->
+    <div class="stage-nav">
+      <button class="snav-btn" id="prevBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span>Precedent</span></button>
+      <div class="stage-center">
+        <div class="slide-counter">Etape <b id="scNum">1</b> / <span id="scTot">28</span></div>
+        <div class="stage-track"><i id="topBar"></i></div>
+      </div>
+      <button class="snav-btn" id="nextBtn"><span>Suivant</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- COMMAND PALETTE / SEARCH -->
+<div class="cmdk" id="cmdk">
+  <div class="cmdk-box">
+    <input id="cmdkInput" type="text" placeholder="Rechercher une section... (ex. sommeil, posture, quiz)" autocomplete="off">
+    <div class="cmdk-list" id="cmdkList"></div>
+    <div class="cmdk-foot"><span>&uarr;&darr; naviguer</span><span>&crarr; ouvrir</span><span>Echap fermer</span></div>
+  </div>
+</div>
+
+<!-- ESPACE FORMATEUR -->
+<div class="coach" id="coach">
+  <div class="coach-box">
+    <button class="coach-close" id="coachClose" aria-label="Fermer">&times;</button>
+    <h3>Espace formateur</h3>
+    <p class="coach-sub">Suivi des resultats du travailleur sur ce poste (donnees locales).</p>
+    <div id="coachBody"></div>
+    <div class="coach-actions">
+      <button class="btn" id="coachExport">&#11015; Exporter (.txt)</button>
+      <button class="btn ghost" id="coachPrint">&#128424; Imprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST / badges -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- PRINT LAYER (certificate) -->
+<div id="printLayer"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Fermer">&times;</button>
+    <div class="modal-img"><img id="modalImg" src="" alt=""></div>
+    <div class="modal-body">
+      <span class="modal-tag" id="modalTag"></span>
+      <h3 id="modalTitle"></h3>
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-section modal-risk"><h4>&#9888; Facteurs de risque</h4><ul id="modalRisk"></ul></div>
+      <div class="modal-section modal-prev"><h4>&#10003; Prevention</h4><ul id="modalPrev"></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose" aria-label="Fermer">&times;</button>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<script>
+// ===== Inject end-of-part recaps ("L'essentiel") =====
+var RECAP={
+ 1:{t:"L'essentiel : comprendre les TMS",p:["Un TMS est une atteinte des muscles, tendons, nerfs ou articulations, qui s'installe surtout par usure (repetition, force, postures).","Zones les plus touchees : dos, epaules, cou, poignets, coudes, genoux.","Agis des le premier inconfort (etape 1) : plus on attend, plus la recuperation est longue.","Un TMS a plusieurs causes : effort, posture, repetition, fatigue et environnement."],tip:"La douleur qui revient est un signal, pas une faiblesse."},
+ 2:{t:"L'essentiel : charge et recuperation",p:["Un TMS apparait quand la charge depasse, de facon repetee, la capacite a recuperer.","Le muscle a besoin d'energie (ATP) ; sans recuperation, la fatigue arrive plus vite.","Le travail statique comprime le flot sanguin : varie la posture et prends des micro-pauses."],tip:"Reduire la charge ET maximiser la recuperation."},
+ 3:{t:"L'essentiel : le sommeil",p:["Ton corps se repare surtout la nuit : vise 7 a 9h de sommeil par 24h.","Manquer de sommeil ralentit les reactions, amplifie la douleur et augmente les accidents.","Pour dormir le jour : chambre noire et fraiche, routine fixe, cafeine maitrisee."],tip:"La fatigue ne se rattrape pas : elle s'accumule comme une dette."},
+ 4:{t:"L'essentiel : l'hygiene de vie",p:["Hydrate-toi avant d'avoir soif et garde une gourde au poste.","Mange pour tenir : energie stable (grains, legumes) et proteines pour reparer les muscles.","Bouge hors travail ; tabac, alcool et cannabis ralentissent la recuperation."],tip:"Quatre leviers : eau, alimentation, mouvement, habitudes."},
+ 5:{t:"L'essentiel : les reflexes au poste",p:["4 regles : charge pres du corps, dos en position naturelle, pivoter avec les pieds, hauteur de travail adaptee.","A eviter : charge loin du corps, dos arrondi, torsion du tronc, bras en extension prolongee.","Echauffe-toi 5 min, varie tes postures, prends des micro-pauses et signale tot tout inconfort."],tip:"Au-dela de 45 degres, la position devient contraignante."}
+};
+Object.keys(RECAP).forEach(function(ti){
+  var theme=document.querySelector('.theme[data-theme="'+ti+'"]');if(!theme)return;
+  var subtabs=theme.querySelector('.subtabs');if(subtabs){var btn=document.createElement('button');btn.className='subtab';btn.dataset.sub='recap';btn.textContent="L'essentiel";subtabs.appendChild(btn);}
+  var d=RECAP[ti],panel=document.createElement('div');panel.className='subpanel';panel.dataset.sub='recap';
+  panel.innerHTML='<div class="recap"><h3>📋 '+d.t+'</h3><ul>'+d.p.map(function(x){return '<li><span class="rk">✔</span><span>'+x+'</span></li>';}).join('')+'</ul><p class="recap-tip">'+d.tip+'</p></div>';
+  theme.appendChild(panel);
+});
+
+// ===== Inject a short checkpoint quiz after each part ("Quiz eclair") =====
+var CHECK={
+ 1:[{q:"Un TMS s'installe surtout :",o:["d'un coup, par accident","par usure : repetition, force, mauvaises postures","uniquement avec l'age"],a:1,e:"La plupart des TMS s'installent par usure, sur de longues periodes."},{q:"Quand faut-il agir contre un TMS ?",o:["des le premier inconfort","quand la douleur est permanente","apres un arret de travail"],a:0,e:"Plus on attend, plus la recuperation est longue et incertaine."}],
+ 2:[{q:"Un TMS apparait quand :",o:["la charge depasse, de facon repetee, la capacite a recuperer","on reste assis","il fait froid"],a:0,e:"C'est le desequilibre repete entre charge et recuperation."},{q:"Le travail statique (rester contracte) :",o:["fait mieux circuler le sang","comprime le flot sanguin et fatigue plus vite","n'a aucun effet"],a:1,e:"Varier la posture et prendre des micro-pauses aide."}],
+ 3:[{q:"Combien d'heures de sommeil par 24h ?",o:["4 a 5h","7 a 9h","10 a 12h"],a:1,e:"Vise 7 a 9h : la fatigue s'accumule comme une dette."},{q:"Manquer de sommeil :",o:["ameliore la vigilance","ralentit les reactions et amplifie la douleur","ne change rien"],a:1,e:"Rester 17 a 19h eveille equivaut a 0,05 d'alcool."}],
+ 4:[{q:"Quand faut-il boire ?",o:["seulement quand on a tres soif","avant d'avoir soif","seulement aux repas"],a:1,e:"La soif est deja un signe de deshydratation."},{q:"Pour reparer les muscles, on privilegie :",o:["le sucre rapide","les proteines","l'alcool"],a:1,e:"Les proteines reconstruisent les muscles sollicites."}],
+ 5:[{q:"Pour soulever une charge, il faut :",o:["plier les genoux, charge pres du corps","plier le dos, bras tendus","tourner le tronc pour aller vite"],a:0,e:"Genoux flechis, dos droit, charge pres du corps."},{q:"Au-dela de quel angle la position du bras devient contraignante ?",o:["10 degres","45 degres","90 degres"],a:1,e:"0-20 confort, 20-45 a surveiller, plus de 45 contraignant."}]
+};
+var scored=new Set();try{scored=new Set(JSON.parse(localStorage.getItem('tms_scored')||'[]'));}catch(e){}
+function scoredAdd(k){scored.add(k);try{localStorage.setItem('tms_scored',JSON.stringify(Array.from(scored)));}catch(e){}}
+var CHECK_TOTAL=0;Object.keys(CHECK).forEach(function(k){CHECK_TOTAL+=CHECK[k].length;});
+function computeNote(){var best=+(localStorage.getItem('tms_quiz_best')||0);var total=CHECK_TOTAL+8;var correct=Math.min(scored.size,CHECK_TOTAL)+Math.min(best,8);return {note:total?Math.round(correct/total*100):0,correct:correct,total:total};}
+function cpDone(panel,ti,qs,solved){
+  if(!qs.every(function(_,i){return solved[i];}))return;
+  var d=panel.querySelector('.cp-done');if(d){d.style.display='block';d.innerHTML='<div class="alert"><div class="ai">🎉</div><p><strong>Section validee !</strong> Bonnes reponses a toutes les questions.</p></div>';}
+  if(!badges.has(ti)){badges.add(ti);try{localStorage.setItem('tms_badges',JSON.stringify(Array.from(badges)));}catch(e){}addScore(50);toast('🏅','Badge obtenu','Partie '+ti+' validee (+50 pts)');confetti();if(typeof sndBadge==='function')sndBadge();}
+}
+function buildCheckpoint(panel,ti){
+  var qs=CHECK[ti];if(!qs)return;
+  var html='<div class="recap" style="margin-bottom:1.3rem"><h3>✅ Quiz eclair</h3><p class="recap-tip" style="margin-top:.2rem">Reponds pour valider la partie et gagner des points. Tu peux reessayer jusqu\'a la bonne reponse.</p></div>';
+  qs.forEach(function(q,qi){html+='<div class="quiz-q" data-cpq="'+qi+'" style="margin-bottom:1rem"><h3>'+(qi+1)+'. '+q.q+'</h3><div class="quiz-opts">';q.o.forEach(function(opt,oi){html+='<button class="quiz-opt" data-oi="'+oi+'"><span class="qo-mark"></span><span>'+opt+'</span></button>';});html+='</div><div class="quiz-explain"><strong>Explication :</strong> '+q.e+'</div></div>';});
+  html+='<div class="cp-done" style="display:none"></div>';
+  panel.innerHTML=html;
+  var solved={};
+  panel.querySelectorAll('.quiz-q').forEach(function(qEl){
+    var qi=+qEl.dataset.cpq,q=qs[qi];
+    qEl.querySelectorAll('.quiz-opt').forEach(function(b){b.addEventListener('click',function(){
+      if(solved[qi])return;var oi=+b.dataset.oi;
+      if(oi===q.a){b.classList.add('correct');b.querySelector('.qo-mark').textContent='✓';qEl.querySelectorAll('.quiz-opt').forEach(function(x){x.disabled=true;});qEl.querySelector('.quiz-explain').classList.add('show');solved[qi]=true;var key='cp'+ti+'-'+qi;if(!scored.has(key)){scoredAdd(key);addScore(20);}if(typeof sndCorrect==='function')sndCorrect();cpDone(panel,ti,qs,solved);}
+      else{b.classList.add('wrong');b.querySelector('.qo-mark').textContent='✗';b.disabled=true;if(typeof sndWrong==='function')sndWrong();}
+    });});
+  });
+}
+[1,2,3,4,5].forEach(function(ti){
+  var theme=document.querySelector('.theme[data-theme="'+ti+'"]');if(!theme)return;
+  var subtabs=theme.querySelector('.subtabs');if(subtabs){var btn=document.createElement('button');btn.className='subtab';btn.dataset.sub='check';btn.textContent='Quiz eclair';subtabs.appendChild(btn);}
+  var cpanel=document.createElement('div');cpanel.className='subpanel';cpanel.dataset.sub='check';theme.appendChild(cpanel);
+  buildCheckpoint(cpanel,ti);
+});
+
+// ===== Guided step navigation =====
+const themes=Array.from(document.querySelectorAll('.theme'));
+const navItems=Array.from(document.querySelectorAll('.nav-item'));
+const prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn');
+const stageScroll=document.getElementById('stageScroll');
+const scNum=document.getElementById('scNum'),scTot=document.getElementById('scTot');
+const topBar=document.getElementById('topBar'),progTxt=document.getElementById('progTxt'),progBar=document.getElementById('progBar'),scoreTxt=document.getElementById('scoreTxt');
+navItems.forEach(function(n){var f=document.createElement('span');f.className='ni-frac';n.appendChild(f);var lk=document.createElement('span');lk.className='ni-lock';lk.textContent='🔒';n.appendChild(lk);});
+document.querySelectorAll('.prog-card').forEach(function(p){var h=p.querySelector('h4');if(h){var lk=document.createElement('span');lk.className='pc-lock';lk.textContent=' 🔒';h.appendChild(lk);}});
+const steps=[];
+themes.forEach(function(theme,ti){var subs=theme.querySelectorAll('.subpanel');if(subs.length){subs.forEach(function(sp){steps.push({t:ti,sub:sp.dataset.sub});});}else{steps.push({t:ti,sub:null});}});
+const N=steps.length;let cur=0;
+scTot.textContent=N;
+const themeSteps=themes.map(function(_,ti){var a=[];steps.forEach(function(s,i){if(s.t===ti)a.push(i);});return a;});
+function firstStepOf(ti){return themeSteps[ti][0];}
+// build the horizontal journey stepper
+const STEP_LBL=['Accueil','Comprendre','Charge','Sommeil','Hygiene','Reflexes','Bilan','Quiz'];
+const ARR='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+const stepper=document.getElementById('stepper');
+themes.forEach(function(_,ti){var node=document.createElement('button');node.className='step-node';node.dataset.theme=ti;node.innerHTML='<span class="step-dot">'+ti+'</span><span class="step-lbl">'+STEP_LBL[ti]+'</span>';node.addEventListener('click',function(){showStep(firstStepOf(ti));});stepper.appendChild(node);});
+const stepNodes=Array.from(stepper.children);
+function updateStepper(at){
+  stepNodes.forEach(function(node,ti){
+    var ids=themeSteps[ti],allDone=ids.length>0&&ids.every(function(i){return visited.has(i);}),done=allDone&&ti!==at;
+    node.classList.toggle('current',ti===at);
+    node.classList.toggle('done',done);
+    node.classList.toggle('reached',ti<=at);
+    node.querySelector('.step-dot').textContent=done?'✓':ti;
+  });
+}
+let visited=new Set();try{visited=new Set(JSON.parse(localStorage.getItem('tms_steps')||'[]'));}catch(e){}
+let maxReached=0;try{maxReached=parseInt(localStorage.getItem('tms_max')||'0',10)||0;}catch(e){}
+let score=0;try{score=parseInt(localStorage.getItem('tms_score')||'0',10)||0;}catch(e){}
+let badges=new Set();try{badges=new Set(JSON.parse(localStorage.getItem('tms_badges')||'[]'));}catch(e){}
+function renderScore(){if(scoreTxt)scoreTxt.textContent=score;}
+function addScore(n){score+=n;try{localStorage.setItem('tms_score',score);}catch(e){}renderScore();if(scoreTxt){scoreTxt.classList.remove('bump');void scoreTxt.offsetWidth;scoreTxt.classList.add('bump');var sb=scoreTxt.closest('.sb-score');if(sb){var p=document.createElement('span');p.className='score-pop';p.textContent='+'+n;sb.appendChild(p);(function(el){setTimeout(function(){el.remove();},1000);})(p);}}}
+function canGo(s){return s>=0&&s<N;}
+var readTimer=null,READ_TIME=4;
+function clearReadGate(){if(readTimer){clearInterval(readTimer);readTimer=null;}}
+function applyReadGate(s,st,isNew){clearReadGate();if(!(isNew&&st.t>=1&&st.t<=5&&st.sub!=='recap'&&s<N-1))return;var saved=nextBtn.innerHTML,secs=READ_TIME;nextBtn.disabled=true;nextBtn.classList.add('reading');var tk=function(){if(secs<=0){clearReadGate();nextBtn.classList.remove('reading');nextBtn.disabled=false;nextBtn.innerHTML=saved;return;}nextBtn.innerHTML='<span class="nb-lab">Lecture… '+secs+' s</span>';secs--;};tk();readTimer=setInterval(tk,1000);}
+function toast(icon,title,desc){var w=document.getElementById('toastWrap');if(!w)return;var t=document.createElement('div');t.className='toast';t.innerHTML='<span class="ti">'+icon+'</span><div><div class="tt">'+title+'</div><div class="td">'+desc+'</div></div>';w.appendChild(t);setTimeout(function(){t.style.transition='opacity .4s,transform .4s';t.style.opacity='0';t.style.transform='translateX(40px)';setTimeout(function(){t.remove();},420);},3400);}
+function confetti(){var cols=['#f59e0b','#ef4444','#10b981','#3b82f6','#e11d2a','#fbbf24'];for(var i=0;i<90;i++){var d=document.createElement('div');d.className='confetti';d.style.left=(Math.random()*100)+'vw';d.style.background=cols[i%cols.length];var dur=2+Math.random()*2;d.style.animation='confFall '+dur.toFixed(2)+'s linear forwards';d.style.animationDelay=(Math.random()*0.6).toFixed(2)+'s';document.body.appendChild(d);(function(el,ms){setTimeout(function(){el.remove();},ms);})(d,(dur+1.2)*1000);}}
+function checkBadge(ti){if(ti<1||ti>5||badges.has(ti))return;if(themeSteps[ti].every(function(i){return visited.has(i);})){badges.add(ti);try{localStorage.setItem('tms_badges',JSON.stringify(Array.from(badges)));}catch(e){}addScore(50);toast('🏅','Badge obtenu','Partie '+ti+' · '+STEP_LBL[ti]+' maitrisee (+50 pts)');}}
+function renderLocks(){
+  navItems.forEach(function(n){n.classList.remove('locked');});
+  stepNodes.forEach(function(node){node.classList.remove('locked');});
+  document.querySelectorAll('.subtab').forEach(function(tab){tab.classList.remove('locked');});
+  document.querySelectorAll('.prog-card').forEach(function(p){p.classList.remove('locked');});
+}
+function attReqsMet(){var parts=true;for(var ti=1;ti<=5;ti++){if(!themeSteps[ti].every(function(i){return visited.has(i);}))parts=false;}var quiz=(+(localStorage.getItem('tms_quiz_best')||0))>=6;var note=computeNote().note>=70;return{parts:parts,quiz:quiz,note:note,all:parts&&quiz&&note};}
+function renderAttest(){var reqs=document.getElementById('attReqs');if(!reqs)return;var m=attReqsMet(),nv=computeNote().note,lp=reqs.querySelector('[data-req="parts"]'),lq=reqs.querySelector('[data-req="quiz"]'),ln=reqs.querySelector('[data-req="note"]');if(lp){lp.classList.toggle('ok',m.parts);lp.querySelector('.rq').textContent=m.parts?'✓':'';}if(lq){lq.classList.toggle('ok',m.quiz);lq.querySelector('.rq').textContent=m.quiz?'✓':'';}if(ln){ln.classList.toggle('ok',m.note);ln.querySelector('.rq').textContent=m.note?'✓':'';var t=ln.querySelector('.rq-txt');if(t)t.textContent='Obtenir une note d\'au moins 70/100 (actuelle : '+nv+'/100)';}var b=document.getElementById('attBtn'),nm=document.getElementById('attName');if(b)b.disabled=!m.all;if(nm)nm.disabled=!m.all;}
+function renderProgress(){
+  themes.forEach(function(_,ti){var ids=themeSteps[ti],done=ids.filter(function(i){return visited.has(i);}).length,f=navItems[ti].querySelector('.ni-frac');if(f){if(done>0&&done>=ids.length){f.textContent='✓';f.className='ni-frac done';}else{f.textContent=done+'/'+ids.length;f.className='ni-frac';}}});
+  var pct=Math.round(visited.size/N*100);if(progTxt)progTxt.textContent=pct+'%';if(progBar)progBar.style.width=pct+'%';if(topBar)topBar.style.width=pct+'%';
+}
+renderProgress();renderScore();
+// ===== Entrance animations (staggered) =====
+function animateIn(scope){
+  if(!scope)return;
+  var sel='.theme-title,.theme-lead,.subtabs,.card,.imgcard,.stat,.step,.pilier,.mine,.checklist,.prog-card,.infographic,.sim,.borg,.bodymap,.chrono,.sleepbar,.quiz-q,.alert,.attest,.recap';
+  var i=0;
+  scope.querySelectorAll(sel).forEach(function(el){
+    if(el.offsetParent===null)return;
+    el.classList.remove('anim');el.style.animationDelay=Math.min(i,14)*50+'ms';i++;
+    void el.offsetWidth;el.classList.add('anim');
+  });
+}
+document.addEventListener('animationend',function(e){if(e.target.classList&&e.target.classList.contains('anim')){e.target.classList.remove('anim');e.target.style.animationDelay='';}});
+function showStep(s){
+  s=Math.max(0,Math.min(N-1,s));var dir=s<cur?'prev':'next';cur=s;
+  var st=steps[s],theme=themes[st.t];
+  themes.forEach(function(t,k){t.classList.toggle('active',k===st.t);});
+  navItems.forEach(function(n,k){n.classList.toggle('active',k===st.t);});
+  if(st.sub){theme.querySelectorAll('.subtab').forEach(function(tb){tb.classList.toggle('active',tb.dataset.sub===st.sub);});theme.querySelectorAll('.subpanel').forEach(function(sp){sp.classList.toggle('active',sp.dataset.sub===st.sub);});}
+  scNum.textContent=s+1;
+  prevBtn.disabled=(s===0);nextBtn.disabled=(s===N-1);
+  if(s<N-1){var ns=steps[s+1],lab;if(ns.sub){var tb=themes[ns.t].querySelector('.subtab[data-sub="'+ns.sub+'"]');lab=tb?tb.textContent.trim():STEP_LBL[ns.t];}else{lab=STEP_LBL[ns.t];}nextBtn.innerHTML='<span class="nb-lab">Suivant : '+lab+'</span>'+ARR;}else{nextBtn.innerHTML='<span class="nb-lab">Termine !</span>'+ARR;}
+  nextBtn.classList.remove('bump');void nextBtn.offsetWidth;nextBtn.classList.add('bump');
+  visited.add(s);try{localStorage.setItem('tms_steps',JSON.stringify(Array.from(visited)));}catch(e){}
+  if(s>maxReached){maxReached=s;try{localStorage.setItem('tms_max',maxReached);}catch(e){}}
+  renderProgress();updateStepper(st.t);renderLocks();renderAttest();
+  if(st.t===6&&typeof renderDashboard==='function')renderDashboard();
+  if(typeof animateStats==='function')animateStats(theme);
+  stageScroll.scrollTop=0;
+  if(history.replaceState)history.replaceState(null,'','#'+s);
+  var inner=document.querySelector('.stage-inner');
+  if(inner){inner.classList.remove('sl-next','sl-prev');void inner.offsetWidth;inner.classList.add(dir==='prev'?'sl-prev':'sl-next');}
+  animateIn(theme.querySelector('.subpanel.active')||theme);
+}
+navItems.forEach(function(n){n.addEventListener('click',function(){var t=firstStepOf(+n.dataset.theme);if(canGo(t))showStep(t);});});
+document.querySelectorAll('.prog-card').forEach(function(p){p.addEventListener('click',function(){var t=firstStepOf(+p.dataset.theme);if(canGo(t))showStep(t);});});
+prevBtn.addEventListener('click',function(){showStep(cur-1);});
+nextBtn.addEventListener('click',function(){showStep(cur+1);});
+
+// ===== Sub-tabs jump (only to already-reached steps) =====
+document.querySelectorAll('.theme').forEach(function(theme){
+  var ti=+theme.dataset.theme;
+  theme.querySelectorAll('.subtab').forEach(function(tab){tab.addEventListener('click',function(){var idx=-1;steps.forEach(function(s,i){if(s.t===ti&&s.sub===tab.dataset.sub)idx=i;});if(idx>=0&&canGo(idx))showStep(idx);});});
+});
+var startBtn=document.getElementById('startBtn');if(startBtn)startBtn.addEventListener('click',function(){showStep(maxReached>=1?maxReached:1);});
+
+// ===== Keyboard + fullscreen =====
+const fsBtn=document.getElementById('fsBtn');
+function toggleFs(){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}else{document.exitFullscreen&&document.exitFullscreen();}}
+fsBtn.addEventListener('click',toggleFs);
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();if(typeof openCmdk==='function')openCmdk();return;}
+  var ck=document.getElementById('cmdk');if(ck&&ck.classList.contains('open'))return;
+  var co=document.getElementById('coach');if(co&&co.classList.contains('open'))return;
+  if(document.getElementById('modal').classList.contains('open')||document.getElementById('lightbox').classList.contains('open')){if(e.key==='Escape'){closeModal();closeLB();}return;}
+  if(e.key==='ArrowRight'||e.key==='PageDown'){if(!nextBtn.disabled)showStep(cur+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){showStep(cur-1);}
+  else if((e.key==='f'||e.key==='F')&&!e.ctrlKey&&!e.metaKey){toggleFs();}
+});
+
+// ===== Deep link (step index) =====
+var startStep=parseInt(location.hash.replace('#',''),10);
+if(!isNaN(startStep))showStep(startStep);else showStep(maxReached>0?maxReached:0);
+
+// ===== Modal (TMS) =====
+const MODAL_DATA={
+  lombalgie:{tag:'Type de TMS',title:'Lombalgie',img:'images/tms_lombalgie.jpeg',desc:"Atteinte du bas du dos touchant les vertebres lombaires, les disques et les muscles. C'est le trouble musculosquelettique le plus repandu en milieu de travail.",risk:['Manutention de charges lourdes','Flexions et torsions repetees du tronc','Postures penchees ou assises prolongees','Vibrations transmises au corps entier'],prev:['Plier les genoux, garder le dos droit','Garder la charge pres du corps','Ne pas tourner le tronc en soulevant',"Utiliser une aide mecanique ou demander de l'aide"]},
+  tendinite:{tag:'Type de TMS',title:'Tendinite',img:'images/tms_tendinite.jpeg',desc:"Inflammation d'un tendon, le plus souvent a l'epaule, au coude ou au poignet. Apparait quand le tendon est trop sollicite sans recuperation suffisante.",risk:['Mouvements repetitifs','Efforts intenses ou prolonges','Prises et serrages frequents','Vibrations des outils'],prev:['Alterner les taches et les gestes','Prendre des micro-pauses',"S'echauffer avant l'effort","Adapter l'outil et la hauteur de travail"]},
+  bursite:{tag:'Type de TMS',title:'Bursite',img:'images/tms_bursite.jpeg',desc:"Inflammation des bourses sereuses, ces petits coussinets qui amortissent les articulations. Frequente aux genoux et aux epaules.",risk:['Position a genoux prolongee','Appuis et frottements repetes','Chocs ou pressions directes','Travail bras leves'],prev:['Porter des genouilleres','Varier les postures regulierement','Eviter les appuis prolonges','Amenager un support sous les genoux']},
+  carpien:{tag:'Type de TMS',title:'Canal carpien',img:'images/tms_carpien.jpeg',desc:"Compression du nerf median dans le poignet. Provoque engourdissements, fourmillements et perte de force dans la main.",risk:['Mouvements repetitifs du poignet','Force de prehension elevee','Poignet plie longtemps','Vibrations des outils'],prev:['Garder le poignet en position neutre','Utiliser des outils ergonomiques','Reduire la force de serrage','Faire des pauses et des etirements']},
+  dos:{tag:'Zone a risque',title:'Dos et bas du dos',img:'images/zone_dos.jpeg',desc:"Le bas du dos encaisse la majorite des efforts de manutention. C'est la zone la plus touchee par les TMS sous terre.",risk:['Manutention de charges lourdes','Flexions du tronc','Torsions en charge','Charges lourdes repetees'],prev:['Plier les genoux, pas le dos','Garder la charge pres du corps','Pivoter avec les pieds, pas le tronc','Aides mecaniques quand possible']},
+  epaules:{tag:'Zone a risque',title:'Epaules',img:'images/zone_epaules.jpeg',desc:"Les epaules sont sollicitees des que l'on travaille les bras leves ou que l'on manipule des charges en hauteur.",risk:['Travail bras leves','Vibrations','Charges en hauteur','Gestes repetes au-dessus des epaules'],prev:['Travailler a hauteur de poitrine','Rapprocher le travail de soi','Alterner les bras et les taches','Utiliser des supports ou plateformes']},
+  cou:{tag:'Zone a risque',title:'Cou et nuque',img:'images/zone_cou.jpeg',desc:"Le cou et la nuque souffrent des postures statiques et du poids de l'equipement porte sur la tete.",risk:['Postures statiques prolongees',"Tete penchee vers l'avant",'Poids du casque et de la lampe','Manque de mouvement'],prev:["Garder la tete dans l'axe",'Faire des rotations douces du cou',"Ajuster l'eclairage et la position",'Bouger regulierement']},
+  poignets:{tag:'Zone a risque',title:'Poignets et mains',img:'images/zone_poignets.jpeg',desc:"Poignets et mains sont exposes aux gestes fins, repetes et aux outils, surtout lors du serrage et de la prehension.",risk:['Mouvements repetes','Force en torsion','Prises et serrages frequents','Vibrations'],prev:['Poignets en position neutre','Outils adaptes a la main','Reduire la force de prise','Pauses et etirements']},
+  coudes:{tag:'Zone a risque',title:'Coudes',img:'images/zone_coudes.jpeg',desc:"Les coudes sont mis a l'epreuve par les outils vibrants et les gestes de serrage repetes.",risk:['Outils vibrants','Prises repetees','Serrage frequent','Efforts en flexion-extension'],prev:["Limiter le temps d'exposition aux vibrations",'Choisir des outils anti-vibration','Alterner les taches','Echauffer les avant-bras']},
+  genoux:{tag:'Zone a risque',title:'Genoux',img:'images/zone_genoux.jpeg',desc:"Les genoux subissent les positions accroupies, le travail a genoux et l'instabilite du sol en mine.",risk:['Position accroupie','Travail a genoux','Sol inegal et instable','Deplacements sur terrain difficile'],prev:['Porter des genouilleres','Varier les appuis et postures','Se relever regulierement','Securiser et stabiliser le sol']}
+};
+const modal=document.getElementById('modal');
+const mImg=document.getElementById('modalImg'),mTag=document.getElementById('modalTag'),mTitle=document.getElementById('modalTitle'),mDesc=document.getElementById('modalDesc'),mRisk=document.getElementById('modalRisk'),mPrev=document.getElementById('modalPrev');
+function openModal(key){const d=MODAL_DATA[key];if(!d)return;mImg.src=d.img;mImg.alt=d.title;mTag.textContent=d.tag;mTitle.textContent=d.title;mDesc.textContent=d.desc;mRisk.innerHTML=d.risk.map(x=>'<li>'+x+'</li>').join('');mPrev.innerHTML=d.prev.map(x=>'<li>'+x+'</li>').join('');modal.classList.add('open');}
+function closeModal(){modal.classList.remove('open');}
+document.querySelectorAll('[data-modal]').forEach(el=>{el.addEventListener('click',()=>openModal(el.dataset.modal));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openModal(el.dataset.modal);}});});
+document.getElementById('modalClose').addEventListener('click',closeModal);
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+
+// ===== Lightbox =====
+const lightbox=document.getElementById('lightbox'),lbImg=document.getElementById('lbImg');
+function openLB(src,alt){lbImg.src=src;lbImg.alt=alt||'';lightbox.classList.add('open');}
+function closeLB(){lightbox.classList.remove('open');}
+document.querySelectorAll('.infographic[data-img]').forEach(el=>el.addEventListener('click',()=>openLB(el.dataset.img,el.querySelector('img')?el.querySelector('img').alt:'')));
+document.getElementById('lbClose').addEventListener('click',closeLB);
+lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLB();});
+// eager-load all infographics so sub-tab switches are instant (no flash)
+document.querySelectorAll('.infographic img').forEach(function(i){i.loading='eager';i.removeAttribute('loading');});
+
+// ===== Quiz =====
+const QUIZ=[
+  {q:"Qu'est-ce qu'un TMS ?",o:["Une atteinte des muscles, tendons, nerfs ou articulations liee au travail","Une maladie contagieuse","Un probleme uniquement du a un accident soudain"],a:0,e:"Un trouble musculosquelettique s'installe surtout par usure : repetition, force et mauvaises postures."},
+  {q:"Quel est le TMS le plus frequent ?",o:["Le canal carpien","La lombalgie (bas du dos)","La bursite"],a:1,e:"La lombalgie touche le bas du dos, la zone la plus sollicitee en manutention."},
+  {q:"Quand faut-il agir contre un TMS ?",o:["Quand la douleur devient permanente","Des les premiers inconforts (etape 1)","Apres l'arret de travail"],a:1,e:"Plus on attend, plus la recuperation est longue et incertaine. Le bon moment, c'est l'inconfort."},
+  {q:"Combien d'heures de sommeil par 24h sont recommandees ?",o:["4 a 5h","7 a 9h","10 a 12h"],a:1,e:"La fatigue ne se rattrape pas : elle s'accumule comme une dette. Vise 7 a 9h."},
+  {q:"Rester eveille 17 a 19h d'affilee equivaut a quel taux d'alcool ?",o:["0,00","0,05","0,15"],a:1,e:"La fatigue conduit comme l'alcool : la vigilance chute autant qu'a 0,05."},
+  {q:"Pour soulever une charge, il faut :",o:["Plier les genoux et garder la charge pres du corps","Plier le dos et tendre les bras","Tourner le tronc pour aller plus vite"],a:0,e:"Genoux flechis, dos droit, charge pres du corps, et on pivote avec les pieds."},
+  {q:"A partir de quel angle une posture du bras devient-elle contraignante ?",o:["Plus de 10 degres","Plus de 45 degres","Plus de 90 degres"],a:1,e:"0 a 20 = confort, 20 a 45 = a surveiller, plus de 45 degres = zone contraignante."},
+  {q:"Un inconfort qui revient souvent, on doit :",o:["L'ignorer, c'est normal","Le cacher pour ne pas inquieter","Le signaler tot a son superviseur ou au comite SST"],a:2,e:"Signaler tot permet d'ajuster le poste, d'eviter la chronicite et de proteger les collegues."}
+];
+const quizArea=document.getElementById('quizArea'),quizProg=document.getElementById('quizProg'),quizScore=document.getElementById('quizScore'),quizBar=document.getElementById('quizBar');
+let qi=0,qScore=0,qAnswered=false;
+function renderQ(){
+  qAnswered=false;
+  const item=QUIZ[qi];
+  quizProg.textContent='Question '+(qi+1)+' / '+QUIZ.length;
+  quizScore.textContent='Score : '+qScore;
+  quizBar.style.width=(qi/QUIZ.length*100)+'%';
+  let html='<div class="quiz-q"><h3>'+item.q+'</h3><div class="quiz-opts">';
+  item.o.forEach((opt,k)=>{html+='<button class="quiz-opt" data-k="'+k+'"><span class="qo-mark"></span><span>'+opt+'</span></button>';});
+  html+='</div><div class="quiz-explain" id="qExplain"><strong>Explication :</strong> '+item.e+'</div><div class="quiz-foot"><button class="btn" id="qNext" style="display:none">'+(qi===QUIZ.length-1?'Voir le resultat':'Question suivante')+' &rarr;</button></div></div>';
+  quizArea.innerHTML=html;
+  quizArea.querySelectorAll('.quiz-opt').forEach(b=>b.addEventListener('click',()=>answer(+b.dataset.k)));
+  document.getElementById('qNext').addEventListener('click',nextQ);
+  animateIn(quizArea);
+}
+function answer(k){
+  if(qAnswered)return;qAnswered=true;
+  const item=QUIZ[qi];
+  const opts=quizArea.querySelectorAll('.quiz-opt');
+  opts.forEach((b,idx)=>{b.disabled=true;
+    if(idx===item.a){b.classList.add('correct');b.querySelector('.qo-mark').textContent='✓';}
+    if(idx===k&&k!==item.a){b.classList.add('wrong');b.querySelector('.qo-mark').textContent='✗';}
+  });
+  if(k===item.a){qScore++;addScore(20);if(typeof sndCorrect==='function')sndCorrect();}else{if(typeof sndWrong==='function')sndWrong();}
+  quizScore.textContent='Score : '+qScore;
+  document.getElementById('qExplain').classList.add('show');
+  document.getElementById('qNext').style.display='inline-flex';
+}
+function nextQ(){if(qi<QUIZ.length-1){qi++;renderQ();}else{showResult();}}
+function showResult(){
+  quizBar.style.width='100%';quizProg.textContent='Termine';quizScore.textContent='Score : '+qScore;
+  try{var _b=Math.max(qScore,+(localStorage.getItem('tms_quiz_best')||0));localStorage.setItem('tms_quiz_best',_b);}catch(e){}
+  var passed=qScore>=6;
+  var msg=qScore>=7?"Excellent ! Tu maitrises la prevention des TMS.":passed?"Bravo, c'est reussi !":"Pas encore atteint : il faut 6/8 pour valider.";
+  var sub=passed?"Formation reussie. Tu peux generer ton attestation.":"Reprends les notions et reessaie pour debloquer l'attestation.";
+  var actions=(passed?'<button class="btn" id="qCert">Generer mon attestation &rarr;</button>':'<button class="btn" id="qRetry">Reessayer le quiz</button>')+' <button class="btn" id="qRestart" style="background:var(--card-2);color:var(--text);border:1px solid var(--border)">Recommencer</button>';
+  var scoreStyle=passed?'':'-webkit-text-fill-color:var(--danger);color:var(--danger)';
+  quizArea.innerHTML='<div class="quiz-result"><div class="score" style="'+scoreStyle+'">'+qScore+'/'+QUIZ.length+'</div><h3>'+msg+'</h3><p>'+sub+'</p><div style="display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center">'+actions+'</div></div>';
+  document.getElementById('qRestart').addEventListener('click',function(){qi=0;qScore=0;renderQ();});
+  var qr=document.getElementById('qRetry');if(qr)qr.addEventListener('click',function(){qi=0;qScore=0;renderQ();});
+  var qc=document.getElementById('qCert');if(qc)qc.addEventListener('click',function(){showStep(firstStepOf(6));});
+  renderAttest();
+  if(passed){confetti();toast('🎉','Quiz reussi !','Score '+qScore+'/8 — attestation debloquee');if(typeof sndBadge==='function')sndBadge();}
+}
+renderQ();
+
+// ===== Angle simulator =====
+(function(){
+  var range=document.getElementById('simRange');if(!range)return;
+  var arm=document.getElementById('simArm'),hand=document.getElementById('simHand'),deg=document.getElementById('simDeg'),badge=document.getElementById('simBadge');
+  var P={x:95,y:80},AR=108;
+  function set(v){
+    var r=v*Math.PI/180,ex=P.x+AR*Math.sin(r),ey=P.y+AR*Math.cos(r);
+    arm.setAttribute('x2',ex.toFixed(1));arm.setAttribute('y2',ey.toFixed(1));
+    hand.setAttribute('cx',ex.toFixed(1));hand.setAttribute('cy',ey.toFixed(1));
+    deg.innerHTML=v+'&deg;';
+    var l,c,t;
+    if(v<=20){l='Zone de confort';c='#10b981';t='#06140d';}
+    else if(v<=45){l='A surveiller';c='#f59e0b';t='#1a0f02';}
+    else{l='Zone contraignante';c='#ef4444';t='#fff';}
+    if(v>60)l='Risque eleve (>60°)';
+    badge.textContent=l;badge.style.background=c;badge.style.color=t;
+  }
+  range.addEventListener('input',function(e){set(+e.target.value);});
+  set(0);
+})();
+
+// ===== Attestation =====
+(function(){
+  var btn=document.getElementById('attBtn');if(!btn)return;
+  var name=document.getElementById('attName'),prnt=document.getElementById('attPrint'),prev=document.getElementById('certPreview'),layer=document.getElementById('printLayer');
+  function cert(n){
+    var d=new Date();
+    var date=d.toLocaleDateString('fr-CA',{year:'numeric',month:'long',day:'numeric'});
+    var nv=computeNote().note;
+    return '<div class="cert"><img src="images/logo_roger.png" alt="Machines Roger International"><div class="cert-k">Attestation de formation</div><h2>Prevention des TMS</h2><p class="cert-body">Atteste que</p><div class="cert-name">'+n+'</div><p class="cert-body">a complete avec succes la formation de prevention des troubles musculosquelettiques en mine souterraine &mdash; Formation Nouveaux Travailleurs.</p><div class="cert-note">Note globale : <b>'+nv+' / 100</b></div><div class="cert-foot"><span>Machines Roger International</span><span>Date : '+date+'</span></div></div>';
+  }
+  function gen(){
+    if(typeof attReqsMet==='function'&&!attReqsMet().all)return;
+    var n=name.value.trim();if(!n){name.focus();return;}
+    var h=cert(n);prev.innerHTML=h;layer.innerHTML=h;prnt.style.display='inline-flex';
+    confetti();
+    prev.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  btn.addEventListener('click',gen);
+  name.addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
+  prnt.addEventListener('click',function(){window.print();});
+})();
+
+// ===== Borg scale (perception de l'effort) =====
+(function(){
+  var rows=[].slice.call(document.querySelectorAll('.borg-row'));if(!rows.length)return;
+  var range=document.getElementById('borgRange'),emo=document.getElementById('borgEmo'),big=document.getElementById('borgBig'),lbl=document.getElementById('borgLbl'),desc=document.getElementById('borgDesc'),act=document.getElementById('borgAct'),needle=document.getElementById('borgNeedle'),hb=document.getElementById('borgHb'),hr=document.getElementById('borgHr');
+  var D=[
+    ['Aucun effort',"Pas d'effort.",'Au repos complet','😴','#16a34a','Rythme au repos'],
+    ['Tres tres facile','A peine perceptible.','Rester debout','😌','#22c55e','Rythme au repos'],
+    ['Tres facile','Effort tres leger.','Marche lente','🙂','#4ade80','Rythme calme'],
+    ['Facile','Effort leger.','Marche normale','🙂','#84cc16','Rythme calme'],
+    ['Effort modere','Effort confortable mais notable.','Porter une charge legere','😐','#eab308','Respiration un peu marquee'],
+    ['Moyen','Effort soutenu, respiration plus marquee.','Manipuler des outils','😅','#f59e0b','Respiration marquee'],
+    ['Un peu dur','Effort exigeant.','Manutention repetee','😓','#f97316','Respiration forte'],
+    ['Dur','Effort difficile, respiration forte.','Pelleter, deplacer des charges','😣','#ea580c','Respiration forte'],
+    ['Tres dur','Effort tres difficile.','Pousser un equipement lourd','😖','#dc2626','Souffle court'],
+    ['Tres tres dur','Effort extremement difficile.','Soulever a la limite','😫','#dc2626','Souffle tres court'],
+    ['Maximal','Effort maximal, a la limite de mes capacites.','Effort impossible a tenir','🥵','#b91c1c','Effort maximal']
+  ];
+  function set(l){
+    l=Math.max(0,Math.min(10,l|0));var d=D[l];
+    rows.forEach(function(r){r.classList.toggle('active',+r.dataset.l===l);});
+    range.value=l;
+    emo.textContent=d[3];emo.style.transform='scale('+(1+l*0.03)+')';
+    big.textContent=l;big.style.color=d[4];
+    lbl.textContent=d[0];lbl.style.color=d[4];
+    desc.textContent=d[1];act.textContent=d[2];hr.textContent=d[5];
+    needle.setAttribute('transform','rotate('+(l*18)+' 100 100)');
+    hb.style.animationDuration=Math.max(.32,1.25-l*0.093).toFixed(2)+'s';
+  }
+  rows.forEach(function(r){r.addEventListener('click',function(){set(+r.dataset.l);});});
+  range.addEventListener('input',function(e){set(+e.target.value);});
+  set(0);
+})();
+
+// ===== Command palette (Ctrl+K) =====
+(function(){
+  var cmdk=document.getElementById('cmdk'),cmdkInput=document.getElementById('cmdkInput'),cmdkList=document.getElementById('cmdkList');if(!cmdk)return;
+  var ITEMS=steps.map(function(s,i){var base=STEP_LBL[s.t],sub='';if(s.sub){var tb=themes[s.t].querySelector('.subtab[data-sub="'+s.sub+'"]');sub=tb?tb.textContent.trim():s.sub;}return {i:i,theme:base,sub:sub};});
+  var filtered=[],active=0;
+  function render(q){q=(q||'').toLowerCase().trim();filtered=ITEMS.filter(function(it){return (it.theme+' '+it.sub).toLowerCase().indexOf(q)>-1;});active=0;if(!filtered.length){cmdkList.innerHTML='<div class="cmdk-empty">Aucun resultat</div>';return;}cmdkList.innerHTML=filtered.map(function(it,k){return '<div class="cmdk-item'+(k===0?' active':'')+'" data-go="'+it.i+'"><span class="ci-n">'+(it.i+1)+'</span><span>'+it.theme+'</span>'+(it.sub?'<span class="ci-sub">'+it.sub+'</span>':'')+'</div>';}).join('');Array.from(cmdkList.children).forEach(function(el){el.addEventListener('click',function(){pick(+el.dataset.go);});});}
+  function upd(){Array.from(cmdkList.children).forEach(function(el,k){el.classList.toggle('active',k===active);});var a=cmdkList.children[active];if(a&&a.scrollIntoView)a.scrollIntoView({block:'nearest'});}
+  function pick(i){cmdk.classList.remove('open');showStep(i);}
+  window.openCmdk=function(){cmdk.classList.add('open');cmdkInput.value='';render('');setTimeout(function(){cmdkInput.focus();},40);};
+  cmdkInput.addEventListener('input',function(){render(cmdkInput.value);});
+  cmdkInput.addEventListener('keydown',function(e){if(e.key==='Escape'){cmdk.classList.remove('open');}else if(e.key==='ArrowDown'){e.preventDefault();active=Math.min(active+1,filtered.length-1);upd();}else if(e.key==='ArrowUp'){e.preventDefault();active=Math.max(active-1,0);upd();}else if(e.key==='Enter'){if(filtered[active])pick(filtered[active].i);}});
+  cmdk.addEventListener('click',function(e){if(e.target===cmdk)cmdk.classList.remove('open');});
+  var sb=document.getElementById('searchBtn');if(sb)sb.addEventListener('click',openCmdk);
+})();
+
+// ===== Sound feedback (WebAudio) =====
+var TMS_soundOn=(localStorage.getItem('tms_sound')!=='off'),TMS_actx=null;
+function tmsTone(seq,type){if(!TMS_soundOn)return;try{if(!TMS_actx)TMS_actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}if(!TMS_actx)return;if(TMS_actx.state==='suspended'){try{TMS_actx.resume();}catch(e){}}var t=TMS_actx.currentTime;seq.forEach(function(f,i){var o=TMS_actx.createOscillator(),g=TMS_actx.createGain();o.type=type||'sine';o.frequency.value=f;o.connect(g);g.connect(TMS_actx.destination);var s=t+i*0.09;g.gain.setValueAtTime(0.0001,s);g.gain.exponentialRampToValueAtTime(0.12,s+0.012);g.gain.exponentialRampToValueAtTime(0.0001,s+0.19);o.start(s);o.stop(s+0.2);});}
+function sndCorrect(){tmsTone([660,880],'sine');}
+function sndWrong(){tmsTone([180,130],'square');}
+function sndBadge(){tmsTone([523,659,784,1047],'triangle');}
+(function(){
+  var ICON_ON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19 5a9 9 0 010 14M15.5 8.5a5 5 0 010 7"/></svg>';
+  var ICON_OFF='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>';
+  var btn=document.getElementById('soundBtn');if(!btn)return;
+  function paint(){btn.innerHTML=(TMS_soundOn?ICON_ON:ICON_OFF)+'<span class="tl">Son</span>';btn.title=TMS_soundOn?'Son active (couper)':'Son coupe (activer)';}
+  btn.addEventListener('click',function(){TMS_soundOn=!TMS_soundOn;localStorage.setItem('tms_sound',TMS_soundOn?'on':'off');paint();if(TMS_soundOn)sndCorrect();});
+  paint();
+})();
+
+// ===== Dashboard (bilan) =====
+function tmsCountUp(el,target,dur){if(!el)return;var t0=null;function step(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/dur,1);el.textContent=Math.round(target*p);if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
+function renderDashboard(){var ring=document.getElementById('dashRing');if(!ring)return;var n=computeNote().note,C=2*Math.PI*52;ring.style.strokeDasharray=C.toFixed(1);ring.style.strokeDashoffset=(C*(1-n/100)).toFixed(1);tmsCountUp(document.getElementById('dashNum'),n,900);tmsCountUp(document.getElementById('dashScore'),score,900);var pg=document.getElementById('dashProg');if(pg){var tgt=Math.round(visited.size/N*100),t0=null;(function st(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/900,1);pg.textContent=Math.round(tgt*p)+'%';if(p<1)requestAnimationFrame(st);})(performance.now());}document.querySelectorAll('.dash-badge').forEach(function(b){b.classList.toggle('earned',badges.has(+b.dataset.part));});}
+
+// ===== Resume label =====
+(function(){var sbn=document.getElementById('startBtn');if(sbn&&maxReached>0)sbn.innerHTML='Reprendre la formation '+ARR;})();
+
+// ===== Printable full recap =====
+(function(){
+  var btn=document.getElementById('recapPrintBtn'),layer=document.getElementById('printLayer');if(!btn||!layer)return;
+  function build(){
+    var d=new Date(),date=d.toLocaleDateString('fr-CA',{year:'numeric',month:'long',day:'numeric'});
+    var h='<div class="print-doc"><div class="pd-head"><img src="images/logo_roger.png" alt="Machines Roger"><div><div class="pd-k">Recapitulatif de formation</div><h1>Prevention des TMS</h1><div class="pd-date">Mine souterraine &mdash; '+date+'</div></div></div>';
+    [1,2,3,4,5].forEach(function(ti){var r=RECAP[ti];if(!r)return;h+='<section class="pd-part"><h2>'+ti+'. '+r.t.replace("L\'essentiel : ","")+'</h2><ul>'+r.p.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul><p class="pd-tip">A retenir : '+r.tip+'</p></section>';});
+    h+='<section class="pd-part"><h2>Les deux piliers</h2><div class="pd-cols"><div><h3>Reduire la charge</h3><ul><li>Bons gestes de manutention</li><li>Echauffement et micro-pauses</li><li>Varier postures et taches</li><li>Aides mecaniques, demander de l\'aide</li></ul></div><div><h3>Maximiser la recuperation</h3><ul><li>Sommeil de 7 a 9h, regulier</li><li>Bien s\'hydrater, bien manger</li><li>Bouger, garder force et souplesse</li><li>Habitudes qui aident la reparation</li></ul></div></div></section>';
+    h+='<section class="pd-part"><h2>Aide-memoire quotidien</h2><div class="pd-cols3"><div><h3>Sommeil</h3><ul><li>Heure de coucher fixe</li><li>Chambre noire et fraiche</li><li>Pas de cafe en fin de quart</li></ul></div><div><h3>Hygiene de vie</h3><ul><li>Gourde au poste chaque jour</li><li>Une collation qui tient</li><li>Bouger 20 min un jour de conge</li></ul></div><div><h3>Au poste</h3><ul><li>5 min d\'echauffement</li><li>Plier les genoux, pas de torsion</li><li>Signaler tout inconfort</li></ul></div></div></section>';
+    h+='<div class="pd-foot">Machines Roger International &mdash; Formation Nouveaux Travailleurs &middot; Prevention des TMS</div></div>';
+    layer.innerHTML=h;
+  }
+  btn.addEventListener('click',function(){build();window.print();});
+})();
+
+// ===== Animated statistic counters =====
+function animateStat(el){
+  var raw=el.getAttribute('data-final')||el.textContent.trim();
+  el.setAttribute('data-final',raw);
+  if(raw.indexOf('/')>-1)return;
+  var m=raw.match(/\d[\d  ]*(?:,\d+)?/);if(!m)return;
+  var numStr=m[0],idx=m.index,pre=raw.slice(0,idx),post=raw.slice(idx+numStr.length);
+  var hasDec=numStr.indexOf(',')>-1;
+  var val=parseFloat(numStr.replace(/[  ]/g,'').replace(',','.'));if(isNaN(val))return;
+  var dur=1100,t0=null;
+  function fmt(v){if(hasDec)return v.toFixed(1).replace('.',',');return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+  el.textContent=pre+fmt(0)+post;
+  function step(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/dur,1);el.textContent=pre+fmt(val*p)+post;if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+function animateStats(scope){(scope||document).querySelectorAll('.stat .v').forEach(function(el){if(el.offsetParent!==null)animateStat(el);});}
+
+// ===== Reset (kiosk: next worker) =====
+(function(){
+  var b=document.getElementById('resetBtn');if(!b)return;var armed=false,tmr=null;
+  b.addEventListener('click',function(){
+    if(armed){try{localStorage.clear();}catch(e){}location.replace(location.pathname);return;}
+    armed=true;b.style.borderColor='var(--brand)';b.style.color='#fff';
+    if(typeof toast==='function')toast('↺','Reinitialiser ?','Clique encore pour effacer la progression');
+    tmr=setTimeout(function(){armed=false;b.style.borderColor='';b.style.color='';},3000);
+  });
+})();
+
+// ===== Espace formateur (resultats) =====
+(function(){
+  var ov=document.getElementById('coach'),body=document.getElementById('coachBody'),btn=document.getElementById('coachBtn');if(!ov||!btn)return;
+  function rows(fn){var r='';for(var ti=1;ti<=5;ti++){var ids=themeSteps[ti],done=ids.every(function(i){return visited.has(i);});var cp=0;for(var qi=0;qi<2;qi++){if(scored.has('cp'+ti+'-'+qi))cp++;}r+=fn(ti,done,cp);}return r;}
+  function build(){
+    var note=computeNote().note,prog=Math.round(visited.size/N*100),best=+(localStorage.getItem('tms_quiz_best')||0);
+    var tr=rows(function(ti,done,cp){return '<tr><td>'+ti+'. '+STEP_LBL[ti]+'</td><td>'+(done?'<span class="coach-ok">Oui</span>':'<span class="coach-no">Non</span>')+'</td><td>'+cp+'/2</td><td>'+(badges.has(ti)?'<span class="coach-ok">Oui</span>':'<span class="coach-no">Non</span>')+'</td></tr>';});
+    body.innerHTML='<div class="coach-grid"><div class="coach-kpi"><div class="v">'+note+'/100</div><div class="l">Note</div></div><div class="coach-kpi"><div class="v">'+score+'</div><div class="l">Points</div></div><div class="coach-kpi"><div class="v">'+prog+'%</div><div class="l">Progression</div></div><div class="coach-kpi"><div class="v">'+best+'/8</div><div class="l">Quiz final</div></div></div><table class="coach-table"><thead><tr><th>Partie</th><th>Consultee</th><th>Quiz eclair</th><th>Badge</th></tr></thead><tbody>'+tr+'</tbody></table>';
+  }
+  function txt(){var note=computeNote().note,prog=Math.round(visited.size/N*100),best=+(localStorage.getItem('tms_quiz_best')||0);var t='RESULTATS - Formation Prevention des TMS\nMachines Roger International\n\nNote globale: '+note+'/100\nPoints: '+score+'\nProgression: '+prog+'%\nQuiz final: '+best+'/8\n\nDetail par partie:\n';t+=rows(function(ti,done,cp){return '- '+ti+'. '+STEP_LBL[ti]+': '+(done?'consultee':'a faire')+', quiz eclair '+cp+'/2, badge '+(badges.has(ti)?'oui':'non')+'\n';});return t;}
+  function openC(){build();ov.classList.add('open');}
+  function closeC(){ov.classList.remove('open');}
+  btn.addEventListener('click',openC);
+  document.getElementById('coachClose').addEventListener('click',closeC);
+  ov.addEventListener('click',function(e){if(e.target===ov)closeC();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ov.classList.contains('open'))closeC();});
+  document.getElementById('coachExport').addEventListener('click',function(){var blob=new Blob([txt()],{type:'text/plain;charset=utf-8'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='resultats-formation-tms.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);});
+  document.getElementById('coachPrint').addEventListener('click',function(){var layer=document.getElementById('printLayer');var note=computeNote().note,prog=Math.round(visited.size/N*100),best=+(localStorage.getItem('tms_quiz_best')||0);var tr=rows(function(ti,done,cp){return '<tr><td style="padding:.4rem;border-bottom:1px solid #ccc">'+ti+'. '+STEP_LBL[ti]+'</td><td style="padding:.4rem;border-bottom:1px solid #ccc">'+(done?'Oui':'Non')+'</td><td style="padding:.4rem;border-bottom:1px solid #ccc">'+cp+'/2</td><td style="padding:.4rem;border-bottom:1px solid #ccc">'+(badges.has(ti)?'Oui':'Non')+'</td></tr>';});layer.innerHTML='<div class="print-doc"><div class="pd-head"><img src="images/logo_roger.png"><div><div class="pd-k">Resultats de formation</div><h1>Prevention des TMS</h1></div></div><div class="pd-cols"><div><h3>Note : '+note+'/100</h3></div><div><h3>Points : '+score+'</h3></div><div><h3>Progression : '+prog+'%</h3></div><div><h3>Quiz final : '+best+'/8</h3></div></div><table style="width:100%;border-collapse:collapse;margin-top:1rem;font-size:.9rem"><tr><th style="text-align:left;border-bottom:2px solid #d22325;padding:.4rem">Partie</th><th style="text-align:left;border-bottom:2px solid #d22325;padding:.4rem">Consultee</th><th style="text-align:left;border-bottom:2px solid #d22325;padding:.4rem">Quiz eclair</th><th style="text-align:left;border-bottom:2px solid #d22325;padding:.4rem">Badge</th></tr>'+tr+'</table><div class="pd-foot">Machines Roger International — Formation Nouveaux Travailleurs</div></div>';window.print();});
+})();
+</script>
+</body>
+</html>
