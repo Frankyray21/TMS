@@ -1,0 +1,2708 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Exploration interactive des facteurs de risque des TMS en mine souterraine : schéma cliquable, vidéo, carte du corps et simulateur de poste. Machines Roger International.">
+<title>Exploration interactive des TMS | Schéma, corps humain, simulateur — Machines Roger International</title>
+<meta name="theme-color" content="#0a0e17">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CA">
+<meta property="og:title" content="Exploration interactive des TMS — Machines Roger International">
+<meta property="og:description" content="Schéma des facteurs cliquable, carte du corps, vidéo et simulateur : explore les risques de TMS en mine souterraine.">
+<meta property="og:image" content="https://preventiontmsmri.netlify.app/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://preventiontmsmri.netlify.app/interactif.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e17'/%3E%3Cpath d='M16 38a16 16 0 0 1 32 0z' fill='%23d22325'/%3E%3Crect x='28' y='16' width='8' height='12' rx='3' fill='%23d22325'/%3E%3Crect x='10' y='38' width='44' height='7' rx='3.5' fill='%23ef5a5c'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --rouge: #d6111e;
+    --rouge-fonce: #8f0a12;
+    --bleu: #1b6e96;
+    --bleu-clair: #2e8fc0;
+    --orange: #d97a16;
+    --orange-clair: #f09430;
+    --vert: #5a9421;
+    --vert-clair: #74b62e;
+    --or: #d9a43a;
+    --noir: #0a0a0a;
+    --carte: #161616;
+    --bordure: #2c2c2c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--noir);
+    color: #fff;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #111; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--rouge); }
+
+  button { font-family: inherit; }
+  button:focus-visible, a:focus-visible, [tabindex]:focus-visible, input:focus-visible {
+    outline: 2px solid var(--or);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Fond décoratif ---------- */
+  .fond-blob {
+    position: fixed;
+    width: 50vw; height: 50vw;
+    border-radius: 50%;
+    filter: blur(130px);
+    opacity: .12;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .fond-blob.b1 { background: var(--rouge); top: -15vw; right: -15vw; animation: derive1 26s ease-in-out infinite alternate; }
+  .fond-blob.b2 { background: var(--bleu); bottom: -20vw; left: -15vw; animation: derive2 32s ease-in-out infinite alternate; }
+  @keyframes derive1 { to { transform: translate(-8vw, 10vh); } }
+  @keyframes derive2 { to { transform: translate(10vw, -8vh); } }
+
+  /* ---------- Barre de défilement haute ---------- */
+  #barre-scroll {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    width: 0;
+    background: linear-gradient(90deg, var(--rouge), var(--or));
+    z-index: 60;
+    transition: width .1s linear;
+  }
+
+  /* ---------- Navigation ---------- */
+  nav.barre {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(10,10,10,.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--bordure);
+  }
+  .barre-int {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .barre .logo {
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: var(--rouge);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .barre .liens {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .barre .liens::-webkit-scrollbar { display: none; }
+  .barre a.lien-nav {
+    color: #bbb;
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+  }
+  .barre a.lien-nav:hover { background: #1e1e1e; color: #fff; }
+  .barre a.lien-nav.actif { background: #241112; color: #ff7b84; }
+  .anneau-bloc {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .anneau-bloc svg { transform: rotate(-90deg); }
+  #anneau-valeur {
+    transition: stroke-dashoffset .5s ease;
+    stroke: var(--or);
+  }
+  #texte-prog { font-size: .75rem; color: #ccc; white-space: nowrap; }
+
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  /* ---------- Apparition au défilement ---------- */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ---------- En-tête ---------- */
+  header.haut h1 {
+    font-size: clamp(1.8rem, 5vw, 3.4rem);
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  header.haut h1 .accent {
+    background: linear-gradient(90deg, var(--rouge), #ff6b35);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header.haut p.sous-titre {
+    margin-top: 8px;
+    font-size: clamp(.95rem, 2vw, 1.15rem);
+    color: #ddd;
+  }
+  header.haut p.consigne {
+    margin-top: 6px;
+    font-size: .9rem;
+    color: var(--or);
+  }
+
+  /* ---------- Recherche ---------- */
+  .recherche {
+    position: relative;
+    margin-top: 16px;
+    max-width: 430px;
+  }
+  .recherche input {
+    width: 100%;
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-radius: 12px;
+    color: #fff;
+    font-size: .95rem;
+    padding: 11px 14px 11px 40px;
+    transition: border-color .15s;
+  }
+  .recherche input:focus { border-color: var(--or); outline: none; }
+  .recherche .loupe {
+    position: absolute;
+    left: 13px; top: 50%;
+    transform: translateY(-50%);
+    opacity: .6;
+  }
+  #resultats-recherche {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: #1b1b1b;
+    border: 1px solid var(--bordure);
+    border-radius: 12px;
+    list-style: none;
+    overflow: hidden;
+    z-index: 40;
+    display: none;
+    box-shadow: 0 16px 40px rgba(0,0,0,.6);
+  }
+  #resultats-recherche.ouvert { display: block; }
+  #resultats-recherche li button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: #eee;
+    padding: 10px 14px;
+    font-size: .9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #resultats-recherche li button:hover, #resultats-recherche li button:focus-visible {
+    background: #262626;
+    outline: none;
+  }
+  #resultats-recherche .cat-resultat {
+    margin-left: auto;
+    font-size: .7rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  /* ---------- Légende ---------- */
+  .legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 14px;
+    font-size: .82rem;
+    color: #ccc;
+    align-items: center;
+  }
+  .legende .point {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: -1px;
+  }
+  .legende .pb { background: var(--bleu-clair); }
+  .legende .pi { background: var(--orange-clair); }
+  .legende .pe { background: var(--vert-clair); }
+
+  /* ---------- Disposition principale ---------- */
+  .contenu {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    align-items: flex-start;
+  }
+
+  /* ---------- Encadré À retenir ---------- */
+  aside.retenir {
+    flex: 0 0 240px;
+    border: 2px solid var(--rouge);
+    border-radius: 14px;
+    padding: 18px;
+    background: var(--carte);
+  }
+  aside.retenir .titre {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: .5px;
+    border-bottom: 2px solid var(--rouge);
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+  }
+  aside.retenir .ampoule {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--rouge);
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    animation: pulsation 2.6s ease-in-out infinite;
+  }
+  @keyframes pulsation {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(214,17,30,.55); }
+    50% { box-shadow: 0 0 0 9px rgba(214,17,30,0); }
+  }
+  aside.retenir p {
+    font-size: .92rem;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    color: #eee;
+  }
+  aside.retenir .btn-savoir {
+    width: 100%;
+    background: linear-gradient(180deg, #b30f1a, var(--rouge-fonce));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: .88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s, filter .15s;
+  }
+  aside.retenir .btn-savoir:hover { transform: translateY(-2px); filter: brightness(1.15); }
+
+  /* ---------- Schéma interactif ---------- */
+  .schema { flex: 1; position: relative; min-width: 0; }
+
+  .scene {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+  }
+
+  .scene::before {
+    content: "";
+    position: absolute;
+    left: 11%; top: 11%;
+    width: 78%; height: 78%;
+    border-radius: 50%;
+    border: 2px solid #333;
+    background: radial-gradient(ellipse at center, #1c1c1c 0%, #111 70%);
+  }
+
+  /* Lignes de liaison dynamiques */
+  #svg-liaisons {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .lien {
+    fill: none;
+    stroke-width: 2;
+    opacity: .6;
+    stroke-dasharray: 7 5;
+    animation: flux 1.5s linear infinite;
+    transition: opacity .25s, stroke-width .2s;
+  }
+  @keyframes flux { to { stroke-dashoffset: -24; } }
+  .lien-biomecanique { stroke: var(--bleu-clair); }
+  .lien-individuel { stroke: var(--orange-clair); }
+  .lien-environnement { stroke: var(--vert-clair); }
+  .lien.lien-fort { stroke-width: 4; opacity: 1; }
+
+  /* Mise en évidence par famille au survol d'un cercle */
+  .scene.focus-biomecanique .lien:not(.lien-biomecanique),
+  .scene.focus-individuel .lien:not(.lien-individuel),
+  .scene.focus-environnement .lien:not(.lien-environnement) { opacity: .08; }
+  .scene.focus-biomecanique .pastille:not([data-famille="biomecanique"]),
+  .scene.focus-individuel .pastille:not([data-famille="individuel"]),
+  .scene.focus-environnement .pastille:not([data-famille="environnement"]) { opacity: .25; }
+
+  /* Cercles centraux */
+  .cercle {
+    position: absolute;
+    top: 22%;
+    width: 30%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4%;
+    transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    z-index: 2;
+  }
+  .cercle:hover, .cercle:focus-visible {
+    transform: scale(1.05);
+    z-index: 5;
+    filter: brightness(1.12);
+    box-shadow: 0 0 30px rgba(255,255,255,.25);
+    outline: none;
+  }
+  .cercle .icone { font-size: clamp(1.1rem, 2.6vw, 2rem); margin-bottom: 4px; }
+  .cercle .nom {
+    font-weight: 800;
+    font-size: clamp(.68rem, 1.45vw, 1rem);
+    line-height: 1.2;
+    border-bottom: 1px solid rgba(255,255,255,.7);
+    padding-bottom: 5px;
+    margin-bottom: 6px;
+  }
+  .cercle ul { list-style: none; }
+  .cercle ul li { line-height: 1.1; }
+  .sous-item {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: clamp(.55rem, 1.05vw, .8rem);
+    cursor: pointer;
+    padding: 1px 4px;
+    border-radius: 6px;
+    text-decoration: underline dotted rgba(255,255,255,.55);
+    text-underline-offset: 3px;
+    transition: background .15s, color .15s;
+  }
+  .sous-item:hover, .sous-item:focus-visible {
+    background: rgba(0,0,0,.35);
+    color: #ffd98a;
+    outline: none;
+  }
+
+  .cercle.bio { left: 12%; background: radial-gradient(circle at 35% 30%, #2a89b6, var(--bleu) 70%); }
+  .cercle.ind { left: 35%; background: radial-gradient(circle at 35% 30%, #f09430, var(--orange) 70%); z-index: 3; }
+  .cercle.env { left: 58%; background: radial-gradient(circle at 35% 30%, #74b62e, var(--vert) 70%); }
+
+  .cercle.visite::after, .pastille.visite .rond::after {
+    content: "✓";
+    position: absolute;
+    top: 4%; right: 8%;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--or);
+    color: #000;
+    font-size: .8rem;
+    font-weight: 900;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.5);
+  }
+  .pastille.visite .rond::after {
+    top: -4px; right: -4px;
+    width: 18px; height: 18px;
+    font-size: .65rem;
+  }
+
+  .fleche-combo {
+    position: absolute;
+    top: 43%;
+    width: 4.5%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.4);
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: clamp(.8rem, 1.6vw, 1.2rem);
+    cursor: pointer;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    transition: transform .15s, background .15s;
+  }
+  .fleche-combo:hover, .fleche-combo:focus-visible {
+    transform: scale(1.18);
+    background: var(--rouge);
+    outline: none;
+  }
+  .fleche-combo.g { left: 33%; }
+  .fleche-combo.d { left: 62.5%; }
+
+  .bandeau-centre {
+    position: absolute;
+    left: 50%; top: 86%;
+    transform: translateX(-50%);
+    background: #000;
+    border: 2px solid #fff;
+    padding: 6px 18px;
+    font-weight: 800;
+    font-size: clamp(.6rem, 1.3vw, .95rem);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    z-index: 2;
+    color: #fff;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .bandeau-centre:hover, .bandeau-centre:focus-visible {
+    background: var(--rouge);
+    border-color: var(--rouge);
+    outline: none;
+  }
+
+  /* Pastilles périphériques */
+  .pastille {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    width: 12%;
+    transform: translate(-50%, -50%);
+    transition: transform .2s ease, opacity .25s ease;
+    z-index: 6;
+  }
+  .pastille:hover, .pastille:focus-visible {
+    transform: translate(-50%, -50%) scale(1.12);
+    outline: none;
+    z-index: 8;
+  }
+  .pastille .rond {
+    position: relative;
+    width: clamp(42px, 5.2vw, 74px);
+    height: clamp(42px, 5.2vw, 74px);
+    border-radius: 50%;
+    border: 3px solid var(--or);
+    background: #111;
+    display: grid;
+    place-items: center;
+    font-size: clamp(1rem, 2.4vw, 1.9rem);
+    transition: box-shadow .2s ease, background .2s ease;
+  }
+  .pastille[data-famille="biomecanique"] .rond { border-color: var(--bleu-clair); }
+  .pastille[data-famille="individuel"] .rond { border-color: var(--orange-clair); }
+  .pastille[data-famille="environnement"] .rond { border-color: var(--vert-clair); }
+  .pastille[data-famille="biomecanique"]:hover .rond, .pastille[data-famille="biomecanique"]:focus-visible .rond { box-shadow: 0 0 18px rgba(46,143,192,.8); }
+  .pastille[data-famille="individuel"]:hover .rond, .pastille[data-famille="individuel"]:focus-visible .rond { box-shadow: 0 0 18px rgba(240,148,48,.8); }
+  .pastille[data-famille="environnement"]:hover .rond, .pastille[data-famille="environnement"]:focus-visible .rond { box-shadow: 0 0 18px rgba(116,182,46,.8); }
+  .pastille .libelle {
+    font-size: clamp(.56rem, 1.15vw, .82rem);
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    text-shadow: 0 1px 4px #000;
+  }
+
+  /* Positions — regroupées par famille :
+     gauche = biomécanique (bleu), haut centre = individuel (orange), droite = environnement (vert) */
+  .p-manutention  { left: 12%;   top: 10%; }
+  .p-bras-leves   { left: 30%;   top: 4%;  }
+  .p-mvts-repetes { left: 3.5%;  top: 33%; }
+  .p-posture      { left: 3.5%;  top: 63%; }
+  .p-prise        { left: 11%;   top: 87%; }
+  .p-genoux       { left: 30%;   top: 95%; }
+  .p-recup        { left: 50%;   top: 4%;  }
+  .p-froid        { left: 88%;   top: 9%;  }
+  .p-outils-vibr  { left: 96.5%; top: 46%; }
+  .p-hauteur      { left: 88%;   top: 86%; }
+
+  /* ---------- Bandeau d'avertissement ---------- */
+  .avertissement {
+    margin-top: 26px;
+    width: 100%;
+    background: linear-gradient(180deg, #b30f1a, var(--rouge-fonce));
+    border: 2px solid #e8404a;
+    border-radius: 12px;
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: clamp(.95rem, 2vw, 1.25rem);
+    font-weight: 800;
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .avertissement:hover, .avertissement:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(214,17,30,.35);
+    outline: none;
+  }
+  .avertissement .picto { font-size: 1.8em; flex-shrink: 0; }
+  .avertissement .mini { display: block; font-size: .68em; font-weight: 600; color: #ffd5d8; margin-top: 3px; }
+
+  /* ---------- Sections génériques ---------- */
+  section.bloc { margin-top: 70px; }
+  section.bloc > h2 {
+    font-size: clamp(1.4rem, 3.4vw, 2.2rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  section.bloc > h2 .accent { color: var(--rouge); }
+  section.bloc > p.intro {
+    margin-top: 8px;
+    color: #ccc;
+    font-size: .98rem;
+    max-width: 760px;
+    line-height: 1.55;
+  }
+
+  /* ---------- Vidéo ---------- */
+  .video-cadre {
+    margin-top: 26px;
+    max-width: 880px;
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .video-cadre:hover { border-color: var(--rouge); box-shadow: 0 14px 44px rgba(214,17,30,.18); }
+  .video-cadre video {
+    width: 100%;
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+  .video-legende {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+  }
+  .video-titre { font-weight: 800; font-size: .95rem; }
+  .video-puces { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .video-pour { font-size: .78rem; color: #999; margin-right: 2px; }
+
+  /* ---------- Carte du corps ---------- */
+  .corps-flex {
+    display: flex;
+    gap: 36px;
+    margin-top: 26px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .corps-svg-bloc {
+    flex: 0 0 300px;
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-radius: 18px;
+    padding: 18px;
+  }
+  #corps-svg { width: 100%; height: auto; display: block; }
+  #corps-svg .silhouette { fill: #232323; stroke: #3a3a3a; stroke-width: 1.5; }
+  #corps-svg .membre { stroke: #232323; stroke-linecap: round; fill: none; }
+  #corps-svg .zone { cursor: pointer; }
+  #corps-svg .zone .point {
+    fill: var(--or);
+    stroke: #000;
+    stroke-width: 2;
+    transition: r .15s, fill .15s;
+  }
+  #corps-svg .zone .onde {
+    fill: none;
+    stroke: var(--or);
+    stroke-width: 2;
+    opacity: .7;
+    animation: onde 2.2s ease-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @keyframes onde {
+    0% { transform: scale(.6); opacity: .8; }
+    100% { transform: scale(1.9); opacity: 0; }
+  }
+  #corps-svg .zone:hover .point, #corps-svg .zone:focus-visible .point { fill: var(--rouge); r: 13; }
+  #corps-svg .zone:focus-visible { outline: none; }
+  .zones-liste {
+    flex: 1;
+    min-width: 260px;
+  }
+  .zones-liste h3 { font-size: 1rem; color: var(--or); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .zones-grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px;
+  }
+  .carte-zone {
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-radius: 14px;
+    padding: 14px;
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    transition: transform .15s, border-color .15s, background .15s;
+  }
+  .carte-zone:hover, .carte-zone:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--or);
+    background: #1c1810;
+    outline: none;
+  }
+  .carte-zone .ico { font-size: 1.5rem; }
+  .carte-zone .nom-zone { font-weight: 700; font-size: .92rem; }
+  .carte-zone .tms-zone { font-size: .75rem; color: #aaa; margin-top: 2px; line-height: 1.35; }
+
+  /* ---------- Simulateur ---------- */
+  .sim-flex {
+    display: flex;
+    gap: 30px;
+    margin-top: 26px;
+    flex-wrap: wrap;
+  }
+  .sim-form { flex: 1.4; min-width: 300px; }
+  .sim-cat { margin-bottom: 22px; }
+  .sim-cat h3 {
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding-left: 12px;
+    border-left: 4px solid;
+  }
+  .sim-cat.c-bio h3 { border-color: var(--bleu-clair); color: #7cc3e8; }
+  .sim-cat.c-ind h3 { border-color: var(--orange-clair); color: #ffb567; }
+  .sim-cat.c-env h3 { border-color: var(--vert-clair); color: #a4d96c; }
+  .case {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-radius: 12px;
+    padding: 11px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    font-size: .92rem;
+  }
+  .case:hover { border-color: #555; }
+  .case input { display: none; }
+  .case .boite {
+    width: 22px; height: 22px;
+    border: 2px solid #555;
+    border-radius: 7px;
+    display: grid;
+    place-items: center;
+    font-size: .8rem;
+    color: #000;
+    flex-shrink: 0;
+    transition: background .15s, border-color .15s;
+  }
+  .case input:checked + .boite { background: var(--or); border-color: var(--or); }
+  .case input:checked + .boite::after { content: "✓"; font-weight: 900; }
+  .case input:checked ~ .texte { color: #ffd98a; }
+  .case .poids {
+    margin-left: auto;
+    font-size: .7rem;
+    color: #888;
+    white-space: nowrap;
+  }
+
+  .sim-resultat {
+    flex: 1;
+    min-width: 290px;
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-radius: 18px;
+    padding: 24px;
+    position: sticky;
+    top: 70px;
+    align-self: flex-start;
+  }
+  .sim-resultat h3 { text-align: center; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; color: #ccc; }
+  #jauge { display: block; margin: 10px auto 0; width: 100%; max-width: 300px; }
+  #arc-fond { stroke: #2a2a2a; }
+  #arc-niveau { transition: stroke-dasharray .6s ease, stroke .4s ease; }
+  #aiguille { transform-origin: 110px 112px; transition: transform .6s cubic-bezier(.2,.8,.3,1.15); }
+  #score-valeur {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 900;
+    margin-top: -38px;
+  }
+  #score-niveau {
+    text-align: center;
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-top: 2px;
+    min-height: 1.4em;
+  }
+  #sim-combo {
+    margin-top: 12px;
+    font-size: .82rem;
+    color: #ffb3b8;
+    text-align: center;
+    line-height: 1.45;
+    min-height: 2.4em;
+  }
+  #sim-conseils { list-style: none; margin-top: 14px; }
+  #sim-conseils li {
+    position: relative;
+    padding-left: 24px;
+    font-size: .86rem;
+    color: #ddd;
+    line-height: 1.45;
+    margin-bottom: 8px;
+  }
+  #sim-conseils li::before {
+    content: "✓";
+    position: absolute; left: 2px;
+    color: #6fc24a;
+    font-weight: 700;
+  }
+  #sim-raz {
+    display: block;
+    margin: 16px auto 0;
+    background: #262626;
+    color: #ddd;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  #sim-raz:hover { background: #333; }
+
+  /* ---------- Pied de page ---------- */
+  footer.pied {
+    margin-top: 70px;
+    border-top: 1px solid var(--bordure);
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: .82rem;
+    color: #888;
+  }
+  #btn-raz-progression {
+    background: none;
+    border: 1px solid #3a3a3a;
+    color: #999;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: color .15s, border-color .15s;
+  }
+  #btn-raz-progression:hover { color: #fff; border-color: var(--rouge); }
+
+  /* ---------- Infobulle ---------- */
+  #infobulle {
+    position: fixed;
+    background: #222;
+    border: 1px solid #444;
+    color: #eee;
+    font-size: .78rem;
+    line-height: 1.4;
+    padding: 8px 11px;
+    border-radius: 9px;
+    max-width: 250px;
+    pointer-events: none;
+    z-index: 90;
+    opacity: 0;
+    transition: opacity .15s;
+    box-shadow: 0 8px 24px rgba(0,0,0,.55);
+  }
+  #infobulle.visible { opacity: 1; }
+
+  /* ---------- Notifications (toasts) ---------- */
+  #toasts {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 95;
+  }
+  .toast {
+    background: #1d1d1d;
+    border: 1px solid #3a3a3a;
+    border-left: 4px solid var(--or);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: .88rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.6);
+    animation: toast-entree .3s ease;
+    max-width: 320px;
+  }
+  @keyframes toast-entree {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: none; }
+  }
+  .toast.sortie { opacity: 0; transform: translateX(40px); transition: all .3s; }
+
+  /* ---------- Confettis ---------- */
+  #confettis {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  /* ---------- Fenêtre de détails (modale) ---------- */
+  .voile {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.78);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .voile.ouvert { display: flex; }
+
+  .modale {
+    background: rgba(24,24,24,.96);
+    border: 1px solid #333;
+    border-radius: 18px;
+    max-width: 660px;
+    width: 100%;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    border-top: 8px solid var(--accent-modale, var(--rouge));
+    box-shadow: 0 20px 60px rgba(0,0,0,.8);
+    animation: apparition .25s ease;
+  }
+  @keyframes apparition {
+    from { opacity: 0; transform: translateY(24px) scale(.97); }
+    to { opacity: 1; transform: none; }
+  }
+  .modale-entete {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px 12px;
+  }
+  .modale-entete .picto {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--accent-modale, var(--rouge));
+    display: grid;
+    place-items: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+  }
+  .modale-entete h2 { font-size: 1.3rem; font-weight: 800; flex: 1; min-width: 0; }
+  .modale-entete .categorie {
+    display: block;
+    font-size: .72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-modale, var(--rouge));
+    margin-bottom: 2px;
+  }
+  .modale-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .modale-actions button {
+    background: #2a2a2a;
+    border: none;
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+  }
+  .modale-actions button:hover, .modale-actions button:focus-visible { background: var(--rouge); transform: scale(1.08); outline: none; }
+  .modale-actions button.actif-audio { background: var(--vert); }
+
+  .modale-corps { padding: 6px 24px 20px; overflow-y: auto; }
+  .modale-corps p.description {
+    font-size: .97rem;
+    line-height: 1.6;
+    color: #e8e8e8;
+    margin-bottom: 18px;
+  }
+  .modale-corps h3 {
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-modale, var(--rouge));
+    margin-bottom: 8px;
+  }
+  .modale-corps ul { list-style: none; margin-bottom: 18px; }
+  .modale-corps ul li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 7px;
+    font-size: .92rem;
+    line-height: 1.5;
+    color: #ddd;
+  }
+  .modale-corps ul.exemples li::before {
+    content: "▸";
+    position: absolute; left: 4px;
+    color: var(--accent-modale, var(--rouge));
+  }
+  .modale-corps ul.prevention li::before {
+    content: "✓";
+    position: absolute; left: 2px;
+    color: #6fc24a;
+    font-weight: 700;
+  }
+  .puces { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .puce {
+    background: #242424;
+    border: 1px solid #3c3c3c;
+    color: #ddd;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+  .puce:hover, .puce:focus-visible {
+    border-color: var(--accent-modale, var(--rouge));
+    background: #2e2420;
+    transform: translateY(-2px);
+    outline: none;
+  }
+
+  .modale-pied {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 24px;
+    border-top: 1px solid #2c2c2c;
+  }
+  .modale-pied button {
+    background: #262626;
+    border: 1px solid #3a3a3a;
+    color: #eee;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .modale-pied button:hover:not(:disabled), .modale-pied button:focus-visible { background: #333; border-color: var(--or); outline: none; }
+  .modale-pied button:disabled { opacity: .35; cursor: default; }
+  #modale-position { font-size: .8rem; color: #999; }
+
+  /* ---------- Impression de la fiche ouverte ---------- */
+  @media print {
+    body * { visibility: hidden; }
+    #voile.ouvert, #voile.ouvert * { visibility: visible; }
+    #voile.ouvert { position: absolute; inset: 0; background: #fff; padding: 0; display: block; }
+    .modale {
+      box-shadow: none;
+      max-height: none;
+      max-width: 100%;
+      background: #fff;
+      border: none;
+      border-top: 10px solid var(--accent-modale, var(--rouge));
+      border-radius: 0;
+    }
+    .modale-entete h2, .modale-corps p.description { color: #111; }
+    .modale-corps ul li { color: #222; }
+    .modale-entete .picto { color: #fff; }
+    .modale-actions, .modale-pied { display: none; }
+    .puce { color: #333; background: #f0f0f0; border-color: #ccc; }
+  }
+
+  /* ---------- Mouvement réduit ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  /* ---------- Adaptation mobile ---------- */
+  @media (max-width: 900px) {
+    .contenu { flex-direction: column; }
+    aside.retenir { flex: none; width: 100%; }
+
+    .scene { aspect-ratio: auto; }
+    .scene::before, #svg-liaisons, .fleche-combo, .bandeau-centre { display: none; }
+
+    .scene { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .cercle {
+      position: static;
+      width: 100%;
+      aspect-ratio: auto;
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .cercle .nom { font-size: 1.05rem; }
+    .sous-item { font-size: .85rem; padding: 3px 6px; }
+    .cercle.visite::after { top: 10px; right: 10px; }
+
+    .grille-pastilles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+    }
+    .pastille {
+      position: static;
+      transform: none;
+      width: auto;
+      background: #141414;
+      border: 1px solid #2c2c2c;
+      border-radius: 14px;
+      padding: 14px 8px;
+    }
+    .pastille:hover, .pastille:focus-visible { transform: scale(1.04); }
+    .pastille .libelle { font-size: .78rem; }
+
+    .sim-resultat { position: static; }
+    .barre-int { padding: 8px 12px; gap: 10px; }
+    #texte-prog { display: none; }
+  }
+  @media (min-width: 901px) {
+    .grille-pastilles { display: contents; }
+  }
+</style>
+<style>
+/* ===== Intégration Machines Roger : typographie + palette ===== */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
+:root{
+  --rouge:#d22325;
+  --rouge-fonce:#a81a1c;
+  --noir:#0a0e17;
+  --carte:#111827;
+  --bordure:#1e293b;
+}
+body{font-family:'Barlow',"Segoe UI",Arial,Helvetica,sans-serif}
+h1,h2,h3,.barre .logo{font-family:'Barlow Condensed','Barlow',sans-serif;letter-spacing:.01em}
+h1,h2{text-transform:uppercase}
+/* liens vers les autres pages du site */
+.lien-page{color:#e8edf5;background:#1a2332;border:1px solid var(--bordure);text-decoration:none;font-size:.82rem;font-weight:700;padding:7px 12px;border-radius:50px;white-space:nowrap;transition:all .15s}
+.lien-page:hover{border-color:var(--rouge);color:#fff}
+/* section de renvoi (remplace quiz + chiffres) */
+.suite-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px;margin-top:18px}
+.suite-carte{display:block;background:var(--carte);border:1px solid var(--bordure);border-radius:14px;padding:20px 22px;color:#fff;text-decoration:none;transition:transform .2s,border-color .2s,box-shadow .2s}
+.suite-carte:hover{transform:translateY(-3px);border-color:var(--rouge);box-shadow:0 14px 36px rgba(0,0,0,.4)}
+.suite-carte .sc-k{display:block;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;font-weight:700;font-size:1.25rem;margin-bottom:6px;color:#ff7b84}
+.suite-carte p{color:#bbb;font-size:.92rem;line-height:1.5;margin:0}
+.suite-carte .sc-m{display:inline-block;margin-top:10px;font-size:.78rem;font-weight:700;color:#888}
+</style>
+</head>
+<body>
+
+<div class="fond-blob b1" aria-hidden="true"></div>
+<div class="fond-blob b2" aria-hidden="true"></div>
+<div id="barre-scroll" aria-hidden="true"></div>
+
+<nav class="barre">
+  <div class="barre-int">
+    <span class="logo">TMS &middot; INTERACTIF</span>
+    <div class="liens">
+      <a class="lien-nav" href="#schema" data-section="schema">Schéma</a>
+      <a class="lien-nav" href="#video" data-section="video">Vidéo</a>
+      <a class="lien-nav" href="#corps" data-section="corps">Corps humain</a>
+      <a class="lien-nav" href="#simulateur" data-section="simulateur">Simulateur</a>
+      <a class="lien-page" href="index.html" title="Base de connaissances (consultation libre)">&#128214; Base de connaissances</a>
+      <a class="lien-page" href="formation.html" title="Formation guidée avec quiz et attestation">&#127891; Formation guidée</a>
+    </div>
+    <div class="anneau-bloc" title="Votre progression d'exploration du schéma">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <circle cx="17" cy="17" r="14" fill="none" stroke="#2c2c2c" stroke-width="4"/>
+        <circle id="anneau-valeur" cx="17" cy="17" r="14" fill="none" stroke-width="4"
+                stroke-linecap="round" stroke-dasharray="87.96" stroke-dashoffset="87.96"/>
+      </svg>
+      <span id="texte-prog">0 / 13 explorés</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <header class="haut" id="haut">
+    <h1>Les <span class="accent">facteurs de risque</span></h1>
+    <p class="sous-titre">Chez les travailleurs, le risque vient surtout de la tâche, du corps et de l'environnement immédiat.</p>
+    <p class="consigne">👆 Tout est cliquable : les 3 familles, chaque mot dans les cercles, les pastilles autour — chacune est reliée par une ligne de couleur à sa famille.</p>
+
+    <div class="recherche">
+      <span class="loupe" aria-hidden="true">🔍</span>
+      <input type="text" id="champ-recherche" placeholder="Rechercher un facteur, une zone du corps…" autocomplete="off" aria-label="Rechercher un facteur de risque">
+      <ul id="resultats-recherche"></ul>
+    </div>
+
+    <div class="legende" aria-label="Légende des couleurs">
+      <strong>Chaque pastille est reliée à sa famille :</strong>
+      <span><span class="point pb"></span>Facteurs biomécaniques</span>
+      <span><span class="point pi"></span>Facteurs individuels</span>
+      <span><span class="point pe"></span>Environnement immédiat</span>
+    </div>
+  </header>
+
+  <!-- ================= SCHÉMA ================= -->
+  <section class="bloc" id="schema" style="margin-top:34px">
+    <div class="contenu">
+
+      <aside class="retenir reveal">
+        <div class="titre"><span class="ampoule">💡</span> À RETENIR</div>
+        <p>Un TMS n'a pas une seule cause.</p>
+        <p>Souvent, c'est un mélange d'effort, de posture, de répétition, de fatigue et d'environnement.</p>
+        <p>Agir tôt aide à éviter que le problème s'installe.</p>
+        <button class="btn-savoir" data-cle="agir-tot">💡 Pourquoi agir tôt ?</button>
+      </aside>
+
+      <div class="schema reveal">
+        <div class="scene" id="scene">
+
+          <svg id="svg-liaisons" aria-hidden="true"></svg>
+
+          <!-- Les trois grandes familles -->
+          <div class="cercle bio" role="button" tabindex="0" aria-label="Facteurs biomécaniques — ouvrir la fiche" data-cle="biomecanique" data-famille="biomecanique"
+                  data-resume="Les contraintes physiques de la tâche : efforts, gestes répétés, postures, charges, torsions. Cliquez pour les détails — ou cliquez directement sur un mot.">
+            <span class="icone">💪</span>
+            <span class="nom">Facteurs<br>biomécaniques</span>
+            <ul>
+              <li><button class="sous-item" data-cle="efforts">Efforts</button></li>
+              <li><button class="sous-item" data-cle="mouvements-repetes">Répétition</button></li>
+              <li><button class="sous-item" data-cle="postures">Postures</button></li>
+              <li><button class="sous-item" data-cle="charges">Charges</button></li>
+              <li><button class="sous-item" data-cle="torsion">Torsion</button></li>
+            </ul>
+          </div>
+
+          <div class="cercle ind" role="button" tabindex="0" aria-label="Facteurs individuels — ouvrir la fiche" data-cle="individuel" data-famille="individuel"
+                  data-resume="Ce qui appartient à la personne : fatigue, sommeil, condition physique, douleur déjà présente, expérience.">
+            <span class="icone">🧍</span>
+            <span class="nom">Facteurs<br>individuels</span>
+            <ul>
+              <li><button class="sous-item" data-cle="fatigue">Fatigue</button></li>
+              <li><button class="sous-item" data-cle="sommeil">Sommeil</button></li>
+              <li><button class="sous-item" data-cle="condition-physique">Condition physique</button></li>
+              <li><button class="sous-item" data-cle="douleur-presente">Douleur déjà présente</button></li>
+              <li><button class="sous-item" data-cle="experience">Expérience</button></li>
+            </ul>
+          </div>
+
+          <div class="cercle env" role="button" tabindex="0" aria-label="Environnement immédiat — ouvrir la fiche" data-cle="environnement" data-famille="environnement"
+                  data-resume="Le contexte matériel : outils, vibrations, température, espace de travail, sol inégal.">
+            <span class="icone">🌡️</span>
+            <span class="nom">Environnement<br>immédiat</span>
+            <ul>
+              <li><button class="sous-item" data-cle="outils">Outils</button></li>
+              <li><button class="sous-item" data-cle="outils-vibrants">Vibrations</button></li>
+              <li><button class="sous-item" data-cle="temperature">Température</button></li>
+              <li><button class="sous-item" data-cle="espace-travail">Espace de travail</button></li>
+              <li><button class="sous-item" data-cle="sol-inegal">Sol inégal</button></li>
+            </ul>
+          </div>
+
+          <button class="fleche-combo g" data-cle="combinaison" aria-label="Interaction entre les familles de facteurs" data-resume="Les familles interagissent : cliquez pour comprendre pourquoi la combinaison augmente le risque.">⇄</button>
+          <button class="fleche-combo d" data-cle="combinaison" aria-label="Interaction entre les familles de facteurs" data-resume="Les familles interagissent : cliquez pour comprendre pourquoi la combinaison augmente le risque.">⇄</button>
+          <button class="bandeau-centre" data-cle="combinaison">LES FACTEURS DE RISQUE</button>
+
+          <!-- Pastilles périphériques, regroupées autour de leur famille -->
+          <div class="grille-pastilles">
+            <button class="pastille p-manutention" data-cle="manutention" data-famille="biomecanique"
+                    data-resume="Soulever, transporter, pousser, tirer : fortes contraintes pour le dos et les épaules. Famille : facteurs biomécaniques.">
+              <span class="rond">📦</span><span class="libelle">Manutention</span>
+            </button>
+            <button class="pastille p-bras-leves" data-cle="bras-leves" data-famille="biomecanique"
+                    data-resume="Mains au-dessus des épaules : tension constante sur les épaules. Famille : facteurs biomécaniques.">
+              <span class="rond">🙆</span><span class="libelle">Travail bras levés</span>
+            </button>
+            <button class="pastille p-mvts-repetes" data-cle="mouvements-repetes" data-famille="biomecanique"
+                    data-resume="Le même geste répété sans pause : l'accumulation blesse. Famille : facteurs biomécaniques.">
+              <span class="rond">🔁</span><span class="libelle">Mouvements répétés</span>
+            </button>
+            <button class="pastille p-posture" data-cle="posture-statique" data-famille="biomecanique"
+                    data-resume="Rester longtemps dans la même position fatigue, même sans effort. Famille : facteurs biomécaniques.">
+              <span class="rond">🪑</span><span class="libelle">Posture statique</span>
+            </button>
+            <button class="pastille p-prise" data-cle="prise-serree" data-famille="biomecanique"
+                    data-resume="Serrer fort un outil ou pincer du bout des doigts sollicite tendons de la main et de l'avant-bras. Famille : facteurs biomécaniques.">
+              <span class="rond">✊</span><span class="libelle">Prise serrée</span>
+            </button>
+            <button class="pastille p-genoux" data-cle="travail-genoux" data-famille="biomecanique"
+                    data-resume="S'agenouiller ou s'accroupir comprime le genou. Famille : facteurs biomécaniques.">
+              <span class="rond">🧎</span><span class="libelle">Travail à genoux</span>
+            </button>
+            <button class="pastille p-recup" data-cle="recuperation" data-famille="individuel"
+                    data-resume="Sans pauses ni repos suffisants, les tissus n'ont pas le temps de se réparer. Famille : facteurs individuels.">
+              <span class="rond">😴</span><span class="libelle">Manque de récupération</span>
+            </button>
+            <button class="pastille p-froid" data-cle="froid" data-famille="environnement"
+                    data-resume="Le froid raidit les muscles et réduit la dextérité. Famille : environnement immédiat.">
+              <span class="rond">❄️</span><span class="libelle">Froid</span>
+            </button>
+            <button class="pastille p-outils-vibr" data-cle="outils-vibrants" data-famille="environnement"
+                    data-resume="Les vibrations endommagent nerfs et vaisseaux des mains et des bras. Famille : environnement immédiat.">
+              <span class="rond">🔧</span><span class="libelle">Outils vibrants</span>
+            </button>
+            <button class="pastille p-hauteur" data-cle="hauteur-travail" data-famille="environnement"
+                    data-resume="Plan de travail trop haut ou trop bas : le corps compense par de mauvaises postures. Famille : environnement immédiat.">
+              <span class="rond">📏</span><span class="libelle">Hauteur de travail</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <button class="avertissement reveal" data-cle="combinaison">
+      <span class="picto">⚠️</span>
+      <span>Ce n'est pas un seul facteur. C'est souvent la combinaison qui augmente le risque.
+        <span class="mini">Cliquez pour comprendre comment les facteurs se multiplient entre eux.</span>
+      </span>
+    </button>
+  </section>
+
+  <!-- ================= VIDÉO ================= -->
+  <section class="bloc reveal" id="video">
+    <h2>En vidéo : <span class="accent">préserver son corps</span></h2>
+    <p class="intro">Le corps est votre premier outil de travail : cette courte vidéo (2 min) montre comment l'entretenir au quotidien — sommeil, activité physique, récupération — pour mieux encaisser les contraintes du travail. C'est le volet « facteurs individuels » du schéma, en images.</p>
+
+    <div class="video-cadre">
+      <video id="lecteur-video" controls preload="metadata" poster="videos/preserver-son-corps-affiche.jpg">
+        <source src="videos/preserver-son-corps.mp4" type="video/mp4">
+        Votre navigateur ne prend pas en charge la lecture vidéo.
+        <a href="videos/preserver-son-corps.mp4">Télécharger la vidéo</a>.
+      </video>
+      <div class="video-legende">
+        <span class="video-titre">🎬 Préserver son corps — 1 min 54</span>
+        <div class="video-puces">
+          <span class="video-pour">Pour aller plus loin :</span>
+          <button class="puce" data-cle="sommeil">🌙 Sommeil</button>
+          <button class="puce" data-cle="condition-physique">🏃 Condition physique</button>
+          <button class="puce" data-cle="recuperation">😴 Récupération</button>
+          <button class="puce" data-cle="agir-tot">💡 Agir tôt</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CORPS HUMAIN ================= -->
+  <section class="bloc reveal" id="corps">
+    <h2>Où ça fait <span class="accent">mal ?</span></h2>
+    <p class="intro">Chaque facteur de risque cible des zones précises du corps. Cliquez sur un point de la silhouette — ou sur une carte — pour découvrir les TMS typiques de cette zone, les facteurs en cause et les bons réflexes.</p>
+
+    <div class="corps-flex">
+      <div class="corps-svg-bloc">
+        <svg id="corps-svg" viewBox="0 0 220 460" role="group" aria-label="Silhouette humaine interactive : sélectionnez une zone du corps">
+          <!-- silhouette -->
+          <circle class="silhouette" cx="110" cy="36" r="24"/>
+          <rect class="silhouette" x="100" y="58" width="20" height="14" rx="4"/>
+          <path class="silhouette" d="M76,72 h68 c12,0 18,9 17,22 l-6,108 c-1,12 -16,18 -45,18 s-44,-6 -45,-18 l-6,-108 c-1,-13 5,-22 17,-22 z"/>
+          <line class="membre" x1="70" y1="86" x2="52" y2="160" stroke-width="18"/>
+          <line class="membre" x1="52" y1="160" x2="46" y2="232" stroke-width="16"/>
+          <line class="membre" x1="150" y1="86" x2="168" y2="160" stroke-width="18"/>
+          <line class="membre" x1="168" y1="160" x2="174" y2="232" stroke-width="16"/>
+          <circle class="silhouette" cx="44" cy="246" r="11"/>
+          <circle class="silhouette" cx="176" cy="246" r="11"/>
+          <line class="membre" x1="92" y1="214" x2="86" y2="330" stroke-width="24"/>
+          <line class="membre" x1="86" y1="330" x2="82" y2="408" stroke-width="20"/>
+          <line class="membre" x1="128" y1="214" x2="134" y2="330" stroke-width="24"/>
+          <line class="membre" x1="134" y1="330" x2="138" y2="408" stroke-width="20"/>
+          <ellipse class="silhouette" cx="76" cy="420" rx="16" ry="9"/>
+          <ellipse class="silhouette" cx="144" cy="420" rx="16" ry="9"/>
+          <!-- zones cliquables (générées + points fixes) -->
+          <g class="zone" data-zone="cou" tabindex="0" role="button" aria-label="Zone cou et nuque">
+            <circle class="onde" cx="110" cy="62" r="11"/><circle class="point" cx="110" cy="62" r="10"/>
+          </g>
+          <g class="zone" data-zone="epaules" tabindex="0" role="button" aria-label="Zone épaules">
+            <circle class="onde" cx="74" cy="84" r="11"/><circle class="point" cx="74" cy="84" r="10"/>
+          </g>
+          <g class="zone" data-zone="epaules" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="146" cy="84" r="11"/><circle class="point" cx="146" cy="84" r="10"/>
+          </g>
+          <g class="zone" data-zone="haut-dos" tabindex="0" role="button" aria-label="Zone haut du dos">
+            <circle class="onde" cx="110" cy="115" r="11"/><circle class="point" cx="110" cy="115" r="10"/>
+          </g>
+          <g class="zone" data-zone="bas-dos" tabindex="0" role="button" aria-label="Zone bas du dos">
+            <circle class="onde" cx="110" cy="185" r="11"/><circle class="point" cx="110" cy="185" r="10"/>
+          </g>
+          <g class="zone" data-zone="coudes" tabindex="0" role="button" aria-label="Zone coudes">
+            <circle class="onde" cx="52" cy="162" r="11"/><circle class="point" cx="52" cy="162" r="10"/>
+          </g>
+          <g class="zone" data-zone="coudes" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="168" cy="162" r="11"/><circle class="point" cx="168" cy="162" r="10"/>
+          </g>
+          <g class="zone" data-zone="poignets-mains" tabindex="0" role="button" aria-label="Zone poignets et mains">
+            <circle class="onde" cx="45" cy="242" r="11"/><circle class="point" cx="45" cy="242" r="10"/>
+          </g>
+          <g class="zone" data-zone="poignets-mains" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="175" cy="242" r="11"/><circle class="point" cx="175" cy="242" r="10"/>
+          </g>
+          <g class="zone" data-zone="genoux" tabindex="0" role="button" aria-label="Zone genoux">
+            <circle class="onde" cx="86" cy="330" r="11"/><circle class="point" cx="86" cy="330" r="10"/>
+          </g>
+          <g class="zone" data-zone="genoux" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="134" cy="330" r="11"/><circle class="point" cx="134" cy="330" r="10"/>
+          </g>
+          <g class="zone" data-zone="chevilles-pieds" tabindex="0" role="button" aria-label="Zone chevilles et pieds">
+            <circle class="onde" cx="78" cy="414" r="11"/><circle class="point" cx="78" cy="414" r="10"/>
+          </g>
+          <g class="zone" data-zone="chevilles-pieds" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="142" cy="414" r="11"/><circle class="point" cx="142" cy="414" r="10"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="zones-liste">
+        <h3>8 zones sous surveillance</h3>
+        <div class="zones-grille" id="zones-grille"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SIMULATEUR ================= -->
+  <section class="bloc reveal" id="simulateur">
+    <h2>Évaluez <span class="accent">votre poste</span></h2>
+    <p class="intro">Cochez ce qui correspond à votre situation de travail. La jauge calcule un niveau de risque indicatif — et démontre le message clé : cocher dans <strong>plusieurs familles à la fois</strong> fait grimper le score plus vite, car les facteurs se multiplient.</p>
+
+    <div class="sim-flex">
+      <form class="sim-form" id="form-sim"></form>
+
+      <div class="sim-resultat">
+        <h3>Niveau de risque indicatif</h3>
+        <svg id="jauge" viewBox="0 0 220 130" aria-hidden="true">
+          <defs>
+            <linearGradient id="grad-jauge" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#6fc24a"/>
+              <stop offset="45%" stop-color="#e3c54a"/>
+              <stop offset="75%" stop-color="#f08a2e"/>
+              <stop offset="100%" stop-color="#e8404a"/>
+            </linearGradient>
+          </defs>
+          <path id="arc-fond" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke-width="16" stroke-linecap="round"/>
+          <path id="arc-niveau" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke="url(#grad-jauge)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+          <g id="aiguille">
+            <line x1="110" y1="112" x2="110" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="110" cy="112" r="8" fill="#fff"/>
+          </g>
+        </svg>
+        <div id="score-valeur">0</div>
+        <div id="score-niveau">Cochez des facteurs ci-contre</div>
+        <p id="sim-combo"></p>
+        <ul id="sim-conseils"></ul>
+        <button type="button" id="sim-raz">↺ Tout effacer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ET MAINTENANT ? ================= -->
+  <section class="bloc reveal" id="suite">
+    <h2>Et <span class="accent">maintenant ?</span></h2>
+    <p class="intro">Tu as exploré les facteurs de risque. Pour approfondir ou valider tes connaissances :</p>
+    <div class="suite-grille">
+      <a class="suite-carte" href="index.html">
+        <span class="sc-k">&#128214; Base de connaissances</span>
+        <p>Tout le contenu en consultation libre : sommeil, hygiène de vie, bons réflexes au poste, chronicisation et les chiffres CNESST du Québec.</p>
+        <span class="sc-m">Consultation libre &middot; ~10-15 min</span>
+      </a>
+      <a class="suite-carte" href="formation.html">
+        <span class="sc-k">&#127891; Formation guidée</span>
+        <p>Le parcours officiel en 38 étapes avec quiz éclair, quiz final et attestation de formation à ton nom.</p>
+        <span class="sc-m">Diapositives + quiz &middot; ~30 min</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="pied">
+    <span>Machines Roger International &middot; Document de sensibilisation inspiré des démarches de prévention CNESST / INRS — ne remplace pas une évaluation ergonomique professionnelle.</span>
+    <button id="btn-raz-progression">↺ Réinitialiser ma progression</button>
+  </footer>
+</div>
+
+<!-- Fenêtre de détails -->
+<div class="voile" id="voile" role="dialog" aria-modal="true" aria-labelledby="modale-titre">
+  <div class="modale" id="modale">
+    <div class="modale-entete">
+      <span class="picto" id="modale-picto"></span>
+      <h2>
+        <span class="categorie" id="modale-categorie"></span>
+        <span id="modale-titre"></span>
+      </h2>
+      <div class="modale-actions">
+        <button id="btn-lecture" title="Écouter la fiche" aria-label="Lire la fiche à voix haute">🔊</button>
+        <button id="btn-imprimer" title="Imprimer la fiche" aria-label="Imprimer la fiche">🖨️</button>
+        <button class="fermer" id="fermer" aria-label="Fermer la fenêtre">✕</button>
+      </div>
+    </div>
+    <div class="modale-corps" id="modale-corps"></div>
+    <div class="modale-pied" id="modale-pied">
+      <button id="btn-prec">← Précédent</button>
+      <span id="modale-position"></span>
+      <button id="btn-suiv">Suivant →</button>
+    </div>
+  </div>
+</div>
+
+<div id="infobulle" role="tooltip"></div>
+<div id="toasts" aria-live="polite"></div>
+<canvas id="confettis"></canvas>
+
+<script>
+/* ================================================================
+   DONNÉES
+   ================================================================ */
+const FAMILLES = {
+  biomecanique: { nom: "Facteurs biomécaniques", couleur: "#1b6e96", clair: "#2e8fc0" },
+  individuel: { nom: "Facteurs individuels", couleur: "#d97a16", clair: "#f09430" },
+  environnement: { nom: "Environnement immédiat", couleur: "#5a9421", clair: "#74b62e" }
+};
+
+const DETAILS = {
+  /* ----- Les trois familles ----- */
+  "biomecanique": {
+    categorie: "Grande famille", titre: "Facteurs biomécaniques", icone: "💪", couleur: "#1b6e96",
+    description: "Ce sont les contraintes physiques directement liées à la tâche : la force exercée, la fréquence des gestes, les positions adoptées et le poids manipulé. Plus ces contraintes sont intenses, fréquentes ou prolongées, plus les muscles, tendons et articulations sont sollicités au-delà de leur capacité de récupération.",
+    exemples: [
+      "Efforts : pousser, tirer ou soulever en forçant.",
+      "Répétition : refaire le même geste des centaines de fois par quart de travail.",
+      "Postures : travailler le dos courbé, les poignets pliés ou le cou penché.",
+      "Charges : manipuler des objets lourds ou difficiles à saisir.",
+      "Torsion : tourner le tronc ou les poignets en effort."
+    ],
+    prevention: [
+      "Réduire le poids des charges ou utiliser des aides mécaniques.",
+      "Varier les gestes et alterner les tâches.",
+      "Aménager le poste pour garder des postures neutres.",
+      "Former aux bonnes techniques de travail."
+    ],
+    zones: ["epaules", "haut-dos", "bas-dos", "coudes", "poignets-mains"],
+    voirAussi: ["manutention", "mouvements-repetes", "combinaison"]
+  },
+  "individuel": {
+    categorie: "Grande famille", titre: "Facteurs individuels", icone: "🧍", couleur: "#d97a16",
+    description: "Chaque personne réagit différemment aux mêmes contraintes. L'état de forme, la fatigue accumulée, la qualité du sommeil, une douleur déjà présente ou le niveau d'expérience influencent la capacité du corps à encaisser et à récupérer.",
+    exemples: [
+      "Fatigue : un corps fatigué se protège moins bien et compense mal.",
+      "Sommeil : un mauvais sommeil ralentit la réparation des tissus.",
+      "Condition physique : une faible endurance musculaire augmente la vulnérabilité.",
+      "Douleur déjà présente : une blessure mal guérie fragilise la zone.",
+      "Expérience : un travailleur novice maîtrise moins les gestes économes."
+    ],
+    prevention: [
+      "Signaler tôt toute douleur persistante.",
+      "Favoriser un bon sommeil et une bonne hygiène de vie.",
+      "Prévoir une période d'adaptation pour les nouveaux travailleurs.",
+      "Adapter la charge de travail à la condition de chacun."
+    ],
+    zones: [],
+    voirAussi: ["recuperation", "fatigue", "combinaison"]
+  },
+  "environnement": {
+    categorie: "Grande famille", titre: "Environnement immédiat", icone: "🌡️", couleur: "#5a9421",
+    description: "Le contexte matériel dans lequel la tâche est réalisée peut amplifier toutes les autres contraintes : des outils mal adaptés, des vibrations, le froid, un espace exigu ou un sol instable obligent le corps à travailler plus fort pour le même résultat.",
+    exemples: [
+      "Outils : un outil mal entretenu ou mal dimensionné exige plus de force.",
+      "Vibrations : elles fatiguent les tissus des mains, des bras et du dos.",
+      "Température : le froid raidit les muscles, la chaleur épuise.",
+      "Espace de travail : un espace restreint force des postures contraignantes.",
+      "Sol inégal : il déstabilise et augmente l'effort de maintien."
+    ],
+    prevention: [
+      "Choisir et entretenir des outils ergonomiques.",
+      "Dégager et organiser l'espace de travail.",
+      "Adapter les vêtements et les pauses à la température.",
+      "Maintenir les sols propres, plans et dégagés."
+    ],
+    zones: ["poignets-mains", "bas-dos", "genoux"],
+    voirAussi: ["froid", "outils-vibrants", "combinaison"]
+  },
+
+  /* ----- Situations à risque : famille biomécanique ----- */
+  "manutention": {
+    categorie: "Situation à risque — famille biomécanique", titre: "Manutention", icone: "📦", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Soulever, transporter, pousser ou tirer des charges sollicite fortement le dos, les épaules et les bras. Le risque augmente avec le poids, la distance de la charge par rapport au corps, la fréquence et la posture adoptée.",
+    exemples: [
+      "Soulever une boîte posée au sol en arrondissant le dos.",
+      "Transporter une charge loin du corps, bras tendus.",
+      "Empiler des sacs au-dessus des épaules.",
+      "Tirer un chariot lourd sur une longue distance."
+    ],
+    prevention: [
+      "Utiliser des aides mécaniques (transpalette, diable, lève-charge).",
+      "Garder la charge près du corps et plier les genoux.",
+      "Fractionner les charges trop lourdes.",
+      "Travailler à deux pour les objets encombrants."
+    ],
+    zones: ["bas-dos", "epaules", "poignets-mains"],
+    voirAussi: ["charges", "efforts", "torsion"]
+  },
+  "bras-leves": {
+    categorie: "Situation à risque — famille biomécanique", titre: "Travail bras levés", icone: "🙆", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Travailler les mains au-dessus des épaules met les muscles et tendons de l'épaule en tension constante et réduit leur irrigation sanguine. C'est l'une des causes majeures de tendinites de la coiffe des rotateurs.",
+    exemples: [
+      "Visser ou peindre au plafond.",
+      "Ranger des articles sur des tablettes hautes.",
+      "Tirer des câbles au-dessus de la tête.",
+      "Poser des panneaux ou des conduits en hauteur."
+    ],
+    prevention: [
+      "Utiliser une plateforme ou un escabeau pour travailler à hauteur d'épaule.",
+      "Limiter la durée des tâches bras levés et alterner.",
+      "Utiliser des rallonges d'outils quand c'est possible.",
+      "Préparer le matériel à portée de main avant de monter."
+    ],
+    zones: ["epaules", "cou"],
+    voirAussi: ["hauteur-travail", "postures"]
+  },
+  "mouvements-repetes": {
+    categorie: "Situation à risque — famille biomécanique", titre: "Mouvements répétés", icone: "🔁", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Répéter le même geste sans pause empêche les tissus de récupérer entre chaque sollicitation. Même un effort faible devient dommageable quand il est répété des milliers de fois : c'est l'accumulation qui blesse.",
+    exemples: [
+      "Scanner des articles à la caisse toute la journée.",
+      "Assembler les mêmes pièces sur une chaîne de montage.",
+      "Découper ou désosser à un rythme soutenu.",
+      "Cliquer et saisir au clavier sans interruption."
+    ],
+    prevention: [
+      "Faire une rotation des tâches entre collègues.",
+      "Introduire des micro-pauses régulières.",
+      "Automatiser ou mécaniser les gestes les plus répétitifs.",
+      "Varier la façon d'exécuter le geste quand c'est possible."
+    ],
+    zones: ["poignets-mains", "coudes", "epaules"],
+    voirAussi: ["recuperation", "prise-serree"]
+  },
+  "posture-statique": {
+    categorie: "Situation à risque — famille biomécanique", titre: "Posture statique", icone: "🪑", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Rester longtemps dans la même position, assis ou debout, contracte les muscles en continu et ralentit la circulation sanguine. L'immobilité prolongée fatigue autant que l'effort : le corps a besoin de mouvement pour s'irriguer.",
+    exemples: [
+      "Rester assis devant un écran plusieurs heures sans bouger.",
+      "Travailler debout immobile à un poste de contrôle.",
+      "Maintenir les bras dans la même position pour tenir une pièce.",
+      "Conduire de longues heures sans pause."
+    ],
+    prevention: [
+      "Se lever, marcher et s'étirer régulièrement.",
+      "Alterner les positions assise et debout.",
+      "Régler le poste (chaise, écran, plan de travail) à sa morphologie.",
+      "Planifier des pauses actives dans l'horaire."
+    ],
+    zones: ["cou", "haut-dos", "bas-dos"],
+    voirAussi: ["postures", "espace-travail"]
+  },
+  "prise-serree": {
+    categorie: "Situation à risque — famille biomécanique", titre: "Prise serrée", icone: "✊", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Serrer fort un outil ou un objet, surtout du bout des doigts (prise en pince), sollicite intensément les tendons de la main et de l'avant-bras. Le risque augmente si la prise est maintenue longtemps, répétée ou combinée à des vibrations ou au froid.",
+    exemples: [
+      "Tenir fermement un pistolet à visser toute la journée.",
+      "Couper avec des ciseaux ou des pinces à répétition.",
+      "Saisir des pièces lisses ou glissantes du bout des doigts.",
+      "Porter des contenants par une poignée trop fine."
+    ],
+    prevention: [
+      "Choisir des outils avec des poignées adaptées à la main.",
+      "Privilégier la prise pleine main plutôt que la pince.",
+      "Entretenir les outils pour réduire la force nécessaire.",
+      "Porter des gants bien ajustés qui n'obligent pas à serrer plus."
+    ],
+    zones: ["poignets-mains", "coudes"],
+    voirAussi: ["outils", "froid", "outils-vibrants"]
+  },
+  "travail-genoux": {
+    categorie: "Situation à risque — famille biomécanique", titre: "Travail à genoux", icone: "🧎", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "S'agenouiller ou s'accroupir comprime directement les structures du genou et plie l'articulation à l'extrême. Maintenue ou répétée, cette position favorise bursites, lésions du ménisque et douleurs chroniques.",
+    exemples: [
+      "Poser du plancher ou de la céramique.",
+      "Faire de la mécanique au ras du sol.",
+      "Jardiner ou désherber à genoux.",
+      "Intervenir sous des équipements bas."
+    ],
+    prevention: [
+      "Porter des genouillères ou utiliser un tapis rembourré.",
+      "Utiliser un petit banc ou un siège bas quand c'est possible.",
+      "Surélever le travail plutôt que de descendre vers lui.",
+      "Se relever et bouger les jambes fréquemment."
+    ],
+    zones: ["genoux", "bas-dos"],
+    voirAussi: ["espace-travail", "sol-inegal"]
+  },
+
+  /* ----- Situation à risque : famille individuelle ----- */
+  "recuperation": {
+    categorie: "Situation à risque — famille individuelle", titre: "Manque de récupération", icone: "😴", couleur: "#f09430", famille: "individuel",
+    description: "Les tissus se réparent pendant les pauses et le repos. Sans temps de récupération suffisant — pauses trop rares, heures supplémentaires, mauvais sommeil — les microlésions s'accumulent plus vite qu'elles ne guérissent et le TMS s'installe.",
+    exemples: [
+      "Enchaîner les quarts de travail sans journée de repos.",
+      "Sauter ses pauses pour finir plus vite.",
+      "Cadence imposée qui ne laisse aucun répit entre les cycles.",
+      "Cumuler un travail physique et un sommeil insuffisant."
+    ],
+    prevention: [
+      "Respecter les pauses prévues et en faire de vraies coupures.",
+      "Alterner tâches exigeantes et tâches légères.",
+      "Limiter les heures supplémentaires répétées.",
+      "Préserver un sommeil suffisant et régulier."
+    ],
+    zones: [],
+    voirAussi: ["fatigue", "sommeil", "mouvements-repetes"]
+  },
+
+  /* ----- Situations à risque : famille environnement ----- */
+  "outils-vibrants": {
+    categorie: "Situation à risque — famille environnement", titre: "Outils vibrants", icone: "🔧", couleur: "#74b62e", famille: "environnement",
+    description: "Les vibrations transmises aux mains et aux bras endommagent progressivement les nerfs, les vaisseaux sanguins et les articulations. À long terme, elles peuvent causer le syndrome des vibrations main-bras (doigts blancs, engourdissements, perte de dextérité).",
+    exemples: [
+      "Utiliser un marteau-piqueur ou une plaque vibrante.",
+      "Meuler ou poncer pendant de longues périodes.",
+      "Travailler à la scie mécanique ou à la débroussailleuse.",
+      "Visser avec des clés à choc à répétition."
+    ],
+    prevention: [
+      "Choisir des outils antivibratiles et bien entretenus.",
+      "Limiter la durée d'exposition quotidienne et alterner les tâches.",
+      "Porter des gants antivibrations.",
+      "Éviter de serrer l'outil plus que nécessaire."
+    ],
+    zones: ["poignets-mains", "coudes", "epaules"],
+    voirAussi: ["outils", "froid", "prise-serree"]
+  },
+  "hauteur-travail": {
+    categorie: "Situation à risque — famille environnement", titre: "Hauteur de travail", icone: "📏", couleur: "#74b62e", famille: "environnement",
+    description: "Un plan de travail trop bas force à se pencher, un plan trop haut force à lever les épaules. Dans les deux cas, le corps compense par des postures contraignantes maintenues toute la journée.",
+    exemples: [
+      "Établi trop bas qui oblige à courber le dos.",
+      "Comptoir trop haut qui force à hausser les épaules.",
+      "Travailler dans le fond d'un bac ou d'une cuve profonde.",
+      "Écran placé trop bas ou trop haut par rapport aux yeux."
+    ],
+    prevention: [
+      "Régler la hauteur du plan de travail à la tâche et à la personne.",
+      "Utiliser des tables élévatrices ou des supports réglables.",
+      "Incliner ou surélever les contenants profonds.",
+      "Positionner le travail entre les hanches et les épaules."
+    ],
+    zones: ["haut-dos", "bas-dos", "epaules", "cou"],
+    voirAussi: ["postures", "bras-leves", "espace-travail"]
+  },
+  "froid": {
+    categorie: "Situation à risque — famille environnement", titre: "Froid", icone: "❄️", couleur: "#74b62e", famille: "environnement",
+    description: "Le froid raidit les muscles et les tendons, réduit la sensibilité et la dextérité des mains, et pousse à serrer plus fort. Il amplifie l'effet de tous les autres facteurs, notamment les vibrations et les gestes répétés.",
+    exemples: [
+      "Travailler en chambre froide ou en entrepôt frigorifique.",
+      "Manipuler des produits congelés à mains nues ou peu protégées.",
+      "Travailler dehors l'hiver avec des outils métalliques.",
+      "Courants d'air froid sur un poste fixe."
+    ],
+    prevention: [
+      "Porter des vêtements et des gants adaptés au froid.",
+      "Prévoir des pauses de réchauffement dans un local tempéré.",
+      "S'échauffer avant les tâches exigeantes.",
+      "Isoler les poignées d'outils et couper les courants d'air."
+    ],
+    zones: ["poignets-mains"],
+    voirAussi: ["temperature", "prise-serree", "outils-vibrants"]
+  },
+
+  /* ----- Sous-facteurs biomécaniques ----- */
+  "efforts": {
+    categorie: "Sous-facteur biomécanique", titre: "Efforts", icone: "🏋️", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Forcer pour pousser, tirer, soulever ou serrer impose une tension élevée aux muscles et aux tendons. Le risque grimpe quand l'effort est intense, prolongé, répété ou réalisé dans une mauvaise posture.",
+    exemples: [
+      "Pousser un chariot lourd ou mal graissé.",
+      "Desserrer un raccord grippé avec une clé.",
+      "Tirer une palette sur un sol rugueux.",
+      "Découper une matière dure avec un outil émoussé."
+    ],
+    prevention: [
+      "Mécaniser les efforts les plus intenses.",
+      "Entretenir les équipements pour réduire la résistance.",
+      "Se placer correctement avant de forcer.",
+      "Demander de l'aide pour les efforts exceptionnels."
+    ],
+    zones: ["epaules", "haut-dos", "bas-dos", "coudes"],
+    voirAussi: ["manutention", "charges", "prise-serree"]
+  },
+  "postures": {
+    categorie: "Sous-facteur biomécanique", titre: "Postures contraignantes", icone: "🧘", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Une posture est contraignante quand une articulation s'éloigne de sa position neutre : dos courbé, cou fléchi, poignets cassés, bras écartés. Maintenue ou répétée, elle surcharge les structures qui stabilisent l'articulation.",
+    exemples: [
+      "Travailler le dos penché vers l'avant.",
+      "Garder le cou fléchi vers un écran ou une pièce.",
+      "Plier les poignets pour atteindre une commande.",
+      "Atteindre des objets placés trop loin ou trop bas."
+    ],
+    prevention: [
+      "Rapprocher le travail du corps.",
+      "Régler la hauteur et l'inclinaison du poste.",
+      "Garder les articulations proches du neutre.",
+      "Changer souvent de position."
+    ],
+    zones: ["cou", "haut-dos", "bas-dos", "poignets-mains"],
+    voirAussi: ["posture-statique", "hauteur-travail"]
+  },
+  "charges": {
+    categorie: "Sous-facteur biomécanique", titre: "Charges", icone: "🧳", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Le danger d'une charge ne tient pas qu'à son poids : sa taille, sa forme, sa stabilité et la qualité de la prise comptent autant. Une charge encombrante ou instable force des compensations dangereuses.",
+    exemples: [
+      "Boîtes lourdes manipulées à répétition.",
+      "Objets sans poignées, difficiles à saisir.",
+      "Contenus qui bougent (liquides, animaux, vrac).",
+      "Charges encombrantes qui bloquent la vue."
+    ],
+    prevention: [
+      "Réduire le poids unitaire ou diviser la charge.",
+      "Ajouter des poignées ou utiliser des bacs adaptés.",
+      "Stabiliser le contenu avant de le déplacer.",
+      "Utiliser des aides mécaniques dès que possible."
+    ],
+    zones: ["bas-dos", "epaules", "poignets-mains"],
+    voirAussi: ["manutention", "efforts"]
+  },
+  "torsion": {
+    categorie: "Sous-facteur biomécanique", titre: "Torsion", icone: "🌀", couleur: "#2e8fc0", famille: "biomecanique",
+    description: "Tourner le tronc ou les poignets pendant un effort combine compression et cisaillement sur les disques et les tendons. C'est l'un des gestes les plus risqués pour le bas du dos, surtout avec une charge dans les mains.",
+    exemples: [
+      "Pivoter le tronc en tenant une charge au lieu de bouger les pieds.",
+      "Transvaser d'un bac à l'autre en tournant le buste.",
+      "Visser à la main à répétition.",
+      "Atteindre un objet derrière soi sans se déplacer."
+    ],
+    prevention: [
+      "Pivoter avec les pieds, jamais avec le tronc en charge.",
+      "Placer les bacs et équipements face à soi.",
+      "Réorganiser le poste pour éviter les rotations.",
+      "Utiliser des outils à renvoi d'angle."
+    ],
+    zones: ["bas-dos", "poignets-mains"],
+    voirAussi: ["manutention", "postures"]
+  },
+
+  /* ----- Sous-facteurs individuels ----- */
+  "fatigue": {
+    categorie: "Sous-facteur individuel", titre: "Fatigue", icone: "🥱", couleur: "#f09430", famille: "individuel",
+    description: "La fatigue diminue la force, la vigilance et la coordination. Les gestes deviennent moins précis, le corps compense avec de mauvaises postures et les signaux d'alerte passent inaperçus.",
+    exemples: [
+      "Fin de quart de travail où tout semble plus lourd.",
+      "Période de pointe avec surcharge prolongée.",
+      "Cumul de deux emplois physiques.",
+      "Longue route avant et après le travail."
+    ],
+    prevention: [
+      "Prendre de vraies pauses avant l'épuisement.",
+      "Alterner les tâches exigeantes et légères.",
+      "Adapter la cadence à la durée du quart.",
+      "Écouter les signaux du corps et le dire."
+    ],
+    zones: [],
+    voirAussi: ["sommeil", "recuperation"]
+  },
+  "sommeil": {
+    categorie: "Sous-facteur individuel", titre: "Sommeil", icone: "🌙", couleur: "#f09430", famille: "individuel",
+    description: "C'est pendant le sommeil que les muscles et les tendons se réparent. Une dette de sommeil chronique augmente la perception de la douleur, ralentit la récupération et fragilise les tissus face aux contraintes du lendemain.",
+    exemples: [
+      "Horaires rotatifs qui dérèglent l'horloge interne.",
+      "Travail de nuit avec sommeil de jour écourté.",
+      "Insomnies liées au stress.",
+      "Écrans tard le soir qui retardent l'endormissement."
+    ],
+    prevention: [
+      "Viser 7 à 9 heures de sommeil régulier.",
+      "Stabiliser les horaires autant que possible.",
+      "Aménager un environnement de sommeil sombre et calme.",
+      "Limiter écrans et stimulants en fin de soirée."
+    ],
+    zones: [],
+    voirAussi: ["fatigue", "recuperation"]
+  },
+  "condition-physique": {
+    categorie: "Sous-facteur individuel", titre: "Condition physique", icone: "🏃", couleur: "#f09430", famille: "individuel",
+    description: "L'endurance musculaire, la force et la souplesse déterminent la marge entre ce que la tâche exige et ce que le corps peut donner. Plus la marge est mince, plus vite la fatigue et les microlésions apparaissent.",
+    exemples: [
+      "Reprise du travail après un long arrêt.",
+      "Mode de vie sédentaire combiné à un travail physique.",
+      "Tâche dont l'exigence dépasse les capacités du moment.",
+      "Absence d'échauffement avant un gros effort."
+    ],
+    prevention: [
+      "Pratiquer une activité physique régulière.",
+      "S'échauffer avant les tâches exigeantes.",
+      "Reprendre graduellement après une absence.",
+      "Adapter la tâche à la personne, pas l'inverse."
+    ],
+    zones: [],
+    voirAussi: ["experience", "fatigue"]
+  },
+  "douleur-presente": {
+    categorie: "Sous-facteur individuel", titre: "Douleur déjà présente", icone: "🤕", couleur: "#f09430", famille: "individuel",
+    description: "Une douleur qui persiste est un signal d'alarme : les tissus sont déjà en surcharge. Continuer à travailler de la même façon transforme une gêne réversible en lésion installée, beaucoup plus longue à guérir.",
+    exemples: [
+      "Courbature qui ne disparaît plus entre les quarts.",
+      "Élancements qui réveillent la nuit.",
+      "Raideur marquée au lever le matin.",
+      "Engourdissements ou fourmillements dans les doigts."
+    ],
+    prevention: [
+      "Signaler la douleur tôt, sans attendre qu'elle s'aggrave.",
+      "Ajuster temporairement la tâche ou le rythme.",
+      "Consulter un professionnel de la santé.",
+      "Suivre l'évolution plutôt que de serrer les dents."
+    ],
+    zones: [],
+    voirAussi: ["fatigue", "agir-tot"]
+  },
+  "experience": {
+    categorie: "Sous-facteur individuel", titre: "Expérience", icone: "🎓", couleur: "#f09430", famille: "individuel",
+    description: "Avec l'expérience viennent les gestes économes : doser l'effort, se placer au bon endroit, anticiper. Un travailleur novice dépense plus d'énergie pour le même résultat et connaît moins les pièges du poste.",
+    exemples: [
+      "Premiers mois à un nouveau poste.",
+      "Personnel intérimaire ou saisonnier.",
+      "Retour après une longue absence.",
+      "Changement d'outil ou de méthode de travail."
+    ],
+    prevention: [
+      "Accueillir et parrainer les nouveaux.",
+      "Former aux gestes professionnels économes.",
+      "Augmenter la cadence progressivement.",
+      "Encourager les questions et le droit à l'erreur."
+    ],
+    zones: [],
+    voirAussi: ["condition-physique"]
+  },
+
+  /* ----- Sous-facteurs environnement ----- */
+  "outils": {
+    categorie: "Sous-facteur environnement", titre: "Outils", icone: "🛠️", couleur: "#74b62e", famille: "environnement",
+    description: "Un outil inadapté ou mal entretenu oblige à fournir plus de force et à adopter de mauvaises positions. Le bon outil, affûté et à la bonne taille, divise littéralement la contrainte sur le corps.",
+    exemples: [
+      "Poignée trop grosse ou trop petite pour la main.",
+      "Outil lourd tenu à bout de bras de longues minutes.",
+      "Lame ou mèche émoussée qui force à appuyer.",
+      "Gants inadaptés qui font perdre la prise."
+    ],
+    prevention: [
+      "Choisir des outils ergonomiques adaptés à la tâche et à la main.",
+      "Affûter et entretenir régulièrement.",
+      "Suspendre ou équilibrer les outils lourds.",
+      "Faire essayer les outils avant l'achat."
+    ],
+    zones: ["poignets-mains", "coudes", "epaules"],
+    voirAussi: ["outils-vibrants", "prise-serree"]
+  },
+  "temperature": {
+    categorie: "Sous-facteur environnement", titre: "Température", icone: "🌡️", couleur: "#74b62e", famille: "environnement",
+    description: "Le froid raidit les tissus et réduit la dextérité ; la chaleur épuise, déshydrate et accélère la fatigue musculaire. Dans les deux cas, le corps dépense de l'énergie à se réguler au lieu de récupérer.",
+    exemples: [
+      "Chambre froide, entrepôt frigorifique.",
+      "Fournil, fonderie, cuisine surchauffée.",
+      "Travail extérieur en plein été ou en plein hiver.",
+      "Courants d'air permanents sur un poste fixe."
+    ],
+    prevention: [
+      "Adapter les vêtements de travail à la température.",
+      "Prévoir des pauses dans un local tempéré.",
+      "S'hydrater régulièrement à la chaleur.",
+      "S'acclimater progressivement aux extrêmes."
+    ],
+    zones: ["poignets-mains"],
+    voirAussi: ["froid"]
+  },
+  "espace-travail": {
+    categorie: "Sous-facteur environnement", titre: "Espace de travail", icone: "📐", couleur: "#74b62e", famille: "environnement",
+    description: "Un espace restreint ou encombré force le corps à se tordre, s'accroupir ou travailler à bout de bras. L'aménagement du poste détermine directement les postures possibles — et donc le risque.",
+    exemples: [
+      "Intervenir sous une machine ou dans un local technique exigu.",
+      "Comptoir encombré qui repousse le travail loin du corps.",
+      "Espace trop étroit pour pivoter avec une charge.",
+      "Travailler dans un véhicule ou une cabine."
+    ],
+    prevention: [
+      "Dégager et organiser l'espace avant de commencer.",
+      "Préparer l'intervention pour limiter le temps en position contrainte.",
+      "Repenser l'implantation des postes encombrés.",
+      "Garder le matériel fréquent à portée de main."
+    ],
+    zones: ["cou", "haut-dos", "bas-dos", "genoux"],
+    voirAussi: ["postures", "hauteur-travail", "travail-genoux"]
+  },
+  "sol-inegal": {
+    categorie: "Sous-facteur environnement", titre: "Sol inégal", icone: "⛰️", couleur: "#74b62e", famille: "environnement",
+    description: "Un sol instable, glissant ou encombré oblige les muscles à travailler en permanence pour garder l'équilibre. Porter une charge sur un sol inégal multiplie l'effort de stabilisation et le risque de faux mouvement.",
+    exemples: [
+      "Chantier avec gravats, boue ou tranchées.",
+      "Quai ou rampe avec dénivelés.",
+      "Sol glissant d'une cuisine ou d'un atelier.",
+      "Marches et seuils répétés avec des charges."
+    ],
+    prevention: [
+      "Entretenir et dégager les voies de circulation.",
+      "Porter des chaussures adaptées et antidérapantes.",
+      "Éclairer correctement les zones de passage.",
+      "Planifier les trajets de transport les plus sûrs."
+    ],
+    zones: ["chevilles-pieds", "genoux", "bas-dos"],
+    voirAussi: ["environnement", "manutention"]
+  },
+
+  /* ----- Messages clés ----- */
+  "combinaison": {
+    categorie: "Message clé", titre: "La combinaison des facteurs", icone: "⚠️", couleur: "#d6111e",
+    description: "Les facteurs de risque ne s'additionnent pas : ils se multiplient. Un geste répété est supportable ; le même geste répété avec force, dans le froid, par une personne fatiguée, devient dangereux. C'est pourquoi la prévention efficace agit sur plusieurs leviers à la fois, pas sur un seul.",
+    exemples: [
+      "Répétition + force : le duo le plus fréquent dans les TMS du membre supérieur.",
+      "Vibrations + froid + prise serrée : cocktail typique des doigts blancs.",
+      "Posture contraignante + longue durée : la contrainte douce qui s'installe.",
+      "Fatigue + cadence élevée : les gestes de protection disparaissent."
+    ],
+    prevention: [
+      "Évaluer le poste dans son ensemble, pas facteur par facteur.",
+      "Agir en priorité sur les combinaisons identifiées.",
+      "Combiner solutions techniques, organisationnelles et humaines.",
+      "Impliquer les travailleurs : ils connaissent les vraies combinaisons du terrain."
+    ],
+    zones: [],
+    voirAussi: ["biomecanique", "individuel", "environnement"]
+  },
+  "agir-tot": {
+    categorie: "À retenir", titre: "Agir tôt, ça change tout", icone: "💡", couleur: "#d6111e",
+    description: "Un TMS s'installe par étapes : gêne en fin de journée, puis douleur pendant le travail, puis douleur qui persiste au repos. Aux premiers stades, tout est réversible avec des ajustements simples. Installé, un TMS peut prendre des mois à guérir — quand il guérit.",
+    exemples: [
+      "Stade 1 : gêne ou fatigue locale en fin de journée, qui disparaît au repos.",
+      "Stade 2 : douleur qui apparaît pendant le travail et persiste le soir.",
+      "Stade 3 : douleur continue, même au repos ou la nuit.",
+      "Stade 4 : limitation des gestes au travail et à la maison."
+    ],
+    prevention: [
+      "Prendre au sérieux les premiers signaux (gêne, raideur, fourmillements).",
+      "En parler tôt : collègue, supérieur, comité de santé-sécurité.",
+      "Ajuster rapidement le poste ou le rythme.",
+      "Consulter sans attendre que la douleur s'installe."
+    ],
+    zones: [],
+    voirAussi: ["douleur-presente", "combinaison"]
+  }
+};
+
+/* Zones du corps */
+const ZONES = {
+  "cou": {
+    nom: "Cou / nuque", icone: "🧣",
+    tms: ["Cervicalgie", "Tensions de la nuque", "Maux de tête d'origine cervicale"],
+    description: "Le cou supporte la tête (4 à 5 kg) toute la journée. Penché vers l'avant, son effort est démultiplié : à 45 degrés de flexion, c'est l'équivalent de plus de 20 kg que les muscles cervicaux retiennent.",
+    facteurs: ["posture-statique", "postures", "bras-leves", "espace-travail"],
+    conseils: [
+      "Placer l'écran ou la tâche à hauteur des yeux.",
+      "Relâcher la nuque par de courts mouvements réguliers.",
+      "Éviter de coincer le téléphone entre l'oreille et l'épaule."
+    ]
+  },
+  "epaules": {
+    nom: "Épaules", icone: "💪",
+    tms: ["Tendinite de la coiffe des rotateurs", "Bursite", "Capsulite"],
+    description: "L'épaule est l'articulation la plus mobile du corps — et la moins stable. Travailler les bras levés ou éloignés du corps réduit l'irrigation des tendons et les use prématurément.",
+    facteurs: ["bras-leves", "manutention", "mouvements-repetes", "outils"],
+    conseils: [
+      "Travailler les coudes près du corps.",
+      "Abaisser le plan de travail sous le niveau des épaules.",
+      "Alterner les tâches qui sollicitent les bras en hauteur."
+    ]
+  },
+  "haut-dos": {
+    nom: "Haut du dos", icone: "🦴",
+    tms: ["Dorsalgie", "Tensions entre les omoplates"],
+    description: "Le haut du dos encaisse les postures penchées et le travail des bras vers l'avant. Les tensions entre les omoplates sont le signal classique d'un poste mal ajusté ou d'une posture statique prolongée.",
+    facteurs: ["posture-statique", "hauteur-travail", "postures"],
+    conseils: [
+      "Régler la hauteur du plan de travail.",
+      "Ouvrir les épaules et varier la posture régulièrement.",
+      "Rapprocher la tâche pour éviter de travailler bras tendus."
+    ]
+  },
+  "bas-dos": {
+    nom: "Bas du dos", icone: "🦴",
+    tms: ["Lombalgie", "Hernie discale", "Sciatalgie"],
+    description: "Région la plus touchée par les TMS. Les disques lombaires encaissent des pressions énormes lors des flexions et des torsions en charge : soulever 25 kg dos courbé peut imposer plusieurs centaines de kilos de pression aux disques.",
+    facteurs: ["manutention", "charges", "torsion", "sol-inegal"],
+    conseils: [
+      "Plier les genoux et garder la charge près du corps.",
+      "Pivoter avec les pieds plutôt qu'avec le tronc.",
+      "Utiliser les aides mécaniques disponibles."
+    ]
+  },
+  "coudes": {
+    nom: "Coudes", icone: "🦾",
+    tms: ["Épicondylite (tennis elbow)", "Épitrochléite"],
+    description: "Les tendons du coude relient les muscles de l'avant-bras qui ferment la main. Serrer, visser et tourner à répétition les enflamme — c'est la fameuse épicondylite, fréquente bien au-delà du tennis.",
+    facteurs: ["prise-serree", "mouvements-repetes", "outils-vibrants"],
+    conseils: [
+      "Réduire la force de serrage avec de meilleurs outils.",
+      "Éviter les rotations répétées du poignet sous effort.",
+      "Faire des pauses avant la sensation de brûlure."
+    ]
+  },
+  "poignets-mains": {
+    nom: "Poignets / mains", icone: "✋",
+    tms: ["Syndrome du canal carpien", "Tendinite de De Quervain", "Syndrome des doigts blancs"],
+    description: "Des dizaines de tendons et le nerf médian passent par le poignet, un tunnel étroit. Gestes répétés, prise en pince, vibrations et froid s'y combinent plus vite que partout ailleurs.",
+    facteurs: ["prise-serree", "mouvements-repetes", "outils-vibrants", "froid"],
+    conseils: [
+      "Garder le poignet aligné avec l'avant-bras.",
+      "Alterner les mains et les types de prise.",
+      "Signaler tôt fourmillements et engourdissements nocturnes."
+    ]
+  },
+  "genoux": {
+    nom: "Genoux", icone: "🦵",
+    tms: ["Bursite du genou", "Lésion du ménisque", "Syndrome fémoro-patellaire"],
+    description: "Le genou n'est pas fait pour servir de point d'appui. Le travail agenouillé comprime la bourse devant la rotule, et les accroupissements profonds répétés usent les ménisques.",
+    facteurs: ["travail-genoux", "sol-inegal", "posture-statique"],
+    conseils: [
+      "Porter des genouillères adaptées au métier.",
+      "Utiliser un tapis, un banc bas ou un siège roulant d'atelier.",
+      "Se relever et déplier les jambes souvent."
+    ]
+  },
+  "chevilles-pieds": {
+    nom: "Chevilles / pieds", icone: "🦶",
+    tms: ["Tendinite d'Achille", "Fasciite plantaire", "Entorses à répétition"],
+    description: "Le travail debout prolongé sur sol dur fatigue la voûte plantaire et le tendon d'Achille. Un sol inégal ou glissant ajoute les faux mouvements et les entorses au tableau.",
+    facteurs: ["sol-inegal", "posture-statique"],
+    conseils: [
+      "Porter des chaussures de travail amortissantes et adaptées.",
+      "Utiliser un tapis antifatigue aux postes debout fixes.",
+      "Garder les zones de circulation planes et dégagées."
+    ]
+  }
+};
+
+/* Simulateur */
+const SIM_ITEMS = [
+  { cle: "s-efforts", libelle: "Efforts importants (pousser, tirer, forcer)", poids: 3, cat: "bio", conseil: "Réduire les efforts avec des aides mécaniques et des outils adaptés." },
+  { cle: "s-repetition", libelle: "Gestes répétés à cadence soutenue", poids: 3, cat: "bio", conseil: "Mettre en place la rotation des tâches et des micro-pauses." },
+  { cle: "s-postures", libelle: "Postures contraignantes (dos courbé, poignets pliés…)", poids: 2, cat: "bio", conseil: "Aménager le poste pour garder les articulations en position neutre." },
+  { cle: "s-charges", libelle: "Charges lourdes ou difficiles à saisir", poids: 3, cat: "bio", conseil: "Fractionner les charges et utiliser des équipements d'aide à la manutention." },
+  { cle: "s-bras", libelle: "Travail bras au-dessus des épaules", poids: 2, cat: "bio", conseil: "Abaisser le travail ou utiliser une plateforme pour travailler sous hauteur d'épaules." },
+  { cle: "s-fatigue", libelle: "Fatigue fréquente ou sommeil insuffisant", poids: 2, cat: "ind", conseil: "Préserver le sommeil et prendre de vraies pauses de récupération." },
+  { cle: "s-douleur", libelle: "Douleur déjà présente (gêne, raideur, fourmillements)", poids: 3, cat: "ind", conseil: "Signaler la douleur tôt et adapter la tâche sans attendre." },
+  { cle: "s-experience", libelle: "Peu d'expérience au poste", poids: 1, cat: "ind", conseil: "Prévoir parrainage, formation aux gestes et montée en cadence progressive." },
+  { cle: "s-condition", libelle: "Condition physique limitée ou reprise après absence", poids: 1, cat: "ind", conseil: "Reprendre graduellement et ajuster la charge de travail." },
+  { cle: "s-pauses", libelle: "Pauses souvent écourtées ou sautées", poids: 2, cat: "ind", conseil: "Planifier les pauses comme des étapes obligatoires du travail." },
+  { cle: "s-froid", libelle: "Froid, courants d'air ou chaleur excessive", poids: 1, cat: "env", conseil: "Adapter les vêtements et prévoir des pauses en local tempéré." },
+  { cle: "s-vibrations", libelle: "Outils vibrants utilisés régulièrement", poids: 2, cat: "env", conseil: "Choisir des outils antivibratiles et limiter la durée d'exposition." },
+  { cle: "s-espace", libelle: "Espace de travail restreint ou encombré", poids: 1, cat: "env", conseil: "Dégager et réorganiser l'espace de travail." },
+  { cle: "s-sol", libelle: "Sol inégal, glissant ou encombré", poids: 1, cat: "env", conseil: "Entretenir les sols et porter des chaussures adaptées." },
+  { cle: "s-outils", libelle: "Outils mal adaptés ou mal entretenus", poids: 2, cat: "env", conseil: "Choisir des outils ergonomiques et les entretenir régulièrement." }
+];
+const SIM_CATS = { bio: "Contraintes de la tâche (biomécanique)", ind: "La personne (individuel)", env: "Le poste et le milieu (environnement)" };
+
+/* Quiz */
+const ORDRE_PRINCIPAL = ["biomecanique", "individuel", "environnement", "manutention", "bras-leves", "mouvements-repetes", "posture-statique", "prise-serree", "travail-genoux", "recuperation", "froid", "outils-vibrants", "hauteur-travail"];
+
+/* ================================================================
+   OUTILS GÉNÉRAUX
+   ================================================================ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+function lireStockage(cle, defaut) {
+  try { const v = localStorage.getItem(cle); return v === null ? defaut : JSON.parse(v); }
+  catch (e) { return defaut; }
+}
+function ecrireStockage(cle, valeur) {
+  try { localStorage.setItem(cle, JSON.stringify(valeur)); } catch (e) {}
+}
+
+function toast(message, icone) {
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = "<span>" + (icone || "✨") + "</span><span></span>";
+  t.lastElementChild.textContent = message;
+  $("#toasts").appendChild(t);
+  setTimeout(() => {
+    t.classList.add("sortie");
+    setTimeout(() => t.remove(), 350);
+  }, 3800);
+}
+
+/* Confettis */
+function lancerConfettis() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const canvas = $("#confettis");
+  const ctx = canvas.getContext("2d");
+  canvas.width = innerWidth; canvas.height = innerHeight;
+  const couleurs = ["#d6111e", "#d9a43a", "#2e8fc0", "#74b62e", "#f09430", "#ffffff"];
+  const parts = Array.from({ length: 160 }, () => ({
+    x: Math.random() * canvas.width,
+    y: -20 - Math.random() * canvas.height * .4,
+    vx: (Math.random() - .5) * 3,
+    vy: 2.5 + Math.random() * 3.5,
+    taille: 5 + Math.random() * 6,
+    angle: Math.random() * Math.PI,
+    va: (Math.random() - .5) * .25,
+    couleur: couleurs[(Math.random() * couleurs.length) | 0]
+  }));
+  const debut = performance.now();
+  (function anime(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    parts.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.angle += p.va;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.couleur;
+      ctx.fillRect(-p.taille / 2, -p.taille / 4, p.taille, p.taille / 2);
+      ctx.restore();
+    });
+    if (t - debut < 3200) requestAnimationFrame(anime);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  })(debut);
+}
+
+/* ================================================================
+   PROGRESSION D'EXPLORATION
+   ================================================================ */
+let visites = new Set(lireStockage("tms-visites", []));
+
+function majProgression() {
+  const total = ORDRE_PRINCIPAL.length;
+  const n = ORDRE_PRINCIPAL.filter(c => visites.has(c)).length;
+  $("#texte-prog").textContent = n + " / " + total + " explorés";
+  const circ = 87.96;
+  $("#anneau-valeur").style.strokeDashoffset = circ * (1 - n / total);
+  ORDRE_PRINCIPAL.forEach(c => {
+    $$("[data-cle='" + c + "']").forEach(el => {
+      if ((el.classList.contains("cercle") || el.classList.contains("pastille")) && visites.has(c)) el.classList.add("visite");
+      if ((el.classList.contains("cercle") || el.classList.contains("pastille")) && !visites.has(c)) el.classList.remove("visite");
+    });
+  });
+}
+
+function marquerVisite(cle) {
+  if (!ORDRE_PRINCIPAL.includes(cle) || visites.has(cle)) return;
+  visites.add(cle);
+  ecrireStockage("tms-visites", Array.from(visites));
+  majProgression();
+  const n = ORDRE_PRINCIPAL.filter(c => visites.has(c)).length;
+  if (n === 1) toast("Première fiche explorée ! Continuez : " + (ORDRE_PRINCIPAL.length - 1) + " restantes.", "🚀");
+  else if (n === 7) toast("Plus de la moitié du schéma exploré !", "⭐");
+  else if (n === ORDRE_PRINCIPAL.length) {
+    toast("Bravo ! Vous avez exploré tout le schéma. Prêt pour la formation guidée ?", "🏆");
+    lancerConfettis();
+  }
+}
+
+$("#btn-raz-progression").addEventListener("click", () => {
+  visites = new Set();
+  ecrireStockage("tms-visites", []);
+  majProgression();
+  toast("Progression réinitialisée.", "↺");
+});
+
+/* ================================================================
+   MODALE
+   ================================================================ */
+const voile = $("#voile");
+const modale = $("#modale");
+let dernierDeclencheur = null;
+let cleCourante = null;
+let lectureEnCours = false;
+
+function elem(tag, classe, texte) {
+  const e = document.createElement(tag);
+  if (classe) e.className = classe;
+  if (texte !== undefined) e.textContent = texte;
+  return e;
+}
+
+function sectionListe(conteneur, titre, items, classeListe) {
+  if (!items || !items.length) return;
+  conteneur.appendChild(elem("h3", null, titre));
+  const ul = elem("ul", classeListe);
+  items.forEach(t => ul.appendChild(elem("li", null, t)));
+  conteneur.appendChild(ul);
+}
+
+function sectionPuces(conteneur, titre, items, action) {
+  if (!items || !items.length) return;
+  conteneur.appendChild(elem("h3", null, titre));
+  const div = elem("div", "puces");
+  items.forEach(it => {
+    const b = elem("button", "puce", it.label);
+    b.addEventListener("click", () => action(it.cle));
+    div.appendChild(b);
+  });
+  conteneur.appendChild(div);
+}
+
+function ouvrirModale(declencheur) {
+  dernierDeclencheur = declencheur || document.activeElement;
+  voile.classList.add("ouvert");
+  $("#fermer").focus();
+}
+
+function fermerModale() {
+  voile.classList.remove("ouvert");
+  arreterLecture();
+  cleCourante = null;
+  if (dernierDeclencheur && dernierDeclencheur.focus) dernierDeclencheur.focus();
+}
+
+function ouvrirDetails(cle, declencheur) {
+  const d = DETAILS[cle];
+  if (!d) return;
+  cleCourante = cle;
+  arreterLecture();
+  $("#modale-picto").textContent = d.icone;
+  $("#modale-categorie").textContent = d.categorie;
+  $("#modale-titre").textContent = d.titre;
+  modale.style.setProperty("--accent-modale", d.couleur);
+
+  const corps = $("#modale-corps");
+  corps.innerHTML = "";
+  corps.appendChild(elem("p", "description", d.description));
+  sectionListe(corps, "Exemples concrets", d.exemples, "exemples");
+  sectionListe(corps, "Pistes de prévention", d.prevention, "prevention");
+  if (d.zones && d.zones.length) {
+    sectionPuces(corps, "Zones du corps touchées",
+      d.zones.map(z => ({ cle: z, label: (ZONES[z] ? ZONES[z].icone + " " + ZONES[z].nom : z) })),
+      z => ouvrirZone(z, dernierDeclencheur));
+  }
+  if (d.voirAussi && d.voirAussi.length) {
+    sectionPuces(corps, "Voir aussi",
+      d.voirAussi.filter(v => DETAILS[v]).map(v => ({ cle: v, label: DETAILS[v].icone + " " + DETAILS[v].titre })),
+      v => ouvrirDetails(v, dernierDeclencheur));
+  }
+
+  const idx = ORDRE_PRINCIPAL.indexOf(cle);
+  const pied = $("#modale-pied");
+  if (idx >= 0) {
+    pied.style.display = "flex";
+    $("#modale-position").textContent = (idx + 1) + " / " + ORDRE_PRINCIPAL.length + " — fiches principales";
+  } else {
+    pied.style.display = "none";
+  }
+
+  marquerVisite(cle);
+  if (!voile.classList.contains("ouvert")) ouvrirModale(declencheur);
+  corps.scrollTop = 0;
+}
+
+function ouvrirZone(zoneCle, declencheur) {
+  const z = ZONES[zoneCle];
+  if (!z) return;
+  cleCourante = null;
+  arreterLecture();
+  $("#modale-picto").textContent = z.icone;
+  $("#modale-categorie").textContent = "Zone du corps";
+  $("#modale-titre").textContent = z.nom;
+  modale.style.setProperty("--accent-modale", "#d9a43a");
+
+  const corps = $("#modale-corps");
+  corps.innerHTML = "";
+  corps.appendChild(elem("p", "description", z.description));
+  sectionListe(corps, "TMS fréquents dans cette zone", z.tms, "exemples");
+  sectionPuces(corps, "Facteurs en cause",
+    z.facteurs.filter(f => DETAILS[f]).map(f => ({ cle: f, label: DETAILS[f].icone + " " + DETAILS[f].titre })),
+    f => ouvrirDetails(f, dernierDeclencheur));
+  sectionListe(corps, "Bons réflexes", z.conseils, "prevention");
+
+  $("#modale-pied").style.display = "none";
+  if (!voile.classList.contains("ouvert")) ouvrirModale(declencheur);
+  corps.scrollTop = 0;
+}
+
+function naviguer(delta) {
+  if (!cleCourante) return;
+  const idx = ORDRE_PRINCIPAL.indexOf(cleCourante);
+  if (idx < 0) return;
+  const suivant = (idx + delta + ORDRE_PRINCIPAL.length) % ORDRE_PRINCIPAL.length;
+  ouvrirDetails(ORDRE_PRINCIPAL[suivant], dernierDeclencheur);
+}
+
+$("#btn-prec").addEventListener("click", () => naviguer(-1));
+$("#btn-suiv").addEventListener("click", () => naviguer(1));
+$("#fermer").addEventListener("click", fermerModale);
+voile.addEventListener("click", e => { if (e.target === voile) fermerModale(); });
+
+document.addEventListener("keydown", e => {
+  if (!voile.classList.contains("ouvert")) return;
+  if (e.key === "Escape") fermerModale();
+  if (e.key === "ArrowLeft") naviguer(-1);
+  if (e.key === "ArrowRight") naviguer(1);
+  if (e.key === "Tab") {
+    const focusables = Array.from(modale.querySelectorAll("button")).filter(b => b.offsetParent !== null);
+    if (!focusables.length) return;
+    const premier = focusables[0], dernier = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === premier) { e.preventDefault(); dernier.focus(); }
+    else if (!e.shiftKey && document.activeElement === dernier) { e.preventDefault(); premier.focus(); }
+  }
+});
+
+/* Lecture audio */
+function arreterLecture() {
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  lectureEnCours = false;
+  $("#btn-lecture").classList.remove("actif-audio");
+}
+$("#btn-lecture").addEventListener("click", () => {
+  if (!window.speechSynthesis) { toast("La lecture audio n'est pas disponible dans ce navigateur.", "🔇"); return; }
+  if (lectureEnCours) { arreterLecture(); return; }
+  const titre = $("#modale-titre").textContent;
+  const morceaux = [titre];
+  $$("#modale-corps p.description, #modale-corps h3, #modale-corps ul li").forEach(el => morceaux.push(el.textContent));
+  const u = new SpeechSynthesisUtterance(morceaux.join(". "));
+  u.lang = "fr-FR";
+  u.rate = 1.02;
+  u.onend = arreterLecture;
+  lectureEnCours = true;
+  $("#btn-lecture").classList.add("actif-audio");
+  speechSynthesis.speak(u);
+});
+
+$("#btn-imprimer").addEventListener("click", () => window.print());
+
+/* Déclencheurs : tout élément portant data-cle.
+   closest() retourne l'élément le plus profond : un clic sur un sous-item
+   ouvre sa fiche sans ouvrir aussi celle du cercle parent. */
+document.addEventListener("click", e => {
+  const cible = e.target.closest("[data-cle]");
+  if (!cible || cible.closest("#modale")) return;
+  const cle = cible.dataset.cle;
+  if (DETAILS[cle]) ouvrirDetails(cle, cible);
+});
+/* Clavier pour les cercles (div role="button") */
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const cible = e.target.closest("div[role='button'][data-cle]");
+  if (!cible) return;
+  e.preventDefault();
+  if (DETAILS[cible.dataset.cle]) ouvrirDetails(cible.dataset.cle, cible);
+});
+
+/* ================================================================
+   LIGNES DE LIAISON PASTILLE → FAMILLE
+   ================================================================ */
+const scene = $("#scene");
+const svgLiaisons = $("#svg-liaisons");
+const CIBLE_CERCLE = { biomecanique: ".cercle.bio", individuel: ".cercle.ind", environnement: ".cercle.env" };
+
+function dessinerLiaisons() {
+  svgLiaisons.innerHTML = "";
+  if (window.matchMedia("(max-width: 900px)").matches) return;
+  const r = scene.getBoundingClientRect();
+  if (r.width === 0) return;
+  svgLiaisons.setAttribute("viewBox", "0 0 " + r.width + " " + r.height);
+  $$(".pastille").forEach(p => {
+    const fam = p.dataset.famille;
+    const cercle = $(CIBLE_CERCLE[fam]);
+    if (!cercle) return;
+    const rp = p.getBoundingClientRect();
+    const rc = cercle.getBoundingClientRect();
+    const ligne = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    ligne.setAttribute("x1", rp.left - r.left + rp.width / 2);
+    ligne.setAttribute("y1", rp.top - r.top + rp.height / 2);
+    ligne.setAttribute("x2", rc.left - r.left + rc.width / 2);
+    ligne.setAttribute("y2", rc.top - r.top + rc.height / 2);
+    ligne.setAttribute("class", "lien lien-" + fam);
+    ligne.dataset.pour = p.dataset.cle;
+    svgLiaisons.appendChild(ligne);
+  });
+}
+
+/* Surbrillance de la ligne au survol d'une pastille */
+$$(".pastille").forEach(p => {
+  const allume = () => {
+    const l = svgLiaisons.querySelector("[data-pour='" + p.dataset.cle + "']");
+    if (l) l.classList.add("lien-fort");
+  };
+  const eteint = () => {
+    const l = svgLiaisons.querySelector("[data-pour='" + p.dataset.cle + "']");
+    if (l) l.classList.remove("lien-fort");
+  };
+  p.addEventListener("mouseenter", allume);
+  p.addEventListener("mouseleave", eteint);
+  p.addEventListener("focus", allume);
+  p.addEventListener("blur", eteint);
+});
+
+/* Survol d'un cercle : ne garder que sa famille */
+$$(".cercle").forEach(c => {
+  const fam = c.dataset.famille;
+  const focus = () => scene.classList.add("focus-" + fam);
+  const defocus = () => scene.classList.remove("focus-" + fam);
+  c.addEventListener("mouseenter", focus);
+  c.addEventListener("mouseleave", defocus);
+  c.addEventListener("focus", focus);
+  c.addEventListener("blur", defocus);
+});
+
+if (window.ResizeObserver) new ResizeObserver(dessinerLiaisons).observe(scene);
+window.addEventListener("resize", dessinerLiaisons);
+window.addEventListener("load", dessinerLiaisons);
+dessinerLiaisons();
+
+/* ================================================================
+   INFOBULLE
+   ================================================================ */
+const infobulle = $("#infobulle");
+let surTactile = window.matchMedia("(hover: none)").matches;
+
+document.addEventListener("mouseover", e => {
+  if (surTactile) return;
+  const cible = e.target.closest("[data-resume]");
+  if (!cible) { infobulle.classList.remove("visible"); return; }
+  infobulle.textContent = cible.dataset.resume;
+  infobulle.classList.add("visible");
+});
+document.addEventListener("mousemove", e => {
+  if (!infobulle.classList.contains("visible")) return;
+  const x = Math.min(e.clientX + 16, innerWidth - infobulle.offsetWidth - 12);
+  const y = Math.min(e.clientY + 18, innerHeight - infobulle.offsetHeight - 12);
+  infobulle.style.left = x + "px";
+  infobulle.style.top = y + "px";
+});
+document.addEventListener("mouseout", e => {
+  if (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest("[data-resume]")) {
+    infobulle.classList.remove("visible");
+  }
+});
+
+/* ================================================================
+   RECHERCHE
+   ================================================================ */
+const champ = $("#champ-recherche");
+const resultats = $("#resultats-recherche");
+
+function normaliser(s) {
+  return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+const INDEX_RECHERCHE = [];
+Object.keys(DETAILS).forEach(c => INDEX_RECHERCHE.push({ type: "detail", cle: c, titre: DETAILS[c].titre, icone: DETAILS[c].icone, cat: DETAILS[c].categorie }));
+Object.keys(ZONES).forEach(c => INDEX_RECHERCHE.push({ type: "zone", cle: c, titre: ZONES[c].nom, icone: ZONES[c].icone, cat: "Zone du corps" }));
+
+function majRecherche() {
+  const q = normaliser(champ.value.trim());
+  resultats.innerHTML = "";
+  if (q.length < 2) { resultats.classList.remove("ouvert"); return; }
+  const trouves = INDEX_RECHERCHE.filter(e => normaliser(e.titre).includes(q) || normaliser(e.cat).includes(q)).slice(0, 8);
+  if (!trouves.length) { resultats.classList.remove("ouvert"); return; }
+  trouves.forEach(t => {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.innerHTML = "<span></span><span></span><span class='cat-resultat'></span>";
+    b.children[0].textContent = t.icone;
+    b.children[1].textContent = t.titre;
+    b.children[2].textContent = t.cat;
+    b.addEventListener("click", () => {
+      resultats.classList.remove("ouvert");
+      champ.value = "";
+      if (t.type === "zone") ouvrirZone(t.cle, champ);
+      else ouvrirDetails(t.cle, champ);
+    });
+    li.appendChild(b);
+    resultats.appendChild(li);
+  });
+  resultats.classList.add("ouvert");
+}
+champ.addEventListener("input", majRecherche);
+champ.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const premier = resultats.querySelector("button");
+    if (premier) premier.click();
+  }
+  if (e.key === "Escape") resultats.classList.remove("ouvert");
+});
+document.addEventListener("click", e => {
+  if (!e.target.closest(".recherche")) resultats.classList.remove("ouvert");
+});
+
+/* ================================================================
+   CARTE DU CORPS
+   ================================================================ */
+$$("#corps-svg .zone").forEach(g => {
+  const z = g.dataset.zone;
+  if (ZONES[z]) g.setAttribute("data-resume", ZONES[z].nom + " — " + ZONES[z].tms.join(", "));
+  g.addEventListener("click", () => ouvrirZone(z, g));
+  g.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ouvrirZone(z, g); }
+  });
+});
+
+const grilleZones = $("#zones-grille");
+Object.keys(ZONES).forEach(c => {
+  const z = ZONES[c];
+  const b = document.createElement("button");
+  b.className = "carte-zone";
+  b.innerHTML = "<span class='ico'></span><span><span class='nom-zone'></span><br><span class='tms-zone'></span></span>";
+  b.querySelector(".ico").textContent = z.icone;
+  b.querySelector(".nom-zone").textContent = z.nom;
+  b.querySelector(".tms-zone").textContent = z.tms.slice(0, 2).join(" · ");
+  b.addEventListener("click", () => ouvrirZone(c, b));
+  grilleZones.appendChild(b);
+});
+
+/* ================================================================
+   SIMULATEUR
+   ================================================================ */
+const formSim = $("#form-sim");
+["bio", "ind", "env"].forEach(cat => {
+  const bloc = document.createElement("div");
+  bloc.className = "sim-cat c-" + cat;
+  const h = document.createElement("h3");
+  h.textContent = SIM_CATS[cat];
+  bloc.appendChild(h);
+  SIM_ITEMS.filter(i => i.cat === cat).forEach(item => {
+    const label = document.createElement("label");
+    label.className = "case";
+    label.innerHTML = "<input type='checkbox'><span class='boite'></span><span class='texte'></span><span class='poids'></span>";
+    label.querySelector("input").dataset.cle = item.cle;
+    label.querySelector(".texte").textContent = item.libelle;
+    label.querySelector(".poids").textContent = "+" + item.poids;
+    bloc.appendChild(label);
+  });
+  formSim.appendChild(bloc);
+});
+
+const POIDS_MAX = SIM_ITEMS.reduce((s, i) => s + i.poids, 0);
+
+function calculerSim() {
+  const coches = SIM_ITEMS.filter(i => formSim.querySelector("[data-cle='" + i.cle + "']").checked);
+  const brut = coches.reduce((s, i) => s + i.poids, 0);
+  const cats = new Set(coches.map(i => i.cat));
+  const mult = cats.size >= 3 ? 1.3 : cats.size === 2 ? 1.15 : 1;
+  const pct = Math.min(100, Math.round((brut * mult) / (POIDS_MAX * 1.3) * 100));
+
+  $("#arc-niveau").setAttribute("stroke-dasharray", pct + " 100");
+  $("#aiguille").style.transform = "rotate(" + (-90 + pct * 1.8) + "deg)";
+  $("#score-valeur").textContent = pct;
+
+  const niveau = $("#score-niveau");
+  let txt, coul;
+  if (!coches.length) { txt = "Cochez des facteurs ci-contre"; coul = "#999"; }
+  else if (pct < 25) { txt = "Risque faible — restez attentif"; coul = "#6fc24a"; }
+  else if (pct < 50) { txt = "Risque modéré — des ajustements s'imposent"; coul = "#e3c54a"; }
+  else if (pct < 75) { txt = "Risque élevé — agissez rapidement"; coul = "#f08a2e"; }
+  else { txt = "Risque très élevé — situation prioritaire"; coul = "#e8404a"; }
+  niveau.textContent = txt;
+  niveau.style.color = coul;
+  $("#score-valeur").style.color = coul;
+
+  const combo = $("#sim-combo");
+  if (cats.size >= 2 && coches.length) {
+    combo.textContent = "⚠️ Facteurs présents dans " + cats.size + " familles : la combinaison multiplie le risque (score majoré de " + Math.round((mult - 1) * 100) + " %).";
+  } else if (coches.length) {
+    combo.textContent = "Facteurs d'une seule famille : le risque grimpe dès que plusieurs familles se combinent.";
+  } else {
+    combo.textContent = "";
+  }
+
+  const ul = $("#sim-conseils");
+  ul.innerHTML = "";
+  coches.sort((a, b) => b.poids - a.poids).slice(0, 4).forEach(i => {
+    const li = document.createElement("li");
+    li.textContent = i.conseil;
+    ul.appendChild(li);
+  });
+}
+formSim.addEventListener("change", calculerSim);
+$("#sim-raz").addEventListener("click", () => {
+  formSim.querySelectorAll("input").forEach(i => { i.checked = false; });
+  calculerSim();
+});
+calculerSim();
+
+/* ================================================================
+   VIDÉO
+   ================================================================ */
+const lecteurVideo = $("#lecteur-video");
+if (lecteurVideo) {
+  lecteurVideo.addEventListener("ended", () => {
+    toast("Vidéo terminée ! Prolongez avec les fiches Sommeil, Condition physique et Récupération juste en dessous.", "🎬");
+  });
+  /* Met la vidéo en pause quand une fiche s'ouvre par-dessus */
+  new MutationObserver(() => {
+    if (voile.classList.contains("ouvert") && !lecteurVideo.paused) lecteurVideo.pause();
+  }).observe(voile, { attributes: true, attributeFilter: ["class"] });
+}
+
+/* ================================================================
+   NAVIGATION, DÉFILEMENT, APPARITIONS
+   ================================================================ */
+window.addEventListener("scroll", () => {
+  const h = document.documentElement;
+  const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+  $("#barre-scroll").style.width = pct + "%";
+}, { passive: true });
+
+const obsSections = new IntersectionObserver(entrees => {
+  entrees.forEach(e => {
+    if (e.isIntersecting) {
+      $$(".lien-nav").forEach(a => a.classList.toggle("actif", a.dataset.section === e.target.id));
+    }
+  });
+}, { rootMargin: "-35% 0px -55% 0px" });
+$$("section.bloc").forEach(s => obsSections.observe(s));
+
+const obsReveal = new IntersectionObserver(entrees => {
+  entrees.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add("visible");
+      obsReveal.unobserve(e.target);
+    }
+  });
+}, { threshold: .12 });
+$$(".reveal").forEach(el => obsReveal.observe(el));
+
+majProgression();
+</script>
+
+</body>
+</html>
