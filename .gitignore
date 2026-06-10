@@ -13,3 +13,7 @@ desktop.ini
 *.log
 *.tmp
 _*.png
+
+# Artefacts locaux (non versionnes)
+prevention-tms-site.zip
+scroll.html
