@@ -437,35 +437,40 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .disc-badge.ok{color:#34d399;border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.08)}
 .disc-badge.no{color:#ef5a5c;border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08)}
 .disc-svg{width:100%;max-width:330px;height:auto;display:block;margin:0 auto}
-.vert-t{animation:vtp 2.4s ease-in-out infinite}
-.vert-b{animation:vbp 2.4s ease-in-out infinite}
-@keyframes vtp{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
-@keyframes vbp{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.vert-t{transform-box:fill-box;transform-origin:50% 100%;animation:vtp 2.4s ease-in-out infinite}
+.vert-b{transform-box:fill-box;transform-origin:50% 0%;animation:vbp 2.4s ease-in-out infinite}
+@keyframes vtp{0%,100%{transform:translateY(0) scaleY(1)}40%,60%{transform:translateY(8px) scaleY(.955)}}
+@keyframes vbp{0%,100%{transform:translateY(0) scaleY(1)}40%,60%{transform:translateY(-8px) scaleY(.955)}}
 .disc-anim{transform-box:fill-box;transform-origin:center;animation:discp 2.4s ease-in-out infinite}
-@keyframes discp{0%,100%{transform:scale(1,1)}50%{transform:scale(1.06,.84)}}
+@keyframes discp{0%,100%{transform:scale(1,1)}40%,60%{transform:scale(1.09,.76)}}
 .disc-diff{transform-box:fill-box;transform-origin:center;animation:diffp 2.4s ease-in-out infinite}
-@keyframes diffp{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+@keyframes diffp{0%,100%{opacity:.5;transform:scale(1)}40%,60%{opacity:1;transform:scale(1.18)}}
+.nuc-glow{animation:nucp 2.4s ease-in-out infinite}
+@keyframes nucp{0%,100%{opacity:.85}40%,60%{opacity:.3}}
 .disc-bulge ellipse{transform-box:fill-box;transform-origin:center}
 .disc-bulge ellipse:first-child{animation:bulgl 2.4s ease-in-out infinite}
 .disc-bulge ellipse:last-child{animation:bulgr 2.4s ease-in-out infinite}
-@keyframes bulgl{0%,100%{opacity:0;transform:translateX(0)}50%{opacity:.5;transform:translateX(-4px)}}
-@keyframes bulgr{0%,100%{opacity:0;transform:translateX(0)}50%{opacity:.5;transform:translateX(4px)}}
-.ok-ar .da-t{animation:vtp 2.4s ease-in-out infinite}
-.ok-ar .da-b{animation:vbp 2.4s ease-in-out infinite}
-.na-t{animation:nat 2s ease-in-out infinite}
-.na-b{animation:nab 2s ease-in-out infinite}
-@keyframes nat{0%,100%{transform:translateY(0);opacity:.75}50%{transform:translateY(3px);opacity:1}}
-@keyframes nab{0%,100%{transform:translateY(0);opacity:.75}50%{transform:translateY(-3px);opacity:1}}
-.disc-stress{animation:stressp 3.2s ease-in-out infinite}
-@keyframes stressp{0%,100%{opacity:.35}50%{opacity:.85}}
-.disc-static{transform-box:fill-box;transform-origin:center;animation:discst 3.2s ease-in-out infinite}
-@keyframes discst{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.95)}}
-.pin-l circle{animation:pinl 2.4s linear infinite}
-.pin-r circle{animation:pinr 2.4s linear infinite}
-.pin-l circle:nth-child(2),.pin-r circle:nth-child(2){animation-delay:-.8s}
-.pin-l circle:nth-child(3),.pin-r circle:nth-child(3){animation-delay:-1.6s}
-@keyframes pinl{0%{transform:translateX(0);opacity:0}18%{opacity:1}80%{opacity:1}100%{transform:translateX(40px);opacity:0}}
-@keyframes pinr{0%{transform:translateX(0);opacity:0}18%{opacity:1}80%{opacity:1}100%{transform:translateX(-40px);opacity:0}}
+@keyframes bulgl{0%,100%{opacity:0;transform:translateX(0)}40%,60%{opacity:.55;transform:translateX(-5px)}}
+@keyframes bulgr{0%,100%{opacity:0;transform:translateX(0)}40%,60%{opacity:.55;transform:translateX(5px)}}
+.ok-ar .da-t{animation:dat 2.4s ease-in-out infinite}
+.ok-ar .da-b{animation:dab 2.4s ease-in-out infinite}
+@keyframes dat{0%,100%{transform:translateY(0);opacity:.75}40%,60%{transform:translateY(8px);opacity:1}}
+@keyframes dab{0%,100%{transform:translateY(0);opacity:.75}40%,60%{transform:translateY(-8px);opacity:1}}
+.na-t{animation:nat 2.6s ease-in-out infinite}
+.na-b{animation:nab 2.6s ease-in-out infinite}
+@keyframes nat{0%,100%{transform:translateY(0);opacity:.7}45%,60%{transform:translateY(4px);opacity:1}}
+@keyframes nab{0%,100%{transform:translateY(0);opacity:.7}45%,60%{transform:translateY(-4px);opacity:1}}
+.disc-stress{animation:stressp 2.6s ease-in-out infinite}
+@keyframes stressp{0%,100%{opacity:.3}45%,60%{opacity:.9}}
+.disc-static{transform-box:fill-box;transform-origin:center;animation:discst 2.6s ease-in-out infinite}
+@keyframes discst{0%,100%{transform:scale(1,1)}45%,60%{transform:scale(1.015,.93)}}
+.pin-l circle{animation:pinl 2.4s ease-in infinite}
+.pin-r circle{animation:pinr 2.4s ease-in infinite}
+.pin-l circle:nth-child(2),.pin-r circle:nth-child(2){animation-delay:-.6s}
+.pin-l circle:nth-child(3),.pin-r circle:nth-child(3){animation-delay:-1.2s}
+.pin-l circle:nth-child(4),.pin-r circle:nth-child(4){animation-delay:-1.8s}
+@keyframes pinl{0%{transform:translateX(0);opacity:0}15%{opacity:1}75%{opacity:1}100%{transform:translateX(56px);opacity:0}}
+@keyframes pinr{0%{transform:translateX(0);opacity:0}15%{opacity:1}75%{opacity:1}100%{transform:translateX(-56px);opacity:0}}
 .pout-l circle{animation:poutl 3.2s linear infinite}
 .pout-r circle{animation:poutr 3.2s linear infinite}
 .pout-l circle:nth-child(2),.pout-r circle:nth-child(2){animation-delay:-1.6s}
@@ -2334,6 +2339,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
                   <linearGradient id="dnBone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4e7c0"/><stop offset=".55" stop-color="#e3cf9f"/><stop offset="1" stop-color="#c9ae76"/></linearGradient>
                   <radialGradient id="dnAnn" cx=".5" cy=".42" r=".8"><stop offset="0" stop-color="#c6e2f3"/><stop offset=".6" stop-color="#9cc3de"/><stop offset="1" stop-color="#7ba7c7"/></radialGradient>
                   <radialGradient id="dnNuc" cx=".5" cy=".38" r=".85"><stop offset="0" stop-color="#f4fcff"/><stop offset=".65" stop-color="#d3ebf9"/><stop offset="1" stop-color="#b2d7ee"/></radialGradient>
+                  <radialGradient id="dnGlow"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
                 </defs>
                 <g class="da ok-ar" stroke="#34d399" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
                   <g class="da-t"><path d="M70 4v10M64 9l6 7 6-7"/><path d="M120 4v10M114 9l6 7 6-7"/><path d="M170 4v10M164 9l6 7 6-7"/></g>
@@ -2359,14 +2365,15 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
                   <ellipse cx="120" cy="100" rx="44" ry="15" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".4"/>
                   <ellipse cx="120" cy="100" rx="33" ry="11.5" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".35"/>
                   <ellipse cx="120" cy="100" rx="24" ry="9" fill="url(#dnNuc)"/>
+                  <ellipse class="nuc-glow" cx="120" cy="100" rx="22" ry="8" fill="url(#dnGlow)"/>
                   <ellipse cx="111" cy="96.5" rx="8" ry="3" fill="#fff" opacity=".5"/>
                   <g class="disc-diff" stroke="#2f6fb2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
                     <path d="M120 90v20M115 94l5-5 5 5M115 106l5 5 5-5"/>
                     <path d="M106 100h28M110 95l-5 5 5 5M130 95l5 5-5 5"/>
                   </g>
                 </g>
-                <g class="pin-l"><circle cx="8" cy="92" r="3.2" fill="#4aa3e8"/><circle cx="8" cy="102" r="3.2" fill="#35c06b"/><circle cx="8" cy="112" r="3.2" fill="#8fd4ff"/></g>
-                <g class="pin-r"><circle cx="232" cy="90" r="3.2" fill="#35c06b"/><circle cx="232" cy="100" r="3.2" fill="#8fd4ff"/><circle cx="232" cy="110" r="3.2" fill="#4aa3e8"/></g>
+                <g class="pin-l"><circle cx="4" cy="88" r="3.6" fill="#4aa3e8"/><circle cx="4" cy="98" r="3.3" fill="#35c06b"/><circle cx="4" cy="108" r="3.6" fill="#8fd4ff"/><circle cx="4" cy="116" r="3" fill="#4aa3e8"/></g>
+                <g class="pin-r"><circle cx="236" cy="86" r="3.3" fill="#35c06b"/><circle cx="236" cy="96" r="3.6" fill="#8fd4ff"/><circle cx="236" cy="106" r="3.3" fill="#4aa3e8"/><circle cx="236" cy="114" r="3.6" fill="#35c06b"/></g>
               </svg>
               <div class="disc-verdict ok"><span class="dv-ic" aria-hidden="true">✓</span>Le disque reste bien hydraté et en santé.</div>
             </div>
