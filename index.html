@@ -1355,6 +1355,12 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .video-puces { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .video-pour { font-size: .78rem; color: #999; margin-right: 2px; }
 
+  /* ---------- Carte du corps : planche photo ---------- */
+  .corps-photo { position: relative; margin-top: 26px; border: 1px solid var(--bordure); border-radius: 18px; overflow: hidden; background: #0a0e17; }
+  .corps-photo img { width: 100%; display: block; }
+  .cp-spot { position: absolute; width: 6%; aspect-ratio: 1; transform: translate(-50%,-50%); border-radius: 50%; background: transparent; border: none; cursor: pointer; transition: box-shadow .2s; }
+  .cp-spot:hover, .cp-spot:focus-visible { box-shadow: 0 0 0 3px rgba(255,90,92,.85), 0 0 20px rgba(255,60,62,.8); outline: none; }
+
   /* ---------- Carte du corps ---------- */
   .corps-flex {
     display: flex;
@@ -2024,6 +2030,17 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
         <h3 class="sub-h reveal">Où ça frappe le plus <span style="font-weight:400;font-size:.85rem;color:var(--dim)"> : clique une zone</span></h3>
         <div class="corps-insitu reveal" id="corps">
           <p class="corps-aide">Clique un point lumineux de la silhouette, ou une zone dans la liste, pour voir la zone touchée, les TMS fréquents, les facteurs en cause et les bons réflexes.</p>
+<div class="corps-photo" id="corpsPhoto" hidden>
+  <img src="" alt="Huit zones sous surveillance sur le corps humain, vues de face et de dos : clique un point pour explorer la zone" id="corpsPhotoImg" decoding="async">
+  <button type="button" class="cp-spot" style="left:34.6%;top:25.8%" data-zone="cou" aria-label="Zone cou et nuque"></button>
+  <button type="button" class="cp-spot" style="left:27.6%;top:31.4%" data-zone="epaules" aria-label="Zone épaules"></button>
+  <button type="button" class="cp-spot" style="left:25.4%;top:46.3%" data-zone="coudes" aria-label="Zone coudes"></button>
+  <button type="button" class="cp-spot" style="left:22.2%;top:59.5%" data-zone="poignets-mains" aria-label="Zone poignets et mains"></button>
+  <button type="button" class="cp-spot" style="left:64.1%;top:32.9%" data-zone="haut-dos" aria-label="Zone haut du dos"></button>
+  <button type="button" class="cp-spot" style="left:64.2%;top:46.7%" data-zone="bas-dos" aria-label="Zone bas du dos"></button>
+  <button type="button" class="cp-spot" style="left:67.2%;top:70.3%" data-zone="genoux" aria-label="Zone genoux"></button>
+  <button type="button" class="cp-spot" style="left:67.6%;top:89.1%" data-zone="chevilles-pieds" aria-label="Zone chevilles et pieds"></button>
+</div>
 <div class="corps-flex">
       <div class="corps-svg-bloc">
         <svg id="corps-svg" viewBox="20 -6 180 476" role="group" aria-label="Silhouette humaine interactive : sélectionnez une zone du corps">
@@ -4411,6 +4428,22 @@ if (champ) {
 /* ================================================================
    CARTE DU CORPS
    ================================================================ */
+/* Planche photo : affichée si images/zones_corps.jpg existe, sinon silhouette SVG */
+(function(){
+  const bloc = $("#corpsPhoto");
+  if (!bloc) return;
+  const test = new Image();
+  test.onload = () => {
+    $("#corpsPhotoImg").src = test.src;
+    bloc.hidden = false;
+    const flex = document.querySelector("#corps .corps-flex .corps-svg-bloc");
+    if (flex) flex.style.display = "none";
+  };
+  test.src = "images/zones_corps.jpg";
+  bloc.querySelectorAll(".cp-spot").forEach(b => {
+    b.addEventListener("click", () => ouvrirZone(b.dataset.zone, b));
+  });
+})();
 $$("#corps-svg .zone").forEach(g => {
   const z = g.dataset.zone;
   if (ZONES[z]) g.setAttribute("data-resume", ZONES[z].nom + " · " + ZONES[z].tms.join(", "));
