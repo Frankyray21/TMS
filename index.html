@@ -220,6 +220,26 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .chrono2-foot b{color:var(--accent-l)}
 @media(max-width:680px){.chrono2-bar{flex-direction:column}.cseg{flex:none!important;min-height:64px;padding:1.4rem .6rem .6rem}.cseg+.cseg::before{left:16%;right:16%;top:0;width:auto;height:1px}}
 
+/* parcours inconfort -> douleur -> lésion (fusion évolution + chronicisation) */
+.evo3{margin:1.2rem 0;border:1px solid rgba(239,68,68,.28);border-radius:16px;overflow:hidden;background:var(--card);box-shadow:var(--shadow-card)}
+.evo-head{display:flex;align-items:center;gap:.6rem;padding:.85rem 1.2rem;background:linear-gradient(90deg,rgba(16,185,129,.16),rgba(245,158,11,.13) 48%,rgba(239,68,68,.18));font-weight:700;font-size:.95rem;border-bottom:1px solid var(--border)}
+.evo-head svg{flex-shrink:0;color:var(--accent-l)}
+.evo-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.evoseg{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:2.1rem 1.15rem 1.4rem;gap:.4rem;color:#fff}
+.evoseg+.evoseg::before{content:'';position:absolute;left:0;top:10%;height:80%;width:1px;background:rgba(255,255,255,.16)}
+.es1{background:linear-gradient(180deg,rgba(16,185,129,.28),rgba(16,185,129,.05))}
+.es2{background:linear-gradient(180deg,rgba(245,158,11,.28),rgba(245,158,11,.05))}
+.es3{background:linear-gradient(180deg,rgba(239,68,68,.32),rgba(239,68,68,.07))}
+.es-tag{position:absolute;top:.6rem;left:50%;transform:translateX(-50%);background:var(--success);color:#06140d;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:.18rem .6rem;border-radius:50px;white-space:nowrap}
+.es-num{font-size:.74rem;font-weight:800;opacity:.65}
+.es-stade{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:800;font-size:1.55rem;line-height:1}
+.es-med{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;opacity:.82}
+.es-desc{font-size:.88rem;line-height:1.5;color:rgba(255,255,255,.9);margin-top:.35rem}
+.es-desc b{color:#fff;font-weight:700}
+.evo-foot{display:flex;align-items:center;gap:.5rem;padding:.75rem 1.2rem;font-size:.86rem;color:var(--muted);background:var(--bg-2)}
+.evo-foot b{color:var(--accent-l)}
+@media(max-width:680px){.evo-grid{grid-template-columns:1fr}.evoseg+.evoseg::before{left:16%;right:16%;top:0;width:auto;height:1px}}
+
 /* piliers */
 .piliers{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:1.5rem}
 .pilier{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:2rem;position:relative;overflow:hidden;box-shadow:var(--shadow-card)}
@@ -1854,12 +1874,34 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
           <span class="ec-go">Lancer l'évaluation &rarr;</span>
         </button>
 
-        <h3 id="evolution" class="sub-h reveal">L'évolution : agir tôt</h3>
-        <p class="lead reveal" style="margin-bottom:1.2rem">Les symptômes des TMS apparaissent généralement de façon progressive. Quand la maladie est bien déclarée, il est déjà tard pour intervenir.</p>
-        <details class="xpand reveal"><summary><span style="color:var(--accent)">1.</span> Inconfort <span class="chev">&rsaquo;</span></summary><div class="xbody">Douleur pendant le travail qui disparaît au repos, fatigue localisée, raideur en fin de quart. <strong style="color:var(--accent-l)">C'est ici qu'il faut agir.</strong></div></details>
-        <details class="xpand reveal"><summary><span style="color:var(--accent)">2.</span> Douleur <span class="chev">&rsaquo;</span></summary><div class="xbody">Survient tôt, persiste plus longtemps, met du temps à disparaître. Sommeil perturbé, rendement réduit.</div></details>
-        <details class="xpand reveal"><summary><span style="color:var(--accent)">3.</span> Lésion <span class="chev">&rsaquo;</span></summary><div class="xbody">Douleur persistante au repos, troubles qui durent des semaines, incapacité fonctionnelle. Récupération longue et incertaine.</div></details>
-        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><p><strong>Le bon moment pour agir, c'est à l'étape 1, dès l'inconfort.</strong> Plus on attend, plus la récupération est longue et incertaine.</p></div>
+        <h3 id="evolution" class="sub-h reveal">L'évolution de la douleur : agir tôt</h3>
+        <p class="lead reveal" style="margin-bottom:1.2rem">Un TMS s'installe par étapes. La même atteinte passe d'un simple <strong style="color:var(--accent-l)">inconfort</strong> à une <strong style="color:var(--accent-l)">douleur</strong> tenace, puis à une <strong style="color:var(--accent-l)">lésion</strong> durable. Plus la douleur dure, plus la récupération est longue — d'où l'importance d'agir dès le départ.</p>
+        <div class="evo3 reveal" role="img" aria-label="Évolution en trois stades : inconfort (phase aiguë, 0 à 6 semaines, fenêtre d'action) ; douleur (phase subaiguë, 6 à 12 semaines) ; lésion (phase chronique, plus de 12 semaines)">
+          <div class="evo-head"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg> La douleur s'aggrave avec le temps — agis dès l'inconfort</div>
+          <div class="evo-grid">
+            <div class="evoseg es1">
+              <span class="es-tag">Fenêtre d'action</span>
+              <span class="es-num">1</span>
+              <span class="es-stade">Inconfort</span>
+              <span class="es-med">Phase aiguë &middot; 0 à 6 semaines</span>
+              <span class="es-desc">Ça tire ou ça brûle <b>à l'effort</b>, puis ça passe au repos. Fatigue locale, raideur en fin de quart. <b>C'est ici qu'il faut agir.</b></span>
+            </div>
+            <div class="evoseg es2">
+              <span class="es-num">2</span>
+              <span class="es-stade">Douleur</span>
+              <span class="es-med">Phase subaiguë &middot; 6 à 12 semaines</span>
+              <span class="es-desc">La douleur revient plus vite, dure plus longtemps et persiste <b>même hors effort</b>. Le sommeil et le rendement en souffrent.</span>
+            </div>
+            <div class="evoseg es3">
+              <span class="es-num">3</span>
+              <span class="es-stade">Lésion</span>
+              <span class="es-med">Phase chronique &middot; plus de 12 semaines (3+ mois)</span>
+              <span class="es-desc">La douleur reste <b>même au repos</b>, l'atteinte est installée : gêne fonctionnelle, récupération longue et incertaine.</span>
+            </div>
+          </div>
+          <div class="evo-foot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Les lésions chroniques sont rares mais de mauvais pronostic : passé ce stade, une prise en charge devient nécessaire.</div>
+        </div>
+        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><p><strong>Le bon moment pour agir, c'est dès l'inconfort</strong> (phase aiguë, la fenêtre verte). Plus on attend, plus on glisse vers la douleur puis la lésion — et plus la récupération est longue et incertaine.</p></div>
 
         <h3 class="sub-h reveal">Les microlésions, mécanisme de l'usure</h3>
         <div class="micro reveal">
@@ -1880,16 +1922,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
         </div>
         <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></div><p><strong>Le temps de récupération détermine si les tissus s'adaptent ou se détériorent.</strong> <span style="color:var(--dim)">— Docking et Cook, 2019</span></p></div>
 
-        <h3 class="sub-h reveal">La chronicisation de la douleur</h3>
-        <div class="chrono2 reveal">
-          <div class="chrono2-head"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg> La douleur s'aggrave avec le temps — agis dès l'inconfort</div>
-          <div class="chrono2-bar" role="img" aria-label="Frise de chronicisation : aiguë 0 à 6 semaines (fenêtre d'action), subaiguë 6 à 12 semaines, chronique au-delà de 12 semaines soit plus de 3 mois">
-            <div class="cseg cs1"><span class="cs-tag">Fenêtre d'action</span><span class="cs-k">Aiguë</span><span class="cs-d">0 à 6 semaines</span></div>
-            <div class="cseg cs2"><span class="cs-k">Subaiguë</span><span class="cs-d">6 à 12 semaines</span></div>
-            <div class="cseg cs3"><span class="cs-k">Chronique</span><span class="cs-d">&gt; 12 semaines (3+ mois)</span></div>
-          </div>
-          <div class="chrono2-foot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Plus la douleur dure, plus la récupération est longue. Les douleurs <b>chroniques</b> sont rares mais de mauvais pronostic : une prise en charge devient nécessaire.</div>
-        </div>
 
       </div>
     </section>
