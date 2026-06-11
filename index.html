@@ -151,7 +151,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .imgcard::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,0) 40%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;transition:background .35s;z-index:4}
 .imgcard:hover,.imgcard:focus-visible{transform:translateY(-6px) scale(1.005);border-color:rgba(210,35,37,.5);box-shadow:0 18px 45px rgba(0,0,0,.5),0 6px 26px rgba(210,35,37,.22)}
 .imgcard:hover::after,.imgcard:focus-visible::after{background:linear-gradient(160deg,rgba(239,90,92,.5),rgba(210,35,37,.10) 60%)}
-.imgcard .media{position:relative;aspect-ratio:4/3;background:linear-gradient(160deg,#161f2e,#0a0e17);overflow:hidden}
+.imgcard .media{position:relative;height:180px;background:linear-gradient(160deg,#161f2e,#0a0e17);overflow:hidden}
 .imgcard .media img{width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .5s,filter .5s;filter:saturate(1.02) contrast(1.03)}
 .imgcard:hover .media img,.imgcard:focus-visible .media img{transform:scale(1.07);filter:saturate(1.3) brightness(1.08)}
 .imgcard .media::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 55%,rgba(210,35,37,.3),transparent 62%);opacity:0;transition:opacity .5s;mix-blend-mode:screen}
@@ -1521,6 +1521,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
     <nav class="toc-nav" id="tocNav" aria-label="Sommaire de la base de connaissances">
       <span class="toc-ind" id="tocInd"></span>
       <a class="toc-link" href="#accueil"><span class="dot"></span>Accueil</a>
+      <a class="toc-link" href="#ampleur"><span class="dot"></span>L'ampleur du problème</a>
       <a class="toc-link" href="#comprendre"><span class="dot"></span>Comprendre les TMS</a>
       <a class="toc-link sub" href="#types">Types &amp; zones</a>
       <a class="toc-link sub" href="#corps">Carte du corps</a>
@@ -1586,7 +1587,23 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
           </a>
         </div>
       </div>
-      <a class="scroll-cue" href="#comprendre" aria-label="Aller à la suite">Défile<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+      <a class="scroll-cue" href="#ampleur" aria-label="Aller à la suite">Défile<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+    </section>
+
+    <!-- AMPLEUR -->
+    <section id="ampleur" tabindex="-1">
+      <span class="ghost" aria-hidden="true">!</span>
+      <div class="wrap">
+        <div class="eyebrow reveal">L'ampleur du problème</div>
+        <h2 class="title reveal d1">Les TMS au Québec, <span class="hl">en chiffres</span></h2>
+        <p class="lead reveal d2">Les troubles musculosquelettiques ne sont pas un détail : ils touchent une grande partie des travailleurs et pèsent lourd, chaque année, sur la santé et le travail.</p>
+        <div class="stats">
+          <div class="stat reveal"><div class="v" data-count>1 / 4</div><div class="l">Travailleur québécois touché par un TMS d'origine non traumatique lié au travail</div></div>
+          <div class="stat reveal d1"><div class="v" data-count>~26 600</div><div class="l">Lésions de type TMS acceptées par la CNESST en 2023</div></div>
+          <div class="stat reveal d2"><div class="v" data-count>23,3%</div><div class="l">Des lésions professionnelles 2023 sont des TMS</div></div>
+          <div class="stat reveal d3"><div class="v" data-count>Top 3</div><div class="l">Des causes d'absence et de réaffectation en milieu de travail</div></div>
+        </div>
+      </div>
     </section>
 
     <!-- COMPRENDRE -->
@@ -1849,13 +1866,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
           <div class="chrono2-foot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Plus la douleur dure, plus la récupération est longue. Les douleurs <b>chroniques</b> sont rares mais de mauvais pronostic : une prise en charge devient nécessaire.</div>
         </div>
 
-        <h3 class="sub-h reveal">Les TMS au Québec, en chiffres</h3>
-        <div class="stats">
-          <div class="stat reveal"><div class="v" data-count>1 / 4</div><div class="l">Travailleur québécois touché par un TMS d'origine non traumatique lié au travail</div></div>
-          <div class="stat reveal d1"><div class="v" data-count>~26 600</div><div class="l">Lésions de type TMS acceptées par la CNESST en 2023</div></div>
-          <div class="stat reveal d2"><div class="v" data-count>23,3%</div><div class="l">Des lésions professionnelles 2023 sont des TMS</div></div>
-          <div class="stat reveal d3"><div class="v" data-count>Top 3</div><div class="l">Des causes d'absence et de réaffectation en milieu de travail</div></div>
-        </div>
       </div>
     </section>
 
