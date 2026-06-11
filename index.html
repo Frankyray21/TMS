@@ -267,15 +267,27 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .bd-e{color:var(--muted);font-size:.88rem}
 .bd-zone{display:inline-block;font-weight:700;font-size:.85rem;padding:.35rem .8rem;border-radius:50px;margin-bottom:.6rem}
 .bd-conseil{color:var(--text);font-size:.95rem;line-height:1.5}
-/* conséquences cause -> effet */
-.conseq2{display:flex;flex-direction:column;gap:.7rem}
-.cq2{display:grid;grid-template-columns:1fr 1.3fr;gap:1rem;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem;border-left:4px solid var(--accent)}
-.cq2-cause{display:flex;align-items:center;gap:.7rem;font-weight:700;font-size:.98rem}
-.cq2-ar{flex-shrink:0;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:1.1rem}
-.cq2-ar.down{background:rgba(239,68,68,.18);color:#ef5a5c}.cq2-ar.side{background:rgba(245,158,11,.18);color:#f59e0b}
-.cq2-eff{display:flex;align-items:flex-start;gap:.6rem;color:var(--muted);font-size:.92rem;line-height:1.5;border-left:1px solid var(--border);padding-left:1rem}
-.cq2-go{color:var(--accent-l);font-weight:800;flex-shrink:0}
-@media(max-width:620px){.cq2{grid-template-columns:1fr;gap:.6rem}.cq2-eff{border-left:none;padding-left:0}}
+/* conséquences fatigue : tableau cause -> effet */
+.ce-alert{display:flex;align-items:center;gap:.9rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.7rem 1.1rem;font-size:.97rem}
+.ce-alert b{color:var(--accent-l)}
+.ce-warn{flex-shrink:0;display:grid;place-items:center;width:40px;height:40px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:var(--accent)}
+.ce-warn i{display:grid;place-items:center;width:34px;height:34px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:#1c0d0e;color:#ef5a5c;font-style:normal;font-weight:900;font-size:1.1rem}
+.ce-heads{display:grid;grid-template-columns:1fr 64px 1fr;margin:1.2rem 0 .7rem}
+.ce-head{justify-self:center;width:min(320px,84%);text-align:center;background:linear-gradient(135deg,#e23a3c,#9c1214);color:#fff;font-weight:800;text-transform:uppercase;letter-spacing:.16em;font-size:.84rem;padding:.45rem 0;clip-path:polygon(0 0,100% 0,93% 100%,7% 100%)}
+.ce-rows{display:flex;flex-direction:column;gap:1rem}
+.ce-row{display:grid;grid-template-columns:1fr 64px 1fr;align-items:stretch}
+.ce-cause{display:flex;align-items:center;gap:1rem;background:linear-gradient(160deg,#16181e,#0d0f13);border:1px solid #2b2e36;border-radius:14px;padding:1rem 1.2rem}
+.ce-ico{flex-shrink:0;display:grid;place-items:center;width:56px;height:56px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:rgba(255,255,255,.14)}
+.ce-ico i{display:grid;place-items:center;width:52px;height:52px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:linear-gradient(160deg,#262a31,#0e1014);font-style:normal;font-size:1.5rem}
+.ce-txt{border-left:1px solid rgba(255,255,255,.14);padding-left:1rem;font-weight:700;font-size:.98rem;line-height:1.45}
+.ce-arrow{display:flex;align-items:center;justify-content:center;gap:.3rem;color:#e8393b}
+.ce-arrow::before,.ce-arrow::after{content:'';width:5px;height:5px;border-radius:50%;background:#e8393b;box-shadow:0 0 7px rgba(232,57,59,.9);flex-shrink:0}
+.ce-arrow svg{filter:drop-shadow(0 0 6px rgba(232,57,59,.45))}
+.ce-effect{display:flex;align-items:center;background:linear-gradient(160deg,#16181e,#0d0f13);border:1px solid #2b2e36;border-radius:14px;padding:1rem 1.3rem;color:rgba(255,255,255,.92);font-size:.95rem;line-height:1.55}
+.ce-foot{display:flex;align-items:center;gap:.9rem;margin-top:1.1rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.8rem 1.1rem;font-size:.94rem;line-height:1.55}
+.ce-red{color:#ef5a5c}
+.ce-bulb{flex-shrink:0;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:var(--g-red);color:#fff}
+@media(max-width:700px){.ce-heads{display:none}.ce-row{grid-template-columns:1fr}.ce-arrow{padding:.4rem 0}.ce-arrow::before,.ce-arrow::after{display:none}.ce-arrow svg{transform:rotate(90deg)}}
 /* promo échelle de Borg */
 .borg-promo{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin:1.4rem 0;background:linear-gradient(160deg,rgba(16,185,129,.12),rgba(17,24,39,.6));border:1px solid rgba(16,185,129,.4);border-radius:16px;padding:1.1rem 1.3rem}
 .bpr-ic{flex-shrink:0;width:50px;height:50px;border-radius:13px;background:rgba(16,185,129,.18);color:#34d399;display:grid;place-items:center}
@@ -300,45 +312,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 @media(max-width:600px){.borg-row{grid-template-columns:44px 1fr;}.br-d{grid-column:1 / -1;padding-left:.2rem}.borg-axe{display:none}}
 
 /* ===== Modules interactifs : fatigue & charge ===== */
-.borg{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem 1.5rem;box-shadow:var(--shadow-card)}
-.borg-top{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.1rem}
-.borg-val{flex-shrink:0;width:84px;height:84px;border-radius:18px;display:flex;align-items:baseline;justify-content:center;gap:1px;font-family:var(--font-display);font-weight:800;background:var(--bg-2);border:1px solid var(--border);transition:background .25s,color .25s,border-color .25s}
-.borg-val span{font-size:2.6rem;line-height:1}.borg-val small{font-size:1rem;opacity:.7}
-.borg-label{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1.2rem;margin-bottom:.2rem}
-.borg-ex{color:var(--muted);font-size:.92rem;line-height:1.5}
-.borg-range{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:50px;outline-offset:4px;background:#1e293b;cursor:pointer}
-.borg-range::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.5);cursor:pointer;transition:border-color .2s}
-.borg-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--accent);cursor:pointer}
-.borg-scale-lbl{display:flex;justify-content:space-between;margin-top:.5rem;font-size:.76rem;color:var(--dim);font-weight:600}
-.borg-zone{margin-top:1rem;text-align:center;font-weight:700;font-size:.95rem;padding:.55rem;border-radius:10px;transition:background .25s,color .25s}
-
-.fatig{display:flex;gap:1.6rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;box-shadow:var(--shadow-card)}
-.fatig-left{flex:0 0 220px;display:flex;flex-direction:column;align-items:center;gap:.9rem}
-.battery{position:relative;width:150px;height:74px;border:4px solid #cbd5e1;border-radius:12px;padding:6px;background:#0d1320}
-.battery::after{content:'';position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:8px;height:28px;background:#cbd5e1;border-radius:0 4px 4px 0}
-.bat-fill{height:100%;width:100%;border-radius:5px;background:linear-gradient(90deg,#10b981,#3bd17a);transition:width .5s ease,background .5s ease}
-.bat-state{font-size:.9rem;color:var(--muted);text-align:center;min-height:2.4em;line-height:1.4}
-.fatig-btns{display:flex;gap:.5rem}
-.fatig-eff,.fatig-rst{border:none;border-radius:10px;padding:.6rem 1rem;font-weight:700;font-size:.86rem;cursor:pointer;font-family:inherit;transition:filter .15s,transform .15s}
-.fatig-eff{background:var(--g-red);color:#fff}.fatig-eff:hover{filter:brightness(1.1);transform:translateY(-2px)}
-.fatig-rst{background:var(--card-2);color:var(--text);border:1px solid var(--border)}.fatig-rst:hover{background:#22304a}
-.fatig-mech{flex:1;min-width:240px;list-style:none;display:flex;flex-direction:column;gap:.7rem;justify-content:center}
-.fatig-mech li{display:flex;align-items:center;gap:.9rem;padding:.8rem 1rem;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);opacity:.45;transform:translateX(6px);transition:opacity .35s,transform .35s,border-color .35s}
-.fatig-mech li.on{opacity:1;transform:none;border-color:rgba(239,90,92,.5)}
-.fatig-mech .fm-ar{flex-shrink:0;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:1.1rem}
-.fatig-mech .fm-ar.down{background:rgba(239,68,68,.18);color:#ef5a5c}.fatig-mech .fm-ar.up{background:rgba(245,158,11,.18);color:#f59e0b}
-.fatig-mech strong{display:block;font-size:.96rem}.fatig-mech span{color:var(--muted);font-size:.84rem}
-
-.conseq{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-.cq{text-align:left;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem;cursor:pointer;font-family:inherit;color:var(--text);transition:border-color .2s,transform .15s}
-.cq:hover{border-color:rgba(210,35,37,.5);transform:translateY(-3px)}
-.cq .cq-ar{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:9px;background:rgba(239,68,68,.16);color:#ef5a5c;font-weight:800;margin-bottom:.6rem}
-.cq .cq-t{display:block;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1rem;margin-bottom:.4rem}
-.cq .cq-d{display:grid;grid-template-rows:0fr;opacity:0;color:var(--muted);font-size:.88rem;line-height:1.5;transition:grid-template-rows .3s,opacity .3s}
-.cq .cq-d>*{overflow:hidden}
-.cq.open .cq-d{grid-template-rows:1fr;opacity:1;margin-top:.2rem}
-.cq.open .cq-ar{background:var(--accent);color:#fff}
-
 .nuance{margin:1.3rem 0;background:linear-gradient(160deg,rgba(16,185,129,.06),rgba(17,24,39,.5));border:1px solid var(--border);border-left:4px solid var(--success);border-radius:0 16px 16px 0;padding:1.3rem 1.5rem}
 
 .micro-open{display:inline-flex;align-items:center;gap:.55rem;flex-shrink:0;background:var(--g-green);border:none;color:#fff;font-family:inherit;font-weight:800;font-size:.98rem;padding:.85rem 1.5rem;border-radius:50px;cursor:pointer;box-shadow:0 8px 22px rgba(16,185,129,.35);transition:transform .15s,filter .2s,box-shadow .2s;animation:micropulse 2.8s ease-in-out infinite}
@@ -397,7 +370,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .sd-out{flex:1;min-width:240px}
 .sd-k{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1.1rem;margin-bottom:.4rem}
 .sd-out p{color:var(--muted);font-size:.95rem;line-height:1.55}
-@media(max-width:680px){.conseq{grid-template-columns:1fr}.fatig-left{flex-basis:100%}}
 
 /* piliers */
 .piliers{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:1.5rem}
@@ -2104,13 +2076,29 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
         </div>
 
         <h3 id="fatigue" class="sub-h reveal">Les conséquences de la fatigue musculaire</h3>
-        <p class="lead reveal" style="margin-bottom:1rem">À force d'être sollicité sans récupération, le muscle s'épuise. La fatigue musculaire mène alors à une <strong style="color:var(--accent-l)">augmentation du risque de blessure</strong>. Trois conséquences s'enchaînent :</p>
-        <div class="conseq2 reveal">
-          <div class="cq2"><div class="cq2-cause"><span class="cq2-ar down">&darr;</span>Diminution de la force musculaire</div><div class="cq2-eff"><span class="cq2-go">&rarr;</span>Moins de force pour accomplir une même tâche : le corps compense en forçant ailleurs.</div></div>
-          <div class="cq2"><div class="cq2-cause"><span class="cq2-ar side">&rarr;</span>Changement dans la biomécanique des mouvements</div><div class="cq2-eff"><span class="cq2-go">&rarr;</span>Mouvements moins efficaces et compensations qui chargent les mauvaises structures.</div></div>
-          <div class="cq2"><div class="cq2-cause"><span class="cq2-ar down">&darr;</span>Diminution de la stabilité articulaire</div><div class="cq2-eff"><span class="cq2-go">&rarr;</span>Moins de contrôle des articulations : faux mouvements et plus de risques de blessures.</div></div>
+        <p class="lead reveal" style="margin-bottom:1rem">À force d'être sollicité sans récupération, le muscle s'épuise. Trois conséquences s'enchaînent :</p>
+        <div class="reveal">
+          <div class="ce-alert"><span class="ce-warn" aria-hidden="true"><i>!</i></span><span>La fatigue musculaire mène à une <b>augmentation du risque de blessure</b>.</span></div>
+          <div class="ce-heads" aria-hidden="true"><span class="ce-head">Cause</span><span></span><span class="ce-head">Effet</span></div>
+          <div class="ce-rows">
+            <div class="ce-row">
+              <div class="ce-cause"><span class="ce-ico" aria-hidden="true"><i>💪</i></span><span class="ce-txt">Diminution de la force musculaire</span></div>
+              <div class="ce-arrow" aria-hidden="true"><svg width="26" height="22" viewBox="0 0 26 22" fill="currentColor"><path d="M2.8.9l10 10.1-10 10.1L0 18.3l7.3-7.3L0 3.7z"/><path d="M14.6.9l10 10.1-10 10.1-2.8-2.8 7.3-7.3-7.3-7.3z"/></svg></div>
+              <div class="ce-effect">Moins de force pour accomplir une même tâche : le corps compense en forçant ailleurs.</div>
+            </div>
+            <div class="ce-row">
+              <div class="ce-cause"><span class="ce-ico" aria-hidden="true"><i>🏃</i></span><span class="ce-txt">Changement dans la biomécanique des mouvements</span></div>
+              <div class="ce-arrow" aria-hidden="true"><svg width="26" height="22" viewBox="0 0 26 22" fill="currentColor"><path d="M2.8.9l10 10.1-10 10.1L0 18.3l7.3-7.3L0 3.7z"/><path d="M14.6.9l10 10.1-10 10.1-2.8-2.8 7.3-7.3-7.3-7.3z"/></svg></div>
+              <div class="ce-effect">Mouvements moins efficaces et compensations qui chargent les mauvaises structures.</div>
+            </div>
+            <div class="ce-row">
+              <div class="ce-cause"><span class="ce-ico" aria-hidden="true"><i>🦵</i></span><span class="ce-txt">Diminution de la stabilité articulaire</span></div>
+              <div class="ce-arrow" aria-hidden="true"><svg width="26" height="22" viewBox="0 0 26 22" fill="currentColor"><path d="M2.8.9l10 10.1-10 10.1L0 18.3l7.3-7.3L0 3.7z"/><path d="M14.6.9l10 10.1-10 10.1-2.8-2.8 7.3-7.3-7.3-7.3z"/></svg></div>
+              <div class="ce-effect">Moins de contrôle des articulations : faux mouvements et plus de risques de blessures.</div>
+            </div>
+          </div>
+          <div class="ce-foot"><span class="ce-bulb" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 00-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0012 2z"/></svg></span><span><strong>Agir tôt</strong> permet de préserver tes capacités, de <b class="ce-red">réduire le risque de blessure</b> et de protéger ta santé à long terme.</span></div>
         </div>
-        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><p><strong>Reconnaître et gérer la fatigue musculaire</strong> permet de maintenir la performance, de réduire le risque de blessure et de protéger sa santé à long terme.</p></div>
 
         <!-- Microlésions interactif -->
 
@@ -4230,11 +4218,6 @@ document.addEventListener("keydown", e => {
   var bb=$("#batBtn"),br=$("#batRst");
   if(bb){bb.addEventListener("click",function(){bat=Math.max(0,bat-20);majBat();});
     br.addEventListener("click",function(){bat=100;majBat();});majBat();}
-
-  /* ---- Conséquences ---- */
-  document.querySelectorAll(".conseq .cq").forEach(function(b){
-    b.addEventListener("click",function(){var o=b.classList.toggle("open");b.setAttribute("aria-expanded",o);});
-  });
 
   /* ---- Microlésions : surcouche ---- */
   var vMicro=$("#voile-micro"),declMicro=null;
