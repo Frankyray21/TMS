@@ -145,7 +145,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 
 /* interactive image cards */
 .icards{display:grid;gap:1.3rem}
-.tms-c{grid-template-columns:repeat(auto-fit,minmax(215px,1fr))}
+.tms-c{grid-template-columns:repeat(2,1fr)}
 .zone-c{grid-template-columns:repeat(auto-fit,minmax(235px,1fr))}
 .imgcard{position:relative;border:1px solid var(--border);border-radius:15px;overflow:hidden;cursor:pointer;background:var(--card);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s,border-color .35s;outline:none}
 .imgcard::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,0) 40%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;transition:background .35s;z-index:4}
@@ -1476,8 +1476,8 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .corps-insitu { margin: 1rem 0 1.4rem; }
 .corps-insitu .corps-aide { font-size: .9rem; color: var(--muted, #9aa7bd); margin-bottom: 1rem; }
 .corps-insitu .corps-svg-bloc { background: rgba(17,24,39,.66); border: 1px solid var(--border, #233047); }
-.modale-corps .zone-photo { margin: 0 0 16px; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
-.modale-corps .zone-photo img { display: block; width: 100%; height: auto; }
+.modale-corps .zone-photo { margin: 0 0 16px; border-radius: 12px; overflow: hidden; border: 1px solid #333; max-width: 300px; }
+.modale-corps .zone-photo img { display: block; width: 100%; height: 170px; object-fit: cover; }
 
 /* ---------- Schéma interactif dans la section facteurs ---------- */
 .insitu { margin: 1.4rem 0; }
