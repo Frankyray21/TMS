@@ -583,6 +583,10 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .sleep-cta{display:flex;align-items:center;justify-content:center;gap:.6rem;margin:1.3rem auto 0;background:var(--g-red);color:#fff;border:none;border-radius:12px;padding:1rem 2.4rem;font-family:inherit;font-weight:800;font-size:1.02rem;cursor:pointer;box-shadow:0 10px 26px rgba(210,35,37,.35);transition:transform .15s,filter .2s}
 .sleep-cta:hover{transform:translateY(-3px);filter:brightness(1.1)}
 .panneau-sommeil{max-width:700px}
+.panneau-video{max-width:900px}
+.hero-video{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.2rem;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:.7rem 1.4rem;font-family:inherit;font-weight:700;font-size:.92rem;color:var(--text);cursor:pointer;transition:border-color .2s,transform .15s}
+.hero-video:hover{border-color:rgba(210,35,37,.55);transform:translateY(-2px)}
+.hero-video .hv-dur{color:var(--dim);font-weight:600;font-size:.82rem}
 .sl-body{color:var(--muted);font-size:.95rem;line-height:1.6;margin-top:.6rem}
 .sl-body strong{color:var(--text)}
 .sl-body ul{list-style:disc;margin:.8rem 0 0;padding-left:1.3rem}
@@ -1594,7 +1598,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     align-items: center;
     justify-content: center;
     padding: 20px;
-    z-index: 100;
+    z-index: 180;
   }
   .voile.ouvert { display: flex; }
 
@@ -1935,6 +1939,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
             <span class="pmeta"><span>&#9654; Diapositives + quiz</span><span>~30 min</span></span>
           </a>
         </div>
+        <button type="button" class="hero-video reveal d3" data-ouvrir-video><span aria-hidden="true">🎬</span> En vidéo : Préserver son corps <span class="hv-dur">1 min 54</span> <span aria-hidden="true">&rarr;</span></button>
       </div>
       <a class="scroll-cue" href="#ampleur" aria-label="Aller à la suite">Défile<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
     </section>
@@ -2169,7 +2174,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   </section>
         </div>
         <p class="cap reveal">Un TMS n'a pas une seule cause : effort, posture, répétition, fatigue et environnement se cumulent.</p>
-        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></div><p><strong>Va plus loin :</strong> la <a class="plink" href="#corps">carte du corps</a>, la vidéo et le <a class="plink" href="#evaluer">simulateur de poste de travail</a> t'attendent dans la section <a class="plink" href="#exploration">Exploration interactive</a>, plus bas dans cette page.</p></div>
+        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></div><p><strong>Va plus loin :</strong> la <a class="plink" href="#corps">carte du corps</a> et le <a class="plink" href="#evaluer">simulateur de poste de travail</a> t'attendent dans la section <a class="plink" href="#exploration">Exploration interactive</a>, plus bas dans cette page.</p></div>
 
         <h3 id="realite" class="sub-h reveal">Notre réalité : sous terre, le risque se cumule</h3>
         <p class="lead reveal" style="margin-bottom:1.2rem">Sous terre, plusieurs contraintes s'additionnent sur un même quart. Coche celles qui touchent ton poste pour mesurer le risque :</p>
@@ -2581,7 +2586,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
       <div class="wrap">
         <div class="eyebrow reveal">Base de connaissances &middot; volet interactif</div>
         <h2 class="title reveal d1">Exploration interactive</h2>
-        <p class="lead reveal d2">La vidéo « Préserver son corps », pour finir en images. Le schéma interactif, la carte du corps et l'évaluation de poste sont intégrés plus haut, dans « Comprendre les TMS ». Ta progression est conservée d'une visite à l'autre.</p>
+        <p class="lead reveal d2">Le schéma interactif, la carte du corps et l'évaluation de poste sont intégrés plus haut, dans « Comprendre les TMS ». La vidéo « Préserver son corps » s'ouvre depuis l'accueil. Ta progression est conservée d'une visite à l'autre.</p>
       </div>
       <div class="ipage">
         <div class="explo-outils">
@@ -2601,30 +2606,6 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
       <span id="texte-prog">0 / 13 explorés</span>
     </div><button id="btn-raz-progression">↺ Réinitialiser ma progression</button></div>
         </div>
-
-<section class="bloc ireveal" id="video">
-    <h2>En vidéo : <span class="accent">préserver son corps</span></h2>
-    <p class="intro">Le corps est votre premier outil de travail : cette courte vidéo (2 min) montre comment l'entretenir au quotidien (sommeil, activité physique, récupération) pour mieux encaisser les contraintes du travail. C'est le volet « facteurs individuels » du schéma, en images.</p>
-
-    <div class="video-cadre">
-      <video id="lecteur-video" controls preload="metadata" poster="videos/preserver-son-corps-affiche.jpg">
-        <source src="videos/preserver-son-corps.mp4" type="video/mp4">
-        Votre navigateur ne prend pas en charge la lecture vidéo.
-        <a href="videos/preserver-son-corps.mp4">Télécharger la vidéo</a>.
-      </video>
-      <div class="video-legende">
-        <span class="video-titre">🎬 Préserver son corps · 1 min 54</span>
-        <div class="video-puces">
-          <span class="video-pour">Pour aller plus loin :</span>
-          <button class="puce" data-cle="sommeil">🌙 Sommeil</button>
-          <button class="puce" data-cle="condition-physique">🏃 Condition physique</button>
-          <button class="puce" data-cle="recuperation">😴 Récupération</button>
-          <button class="puce" data-cle="agir-tot">💡 Agir tôt</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
 
       </div>
     </section>
@@ -2924,7 +2905,7 @@ document.querySelectorAll('.faccard').forEach(function(c){
   document.querySelectorAll('.toc-link').forEach(function(l){ITEMS.push({k:'Section',label:l.textContent.trim(),sub:'',go:l.getAttribute('href')});});
   document.querySelectorAll('h3.sub-h').forEach(function(h){ITEMS.push({k:'Sujet',label:h.textContent.replace(/\s+/g,' ').replace(/:.*clique.*$/i,'').trim(),sub:'',go:'#'+h.id});});
   Object.keys(MODAL_DATA).forEach(function(key){var d=MODAL_DATA[key];ITEMS.push({k:'Fiche',label:d.title,sub:d.tag,modal:key,kw:(d.desc+' '+d.risk.join(' ')+' '+d.prev.join(' '))});});
-  ITEMS.push({k:'Section',label:'Exploration interactive : schéma, corps humain, simulateur',sub:'#exploration',go:'#exploration',kw:'schéma simulateur vidéo carte du corps cliquable évaluer poste de travail'});
+  ITEMS.push({k:'Section',label:'Exploration interactive : schéma, corps humain, simulateur',sub:'#exploration',go:'#exploration',kw:'schéma simulateur carte du corps cliquable évaluer poste de travail'});
   ITEMS.push({k:'Page',label:'Formation guidée : quiz et attestation',sub:'formation.html',go:'formation.html',kw:'quiz attestation certificat formation guidée score'});
   var filtered=[],active=0;
   function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
@@ -2986,6 +2967,32 @@ window.addEventListener('beforeprint',function(){document.querySelectorAll('deta
 window.addEventListener('afterprint',function(){document.querySelectorAll('details.xpand').forEach(function(d){if(!d.dataset.wasOpen)d.open=false;});});
 
 </script>
+<!-- Vidéo en surimpression -->
+<div class="voile-sim" id="voile-video" role="dialog" aria-modal="true" aria-label="Vidéo : préserver son corps">
+  <div class="panneau-sim panneau-video">
+    <button class="fermer-sim" id="fermer-video" aria-label="Fermer la vidéo">✕</button>
+    <h3 class="refl-titre">En vidéo : préserver son corps</h3>
+    <p class="nuance-p">Le corps est ton premier outil de travail : cette courte vidéo (2 min) montre comment l'entretenir au quotidien (sommeil, activité physique, récupération) pour mieux encaisser les contraintes du travail.</p>
+    <div class="video-cadre" style="margin-top:1rem">
+      <video id="lecteur-video" controls preload="metadata" poster="videos/preserver-son-corps-affiche.jpg">
+        <source src="videos/preserver-son-corps.mp4" type="video/mp4">
+        Votre navigateur ne prend pas en charge la lecture vidéo.
+        <a href="videos/preserver-son-corps.mp4">Télécharger la vidéo</a>.
+      </video>
+      <div class="video-legende">
+        <span class="video-titre">🎬 Préserver son corps · 1 min 54</span>
+        <div class="video-puces">
+          <span class="video-pour">Pour aller plus loin :</span>
+          <button class="puce" data-cle="sommeil">🌙 Sommeil</button>
+          <button class="puce" data-cle="condition-physique">🏃 Condition physique</button>
+          <button class="puce" data-cle="recuperation">😴 Récupération</button>
+          <button class="puce" data-cle="agir-tot">💡 Agir tôt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Sommeil : détails en surimpression -->
 <div class="voile-sim" id="voile-sommeil" role="dialog" aria-modal="true" aria-label="Détail sommeil">
   <div class="panneau-sim panneau-sommeil">
@@ -4664,6 +4671,17 @@ document.addEventListener("keydown", e => {
     $("#fermer-sommeil").addEventListener("click",fermerSl);
     vSl.addEventListener("click",function(e){if(e.target===vSl)fermerSl();});
     document.addEventListener("keydown",function(e){if(e.key==="Escape"&&vSl.classList.contains("ouvert"))fermerSl();});
+  }
+
+  /* ---- Vidéo : surcouche ---- */
+  var vVid=$("#voile-video"),declVid=null;
+  function ouvrirVid(d){declVid=d;vVid.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-video").focus();}
+  function fermerVid(){vVid.classList.remove("ouvert");document.body.style.overflow="";var lv=$("#lecteur-video");if(lv&&!lv.paused)lv.pause();if(declVid&&declVid.focus)declVid.focus();}
+  document.querySelectorAll("[data-ouvrir-video]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirVid(b);});});
+  if(vVid){
+    $("#fermer-video").addEventListener("click",fermerVid);
+    vVid.addEventListener("click",function(e){if(e.target===vVid)fermerVid();});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&vVid.classList.contains("ouvert"))fermerVid();});
   }
 
   /* ---- Bons réflexes : surcouche ---- */
