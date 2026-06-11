@@ -1421,39 +1421,6 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   }
   #corps-svg .zone:hover .point, #corps-svg .zone:focus-visible .point { r: 9; filter: drop-shadow(0 0 9px rgba(255,60,62,1)); }
   #corps-svg .zone:focus-visible { outline: none; }
-  .zones-liste {
-    flex: 1;
-    min-width: 260px;
-  }
-  .zones-liste h3 { font-size: 1rem; color: var(--or); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
-  .zones-grille {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-  @media (max-width: 560px) { .zones-grille { grid-template-columns: 1fr; } }
-  .carte-zone {
-    background: var(--carte);
-    border: 1px solid var(--bordure);
-    border-radius: 14px;
-    padding: 22px 20px;
-    color: #fff;
-    cursor: pointer;
-    text-align: left;
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    transition: transform .15s, border-color .15s, background .15s;
-  }
-  .carte-zone:hover, .carte-zone:focus-visible {
-    transform: translateY(-3px);
-    border-color: var(--or);
-    background: #1c1810;
-    outline: none;
-  }
-  .carte-zone .ico { font-size: 2rem; }
-  .carte-zone .nom-zone { font-weight: 700; font-size: 1.05rem; }
-  .carte-zone .tms-zone { font-size: .85rem; color: #aaa; margin-top: 4px; line-height: 1.4; }
 
   /* ---------- Simulateur ---------- */
   .sim-flex {
@@ -2038,7 +2005,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 
         <h3 class="sub-h reveal">Où ça frappe le plus <span style="font-weight:400;font-size:.85rem;color:var(--dim)"> : clique une zone</span></h3>
         <div class="corps-insitu reveal" id="corps">
-          <p class="corps-aide">Clique un point lumineux de la silhouette, ou une zone dans la liste, pour voir la zone touchée, les TMS fréquents, les facteurs en cause et les bons réflexes.</p>
+          <p class="corps-aide">Clique un point lumineux ou une étiquette de la planche pour voir la zone touchée, les TMS fréquents, les facteurs en cause et les bons réflexes.</p>
 <div class="corps-photo" id="corpsPhoto" hidden>
   <img src="" alt="Huit zones sous surveillance sur le corps humain, vues de face et de dos : clique un point pour explorer la zone" id="corpsPhotoImg" decoding="async">
   <button type="button" class="cp-spot" style="left:34.8%;top:26%" data-zone="cou" aria-label="Zone cou et nuque"></button>
@@ -2143,10 +2110,6 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
         </svg>
       </div>
 
-      <div class="zones-liste">
-        <h3>8 zones sous surveillance <span style="font-weight:400;font-size:.85rem;color:var(--dim)">: clique une carte</span></h3>
-        <div class="zones-grille" id="zones-grille"></div>
-      </div>
     </div>
   
         </div>
@@ -4486,19 +4449,6 @@ $$("#corps-svg .zone").forEach(g => {
   g.addEventListener("keydown", e => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ouvrirZone(z, g); }
   });
-});
-
-const grilleZones = $("#zones-grille");
-Object.keys(ZONES).forEach(c => {
-  const z = ZONES[c];
-  const b = document.createElement("button");
-  b.className = "carte-zone";
-  b.innerHTML = "<span class='ico'></span><span><span class='nom-zone'></span><br><span class='tms-zone'></span></span>";
-  b.querySelector(".ico").textContent = z.icone;
-  b.querySelector(".nom-zone").textContent = z.nom;
-  b.querySelector(".tms-zone").textContent = z.tms.slice(0, 2).join(" · ");
-  b.addEventListener("click", () => ouvrirZone(c, b));
-  grilleZones.appendChild(b);
 });
 
 /* ================================================================
