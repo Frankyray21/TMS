@@ -110,13 +110,49 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 .ic-green{background:rgba(16,185,129,.12);color:var(--success)}
 .ic-purple{background:rgba(139,92,246,.12);color:var(--purple)}
 
-.prog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:1rem;margin-top:2rem}
-.prog-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem;cursor:pointer;text-align:left;transition:all .3s;border-top:3px solid;color:var(--text)}
-.prog-card:hover{transform:translateY(-5px);box-shadow:0 14px 38px rgba(0,0,0,.4)}
-.prog-card .pc-num{font-size:1.7rem;font-weight:900;line-height:1;margin-bottom:.5rem}
-.prog-card h4{font-size:1rem;font-weight:700;margin-bottom:.25rem;color:var(--text)}
-.prog-card p{color:var(--muted);font-size:.8rem}
-.prog-card .pc-min{margin-top:.5rem;font-size:.72rem;color:var(--dim);font-weight:700;letter-spacing:.04em}
+/* ===== Modules de formation (inspiré Magic UI : Magic Card, Border Beam, Dot Pattern, Number Ticker) ===== */
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+.mod-section{position:relative;margin-top:1.8rem;padding:1.5rem;border-radius:20px;border:1px solid var(--border);background:radial-gradient(circle at 1px 1px,rgba(255,255,255,.05) 1px,transparent 0) 0 0/22px 22px,var(--bg-2)}
+.mod-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.mod-head .start-h{margin:0}
+.mod-overall{display:flex;align-items:center;gap:.5rem;font-size:.84rem;color:var(--muted);font-weight:600}
+.mod-overall b{font-family:var(--font-display);font-size:1.3rem;font-weight:800;color:var(--accent-l);font-variant-numeric:tabular-nums}
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));gap:1rem}
+.mod-card{position:relative;overflow:hidden;isolation:isolate;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;text-align:left;cursor:pointer;font-family:inherit;color:var(--text);min-height:44px;transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s,border-color .25s}
+.mod-card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--acc) 55%,var(--border));box-shadow:0 16px 40px rgba(0,0,0,.42)}
+.mod-card::before{content:'';position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .3s;background:radial-gradient(240px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--acc) 24%,transparent),transparent 60%)}
+.mod-card:hover::before{opacity:1}
+.mod-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),transparent 80%)}
+.mod-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.55rem}
+.mod-num{font-family:var(--font-display);font-size:1.55rem;font-weight:800;line-height:1;color:var(--acc)}
+.mod-status{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:.26rem .6rem;border-radius:50px;border:1px solid;white-space:nowrap}
+.mod-status[data-st="todo"]{color:#aab6c9;border-color:var(--border);background:rgba(255,255,255,.04)}
+.mod-status[data-st="doing"]{color:#ffd27a;border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.13)}
+.mod-status[data-st="done"]{color:#7ee0b0;border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.14)}
+.mod-card h4{font-size:1.06rem;font-weight:700;margin-bottom:.25rem}
+.mod-card>p{color:var(--muted);font-size:.85rem;line-height:1.45;margin-bottom:.5rem}
+.mod-meta{display:block;font-size:.72rem;color:var(--dim);font-weight:700;letter-spacing:.03em;margin-bottom:.95rem}
+.mod-foot{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+.mod-ring{position:relative;width:44px;height:44px;flex-shrink:0}
+.mod-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.mod-ring .rbg{fill:none;stroke:var(--border);stroke-width:3}
+.mod-ring .rfg{fill:none;stroke:var(--acc);stroke-width:3;stroke-linecap:round;stroke-dasharray:97.4;stroke-dashoffset:97.4;transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.2,1)}
+.mod-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
+.mod-cta{display:inline-flex;align-items:center;gap:.3rem;font-size:.88rem;font-weight:800;color:var(--acc)}
+.mod-cta svg{transition:transform .25s}
+.mod-card:hover .mod-cta svg{transform:translateX(4px)}
+.mod-card.is-done{opacity:.94}
+/* Border Beam : faisceau lumineux qui tourne sur le module en cours */
+.mod-beam{position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;opacity:0;background:conic-gradient(from var(--a),transparent 0 68%,var(--acc) 84%,#fff 91%,var(--acc) 95%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.mod-card.is-current{border-color:transparent}
+.mod-card.is-current .mod-beam{opacity:1;animation:beamspin 4.5s linear infinite}
+@keyframes beamspin{to{--a:360deg}}
+/* Shimmer Button (CTA Commencer/Reprendre) */
+#startBtn{position:relative;overflow:hidden}
+#startBtn::after{content:'';position:absolute;top:0;left:-160%;width:55%;height:100%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-18deg);animation:btnShimmer 4s ease-in-out infinite}
+@keyframes btnShimmer{0%,55%{left:-160%}100%{left:170%}}
+@media(max-width:560px){.mod-section{padding:1.1rem}.mod-card{padding:1.05rem}}
+@media (prefers-reduced-motion:reduce){.mod-card.is-current .mod-beam{animation:none}#startBtn::after{display:none}.mod-ring .rfg{transition:none}.mod-card::before{transition:none}}
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.3rem}
 .stat{background:var(--card-2);border:1px solid var(--border);border-radius:14px;padding:1.7rem;text-align:center}
@@ -616,13 +652,18 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
           </div>
             </div>
           </div>
-          <h3 class="start-h">Les 5 parties de la formation</h3>
-          <div class="prog-grid">
-            <button class="prog-card" data-theme="1" style="border-top-color:#f59e0b"><div class="pc-num" style="color:#f59e0b">01</div><h4>Comprendre les TMS</h4><p>Ce que c'est, où ça frappe, comment ça s'installe</p><div class="pc-min">&#8776; 8 min</div></button>
-            <button class="prog-card" data-theme="2" style="border-top-color:#3b82f6"><div class="pc-num" style="color:#3b82f6">02</div><h4>Charge &amp; récupération</h4><p>L'équation qui explique presque tout</p><div class="pc-min">&#8776; 6 min</div></button>
-            <button class="prog-card" data-theme="3" style="border-top-color:#8b5cf6"><div class="pc-num" style="color:#8b5cf6">03</div><h4>Le sommeil</h4><p>Le réparateur numéro un de ton corps</p><div class="pc-min">&#8776; 5 min</div></button>
-            <button class="prog-card" data-theme="4" style="border-top-color:#10b981"><div class="pc-num" style="color:#10b981">04</div><h4>Hygiène de vie</h4><p>Eau, alimentation, mouvement, habitudes</p><div class="pc-min">&#8776; 4 min</div></button>
-            <button class="prog-card" data-theme="5" style="border-top-color:#e11d2a"><div class="pc-num" style="color:#e11d2a">05</div><h4>Réflexes au poste</h4><p>Ce que tu peux appliquer dès demain</p><div class="pc-min">&#8776; 7 min</div></button>
+          <div class="mod-section">
+            <div class="mod-head">
+              <h3 class="start-h">Les 5 modules de la formation</h3>
+              <div class="mod-overall"><b id="modOverall">0%</b> complété</div>
+            </div>
+            <div class="mod-grid" id="modGrid">
+              <button class="mod-card" data-theme="1" style="--acc:#f59e0b"><span class="mod-beam" aria-hidden="true"></span><div class="mod-row"><span class="mod-num">01</span><span class="mod-status" data-st="todo">À commencer</span></div><h4>Comprendre les TMS</h4><p>Ce que c'est, où ça frappe, comment ça s'installe.</p><span class="mod-meta">&#8776; 8 min</span><div class="mod-foot"><span class="mod-ring"><svg viewBox="0 0 36 36"><circle class="rbg" cx="18" cy="18" r="15.5"/><circle class="rfg" cx="18" cy="18" r="15.5"/></svg><b>0%</b></span><span class="mod-cta"><span class="cta-lbl">Commencer</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></button>
+              <button class="mod-card" data-theme="2" style="--acc:#3b82f6"><span class="mod-beam" aria-hidden="true"></span><div class="mod-row"><span class="mod-num">02</span><span class="mod-status" data-st="todo">À commencer</span></div><h4>Charge &amp; récupération</h4><p>L'équation qui explique presque tout.</p><span class="mod-meta">&#8776; 6 min</span><div class="mod-foot"><span class="mod-ring"><svg viewBox="0 0 36 36"><circle class="rbg" cx="18" cy="18" r="15.5"/><circle class="rfg" cx="18" cy="18" r="15.5"/></svg><b>0%</b></span><span class="mod-cta"><span class="cta-lbl">Commencer</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></button>
+              <button class="mod-card" data-theme="3" style="--acc:#8b5cf6"><span class="mod-beam" aria-hidden="true"></span><div class="mod-row"><span class="mod-num">03</span><span class="mod-status" data-st="todo">À commencer</span></div><h4>Le sommeil</h4><p>Le réparateur numéro un de ton corps.</p><span class="mod-meta">&#8776; 5 min</span><div class="mod-foot"><span class="mod-ring"><svg viewBox="0 0 36 36"><circle class="rbg" cx="18" cy="18" r="15.5"/><circle class="rfg" cx="18" cy="18" r="15.5"/></svg><b>0%</b></span><span class="mod-cta"><span class="cta-lbl">Commencer</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></button>
+              <button class="mod-card" data-theme="4" style="--acc:#10b981"><span class="mod-beam" aria-hidden="true"></span><div class="mod-row"><span class="mod-num">04</span><span class="mod-status" data-st="todo">À commencer</span></div><h4>Hygiène de vie</h4><p>Eau, alimentation, mouvement, habitudes.</p><span class="mod-meta">&#8776; 4 min</span><div class="mod-foot"><span class="mod-ring"><svg viewBox="0 0 36 36"><circle class="rbg" cx="18" cy="18" r="15.5"/><circle class="rfg" cx="18" cy="18" r="15.5"/></svg><b>0%</b></span><span class="mod-cta"><span class="cta-lbl">Commencer</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></button>
+              <button class="mod-card" data-theme="5" style="--acc:#e11d2a"><span class="mod-beam" aria-hidden="true"></span><div class="mod-row"><span class="mod-num">05</span><span class="mod-status" data-st="todo">À commencer</span></div><h4>Réflexes au poste</h4><p>Ce que tu peux appliquer dès demain.</p><span class="mod-meta">&#8776; 7 min</span><div class="mod-foot"><span class="mod-ring"><svg viewBox="0 0 36 36"><circle class="rbg" cx="18" cy="18" r="15.5"/><circle class="rfg" cx="18" cy="18" r="15.5"/></svg><b>0%</b></span><span class="mod-cta"><span class="cta-lbl">Commencer</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></button>
+            </div>
           </div>
           <h3 class="start-h" style="margin-top:1.8rem">Le savais-tu ?</h3>
           <div class="sleepbar" style="margin:.4rem 0 0"><div class="t" style="background:var(--g-amber);-webkit-background-clip:text">1 / 4</div><div><p style="font-weight:600;margin-bottom:.2rem">Un travailleur québécois sur quatre est touché par un TMS d'origine non traumatique lié au travail.</p><p style="color:var(--muted);font-size:.88rem">Toutes les statistiques (CNESST 2023 &middot; INSPQ) t'attendent dans la partie 01 &middot; Comprendre les TMS.</p></div></div>
@@ -1219,7 +1260,6 @@ const stageScroll=document.getElementById('stageScroll');
 const scNum=document.getElementById('scNum'),scTot=document.getElementById('scTot');
 const topBar=document.getElementById('topBar'),progTxt=document.getElementById('progTxt'),progBar=document.getElementById('progBar'),scoreTxt=document.getElementById('scoreTxt');
 navItems.forEach(function(n){var f=document.createElement('span');f.className='ni-frac';n.appendChild(f);var lk=document.createElement('span');lk.className='ni-lock';lk.textContent='🔒';n.appendChild(lk);});
-document.querySelectorAll('.prog-card').forEach(function(p){var h=p.querySelector('h4');if(h){var lk=document.createElement('span');lk.className='pc-lock';lk.textContent=' 🔒';h.appendChild(lk);}});
 const steps=[];
 themes.forEach(function(theme,ti){var subs=theme.querySelectorAll('.subpanel');if(subs.length){subs.forEach(function(sp){steps.push({t:ti,sub:sp.dataset.sub});});}else{steps.push({t:ti,sub:null});}});
 const N=steps.length;let cur=0;
@@ -1259,7 +1299,7 @@ function renderLocks(){
   navItems.forEach(function(n){n.classList.remove('locked');});
   stepNodes.forEach(function(node){node.classList.remove('locked');});
   document.querySelectorAll('.subtab').forEach(function(tab){tab.classList.remove('locked');});
-  document.querySelectorAll('.prog-card').forEach(function(p){p.classList.remove('locked');});
+  document.querySelectorAll('.mod-card').forEach(function(p){p.classList.remove('locked');});
 }
 function attReqsMet(){var parts=true;for(var ti=1;ti<=5;ti++){if(!themeSteps[ti].every(function(i){return visited.has(i);}))parts=false;}var quiz=(+(localStorage.getItem('tms_quiz_best')||0))>=6;var note=computeNote().note>=70;return{parts:parts,quiz:quiz,note:note,all:parts&&quiz&&note};}
 function renderAttest(){var reqs=document.getElementById('attReqs');if(!reqs)return;var m=attReqsMet(),nv=computeNote().note,lp=reqs.querySelector('[data-req="parts"]'),lq=reqs.querySelector('[data-req="quiz"]'),ln=reqs.querySelector('[data-req="note"]');if(lp){lp.classList.toggle('ok',m.parts);lp.querySelector('.rq').textContent=m.parts?'✓':'';}if(lq){lq.classList.toggle('ok',m.quiz);lq.querySelector('.rq').textContent=m.quiz?'✓':'';}if(ln){ln.classList.toggle('ok',m.note);ln.querySelector('.rq').textContent=m.note?'✓':'';var t=ln.querySelector('.rq-txt');if(t)t.textContent='Obtenir une note d\'au moins 70/100 (actuelle : '+nv+'/100)';}var b=document.getElementById('attBtn'),nm=document.getElementById('attName');if(b)b.disabled=!m.all;if(nm)nm.disabled=!m.all;}
@@ -1268,12 +1308,36 @@ function renderProgress(){
   steps.forEach(function(s,i){if(!s.sub||!visited.has(i))return;var tb=themes[s.t].querySelector('.subtab[data-sub="'+s.sub+'"]');if(tb)tb.classList.add('seen');});
   var pct=Math.round(visited.size/N*100);if(progTxt)progTxt.textContent=pct+'%';if(progBar)progBar.style.width=pct+'%';if(topBar)topBar.style.width=pct+'%';
   var sp=document.getElementById('scMiniProg');if(sp)sp.textContent=pct+'%';
+  renderModules();
+}
+var RING_C=2*Math.PI*15.5;
+function renderModules(){
+  var grid=document.getElementById('modGrid');if(!grid)return;
+  var data=[1,2,3,4,5].map(function(ti){var ids=themeSteps[ti]||[];return {ti:ti,done:ids.filter(function(i){return visited.has(i);}).length,total:ids.length};});
+  var cur=data.find(function(d){return d.done>0&&d.done<d.total;})||data.find(function(d){return d.done===0;});
+  data.forEach(function(d){
+    var card=grid.querySelector('.mod-card[data-theme="'+d.ti+'"]');if(!card)return;
+    var p=d.total?Math.round(d.done/d.total*100):0;
+    var st=card.querySelector('.mod-status'),lbl=card.querySelector('.cta-lbl'),pctEl=card.querySelector('.mod-ring b'),rfg=card.querySelector('.rfg');
+    var label,cls,cta;
+    if(d.done===0){label='À commencer';cls='todo';cta='Commencer';}
+    else if(d.done<d.total){label='En cours';cls='doing';cta='Continuer';}
+    else{label='Complété';cls='done';cta='Revoir';}
+    if(st){st.textContent=label;st.dataset.st=cls;}
+    if(lbl)lbl.textContent=cta;
+    if(pctEl)pctEl.textContent=p+'%';
+    if(rfg)rfg.style.strokeDashoffset=(RING_C*(1-p/100)).toFixed(1);
+    card.classList.toggle('is-current',!!cur&&cur.ti===d.ti);
+    card.classList.toggle('is-done',d.total>0&&d.done===d.total);
+    card.setAttribute('aria-label','Module '+d.ti+' : '+card.querySelector('h4').textContent+' — '+label+', '+p+' %');
+  });
+  var ov=document.getElementById('modOverall');if(ov)ov.textContent=Math.round(visited.size/N*100)+'%';
 }
 renderProgress();renderScore();
 // ===== Entrance animations (staggered) =====
 function animateIn(scope){
   if(!scope)return;
-  var sel='.theme-title,.theme-lead,.subtabs,.card,.imgcard,.stat,.step,.pilier,.mine,.checklist,.prog-card,.infographic,.sim,.borg,.bodymap,.chrono,.sleepbar,.quiz-q,.alert,.attest,.recap';
+  var sel='.theme-title,.theme-lead,.subtabs,.card,.imgcard,.stat,.step,.pilier,.mine,.checklist,.mod-card,.infographic,.sim,.borg,.bodymap,.chrono,.sleepbar,.quiz-q,.alert,.attest,.recap';
   var i=0;
   scope.querySelectorAll(sel).forEach(function(el){
     if(el.offsetParent===null)return;
@@ -1306,7 +1370,9 @@ function showStep(s){
   animateIn(theme.querySelector('.subpanel.active')||theme);
 }
 navItems.forEach(function(n){n.addEventListener('click',function(){var t=firstStepOf(+n.dataset.theme);if(canGo(t))showStep(t);});});
-document.querySelectorAll('.prog-card').forEach(function(p){p.addEventListener('click',function(){var t=firstStepOf(+p.dataset.theme);if(canGo(t))showStep(t);});});
+document.querySelectorAll('.mod-card').forEach(function(p){p.addEventListener('click',function(){var ti=+p.dataset.theme,ids=themeSteps[ti]||[];var t=ids.find(function(i){return !visited.has(i);});if(t===undefined)t=ids[0];if(canGo(t))showStep(t);});});
+// halo qui suit le curseur (Magic Card) — désactivé au toucher
+(function(){var grid=document.getElementById('modGrid');if(!grid||(window.matchMedia&&matchMedia('(hover:none)').matches))return;grid.addEventListener('pointermove',function(e){var c=e.target.closest('.mod-card');if(!c)return;var r=c.getBoundingClientRect();c.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');c.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');},{passive:true});})();
 prevBtn.addEventListener('click',function(){showStep(cur-1);});
 nextBtn.addEventListener('click',function(){showStep(cur+1);});
 
