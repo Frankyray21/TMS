@@ -587,6 +587,38 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .hero-video{display:inline-flex;align-items:center;gap:.65rem;margin-top:1.4rem;background:var(--g-red);border:none;border-radius:50px;padding:.95rem 1.9rem;font-family:inherit;font-weight:800;font-size:1.08rem;color:#fff;cursor:pointer;box-shadow:0 8px 22px rgba(210,35,37,.35);transition:transform .15s,filter .2s,box-shadow .2s;animation:borgpulse 2.6s ease-in-out infinite}
 .hero-video:hover,.hero-video:focus-visible{transform:translateY(-3px);filter:brightness(1.1);box-shadow:0 12px 30px rgba(210,35,37,.5);animation:none}
 .hero-video .hv-dur{color:rgba(255,255,255,.75);font-weight:600;font-size:.9rem}
+/* quiz */
+.quiz{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.6rem;box-shadow:var(--shadow-card);margin-top:1.6rem}
+.quiz-head{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.quiz-prog{flex:1;min-width:200px}
+.quiz-prog>span{font-weight:700;font-size:.85rem;color:var(--muted)}
+.quiz-bar{margin-top:.4rem;height:8px;border-radius:50px;background:var(--bg-2);overflow:hidden}
+.quiz-bar>span{display:block;height:100%;width:10%;border-radius:50px;background:var(--g-red);transition:width .4s ease}
+.quiz-score{font-weight:800;font-size:.9rem;color:var(--accent-l);background:rgba(210,35,37,.1);border:1px solid rgba(210,35,37,.3);padding:.4rem .9rem;border-radius:50px}
+.quiz-q{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.01em;font-size:1.3rem;line-height:1.25;margin-bottom:1.2rem}
+.quiz-opts{display:flex;flex-direction:column;gap:.7rem}
+.quiz-opt{display:flex;align-items:center;gap:.85rem;width:100%;text-align:left;background:var(--bg-2);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.15rem;font-family:inherit;font-size:.98rem;color:var(--text);cursor:pointer;transition:border-color .2s,background .2s,transform .12s}
+.quiz-opt:hover:not(:disabled){border-color:rgba(210,35,37,.5);transform:translateY(-2px)}
+.quiz-opt .qo-mark{flex-shrink:0;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:2px solid var(--dim);font-weight:800;font-size:.85rem;color:var(--muted);transition:all .2s}
+.quiz-opt.ok{border-color:var(--success);background:rgba(16,185,129,.12)}
+.quiz-opt.ok .qo-mark{border-color:var(--success);background:var(--success);color:#06140d}
+.quiz-opt.bad{border-color:var(--danger);background:rgba(239,68,68,.12)}
+.quiz-opt.bad .qo-mark{border-color:var(--danger);background:var(--danger);color:#fff}
+.quiz-opt:disabled{cursor:default}
+.quiz-fb{margin-top:1.1rem;border-radius:12px;padding:1rem 1.15rem;font-size:.92rem;line-height:1.55;border:1px solid var(--border);background:var(--bg-2)}
+.quiz-fb.ok{border-color:rgba(16,185,129,.4)}
+.quiz-fb.bad{border-color:rgba(239,68,68,.4)}
+.quiz-fb b{color:var(--text)}
+.quiz-fb .qf-k{font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:.78rem;display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.35rem}
+.quiz-fb.ok .qf-k{color:#34d399}.quiz-fb.bad .qf-k{color:#ef5a5c}
+.quiz-next{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.2rem;background:var(--g-red);color:#fff;border:none;border-radius:11px;padding:.8rem 1.7rem;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;transition:transform .15s,filter .2s}
+.quiz-next:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.quiz-result{text-align:center;padding:1rem}
+.qr-score{font-family:var(--font-display);font-weight:800;font-size:3.4rem;line-height:1;background:var(--g-red);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.qr-score.win{background:var(--g-green);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.qr-sub{font-size:1.05rem;font-weight:700;margin:.5rem 0 .3rem}
+.qr-msg{color:var(--muted);font-size:.95rem;line-height:1.55;max-width:520px;margin:0 auto 1.3rem}
+@media(max-width:560px){.quiz-q{font-size:1.1rem}.qr-score{font-size:2.8rem}}
 .sl-body{color:var(--muted);font-size:.95rem;line-height:1.6;margin-top:.6rem}
 .sl-body strong{color:var(--text)}
 .sl-body ul{list-style:disc;margin:.8rem 0 0;padding-left:1.3rem}
@@ -1339,18 +1371,29 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     padding: 18px;
   }
   #corps-svg { width: 100%; height: auto; display: block; }
-  #corps-svg .silhouette { fill: #232323; stroke: #3a3a3a; stroke-width: 1.5; }
-  #corps-svg .membre { stroke: #232323; stroke-linecap: round; fill: none; }
+  #corps-svg .silhouette { fill: url(#corpsGrad); stroke: #2f4258; stroke-width: 1.5; }
+  #corps-svg .corps-detail { fill: none; stroke: #34506b; stroke-width: 1.4; opacity: .55; stroke-linecap: round; }
   #corps-svg .zone { cursor: pointer; }
   #corps-svg .zone .point {
-    fill: var(--or);
-    stroke: #000;
-    stroke-width: 2;
-    transition: r .15s, fill .15s;
+    fill: #ff3b3d;
+    stroke: #fff;
+    stroke-width: 1.5;
+    filter: drop-shadow(0 0 5px rgba(255,60,62,.9));
+    transition: r .15s;
+  }
+  #corps-svg .zone .halo {
+    fill: url(#zoneGlow);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: zglow 2.4s ease-in-out infinite;
+  }
+  @keyframes zglow {
+    0%,100% { transform: scale(.85); opacity: .55; }
+    50% { transform: scale(1.15); opacity: .9; }
   }
   #corps-svg .zone .onde {
     fill: none;
-    stroke: var(--or);
+    stroke: #ff5a5c;
     stroke-width: 2;
     opacity: .7;
     animation: onde 2.2s ease-out infinite;
@@ -1359,9 +1402,9 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   }
   @keyframes onde {
     0% { transform: scale(.6); opacity: .8; }
-    100% { transform: scale(1.9); opacity: 0; }
+    100% { transform: scale(2.1); opacity: 0; }
   }
-  #corps-svg .zone:hover .point, #corps-svg .zone:focus-visible .point { fill: var(--rouge); r: 13; }
+  #corps-svg .zone:hover .point, #corps-svg .zone:focus-visible .point { r: 9; filter: drop-shadow(0 0 9px rgba(255,60,62,1)); }
   #corps-svg .zone:focus-visible { outline: none; }
   .zones-liste {
     flex: 1;
@@ -1892,10 +1935,10 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
       <a class="toc-link" href="#reflexes"><span class="dot"></span>Réflexes au poste de travail</a>
       <a class="toc-link sub" href="#postures">Bonnes postures</a>
       <a class="toc-link sub" href="#signaler">Signaler</a>
-      <a class="toc-link" href="#exploration"><span class="dot"></span>Exploration interactive</a>
+      <a class="toc-link" href="#quiz"><span class="dot"></span>Quiz</a>
       <a class="toc-link" href="#retenir"><span class="dot"></span>À retenir</a>
     </nav>
-    <a class="toc-cta" href="#exploration"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg> Exploration interactive<span class="tc-sub">Schéma &middot; corps &middot; simulateur</span></a>
+    <a class="toc-cta" href="#quiz"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="10"/></svg> Teste tes connaissances<span class="tc-sub">Quiz prévention TMS</span></a>
     <div class="toc-foot">Base de connaissances &middot; Nouveaux travailleurs<br>Sources : CNESST (2023) &middot; INSPQ</div>
   </aside>
 
@@ -1983,62 +2026,75 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
           <p class="corps-aide">Clique un point lumineux de la silhouette, ou une zone dans la liste, pour voir la zone touchée, les TMS fréquents, les facteurs en cause et les bons réflexes.</p>
 <div class="corps-flex">
       <div class="corps-svg-bloc">
-        <svg id="corps-svg" viewBox="28 -6 160 476" role="group" aria-label="Silhouette humaine interactive : sélectionnez une zone du corps">
-          <!-- silhouette -->
-          <circle class="silhouette" cx="110" cy="36" r="24"/>
-          <rect class="silhouette" x="100" y="58" width="20" height="14" rx="4"/>
-          <path class="silhouette" d="M76,72 h68 c12,0 18,9 17,22 l-6,108 c-1,12 -16,18 -45,18 s-44,-6 -45,-18 l-6,-108 c-1,-13 5,-22 17,-22 z"/>
-          <line class="membre" x1="70" y1="86" x2="52" y2="160" stroke-width="18"/>
-          <line class="membre" x1="52" y1="160" x2="46" y2="232" stroke-width="16"/>
-          <line class="membre" x1="150" y1="86" x2="168" y2="160" stroke-width="18"/>
-          <line class="membre" x1="168" y1="160" x2="174" y2="232" stroke-width="16"/>
-          <circle class="silhouette" cx="44" cy="246" r="11"/>
-          <circle class="silhouette" cx="176" cy="246" r="11"/>
-          <line class="membre" x1="92" y1="214" x2="86" y2="330" stroke-width="24"/>
-          <line class="membre" x1="86" y1="330" x2="82" y2="408" stroke-width="20"/>
-          <line class="membre" x1="128" y1="214" x2="134" y2="330" stroke-width="24"/>
-          <line class="membre" x1="134" y1="330" x2="138" y2="408" stroke-width="20"/>
-          <ellipse class="silhouette" cx="76" cy="420" rx="16" ry="9"/>
-          <ellipse class="silhouette" cx="144" cy="420" rx="16" ry="9"/>
-          <!-- zones cliquables (générées + points fixes) -->
+        <svg id="corps-svg" viewBox="20 -6 180 476" role="group" aria-label="Silhouette humaine interactive : sélectionnez une zone du corps">
+          <defs>
+            <linearGradient id="corpsGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#28384a"/>
+              <stop offset=".5" stop-color="#1f2d3d"/>
+              <stop offset="1" stop-color="#172230"/>
+            </linearGradient>
+            <radialGradient id="zoneGlow">
+              <stop offset="0" stop-color="#ff3b3d" stop-opacity=".85"/>
+              <stop offset=".55" stop-color="#ff3b3d" stop-opacity=".3"/>
+              <stop offset="1" stop-color="#ff3b3d" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <!-- silhouette anatomique (vue de face) -->
+          <path class="silhouette" d="M110 8
+            c-9 0 -15 7 -15 17 c0 6 1 9 3 13 c-3 2 -5 5 -7 5 c-9 2 -19 5 -25 9 c-5 4 -7 10 -7 18
+            c0 11 2 26 4 36 c1 7 3 13 2 19 c-1 7 -4 18 -5 27 c-1 6 0 10 2 12 c2 -1 4 -5 5 -11
+            c1 8 2 16 4 22 c1 5 3 8 3 13 c0 9 -2 24 -3 38 c-1 12 -1 26 0 38 c1 10 3 19 5 28
+            c1 7 2 14 2 21 c0 5 2 8 6 8 c4 0 6 -3 6 -9 c0 -10 -1 -23 0 -34 c1 -9 3 -17 4 -26
+            c1 -6 2 -11 4 -11 c2 0 3 5 4 11 c1 9 3 17 4 26 c1 11 0 24 0 34 c0 6 2 9 6 9
+            c4 0 6 -3 6 -8 c0 -7 1 -14 2 -21 c2 -9 4 -18 5 -28 c1 -12 1 -26 0 -38
+            c-1 -14 -3 -29 -3 -38 c0 -5 2 -8 3 -13 c2 -6 3 -14 4 -22 c1 6 3 10 5 11
+            c2 -2 3 -6 2 -12 c-1 -9 -4 -20 -5 -27 c-1 -6 1 -12 2 -19 c2 -10 4 -25 4 -36
+            c0 -8 -2 -14 -7 -18 c-6 -4 -16 -7 -25 -9 c-2 0 -4 -3 -7 -5 c2 -4 3 -7 3 -13
+            c0 -10 -6 -17 -15 -17 z"/>
+          <!-- détails anatomiques -->
+          <path class="corps-detail" d="M110 44 v176"/>
+          <path class="corps-detail" d="M92 96 q18 10 36 0"/>
+          <path class="corps-detail" d="M96 120 q14 8 28 0"/>
+          <path class="corps-detail" d="M98 150 h24 M100 165 h20 M102 180 h16"/>
+          <!-- zones cliquables (points rouges lumineux) -->
           <g class="zone" data-zone="cou" tabindex="0" role="button" aria-label="Zone cou et nuque">
-            <circle class="onde" cx="110" cy="62" r="11"/><circle class="point" cx="110" cy="62" r="10"/>
+            <circle class="halo" cx="110" cy="46" r="15"/><circle class="onde" cx="110" cy="46" r="8"/><circle class="point" cx="110" cy="46" r="7"/>
           </g>
           <g class="zone" data-zone="epaules" tabindex="0" role="button" aria-label="Zone épaules">
-            <circle class="onde" cx="74" cy="84" r="11"/><circle class="point" cx="74" cy="84" r="10"/>
+            <circle class="halo" cx="76" cy="70" r="15"/><circle class="onde" cx="76" cy="70" r="8"/><circle class="point" cx="76" cy="70" r="7"/>
           </g>
           <g class="zone" data-zone="epaules" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="146" cy="84" r="11"/><circle class="point" cx="146" cy="84" r="10"/>
+            <circle class="halo" cx="144" cy="70" r="15"/><circle class="onde" cx="144" cy="70" r="8"/><circle class="point" cx="144" cy="70" r="7"/>
           </g>
           <g class="zone" data-zone="haut-dos" tabindex="0" role="button" aria-label="Zone haut du dos">
-            <circle class="onde" cx="110" cy="115" r="11"/><circle class="point" cx="110" cy="115" r="10"/>
+            <circle class="halo" cx="110" cy="92" r="15"/><circle class="onde" cx="110" cy="92" r="8"/><circle class="point" cx="110" cy="92" r="7"/>
           </g>
           <g class="zone" data-zone="bas-dos" tabindex="0" role="button" aria-label="Zone bas du dos">
-            <circle class="onde" cx="110" cy="185" r="11"/><circle class="point" cx="110" cy="185" r="10"/>
+            <circle class="halo" cx="110" cy="170" r="15"/><circle class="onde" cx="110" cy="170" r="8"/><circle class="point" cx="110" cy="170" r="7"/>
           </g>
           <g class="zone" data-zone="coudes" tabindex="0" role="button" aria-label="Zone coudes">
-            <circle class="onde" cx="52" cy="162" r="11"/><circle class="point" cx="52" cy="162" r="10"/>
+            <circle class="halo" cx="64" cy="150" r="15"/><circle class="onde" cx="64" cy="150" r="8"/><circle class="point" cx="64" cy="150" r="7"/>
           </g>
           <g class="zone" data-zone="coudes" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="168" cy="162" r="11"/><circle class="point" cx="168" cy="162" r="10"/>
+            <circle class="halo" cx="156" cy="150" r="15"/><circle class="onde" cx="156" cy="150" r="8"/><circle class="point" cx="156" cy="150" r="7"/>
           </g>
           <g class="zone" data-zone="poignets-mains" tabindex="0" role="button" aria-label="Zone poignets et mains">
-            <circle class="onde" cx="45" cy="242" r="11"/><circle class="point" cx="45" cy="242" r="10"/>
+            <circle class="halo" cx="56" cy="206" r="15"/><circle class="onde" cx="56" cy="206" r="8"/><circle class="point" cx="56" cy="206" r="7"/>
           </g>
           <g class="zone" data-zone="poignets-mains" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="175" cy="242" r="11"/><circle class="point" cx="175" cy="242" r="10"/>
+            <circle class="halo" cx="164" cy="206" r="15"/><circle class="onde" cx="164" cy="206" r="8"/><circle class="point" cx="164" cy="206" r="7"/>
           </g>
           <g class="zone" data-zone="genoux" tabindex="0" role="button" aria-label="Zone genoux">
-            <circle class="onde" cx="86" cy="330" r="11"/><circle class="point" cx="86" cy="330" r="10"/>
+            <circle class="halo" cx="92" cy="338" r="15"/><circle class="onde" cx="92" cy="338" r="8"/><circle class="point" cx="92" cy="338" r="7"/>
           </g>
           <g class="zone" data-zone="genoux" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="134" cy="330" r="11"/><circle class="point" cx="134" cy="330" r="10"/>
+            <circle class="halo" cx="128" cy="338" r="15"/><circle class="onde" cx="128" cy="338" r="8"/><circle class="point" cx="128" cy="338" r="7"/>
           </g>
           <g class="zone" data-zone="chevilles-pieds" tabindex="0" role="button" aria-label="Zone chevilles et pieds">
-            <circle class="onde" cx="78" cy="414" r="11"/><circle class="point" cx="78" cy="414" r="10"/>
+            <circle class="halo" cx="96" cy="436" r="15"/><circle class="onde" cx="96" cy="436" r="8"/><circle class="point" cx="96" cy="436" r="7"/>
           </g>
           <g class="zone" data-zone="chevilles-pieds" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="142" cy="414" r="11"/><circle class="point" cx="142" cy="414" r="10"/>
+            <circle class="halo" cx="124" cy="436" r="15"/><circle class="onde" cx="124" cy="436" r="8"/><circle class="point" cx="124" cy="436" r="7"/>
           </g>
         </svg>
       </div>
@@ -2577,33 +2633,21 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
       </div>
     </section>
 
-    <!-- RETENIR -->
-    <!-- ============ EXPLORATION INTERACTIVE (fusionnée) ============ -->
-    <section id="exploration" tabindex="-1">
+    <!-- QUIZ -->
+    <section id="quiz" tabindex="-1">
+      <span class="ghost" aria-hidden="true">?</span>
       <div class="wrap">
-        <div class="eyebrow reveal">Base de connaissances &middot; volet interactif</div>
-        <h2 class="title reveal d1">Exploration interactive</h2>
-        <p class="lead reveal d2">Le schéma interactif, la carte du corps et l'évaluation de poste sont intégrés plus haut, dans « Comprendre les TMS ». La vidéo « Préserver son corps » s'ouvre depuis l'accueil. Ta progression est conservée d'une visite à l'autre.</p>
-      </div>
-      <div class="ipage">
-        <div class="explo-outils">
-          
-          <div class="recherche">
-      <span class="loupe" aria-hidden="true">🔍</span>
-      <input type="text" id="champ-recherche" placeholder="Rechercher un facteur, une zone du corps…" autocomplete="off" aria-label="Rechercher un facteur de risque">
-      <ul id="resultats-recherche"></ul>
-    </div>
-          
-          <div class="explo-etat"><div class="anneau-bloc" title="Votre progression d'exploration du schéma">
-      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
-        <circle cx="17" cy="17" r="14" fill="none" stroke="#2c2c2c" stroke-width="4"/>
-        <circle id="anneau-valeur" cx="17" cy="17" r="14" fill="none" stroke-width="4"
-                stroke-linecap="round" stroke-dasharray="87.96" stroke-dashoffset="87.96"/>
-      </svg>
-      <span id="texte-prog">0 / 13 explorés</span>
-    </div><button id="btn-raz-progression">↺ Réinitialiser ma progression</button></div>
+        <div class="eyebrow reveal">Teste tes connaissances</div>
+        <h2 class="title reveal d1">Le quiz prévention TMS</h2>
+        <p class="lead reveal d2">Dix questions pour vérifier l'essentiel : ce qu'est un TMS, les facteurs de risque, la fatigue, le sommeil et les bons réflexes. Aucune note enregistrée, c'est pour toi.</p>
+        <div class="quiz reveal" id="quizBox">
+          <div class="quiz-head">
+            <div class="quiz-prog"><span id="qProgTxt">Question 1 / 10</span><div class="quiz-bar"><span id="qProgBar"></span></div></div>
+            <div class="quiz-score" id="qScoreLive">0 bonne réponse</div>
+          </div>
+          <div class="quiz-stage" id="qStage"></div>
+          <div class="quiz-result" id="qResult" hidden></div>
         </div>
-
       </div>
     </section>
 
@@ -2647,7 +2691,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
               <li><a href="#sommeil">Le sommeil</a></li>
               <li><a href="#hygiene">Hygiène de vie</a></li>
               <li><a href="#reflexes">Réflexes au poste de travail</a></li>
-              <li><a href="#exploration">Exploration interactive (schéma, corps, simulateur) &rarr;</a></li>
+              <li><a href="#quiz">Quiz prévention TMS &rarr;</a></li>
               <li><a href="formation.html">Formation guidée (quiz + attestation) &rarr;</a></li>
               <li>Questions ? Parles-en au comité santé-sécurité.</li>
             </ul>
@@ -2902,7 +2946,7 @@ document.querySelectorAll('.faccard').forEach(function(c){
   document.querySelectorAll('.toc-link').forEach(function(l){ITEMS.push({k:'Section',label:l.textContent.trim(),sub:'',go:l.getAttribute('href')});});
   document.querySelectorAll('h3.sub-h').forEach(function(h){ITEMS.push({k:'Sujet',label:h.textContent.replace(/\s+/g,' ').replace(/:.*clique.*$/i,'').trim(),sub:'',go:'#'+h.id});});
   Object.keys(MODAL_DATA).forEach(function(key){var d=MODAL_DATA[key];ITEMS.push({k:'Fiche',label:d.title,sub:d.tag,modal:key,kw:(d.desc+' '+d.risk.join(' ')+' '+d.prev.join(' '))});});
-  ITEMS.push({k:'Section',label:'Exploration interactive : schéma, corps humain, simulateur',sub:'#exploration',go:'#exploration',kw:'schéma simulateur carte du corps cliquable évaluer poste de travail'});
+  ITEMS.push({k:'Section',label:'Quiz prévention TMS',sub:'#quiz',go:'#quiz',kw:'quiz test questions connaissances évaluation'});
   ITEMS.push({k:'Page',label:'Formation guidée : quiz et attestation',sub:'formation.html',go:'formation.html',kw:'quiz attestation certificat formation guidée score'});
   var filtered=[],active=0;
   function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
@@ -3997,9 +4041,9 @@ let visites = new Set(lireStockage("tms-visites", []));
 function majProgression() {
   const total = ORDRE_PRINCIPAL.length;
   const n = ORDRE_PRINCIPAL.filter(c => visites.has(c)).length;
-  $("#texte-prog").textContent = n + " / " + total + " explorés";
+  const tp = $("#texte-prog"); if (tp) tp.textContent = n + " / " + total + " explorés";
   const circ = 87.96;
-  $("#anneau-valeur").style.strokeDashoffset = circ * (1 - n / total);
+  const av = $("#anneau-valeur"); if (av) av.style.strokeDashoffset = circ * (1 - n / total);
   ORDRE_PRINCIPAL.forEach(c => {
     $$("[data-cle='" + c + "']").forEach(el => {
       if ((el.classList.contains("cercle") || el.classList.contains("pastille")) && visites.has(c)) el.classList.add("visite");
@@ -4022,7 +4066,8 @@ function marquerVisite(cle) {
   }
 }
 
-$("#btn-raz-progression").addEventListener("click", () => {
+const btnRaz = $("#btn-raz-progression");
+if (btnRaz) btnRaz.addEventListener("click", () => {
   visites = new Set();
   ecrireStockage("tms-visites", []);
   majProgression();
@@ -4324,6 +4369,7 @@ Object.keys(DETAILS).forEach(c => INDEX_RECHERCHE.push({ type: "detail", cle: c,
 Object.keys(ZONES).forEach(c => INDEX_RECHERCHE.push({ type: "zone", cle: c, titre: ZONES[c].nom, icone: ZONES[c].icone, cat: "Zone du corps" }));
 
 function majRecherche() {
+  if (!champ || !resultats) return;
   const q = normaliser(champ.value.trim());
   resultats.innerHTML = "";
   if (q.length < 2) { resultats.classList.remove("ouvert"); return; }
@@ -4347,18 +4393,20 @@ function majRecherche() {
   });
   resultats.classList.add("ouvert");
 }
-champ.addEventListener("input", majRecherche);
-champ.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const premier = resultats.querySelector("button");
-    if (premier) premier.click();
-  }
-  if (e.key === "Escape") resultats.classList.remove("ouvert");
-});
-document.addEventListener("click", e => {
-  if (!e.target.closest(".recherche")) resultats.classList.remove("ouvert");
-});
+if (champ) {
+  champ.addEventListener("input", majRecherche);
+  champ.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const premier = resultats.querySelector("button");
+      if (premier) premier.click();
+    }
+    if (e.key === "Escape") resultats.classList.remove("ouvert");
+  });
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".recherche")) resultats.classList.remove("ouvert");
+  });
+}
 
 /* ================================================================
    CARTE DU CORPS
@@ -4745,6 +4793,109 @@ document.addEventListener("keydown", e => {
       var d=b.nextElementSibling;if(d)d.classList.toggle("open",!o);
     });
   });
+})();
+
+/* ================================================================
+   QUIZ PRÉVENTION TMS
+   ================================================================ */
+(function(){
+  var stage=document.getElementById("qStage");
+  if(!stage)return;
+  var QUESTIONS=[
+    {q:"Qu'est-ce qu'un trouble musculosquelettique (TMS) ?",
+     o:["Une blessure soudaine et unique, comme une fracture","Une atteinte des muscles, tendons, nerfs ou articulations qui s'installe surtout par usure","Une maladie contagieuse propre aux mines","Un trouble uniquement psychologique lié au stress"],
+     a:1,f:"Un TMS touche les muscles, tendons, nerfs, ligaments ou articulations. Il est rarement dû à un seul accident : il s'installe progressivement quand la charge dépasse la capacité de récupération."},
+    {q:"Dans quel ordre la douleur d'un TMS évolue-t-elle si on n'agit pas ?",
+     o:["Lésion, puis douleur, puis inconfort","Douleur, puis inconfort, puis guérison","Inconfort, puis douleur, puis lésion","Tout arrive d'un coup, sans étapes"],
+     a:2,f:"La même atteinte passe d'un simple inconfort (phase aiguë) à une douleur tenace, puis à une lésion durable. Plus on attend, plus la récupération est longue : c'est pourquoi il faut agir dès l'inconfort."},
+    {q:"À quel moment faut-il agir pour éviter qu'un TMS s'installe ?",
+     o:["Dès les premiers inconforts","Seulement quand la douleur empêche de travailler","Quand la lésion est confirmée par un médecin","Quand un collègue le remarque"],
+     a:0,f:"La fenêtre d'action, c'est le stade inconfort. À ce stade l'atteinte reste réversible : agir tôt (récupération, ajustements) évite que les microlésions s'accumulent vers la douleur puis la lésion."},
+    {q:"Un TMS a généralement…",
+     o:["Une seule cause précise","Plusieurs facteurs qui se combinent et se multiplient","Toujours une cause environnementale","Une cause purement génétique"],
+     a:1,f:"Effort, posture, répétition, fatigue et environnement se cumulent. Cocher plusieurs familles de facteurs à la fois fait grimper le risque plus vite, car les facteurs se multiplient entre eux."},
+    {q:"Pourquoi le travail musculaire statique (contraction maintenue) est-il plus fatigant ?",
+     o:["Parce qu'il fait transpirer davantage","Parce que le muscle contracté comprime ses vaisseaux et reçoit moins de sang","Parce qu'il demande plus de concentration","Il n'est pas plus fatigant que le travail dynamique"],
+     a:1,f:"Quand le muscle reste contracté, il comprime ses propres vaisseaux : le sang circule mal, l'oxygène et les nutriments arrivent moins, et la fatigue arrive plus vite. Même 2 % de la force maximale suffit à réduire l'apport sanguin."},
+    {q:"À quoi sert l'échelle de l'effort perçu (échelle de Borg) ?",
+     o:["À mesurer le poids exact d'une charge","À mettre un chiffre sur l'effort ressenti, de 0 à 10","À évaluer la température du milieu de travail","À noter la qualité du sommeil"],
+     a:1,f:"Une même force représente un effort différent d'une personne à l'autre. L'échelle (0 = aucun effort, 10 = effort maximal) aide à repérer la fatigue avant qu'elle ne s'installe."},
+    {q:"Combien d'heures de sommeil par 24 h sont recommandées pour bien récupérer ?",
+     o:["3 à 4 h","5 à 6 h","7 à 9 h","10 à 12 h"],
+     a:2,f:"La cible est de 7 à 9 h par 24 h, à heures régulières. La fatigue ne se rattrape pas en une seule grasse matinée : elle s'accumule comme une dette."},
+    {q:"Rester éveillé 17 à 19 heures d'affilée affecte la vigilance…",
+     o:["Pas du tout, le café compense","Autant qu'un taux d'alcool de 0,05","Seulement chez les personnes âgées","Uniquement la nuit"],
+     a:1,f:"Une fatigue extrême dégrade les réflexes et le jugement autant qu'un taux d'alcool de 0,05. Le café ne fait que masquer la fatigue : seule la vraie solution est le sommeil."},
+    {q:"Quelle est la bonne technique pour soulever une charge ?",
+     o:["Dos arrondi, jambes droites, charge loin du corps","Plier les genoux, garder le dos naturel et la charge près du corps","Tourner le tronc pour aller plus vite","Soulever d'un coup sec pour en finir"],
+     a:1,f:"Charge près du corps, dos en position naturelle, on plie les genoux et on pivote avec les pieds plutôt qu'en tordant le tronc. Demander une aide mécanique n'est pas une faiblesse."},
+    {q:"Que faire face à un inconfort qui revient au travail ?",
+     o:["L'ignorer, c'est normal","Le cacher pour ne pas paraître faible","Le signaler tôt à son superviseur ou au comité santé-sécurité","Attendre que ça devienne chronique"],
+     a:2,f:"Un inconfort qui revient est une information à partager vite. Pris tôt, un TMS se soigne plus facilement, on peut ajuster le poste, et ton signalement protège aussi tes collègues."}
+  ];
+  var idx=0,score=0,answered=false;
+  var stageEl=stage,progTxt=document.getElementById("qProgTxt"),progBar=document.getElementById("qProgBar"),
+      scoreLive=document.getElementById("qScoreLive"),resultEl=document.getElementById("qResult");
+  function render(){
+    answered=false;
+    var Q=QUESTIONS[idx];
+    progTxt.textContent="Question "+(idx+1)+" / "+QUESTIONS.length;
+    progBar.style.width=((idx+1)/QUESTIONS.length*100)+"%";
+    scoreLive.textContent=score+(score>1?" bonnes réponses":" bonne réponse");
+    var h="<div class='quiz-q'>"+Q.q+"</div><div class='quiz-opts'>";
+    Q.o.forEach(function(opt,i){
+      h+="<button type='button' class='quiz-opt' data-i='"+i+"'><span class='qo-mark'>"+String.fromCharCode(65+i)+"</span><span>"+opt+"</span></button>";
+    });
+    h+="</div><div class='quiz-fb' id='qFb' hidden></div>";
+    stageEl.innerHTML=h;
+    stageEl.querySelectorAll(".quiz-opt").forEach(function(b){
+      b.addEventListener("click",function(){choisir(parseInt(b.dataset.i,10));});
+    });
+  }
+  function choisir(i){
+    if(answered)return;answered=true;
+    var Q=QUESTIONS[idx],opts=stageEl.querySelectorAll(".quiz-opt");
+    var bon=i===Q.a;if(bon)score++;
+    opts.forEach(function(b){
+      var bi=parseInt(b.dataset.i,10);b.disabled=true;
+      if(bi===Q.a)b.classList.add("ok");
+      else if(bi===i)b.classList.add("bad");
+    });
+    scoreLive.textContent=score+(score>1?" bonnes réponses":" bonne réponse");
+    var fb=document.getElementById("qFb");
+    fb.className="quiz-fb "+(bon?"ok":"bad");fb.hidden=false;
+    fb.innerHTML="<div class='qf-k'>"+(bon?"✓ Bonne réponse":"✕ Pas tout à fait")+"</div>"+Q.f+
+      "<div><button type='button' class='quiz-next' id='qNext'>"+(idx<QUESTIONS.length-1?"Question suivante &rarr;":"Voir mon résultat &rarr;")+"</button></div>";
+    document.getElementById("qNext").addEventListener("click",suivant);
+    fb.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+  function suivant(){
+    if(idx<QUESTIONS.length-1){idx++;render();stageEl.scrollIntoView({behavior:"smooth",block:"nearest"});}
+    else fin();
+  }
+  function fin(){
+    stageEl.hidden=true;
+    var n=QUESTIONS.length,pct=Math.round(score/n*100),win=score>=8;
+    var msg;
+    if(score>=9)msg="Excellent ! Tu maîtrises les réflexes qui protègent ton corps au quotidien.";
+    else if(score>=7)msg="Bon travail. Quelques notions à revoir, mais l'essentiel est acquis.";
+    else if(score>=5)msg="Pas mal. Reprends les sections clés pour ancrer les bons réflexes.";
+    else msg="C'est un début. Relis les sections de la page : agir tôt change tout.";
+    progTxt.textContent="Quiz terminé";progBar.style.width="100%";
+    scoreLive.textContent=score+" / "+n;
+    resultEl.hidden=false;
+    resultEl.innerHTML="<div class='qr-score "+(win?"win":"")+"'>"+score+" / "+n+"</div>"+
+      "<div class='qr-sub'>"+pct+" % de bonnes réponses</div>"+
+      "<p class='qr-msg'>"+msg+"</p>"+
+      "<div style='display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap'>"+
+      "<button type='button' class='quiz-next' id='qRestart'>↺ Recommencer le quiz</button>"+
+      "<a class='btn ghost' href='#comprendre'>Revoir les notions &uarr;</a></div>";
+    document.getElementById("qRestart").addEventListener("click",function(){
+      idx=0;score=0;resultEl.hidden=true;stageEl.hidden=false;render();
+      document.getElementById("quizBox").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  }
+  render();
 })();
 </script>
 </body>
