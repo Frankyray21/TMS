@@ -238,11 +238,11 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .xpand summary .lev{color:var(--accent);flex-shrink:0}
 .alert p{font-size:1rem}.alert strong{color:var(--accent-l)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1.3rem}
-.stat{position:relative;overflow:hidden;background:var(--card-2);border:1px solid var(--border);border-radius:16px;padding:1.8rem;text-align:center;transition:transform .3s,box-shadow .3s}
+.stat{position:relative;overflow:hidden;background:var(--card-2);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.2rem;text-align:center;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;justify-content:center;gap:.45rem}
 .stat::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:140%;height:140%;background:radial-gradient(closest-side,rgba(210,35,37,.10),transparent 70%);pointer-events:none}
 .stat:hover{transform:translateY(-3px);box-shadow:var(--shadow-card)}
-.stat .v{position:relative;font-family:var(--font-display);font-size:2.9rem;font-weight:800;background:var(--g-red);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:inline-block;font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
-.stat .l{position:relative;color:var(--muted);font-size:.9rem;margin-top:.3rem}
+.stat .v{position:relative;font-family:var(--font-display);font-size:clamp(2.1rem,2.6vw,2.9rem);white-space:nowrap;font-weight:800;background:var(--g-red);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:inline-block;font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
+.stat .l{position:relative;color:var(--muted);font-size:.88rem;line-height:1.45;margin-top:0}
 /* frise de chronicisation */
 .chrono{display:flex;border-radius:14px;overflow:hidden;margin:1.2rem 0;min-height:78px;border:1px solid var(--border)}
 .chrono div{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.6rem;text-align:center;gap:.15rem}
@@ -1481,11 +1481,13 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 
 /* ---------- Schéma interactif dans la section facteurs ---------- */
 .insitu { margin: 1.4rem 0; }
-.insitu section.bloc { margin-top: 10px; }
-.insitu .consigne { font-size: .88rem; color: var(--or, #d9a43a); margin-bottom: 8px; }
-.insitu .legende { margin-top: 0; margin-bottom: 4px; }
+.insitu section.bloc { margin-top: 10px; padding: 0; }
+  .insitu section.bloc::before, .insitu section.bloc::after { display: none; }
+.insitu .consigne { font-size: .88rem; color: var(--or, #d9a43a); margin: 0 0 6px; padding-left: 12px; border-left: 3px solid var(--or, #d9a43a); }
+.insitu .legende { margin: 0; padding-left: 15px; font-size: .8rem; }
 .insitu .contenu { flex-direction: column; align-items: stretch; }
-.insitu aside.retenir { flex: none; width: 100%; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.insitu aside.retenir { flex: none; width: 100%; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; order: 2; margin-top: 6px; }
+.insitu .schema { order: 1; }
 .insitu aside.retenir .titre { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .insitu aside.retenir p { margin-bottom: 0; font-size: .85rem; flex: 1 1 200px; }
 .insitu aside.retenir .btn-savoir { width: auto; padding: 9px 14px; }
@@ -1603,6 +1605,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
           <div class="stat reveal d2"><div class="v" data-count>23,3%</div><div class="l">Des lésions professionnelles 2023 sont des TMS</div></div>
           <div class="stat reveal d3"><div class="v" data-count>Top 3</div><div class="l">Des causes d'absence et de réaffectation en milieu de travail</div></div>
         </div>
+        <p class="cap reveal" style="margin-top:1rem">Sources : CNESST, statistiques annuelles 2023 &middot; INSPQ</p>
       </div>
     </section>
 
@@ -1695,7 +1698,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
   
         </div>
         <h3 id="facteurs" class="sub-h reveal">Les facteurs de risque</h3>
-        <p class="lead reveal" style="margin-bottom:1.2rem">Chez les travailleurs, le risque vient surtout de la tâche, du corps et de l'environnement immédiat. Explore le schéma ci-dessous <span style="color:var(--dim);font-size:.85rem">— chaque famille, chaque mot et chaque pastille est cliquable</span> :</p>
+        <p class="lead reveal" style="margin-bottom:1.2rem">Chez les travailleurs, le risque vient surtout de la tâche, du corps et de l'environnement immédiat :</p>
         <div class="insitu reveal">
           <p class="consigne">👆 Tout est cliquable : les 3 familles, chaque mot dans les cercles, les 10 pastilles autour — chacune est reliée en pointillé à sa famille de couleur.</p>
           <div class="legende" aria-label="Légende des couleurs">
