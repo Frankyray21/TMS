@@ -1472,6 +1472,13 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
     .grille-pastilles { display: contents; }
   }
 
+/* ---------- Corps interactif dans la section "Où ça frappe" ---------- */
+.corps-insitu { margin: 1rem 0 1.4rem; }
+.corps-insitu .corps-aide { font-size: .9rem; color: var(--muted, #9aa7bd); margin-bottom: 1rem; }
+.corps-insitu .corps-svg-bloc { background: rgba(17,24,39,.66); border: 1px solid var(--border, #233047); }
+.modale-corps .zone-photo { margin: 0 0 16px; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
+.modale-corps .zone-photo img { display: block; width: 100%; height: auto; }
+
 /* ---------- Schéma interactif dans la section facteurs ---------- */
 .insitu { margin: 1.4rem 0; }
 .insitu section.bloc { margin-top: 10px; }
@@ -1516,6 +1523,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <a class="toc-link" href="#accueil"><span class="dot"></span>Accueil</a>
       <a class="toc-link" href="#comprendre"><span class="dot"></span>Comprendre les TMS</a>
       <a class="toc-link sub" href="#types">Types &amp; zones</a>
+      <a class="toc-link sub" href="#corps">Carte du corps</a>
       <a class="toc-link sub" href="#facteurs">Facteurs de risque</a>
       <a class="toc-link sub" href="#schema">Schéma interactif</a>
       <a class="toc-link sub" href="#realite">Notre réalité minière</a>
@@ -1529,7 +1537,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <a class="toc-link sub" href="#postures">Bonnes postures</a>
       <a class="toc-link sub" href="#signaler">Signaler</a>
       <a class="toc-link" href="#exploration"><span class="dot"></span>Exploration interactive</a>
-      <a class="toc-link sub" href="#corps">Carte du corps</a>
       <a class="toc-link sub" href="#simulateur">Simulateur</a>
       <a class="toc-link" href="#retenir"><span class="dot"></span>À retenir</a>
     </nav>
@@ -1599,15 +1606,77 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
         </div>
 
         <h3 class="sub-h reveal">Où ça frappe le plus <span style="font-weight:400;font-size:.85rem;color:var(--dim)"> : clique une zone</span></h3>
-        <div class="icards zone-c">
-          <article class="imgcard reveal" data-modal="dos" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Dos et bas du dos : ouvrir les détails"><div class="plus">+</div><div class="media"><img src="images/zone_dos.jpeg" alt="Dos" loading="lazy" decoding="async"></div><div class="body"><h4>Dos et bas du dos</h4><p>Manutention, flexions, torsions, charges lourdes</p></div></article>
-          <article class="imgcard reveal d1" data-modal="epaules" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Épaules : ouvrir les détails"><div class="plus">+</div><div class="media"><img src="images/zone_epaules.jpeg" alt="Épaules" loading="lazy" decoding="async"></div><div class="body"><h4>Épaules</h4><p>Travail bras levés, vibrations, charges en hauteur</p></div></article>
-          <article class="imgcard reveal d2" data-modal="cou" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Cou et nuque : ouvrir les détails"><div class="plus">+</div><div class="media"><img src="images/zone_cou.jpeg" alt="Cou" loading="lazy" decoding="async"></div><div class="body"><h4>Cou et nuque</h4><p>Postures statiques, tête penchée, casque et lampe</p></div></article>
-          <article class="imgcard reveal d3" data-modal="poignets" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Poignets et mains : ouvrir les détails"><div class="plus">+</div><div class="media"><img src="images/zone_poignets.jpeg" alt="Poignets" loading="lazy" decoding="async"></div><div class="body"><h4>Poignets et mains</h4><p>Outils vibrants, prises répétées, serrage</p></div></article>
-          <article class="imgcard reveal" data-modal="coudes" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Coudes : ouvrir les détails"><div class="plus">+</div><div class="media"><img src="images/zone_coudes.jpeg" alt="Coudes" loading="lazy" decoding="async"></div><div class="body"><h4>Coudes</h4><p>Mouvements répétés, force en torsion</p></div></article>
-          <article class="imgcard reveal d1" data-modal="genoux" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Genoux : ouvrir les détails"><div class="plus">+</div><div class="media"><img src="images/zone_genoux.jpeg" alt="Genoux" loading="lazy" decoding="async"></div><div class="body"><h4>Genoux</h4><p>Position accroupie, à genoux, sol inégal</p></div></article>
-        </div>
+        <div class="corps-insitu reveal" id="corps">
+          <p class="corps-aide">Clique un point lumineux de la silhouette — ou une zone dans la liste — pour voir la zone touchée, les TMS fréquents, les facteurs en cause et les bons réflexes.</p>
+<div class="corps-flex">
+      <div class="corps-svg-bloc">
+        <svg id="corps-svg" viewBox="0 0 220 460" role="group" aria-label="Silhouette humaine interactive : sélectionnez une zone du corps">
+          <!-- silhouette -->
+          <circle class="silhouette" cx="110" cy="36" r="24"/>
+          <rect class="silhouette" x="100" y="58" width="20" height="14" rx="4"/>
+          <path class="silhouette" d="M76,72 h68 c12,0 18,9 17,22 l-6,108 c-1,12 -16,18 -45,18 s-44,-6 -45,-18 l-6,-108 c-1,-13 5,-22 17,-22 z"/>
+          <line class="membre" x1="70" y1="86" x2="52" y2="160" stroke-width="18"/>
+          <line class="membre" x1="52" y1="160" x2="46" y2="232" stroke-width="16"/>
+          <line class="membre" x1="150" y1="86" x2="168" y2="160" stroke-width="18"/>
+          <line class="membre" x1="168" y1="160" x2="174" y2="232" stroke-width="16"/>
+          <circle class="silhouette" cx="44" cy="246" r="11"/>
+          <circle class="silhouette" cx="176" cy="246" r="11"/>
+          <line class="membre" x1="92" y1="214" x2="86" y2="330" stroke-width="24"/>
+          <line class="membre" x1="86" y1="330" x2="82" y2="408" stroke-width="20"/>
+          <line class="membre" x1="128" y1="214" x2="134" y2="330" stroke-width="24"/>
+          <line class="membre" x1="134" y1="330" x2="138" y2="408" stroke-width="20"/>
+          <ellipse class="silhouette" cx="76" cy="420" rx="16" ry="9"/>
+          <ellipse class="silhouette" cx="144" cy="420" rx="16" ry="9"/>
+          <!-- zones cliquables (générées + points fixes) -->
+          <g class="zone" data-zone="cou" tabindex="0" role="button" aria-label="Zone cou et nuque">
+            <circle class="onde" cx="110" cy="62" r="11"/><circle class="point" cx="110" cy="62" r="10"/>
+          </g>
+          <g class="zone" data-zone="epaules" tabindex="0" role="button" aria-label="Zone épaules">
+            <circle class="onde" cx="74" cy="84" r="11"/><circle class="point" cx="74" cy="84" r="10"/>
+          </g>
+          <g class="zone" data-zone="epaules" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="146" cy="84" r="11"/><circle class="point" cx="146" cy="84" r="10"/>
+          </g>
+          <g class="zone" data-zone="haut-dos" tabindex="0" role="button" aria-label="Zone haut du dos">
+            <circle class="onde" cx="110" cy="115" r="11"/><circle class="point" cx="110" cy="115" r="10"/>
+          </g>
+          <g class="zone" data-zone="bas-dos" tabindex="0" role="button" aria-label="Zone bas du dos">
+            <circle class="onde" cx="110" cy="185" r="11"/><circle class="point" cx="110" cy="185" r="10"/>
+          </g>
+          <g class="zone" data-zone="coudes" tabindex="0" role="button" aria-label="Zone coudes">
+            <circle class="onde" cx="52" cy="162" r="11"/><circle class="point" cx="52" cy="162" r="10"/>
+          </g>
+          <g class="zone" data-zone="coudes" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="168" cy="162" r="11"/><circle class="point" cx="168" cy="162" r="10"/>
+          </g>
+          <g class="zone" data-zone="poignets-mains" tabindex="0" role="button" aria-label="Zone poignets et mains">
+            <circle class="onde" cx="45" cy="242" r="11"/><circle class="point" cx="45" cy="242" r="10"/>
+          </g>
+          <g class="zone" data-zone="poignets-mains" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="175" cy="242" r="11"/><circle class="point" cx="175" cy="242" r="10"/>
+          </g>
+          <g class="zone" data-zone="genoux" tabindex="0" role="button" aria-label="Zone genoux">
+            <circle class="onde" cx="86" cy="330" r="11"/><circle class="point" cx="86" cy="330" r="10"/>
+          </g>
+          <g class="zone" data-zone="genoux" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="134" cy="330" r="11"/><circle class="point" cx="134" cy="330" r="10"/>
+          </g>
+          <g class="zone" data-zone="chevilles-pieds" tabindex="0" role="button" aria-label="Zone chevilles et pieds">
+            <circle class="onde" cx="78" cy="414" r="11"/><circle class="point" cx="78" cy="414" r="10"/>
+          </g>
+          <g class="zone" data-zone="chevilles-pieds" tabindex="-1" aria-hidden="true">
+            <circle class="onde" cx="142" cy="414" r="11"/><circle class="point" cx="142" cy="414" r="10"/>
+          </g>
+        </svg>
+      </div>
 
+      <div class="zones-liste">
+        <h3>8 zones sous surveillance <span style="font-weight:400;font-size:.85rem;color:var(--dim)">: clique une carte</span></h3>
+        <div class="zones-grille" id="zones-grille"></div>
+      </div>
+    </div>
+  
+        </div>
         <h3 id="facteurs" class="sub-h reveal">Les facteurs de risque</h3>
         <p class="lead reveal" style="margin-bottom:1.2rem">Chez les travailleurs, le risque vient surtout de la tâche, du corps et de l'environnement immédiat. Six déclencheurs reviennent le plus souvent <span style="color:var(--dim);font-size:.85rem">— clique une carte pour le détail</span> :</p>
         <div class="grid g3" style="margin-bottom:1.6rem">
@@ -1934,7 +2003,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <div class="wrap">
         <div class="eyebrow reveal">Base de connaissances &middot; volet interactif</div>
         <h2 class="title reveal d1">Exploration interactive</h2>
-        <p class="lead reveal d2">La suite du volet cliquable : la vidéo, la carte du corps et le simulateur de poste de travail. Le schéma interactif des facteurs, lui, est intégré plus haut dans la section « Facteurs de risque ». Ta progression est conservée d'une visite à l'autre.</p>
+        <p class="lead reveal d2">La suite du volet cliquable : la vidéo et le simulateur de poste de travail. Le schéma interactif des facteurs et la carte du corps sont intégrés plus haut, dans « Comprendre les TMS ». Ta progression est conservée d'une visite à l'autre.</p>
       </div>
       <div class="ipage">
         <div class="explo-outils">
@@ -1977,78 +2046,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       </div>
     </div>
   </section>
-<section class="bloc ireveal" id="corps">
-    <h2>Où ça fait <span class="accent">mal ?</span></h2>
-    <p class="intro">Chaque facteur de risque cible des zones précises du corps. Cliquez sur un point de la silhouette — ou sur une carte — pour découvrir les TMS typiques de cette zone, les facteurs en cause et les bons réflexes.</p>
 
-    <div class="corps-flex">
-      <div class="corps-svg-bloc">
-        <svg id="corps-svg" viewBox="0 0 220 460" role="group" aria-label="Silhouette humaine interactive : sélectionnez une zone du corps">
-          <!-- silhouette -->
-          <circle class="silhouette" cx="110" cy="36" r="24"/>
-          <rect class="silhouette" x="100" y="58" width="20" height="14" rx="4"/>
-          <path class="silhouette" d="M76,72 h68 c12,0 18,9 17,22 l-6,108 c-1,12 -16,18 -45,18 s-44,-6 -45,-18 l-6,-108 c-1,-13 5,-22 17,-22 z"/>
-          <line class="membre" x1="70" y1="86" x2="52" y2="160" stroke-width="18"/>
-          <line class="membre" x1="52" y1="160" x2="46" y2="232" stroke-width="16"/>
-          <line class="membre" x1="150" y1="86" x2="168" y2="160" stroke-width="18"/>
-          <line class="membre" x1="168" y1="160" x2="174" y2="232" stroke-width="16"/>
-          <circle class="silhouette" cx="44" cy="246" r="11"/>
-          <circle class="silhouette" cx="176" cy="246" r="11"/>
-          <line class="membre" x1="92" y1="214" x2="86" y2="330" stroke-width="24"/>
-          <line class="membre" x1="86" y1="330" x2="82" y2="408" stroke-width="20"/>
-          <line class="membre" x1="128" y1="214" x2="134" y2="330" stroke-width="24"/>
-          <line class="membre" x1="134" y1="330" x2="138" y2="408" stroke-width="20"/>
-          <ellipse class="silhouette" cx="76" cy="420" rx="16" ry="9"/>
-          <ellipse class="silhouette" cx="144" cy="420" rx="16" ry="9"/>
-          <!-- zones cliquables (générées + points fixes) -->
-          <g class="zone" data-zone="cou" tabindex="0" role="button" aria-label="Zone cou et nuque">
-            <circle class="onde" cx="110" cy="62" r="11"/><circle class="point" cx="110" cy="62" r="10"/>
-          </g>
-          <g class="zone" data-zone="epaules" tabindex="0" role="button" aria-label="Zone épaules">
-            <circle class="onde" cx="74" cy="84" r="11"/><circle class="point" cx="74" cy="84" r="10"/>
-          </g>
-          <g class="zone" data-zone="epaules" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="146" cy="84" r="11"/><circle class="point" cx="146" cy="84" r="10"/>
-          </g>
-          <g class="zone" data-zone="haut-dos" tabindex="0" role="button" aria-label="Zone haut du dos">
-            <circle class="onde" cx="110" cy="115" r="11"/><circle class="point" cx="110" cy="115" r="10"/>
-          </g>
-          <g class="zone" data-zone="bas-dos" tabindex="0" role="button" aria-label="Zone bas du dos">
-            <circle class="onde" cx="110" cy="185" r="11"/><circle class="point" cx="110" cy="185" r="10"/>
-          </g>
-          <g class="zone" data-zone="coudes" tabindex="0" role="button" aria-label="Zone coudes">
-            <circle class="onde" cx="52" cy="162" r="11"/><circle class="point" cx="52" cy="162" r="10"/>
-          </g>
-          <g class="zone" data-zone="coudes" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="168" cy="162" r="11"/><circle class="point" cx="168" cy="162" r="10"/>
-          </g>
-          <g class="zone" data-zone="poignets-mains" tabindex="0" role="button" aria-label="Zone poignets et mains">
-            <circle class="onde" cx="45" cy="242" r="11"/><circle class="point" cx="45" cy="242" r="10"/>
-          </g>
-          <g class="zone" data-zone="poignets-mains" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="175" cy="242" r="11"/><circle class="point" cx="175" cy="242" r="10"/>
-          </g>
-          <g class="zone" data-zone="genoux" tabindex="0" role="button" aria-label="Zone genoux">
-            <circle class="onde" cx="86" cy="330" r="11"/><circle class="point" cx="86" cy="330" r="10"/>
-          </g>
-          <g class="zone" data-zone="genoux" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="134" cy="330" r="11"/><circle class="point" cx="134" cy="330" r="10"/>
-          </g>
-          <g class="zone" data-zone="chevilles-pieds" tabindex="0" role="button" aria-label="Zone chevilles et pieds">
-            <circle class="onde" cx="78" cy="414" r="11"/><circle class="point" cx="78" cy="414" r="10"/>
-          </g>
-          <g class="zone" data-zone="chevilles-pieds" tabindex="-1" aria-hidden="true">
-            <circle class="onde" cx="142" cy="414" r="11"/><circle class="point" cx="142" cy="414" r="10"/>
-          </g>
-        </svg>
-      </div>
-
-      <div class="zones-liste">
-        <h3>8 zones sous surveillance</h3>
-        <div class="zones-grille" id="zones-grille"></div>
-      </div>
-    </div>
-  </section>
 <section class="bloc ireveal" id="simulateur">
     <h2>Évaluez <span class="accent">votre poste de travail</span></h2>
     <p class="intro">Cochez ce qui correspond à votre situation de travail. La jauge calcule un niveau de risque indicatif — et démontre le message clé : cocher dans <strong>plusieurs familles à la fois</strong> fait grimper le score plus vite, car les facteurs se multiplient.</p>
@@ -3129,6 +3127,7 @@ const DETAILS = {
 /* Zones du corps */
 const ZONES = {
   "cou": {
+    img: "images/zone_cou.jpeg",
     nom: "Cou / nuque", icone: "🧣",
     tms: ["Cervicalgie", "Tensions de la nuque", "Maux de tête d'origine cervicale"],
     description: "Le cou supporte la tête (4 à 5 kg) toute la journée. Penché vers l'avant, son effort est démultiplié : à 45 degrés de flexion, c'est l'équivalent de plus de 20 kg que les muscles cervicaux retiennent.",
@@ -3140,6 +3139,7 @@ const ZONES = {
     ]
   },
   "epaules": {
+    img: "images/zone_epaules.jpeg",
     nom: "Épaules", icone: "💪",
     tms: ["Tendinite de la coiffe des rotateurs", "Bursite", "Capsulite"],
     description: "L'épaule est l'articulation la plus mobile du corps — et la moins stable. Travailler les bras levés ou éloignés du corps réduit l'irrigation des tendons et les use prématurément.",
@@ -3151,6 +3151,7 @@ const ZONES = {
     ]
   },
   "haut-dos": {
+    img: "images/zone_dos.jpeg",
     nom: "Haut du dos", icone: "🦴",
     tms: ["Dorsalgie", "Tensions entre les omoplates"],
     description: "Le haut du dos encaisse les postures penchées et le travail des bras vers l'avant. Les tensions entre les omoplates sont le signal classique d'un poste de travail mal ajusté ou d'une posture statique prolongée.",
@@ -3162,6 +3163,7 @@ const ZONES = {
     ]
   },
   "bas-dos": {
+    img: "images/zone_dos.jpeg",
     nom: "Bas du dos", icone: "🦴",
     tms: ["Lombalgie", "Hernie discale", "Sciatalgie"],
     description: "Région la plus touchée par les TMS. Les disques lombaires encaissent des pressions énormes lors des flexions et des torsions en charge : soulever 25 kg dos courbé peut imposer plusieurs centaines de kilos de pression aux disques.",
@@ -3173,6 +3175,7 @@ const ZONES = {
     ]
   },
   "coudes": {
+    img: "images/zone_coudes.jpeg",
     nom: "Coudes", icone: "🦾",
     tms: ["Épicondylite (tennis elbow)", "Épitrochléite"],
     description: "Les tendons du coude relient les muscles de l'avant-bras qui ferment la main. Serrer, visser et tourner à répétition les enflamme — c'est la fameuse épicondylite, fréquente bien au-delà du tennis.",
@@ -3184,6 +3187,7 @@ const ZONES = {
     ]
   },
   "poignets-mains": {
+    img: "images/zone_poignets.jpeg",
     nom: "Poignets / mains", icone: "✋",
     tms: ["Syndrome du canal carpien", "Tendinite de De Quervain", "Syndrome des doigts blancs"],
     description: "Des dizaines de tendons et le nerf médian passent par le poignet, un tunnel étroit. Gestes répétés, prise en pince, vibrations et froid s'y combinent plus vite que partout ailleurs.",
@@ -3195,6 +3199,7 @@ const ZONES = {
     ]
   },
   "genoux": {
+    img: "images/zone_genoux.jpeg",
     nom: "Genoux", icone: "🦵",
     tms: ["Bursite du genou", "Lésion du ménisque", "Syndrome fémoro-patellaire"],
     description: "Le genou n'est pas fait pour servir de point d'appui. Le travail agenouillé comprime la bourse devant la rotule, et les accroupissements profonds répétés usent les ménisques.",
@@ -3442,6 +3447,13 @@ function ouvrirZone(zoneCle, declencheur) {
 
   const corps = $("#modale-corps");
   corps.innerHTML = "";
+  if (z.img) {
+    const fig = elem("div", "zone-photo");
+    const im = document.createElement("img");
+    im.src = z.img; im.alt = "Zone : " + z.nom; im.loading = "lazy";
+    fig.appendChild(im);
+    corps.appendChild(fig);
+  }
   corps.appendChild(elem("p", "description", z.description));
   sectionListe(corps, "TMS fréquents dans cette zone", z.tms, "exemples");
   sectionPuces(corps, "Facteurs en cause",
