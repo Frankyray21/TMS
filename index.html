@@ -241,9 +241,40 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 @media(max-width:680px){.evo-grid{grid-template-columns:1fr}.evoseg+.evoseg::before{left:16%;right:16%;top:0;width:auto;height:1px}}
 
 /* ===== Échelle de Borg : bouton + surcouche ===== */
-.borg-open{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;background:var(--card-2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-weight:700;font-size:.86rem;padding:.6rem 1.05rem;border-radius:50px;cursor:pointer;transition:border-color .2s,transform .15s,background .2s}
+.borg-cta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.1rem 1.3rem;box-shadow:var(--shadow-card)}
+.borg-cta-txt{flex:1;min-width:200px;display:flex;flex-direction:column}
+.borg-cta-txt strong{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.05rem}
+.borg-cta-txt span{color:var(--muted);font-size:.88rem;margin-top:.15rem}
+.borg-cta-pick{flex:1;min-width:200px;display:flex;align-items:center;gap:.9rem}
+.borg-cta-pick .bp-n{display:grid;place-items:center;width:50px;height:50px;border-radius:12px;font-family:var(--font-display);font-weight:800;font-size:1.6rem;color:#06140d}
+.borg-cta-pick strong{display:block;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.05rem}
+.borg-cta-pick span{color:var(--muted);font-size:.85rem}
+.borg-open{display:inline-flex;align-items:center;gap:.5rem;flex-shrink:0;background:var(--card-2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-weight:700;font-size:.86rem;padding:.6rem 1.05rem;border-radius:50px;cursor:pointer;transition:border-color .2s,transform .15s,background .2s}
 .borg-open:hover,.borg-open:focus-visible{border-color:var(--accent);background:#22304a;transform:translateY(-2px);outline:none}
 .panneau-borg{max-width:760px}
+.borg-detail{margin-top:1rem;background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem}
+.bd-head{display:flex;align-items:center;gap:.9rem;margin-bottom:.7rem}
+.bd-n{display:grid;place-items:center;width:46px;height:46px;border-radius:10px;font-family:var(--font-display);font-weight:800;font-size:1.5rem;color:#06140d}
+.bd-l{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1.05rem}
+.bd-e{color:var(--muted);font-size:.88rem}
+.bd-zone{display:inline-block;font-weight:700;font-size:.85rem;padding:.35rem .8rem;border-radius:50px;margin-bottom:.6rem}
+.bd-conseil{color:var(--text);font-size:.95rem;line-height:1.5}
+/* conséquences cause -> effet */
+.conseq2{display:flex;flex-direction:column;gap:.7rem}
+.cq2{display:grid;grid-template-columns:1fr 1.3fr;gap:1rem;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem;border-left:4px solid var(--accent)}
+.cq2-cause{display:flex;align-items:center;gap:.7rem;font-weight:700;font-size:.98rem}
+.cq2-ar{flex-shrink:0;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:1.1rem}
+.cq2-ar.down{background:rgba(239,68,68,.18);color:#ef5a5c}.cq2-ar.side{background:rgba(245,158,11,.18);color:#f59e0b}
+.cq2-eff{display:flex;align-items:flex-start;gap:.6rem;color:var(--muted);font-size:.92rem;line-height:1.5;border-left:1px solid var(--border);padding-left:1rem}
+.cq2-go{color:var(--accent-l);font-weight:800;flex-shrink:0}
+@media(max-width:620px){.cq2{grid-template-columns:1fr;gap:.6rem}.cq2-eff{border-left:none;padding-left:0}}
+/* promo échelle de Borg */
+.borg-promo{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin:1.4rem 0;background:linear-gradient(160deg,rgba(16,185,129,.12),rgba(17,24,39,.6));border:1px solid rgba(16,185,129,.4);border-radius:16px;padding:1.1rem 1.3rem}
+.bpr-ic{flex-shrink:0;width:50px;height:50px;border-radius:13px;background:rgba(16,185,129,.18);color:#34d399;display:grid;place-items:center}
+.bpr-txt{flex:1;min-width:220px;display:flex;flex-direction:column}
+.bpr-txt strong{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.05rem}
+.bpr-txt span{color:var(--muted);font-size:.88rem;margin-top:.15rem}
+.borg-promo .borg-open{flex-shrink:0}
 .borg-modal-titre{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.4rem;color:var(--accent-l);margin:.4rem 0 .2rem;padding-right:2.4rem}
 .borg-modal-titre span{color:var(--muted);font-size:.95rem;font-weight:400;text-transform:none;letter-spacing:0}
 .borg-modal-sous{color:var(--muted);font-size:.9rem;margin-bottom:1.1rem}
@@ -2010,16 +2041,11 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 
         <!-- Échelle de Borg interactive -->
         <h3 id="borg" class="sub-h reveal">Percevoir l'effort : l'échelle de Borg</h3>
-        <p class="lead reveal" style="margin-bottom:1rem">Une même force peut représenter un effort très différent d'une personne à l'autre. Déplace le curseur pour voir ce que chaque niveau d'effort perçu signifie au travail.</p>
-        <div class="borg reveal">
-          <div class="borg-top">
-            <div class="borg-val"><span id="borgN">3</span><small>/10</small></div>
-            <div class="borg-info"><div class="borg-label" id="borgL">Modéré</div><div class="borg-ex" id="borgE">On sent l'effort, mais une conversation reste possible.</div></div>
-          </div>
-          <input type="range" min="0" max="10" value="3" id="borgR" class="borg-range" aria-label="Niveau d'effort perçu de 0 à 10" aria-valuetext="3 sur 10, modéré">
-          <div class="borg-scale-lbl"><span>0 · Repos</span><span>5 · Soutenu</span><span>10 · Maximal</span></div>
-          <div class="borg-zone" id="borgZ">Zone soutenable longtemps</div>
-          <button type="button" class="borg-open" id="borgOpen" data-ouvrir-borg><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Voir l'échelle complète (0 à 10)</button>
+        <p class="lead reveal" style="margin-bottom:1rem">Une même force peut représenter un effort très différent d'une personne à l'autre. L'échelle de Borg aide à mettre un chiffre sur ce que ton corps perçoit, de 0 (aucun effort) à 10 (effort maximal).</p>
+        <div class="borg-cta reveal" id="borgCta">
+          <div class="borg-cta-pick" id="borgPickWrap" hidden><span class="bp-n" id="borgPickN">0</span><div><strong id="borgPickL">Aucun effort</strong><span id="borgPickZ">Zone soutenable longtemps</span></div></div>
+          <div class="borg-cta-txt" id="borgCtaTxt"><strong>Situe ton effort sur l'échelle de Borg</strong><span>11 niveaux, de « aucun effort » à « maximal ».</span></div>
+          <button type="button" class="borg-open" id="borgOpen" data-ouvrir-borg><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Ouvrir l'échelle</button>
         </div>
 
         <!-- Fatigue musculaire interactive -->
@@ -2040,13 +2066,18 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
             <li id="mech3"><span class="fm-ar down">&darr;</span><div><strong>Activité nerveuse</strong><span>la commande du muscle faiblit</span></div></li>
           </ul>
         </div>
-        <p class="lead reveal" style="margin:1.4rem 0 1rem">La fatigue musculaire augmente le risque de blessure. Clique chaque conséquence :</p>
-        <div class="conseq reveal">
-          <button type="button" class="cq" aria-expanded="false"><span class="cq-ar">&darr;</span><span class="cq-t">Moins de force musculaire</span><span class="cq-d">Il faut plus d'effort pour accomplir la même tâche : le corps compense en forçant ailleurs.</span></button>
-          <button type="button" class="cq" aria-expanded="false"><span class="cq-ar">&rarr;</span><span class="cq-t">Biomécanique modifiée</span><span class="cq-d">Les mouvements deviennent moins efficaces, avec des compensations qui chargent les mauvaises structures.</span></button>
-          <button type="button" class="cq" aria-expanded="false"><span class="cq-ar">&darr;</span><span class="cq-t">Moins de stabilité articulaire</span><span class="cq-d">Moins de contrôle des articulations : faux mouvements et risque de blessure plus élevés.</span></button>
+        <p class="lead reveal" style="margin:1.4rem 0 1rem">La fatigue musculaire mène à une <strong style="color:var(--accent-l)">augmentation du risque de blessure</strong>. Trois conséquences s'enchaînent :</p>
+        <div class="conseq2 reveal">
+          <div class="cq2"><div class="cq2-cause"><span class="cq2-ar down">&darr;</span>Diminution de la force musculaire</div><div class="cq2-eff"><span class="cq2-go">&rarr;</span>Moins de force pour accomplir une même tâche : le corps compense en forçant ailleurs.</div></div>
+          <div class="cq2"><div class="cq2-cause"><span class="cq2-ar side">&rarr;</span>Changement dans la biomécanique des mouvements</div><div class="cq2-eff"><span class="cq2-go">&rarr;</span>Mouvements moins efficaces et compensations qui chargent les mauvaises structures.</div></div>
+          <div class="cq2"><div class="cq2-cause"><span class="cq2-ar down">&darr;</span>Diminution de la stabilité articulaire</div><div class="cq2-eff"><span class="cq2-go">&rarr;</span>Moins de contrôle des articulations : faux mouvements et plus de risques de blessures.</div></div>
         </div>
         <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><p><strong>Reconnaître et gérer la fatigue musculaire</strong> permet de maintenir la performance, de réduire le risque de blessure et de protéger sa santé à long terme.</p></div>
+        <div class="borg-promo reveal">
+          <div class="bpr-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg></div>
+          <div class="bpr-txt"><strong>Surveille ton effort avec l'échelle de Borg</strong><span>Mettre un chiffre sur l'effort perçu (0 à 10) aide à repérer la fatigue avant qu'elle ne s'installe et à ajuster le rythme.</span></div>
+          <button type="button" class="borg-open" data-ouvrir-borg><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Ouvrir l'échelle</button>
+        </div>
 
         <!-- Microlésions interactif -->
         <h3 id="microlesions" class="sub-h reveal">Les microlésions, mécanisme de l'usure</h3>
@@ -2640,10 +2671,15 @@ window.addEventListener('afterprint',function(){document.querySelectorAll('detai
   <div class="panneau-sim panneau-borg">
     <button class="fermer-sim" id="fermer-borg" aria-label="Fermer l'échelle">✕</button>
     <h3 class="borg-modal-titre">Échelle de Borg <span>· effort musculaire</span></h3>
-    <p class="borg-modal-sous">Clique le niveau qui correspond à ton effort : il sera reporté sur le curseur.</p>
+    <p class="borg-modal-sous">Clique un niveau : son sens au travail et la conduite à tenir s'affichent juste en dessous.</p>
     <div class="borg-modal-flex">
       <div class="borg-axe"><span>Intensité faible</span><span class="borg-axe-bar" aria-hidden="true"></span><span>Intensité élevée</span></div>
       <div class="borg-rows" id="borgRows"></div>
+    </div>
+    <div class="borg-detail" id="borgDetail" hidden>
+      <div class="bd-head"><span class="bd-n" id="bdN">0</span><div><div class="bd-l" id="bdL">Aucun effort</div><div class="bd-e" id="bdE">Pas d'effort.</div></div></div>
+      <div class="bd-zone" id="bdZone">Zone soutenable longtemps</div>
+      <p class="bd-conseil" id="bdConseil">Tu peux soutenir ce rythme longtemps.</p>
     </div>
   </div>
 </div>
@@ -4078,26 +4114,22 @@ document.addEventListener("keydown", e => {
     ["Maximal","Effort maximal, à la limite de mes capacités."]
   ];
   var BORG_COUL=["#2e9c4f","#43a047","#66bb6a","#9ccc65","#f9d423","#ffb300","#fb8c00","#f4661e","#ef4423","#e02d2d","#c01717"];
-  var r=$("#borgR");
-  function couleur(v){return BORG_COUL[v];}
-  function majBorg(){
-    var v=+r.value,c=couleur(v);
-    $("#borgN").textContent=v;
-    $("#borgL").textContent=BORG[v][0];
-    $("#borgE").textContent=BORG[v][1];
-    var pct=v*10;
-    r.style.background="linear-gradient(90deg,"+c+" "+pct+"%,#1e293b "+pct+"%)";
-    r.style.setProperty("--c",c);
-    r.setAttribute("aria-valuetext",v+" sur 10, "+BORG[v][0].toLowerCase());
-    var bv=$(".borg-val");bv.style.background=c;bv.style.color="#06140d";bv.style.borderColor=c;
-    var z=$("#borgZ"),zt,zb,zc;
-    if(v<=3){zt="Zone soutenable longtemps";zb="rgba(16,185,129,.15)";zc="#34d399";}
-    else if(v<=6){zt="Surveille la durée et prévois des pauses";zb="rgba(245,158,11,.15)";zc="#f59e0b";}
-    else{zt="Risque élevé : réduis l'effort ou récupère";zb="rgba(226,58,60,.16)";zc="#ef5a5c";}
-    z.textContent=zt;z.style.background=zb;z.style.color=zc;
-    document.querySelectorAll(".borg-range").forEach(function(el){el.style.setProperty("--accent-c",c);});
+  var BORG_SEL=-1;
+  function borgZone(v){
+    if(v<=3)return["Zone soutenable longtemps","rgba(16,185,129,.15)","#34d399"];
+    if(v<=6)return["Surveille la durée et prévois des pauses","rgba(245,158,11,.15)","#f59e0b"];
+    return["Risque élevé : réduis l'effort ou récupère","rgba(226,58,60,.16)","#ef5a5c"];
   }
-  if(r){r.addEventListener("input",majBorg);majBorg();}
+  function choisirBorg(v){
+    BORG_SEL=v;var c=BORG_COUL[v],z=borgZone(v);
+    var w=$("#borgPickWrap"),txt=$("#borgCtaTxt");
+    if(w){w.hidden=false;if(txt)txt.hidden=true;
+      var n=$("#borgPickN");n.textContent=v;n.style.background=c;n.style.color="#06140d";
+      $("#borgPickL").textContent=v+" · "+BORG[v][0];
+      var zl=$("#borgPickZ");zl.textContent=z[0];zl.style.color=z[2];
+      $("#borgCta").style.borderColor=c;
+    }
+  }
 
   /* ---- Échelle de Borg : surcouche ---- */
   var vBorg=$("#voile-borg"),rows=$("#borgRows"),declB=null;
@@ -4106,15 +4138,37 @@ document.addEventListener("keydown", e => {
       var btn=document.createElement("button");
       btn.className="borg-row";btn.setAttribute("data-n",n);
       btn.innerHTML='<span class="br-n" style="background:'+BORG_COUL[n]+'">'+n+'</span><span class="br-l">'+BORG[n][0]+'</span><span class="br-d">'+BORG[n][1]+'</span>';
-      btn.addEventListener("click",function(){ if(r){r.value=n;majBorg();} fermerBorg(); });
+      btn.addEventListener("click",function(){ choisirBorg(n); detailBorg(n); majRows(); });
       rows.appendChild(btn);
     })(i);}
   }
   function majRows(){
-    var v=r?+r.value:0;
-    document.querySelectorAll(".borg-row").forEach(function(el){el.classList.toggle("on",+el.getAttribute("data-n")===v);});
+    document.querySelectorAll(".borg-row").forEach(function(el){el.classList.toggle("on",+el.getAttribute("data-n")===BORG_SEL);});
   }
-  function ouvrirBorg(d){declB=d;majRows();vBorg.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-borg").focus();}
+  var BORG_CONSEIL=[
+    "Tu peux soutenir ce rythme aussi longtemps que nécessaire.",
+    "Effort à peine ressenti : aucun problème de fatigue.",
+    "Effort très léger : confortable sur la durée.",
+    "Effort léger : encore largement soutenable.",
+    "Effort modéré : commence à surveiller la durée et à prévoir des pauses.",
+    "Effort soutenu : alterne les tâches et fais des micro-pauses régulières.",
+    "Effort exigeant : la fatigue s'installe, espace les efforts.",
+    "Effort difficile : réduis la charge ou récupère avant de continuer.",
+    "Effort très difficile : à éviter de répéter, risque de blessure en hausse.",
+    "Presque maximal : ne tiens pas ce niveau, récupère.",
+    "Effort maximal : intenable, arrête et récupère immédiatement."
+  ];
+  function detailBorg(n){
+    var d=$("#borgDetail"); if(!d) return;
+    var c=BORG_COUL[n],z=borgZone(n);
+    d.hidden=false;
+    var bn=$("#bdN");bn.textContent=n;bn.style.background=c;bn.style.color="#06140d";
+    $("#bdL").textContent=BORG[n][0];
+    $("#bdE").textContent=BORG[n][1];
+    var zl=$("#bdZone");zl.textContent=z[0];zl.style.background=z[1];zl.style.color=z[2];
+    $("#bdConseil").textContent=BORG_CONSEIL[n];
+  }
+  function ouvrirBorg(d){declB=d;majRows();if(BORG_SEL>=0)detailBorg(BORG_SEL);else{var bd=$("#borgDetail");if(bd)bd.hidden=true;}vBorg.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-borg").focus();}
   function fermerBorg(){vBorg.classList.remove("ouvert");document.body.style.overflow="";if(declB&&declB.focus)declB.focus();}
   document.querySelectorAll("[data-ouvrir-borg]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirBorg(b);});});
   if(vBorg){
