@@ -249,8 +249,8 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .borg-cta-pick .bp-n{display:grid;place-items:center;width:50px;height:50px;border-radius:12px;font-family:var(--font-display);font-weight:800;font-size:1.6rem;color:#06140d}
 .borg-cta-pick strong{display:block;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.05rem}
 .borg-cta-pick span{color:var(--muted);font-size:.85rem}
-.borg-open{display:inline-flex;align-items:center;gap:.5rem;flex-shrink:0;background:var(--card-2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-weight:700;font-size:.86rem;padding:.6rem 1.05rem;border-radius:50px;cursor:pointer;transition:border-color .2s,transform .15s,background .2s}
-.borg-open:hover,.borg-open:focus-visible{border-color:var(--accent);background:#22304a;transform:translateY(-2px);outline:none}
+.borg-open{display:inline-flex;align-items:center;gap:.55rem;flex-shrink:0;background:var(--g-red);border:none;color:#fff;font-family:inherit;font-weight:800;font-size:.98rem;padding:.85rem 1.5rem;border-radius:50px;cursor:pointer;box-shadow:0 8px 22px rgba(210,35,37,.32);transition:transform .15s,filter .2s,box-shadow .2s}
+.borg-open:hover,.borg-open:focus-visible{transform:translateY(-3px);filter:brightness(1.1);box-shadow:0 12px 30px rgba(210,35,37,.45);outline:none}
 .panneau-borg{max-width:760px}
 .borg-detail{margin-top:1rem;background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem}
 .bd-head{display:flex;align-items:center;gap:.9rem;margin-bottom:.7rem}
@@ -274,7 +274,8 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .bpr-txt{flex:1;min-width:220px;display:flex;flex-direction:column}
 .bpr-txt strong{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.05rem}
 .bpr-txt span{color:var(--muted);font-size:.88rem;margin-top:.15rem}
-.borg-promo .borg-open{flex-shrink:0}
+.borg-promo .borg-open{flex-shrink:0;animation:borgpulse 2.6s ease-in-out infinite}
+@keyframes borgpulse{0%,100%{box-shadow:0 8px 22px rgba(210,35,37,.32)}50%{box-shadow:0 8px 30px rgba(210,35,37,.6)}}
 .borg-modal-titre{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.4rem;color:var(--accent-l);margin:.4rem 0 .2rem;padding-right:2.4rem}
 .borg-modal-titre span{color:var(--muted);font-size:.95rem;font-weight:400;text-transform:none;letter-spacing:0}
 .borg-modal-sous{color:var(--muted);font-size:.9rem;margin-bottom:1.1rem}
@@ -2048,25 +2049,8 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
           <button type="button" class="borg-open" id="borgOpen" data-ouvrir-borg><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Ouvrir l'échelle</button>
         </div>
 
-        <!-- Fatigue musculaire interactive -->
-        <h3 id="fatigue" class="sub-h reveal">Comment la fatigue musculaire survient</h3>
-        <p class="lead reveal" style="margin-bottom:1rem">Le muscle a besoin d'énergie (ATP) pour se contracter. À force d'être sollicité sans récupération, ses ressources s'épuisent. Clique sur « Fournir un effort » pour voir ce qui se passe à l'intérieur.</p>
-        <div class="fatig reveal">
-          <div class="fatig-left">
-            <div class="battery" aria-hidden="true"><div class="bat-fill" id="batFill"></div><span class="bat-cap"></span></div>
-            <div class="bat-state" id="batState">Muscle reposé : pleine capacité.</div>
-            <div class="fatig-btns">
-              <button type="button" id="batBtn" class="fatig-eff">Fournir un effort</button>
-              <button type="button" id="batRst" class="fatig-rst">Récupérer</button>
-            </div>
-          </div>
-          <ul class="fatig-mech">
-            <li id="mech1"><span class="fm-ar down">&darr;</span><div><strong>Production d'ATP</strong><span>l'énergie disponible diminue</span></div></li>
-            <li id="mech2"><span class="fm-ar up">&uarr;</span><div><strong>Déchets métaboliques</strong><span>ils s'accumulent dans le muscle</span></div></li>
-            <li id="mech3"><span class="fm-ar down">&darr;</span><div><strong>Activité nerveuse</strong><span>la commande du muscle faiblit</span></div></li>
-          </ul>
-        </div>
-        <p class="lead reveal" style="margin:1.4rem 0 1rem">La fatigue musculaire mène à une <strong style="color:var(--accent-l)">augmentation du risque de blessure</strong>. Trois conséquences s'enchaînent :</p>
+        <h3 id="fatigue" class="sub-h reveal">Les conséquences de la fatigue musculaire</h3>
+        <p class="lead reveal" style="margin-bottom:1rem">À force d'être sollicité sans récupération, le muscle s'épuise. La fatigue musculaire mène alors à une <strong style="color:var(--accent-l)">augmentation du risque de blessure</strong>. Trois conséquences s'enchaînent :</p>
         <div class="conseq2 reveal">
           <div class="cq2"><div class="cq2-cause"><span class="cq2-ar down">&darr;</span>Diminution de la force musculaire</div><div class="cq2-eff"><span class="cq2-go">&rarr;</span>Moins de force pour accomplir une même tâche : le corps compense en forçant ailleurs.</div></div>
           <div class="cq2"><div class="cq2-cause"><span class="cq2-ar side">&rarr;</span>Changement dans la biomécanique des mouvements</div><div class="cq2-eff"><span class="cq2-go">&rarr;</span>Mouvements moins efficaces et compensations qui chargent les mauvaises structures.</div></div>
