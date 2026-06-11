@@ -240,6 +240,72 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .evo-foot b{color:var(--accent-l)}
 @media(max-width:680px){.evo-grid{grid-template-columns:1fr}.evoseg+.evoseg::before{left:16%;right:16%;top:0;width:auto;height:1px}}
 
+/* ===== Modules interactifs : fatigue & charge ===== */
+.borg{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem 1.5rem;box-shadow:var(--shadow-card)}
+.borg-top{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.1rem}
+.borg-val{flex-shrink:0;width:84px;height:84px;border-radius:18px;display:flex;align-items:baseline;justify-content:center;gap:1px;font-family:var(--font-display);font-weight:800;background:var(--bg-2);border:1px solid var(--border);transition:background .25s,color .25s,border-color .25s}
+.borg-val span{font-size:2.6rem;line-height:1}.borg-val small{font-size:1rem;opacity:.7}
+.borg-label{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1.2rem;margin-bottom:.2rem}
+.borg-ex{color:var(--muted);font-size:.92rem;line-height:1.5}
+.borg-range{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:50px;outline-offset:4px;background:#1e293b;cursor:pointer}
+.borg-range::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.5);cursor:pointer;transition:border-color .2s}
+.borg-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--accent);cursor:pointer}
+.borg-scale-lbl{display:flex;justify-content:space-between;margin-top:.5rem;font-size:.76rem;color:var(--dim);font-weight:600}
+.borg-zone{margin-top:1rem;text-align:center;font-weight:700;font-size:.95rem;padding:.55rem;border-radius:10px;transition:background .25s,color .25s}
+
+.fatig{display:flex;gap:1.6rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;box-shadow:var(--shadow-card)}
+.fatig-left{flex:0 0 220px;display:flex;flex-direction:column;align-items:center;gap:.9rem}
+.battery{position:relative;width:150px;height:74px;border:4px solid #cbd5e1;border-radius:12px;padding:6px;background:#0d1320}
+.battery::after{content:'';position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:8px;height:28px;background:#cbd5e1;border-radius:0 4px 4px 0}
+.bat-fill{height:100%;width:100%;border-radius:5px;background:linear-gradient(90deg,#10b981,#3bd17a);transition:width .5s ease,background .5s ease}
+.bat-state{font-size:.9rem;color:var(--muted);text-align:center;min-height:2.4em;line-height:1.4}
+.fatig-btns{display:flex;gap:.5rem}
+.fatig-eff,.fatig-rst{border:none;border-radius:10px;padding:.6rem 1rem;font-weight:700;font-size:.86rem;cursor:pointer;font-family:inherit;transition:filter .15s,transform .15s}
+.fatig-eff{background:var(--g-red);color:#fff}.fatig-eff:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.fatig-rst{background:var(--card-2);color:var(--text);border:1px solid var(--border)}.fatig-rst:hover{background:#22304a}
+.fatig-mech{flex:1;min-width:240px;list-style:none;display:flex;flex-direction:column;gap:.7rem;justify-content:center}
+.fatig-mech li{display:flex;align-items:center;gap:.9rem;padding:.8rem 1rem;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);opacity:.45;transform:translateX(6px);transition:opacity .35s,transform .35s,border-color .35s}
+.fatig-mech li.on{opacity:1;transform:none;border-color:rgba(239,90,92,.5)}
+.fatig-mech .fm-ar{flex-shrink:0;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:1.1rem}
+.fatig-mech .fm-ar.down{background:rgba(239,68,68,.18);color:#ef5a5c}.fatig-mech .fm-ar.up{background:rgba(245,158,11,.18);color:#f59e0b}
+.fatig-mech strong{display:block;font-size:.96rem}.fatig-mech span{color:var(--muted);font-size:.84rem}
+
+.conseq{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cq{text-align:left;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem;cursor:pointer;font-family:inherit;color:var(--text);transition:border-color .2s,transform .15s}
+.cq:hover{border-color:rgba(210,35,37,.5);transform:translateY(-3px)}
+.cq .cq-ar{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:9px;background:rgba(239,68,68,.16);color:#ef5a5c;font-weight:800;margin-bottom:.6rem}
+.cq .cq-t{display:block;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1rem;margin-bottom:.4rem}
+.cq .cq-d{display:grid;grid-template-rows:0fr;opacity:0;color:var(--muted);font-size:.88rem;line-height:1.5;transition:grid-template-rows .3s,opacity .3s}
+.cq .cq-d>*{overflow:hidden}
+.cq.open .cq-d{grid-template-rows:1fr;opacity:1;margin-top:.2rem}
+.cq.open .cq-ar{background:var(--accent);color:#fff}
+
+.micro2,.sd{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem;box-shadow:var(--shadow-card)}
+.seg-toggle{display:inline-flex;background:var(--bg-2);border:1px solid var(--border);border-radius:50px;padding:.25rem;margin-bottom:1.2rem;gap:.2rem}
+.seg-toggle button{border:none;background:none;color:var(--muted);font-family:inherit;font-weight:700;font-size:.88rem;padding:.5rem 1.1rem;border-radius:50px;cursor:pointer;transition:background .2s,color .2s}
+.seg-toggle button.active{background:var(--accent);color:#fff}
+.micro2-body{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.fibres{flex:0 0 240px;max-width:100%;height:auto;background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:6px}
+.fibres .fb rect{fill:#3b9c6e;transition:fill .4s}
+.fibres .lesions circle{fill:#ef4444;opacity:0;transition:opacity .4s}
+.fibres.no .fb rect{fill:#7a3b3b}
+.fibres.no .lesions circle{opacity:1}
+.micro2-out{flex:1;min-width:240px}
+.m2-k{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1.15rem;margin-bottom:.4rem;color:var(--success)}
+.micro2.bad .m2-k{color:var(--accent-l)}
+.micro2-out p{color:var(--muted);font-size:.95rem;line-height:1.55}
+.sd-body{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.sd-flow{flex:0 0 240px;max-width:100%;height:64px;border-radius:12px;border:1px solid var(--border);background:linear-gradient(90deg,#3a1414,#2a1a1a);display:flex;align-items:center;gap:14px;padding:0 18px;overflow:hidden;transition:background .4s}
+.sd-flow.dyn{background:linear-gradient(90deg,#0d2a1e,#10322a)}
+.sd-dot{width:14px;height:14px;border-radius:50%;background:#ef5a5c;transition:background .4s}
+.sd-flow.dyn .sd-dot{background:#34d399;animation:sdmove 1.4s linear infinite}
+.sd-flow.dyn .sd-dot:nth-child(2){animation-delay:.35s}.sd-flow.dyn .sd-dot:nth-child(3){animation-delay:.7s}.sd-flow.dyn .sd-dot:nth-child(4){animation-delay:1.05s}
+@keyframes sdmove{0%{transform:translateX(0);opacity:.4}50%{opacity:1}100%{transform:translateX(180px);opacity:.4}}
+.sd-out{flex:1;min-width:240px}
+.sd-k{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1.1rem;margin-bottom:.4rem}
+.sd-out p{color:var(--muted);font-size:.95rem;line-height:1.55}
+@media(max-width:680px){.conseq{grid-template-columns:1fr}.fatig-left{flex-basis:100%}}
+
 /* piliers */
 .piliers{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:1.5rem}
 .pilier{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:2rem;position:relative;overflow:hidden;box-shadow:var(--shadow-card)}
@@ -1569,7 +1635,10 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <a class="toc-link sub" href="#schema">Schéma interactif</a>
       <a class="toc-link sub" href="#realite">Notre réalité minière</a>
       <a class="toc-link sub" href="#evolution">Évolution</a>
-      <a class="toc-link" href="#charge"><span class="dot"></span>Charge &amp; récupération</a>
+      <a class="toc-link" href="#charge"><span class="dot"></span>Fatigue &amp; charge</a>
+      <a class="toc-link sub" href="#borg">Échelle de Borg</a>
+      <a class="toc-link sub" href="#fatigue">Fatigue musculaire</a>
+      <a class="toc-link sub" href="#microlesions">Microlésions</a>
       <a class="toc-link sub" href="#assis">Travail assis</a>
       <a class="toc-link" href="#sommeil"><span class="dot"></span>Le sommeil</a>
       <a class="toc-link sub" href="#quarts">Quart de nuit</a>
@@ -1904,25 +1973,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
         </div>
         <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><p><strong>Le bon moment pour agir, c'est dès l'inconfort</strong> (phase aiguë, la fenêtre verte). Plus on attend, plus on glisse vers la douleur puis la lésion, et plus la récupération est longue et incertaine.</p></div>
 
-        <h3 class="sub-h reveal">Les microlésions, mécanisme de l'usure</h3>
-        <div class="micro reveal">
-          <div class="micro-txt">
-            <ul class="plainlist">
-              <li><strong>Les contractions musculaires répétées</strong> créent des microlésions dans les fibres musculaires et tendineuses.</li>
-              <li>Ces microlésions déclenchent une <strong>réponse inflammatoire</strong>.</li>
-            </ul>
-            <div class="micro-rec">
-              <div class="mr-ok"><span class="mr-k"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Temps de repos suffisant</span><span class="mr-d">&uarr; de la force musculaire et de la résistance tendineuse</span></div>
-              <div class="mr-no"><span class="mr-k"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Temps de repos insuffisant</span><span class="mr-d">dégénérescence chronique des tissus</span></div>
-            </div>
-          </div>
-          <figure class="micro-img">
-            <div class="info" data-img="images/info_micro_ab.jpg" tabindex="0" role="button" aria-label="Agrandir : fibres musculaires avant et après"><img src="images/info_micro_ab.jpg" alt="Fibres musculaires avant (saines) et après (microlésions et inflammation en rouge)" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
-            <figcaption>Avant / Après : apparition de microlésions et d'inflammation (en rouge) dans les fibres.</figcaption>
-          </figure>
-        </div>
-        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></div><p><strong>Le temps de récupération détermine si les tissus s'adaptent ou se détériorent.</strong> <span style="color:var(--dim)">· Docking et Cook, 2019</span></p></div>
-
 
       </div>
     </section>
@@ -1932,35 +1982,104 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <span class="ghost" aria-hidden="true">02</span>
       <div class="wrap">
         <div class="eyebrow reveal">Partie 02</div>
-        <h2 class="title reveal d1">Charge de travail et récupération</h2>
+        <h2 class="title reveal d1">Fatigue musculaire <span class="hl">et charge de travail</span></h2>
         <p class="lead reveal d2">Un TMS apparaît quand la charge imposée au corps dépasse, de façon répétée, sa capacité à récupérer.</p>
         <div class="piliers">
           <div class="pilier p1 reveal"><h4>Ce qui augmente la charge</h4><ul><li>Force, gestes répétés, longues heures</li><li>Postures contraignantes, vibrations</li><li>Froid, stress, cadence élevée</li><li><a class="plink" href="#facteurs">Revoir les 6 déclencheurs en détail &uarr;</a></li></ul></div>
           <div class="pilier p2 reveal d1"><h4>Ce qui restaure la capacité</h4><ul><li>Sommeil suffisant et de qualité</li><li>Hydratation, alimentation, activité physique</li><li>Pauses, gestion du stress</li><li><a class="plink" href="#sommeil">Voir le sommeil</a> &middot; <a class="plink" href="#hygiene">l'hygiène de vie &darr;</a></li></ul></div>
         </div>
 
-        <h3 class="sub-h reveal">Percevoir l'effort : l'échelle de Borg</h3>
-        <div class="info reveal" data-img="images/info_perception.jpeg" tabindex="0" role="button" aria-label="Agrandir : perception de l'effort, échelle de Borg"><img src="images/info_perception.jpeg" alt="Échelle de Borg : perception de l'effort de 0 (aucun effort) à 10 (maximal)" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
-        <p class="cap reveal">Une même force peut représenter un effort relatif très différent pour deux personnes : écoute ce que ton corps perçoit.</p>
+        <!-- Échelle de Borg interactive -->
+        <h3 id="borg" class="sub-h reveal">Percevoir l'effort : l'échelle de Borg</h3>
+        <p class="lead reveal" style="margin-bottom:1rem">Une même force peut représenter un effort très différent d'une personne à l'autre. Déplace le curseur pour voir ce que chaque niveau d'effort perçu signifie au travail.</p>
+        <div class="borg reveal">
+          <div class="borg-top">
+            <div class="borg-val"><span id="borgN">3</span><small>/10</small></div>
+            <div class="borg-info"><div class="borg-label" id="borgL">Modéré</div><div class="borg-ex" id="borgE">On sent l'effort, mais une conversation reste possible.</div></div>
+          </div>
+          <input type="range" min="0" max="10" value="3" id="borgR" class="borg-range" aria-label="Niveau d'effort perçu de 0 à 10" aria-valuetext="3 sur 10, modéré">
+          <div class="borg-scale-lbl"><span>0 · Repos</span><span>5 · Soutenu</span><span>10 · Maximal</span></div>
+          <div class="borg-zone" id="borgZ">Zone soutenable longtemps</div>
+        </div>
 
-        <h3 class="sub-h reveal">La fatigue musculaire</h3>
-        <p class="lead reveal" style="margin-bottom:1.2rem">Le muscle a besoin d'énergie (ATP) pour se contracter. Sans récupération suffisante, la fatigue s'installe plus vite.</p>
-        <div class="info reveal" data-img="images/info_fatigue2.jpeg" tabindex="0" role="button" aria-label="Agrandir : fatigue, effort et récupération"><img src="images/info_fatigue2.jpeg" alt="Fatigue musculaire : équilibre entre effort et récupération" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
-        <p class="cap reveal">Tant que l'effort dépasse la récupération, la fatigue s'accumule jour après jour.</p>
+        <!-- Fatigue musculaire interactive -->
+        <h3 id="fatigue" class="sub-h reveal">Comment la fatigue musculaire survient</h3>
+        <p class="lead reveal" style="margin-bottom:1rem">Le muscle a besoin d'énergie (ATP) pour se contracter. À force d'être sollicité sans récupération, ses ressources s'épuisent. Clique sur « Fournir un effort » pour voir ce qui se passe à l'intérieur.</p>
+        <div class="fatig reveal">
+          <div class="fatig-left">
+            <div class="battery" aria-hidden="true"><div class="bat-fill" id="batFill"></div><span class="bat-cap"></span></div>
+            <div class="bat-state" id="batState">Muscle reposé : pleine capacité.</div>
+            <div class="fatig-btns">
+              <button type="button" id="batBtn" class="fatig-eff">Fournir un effort</button>
+              <button type="button" id="batRst" class="fatig-rst">Récupérer</button>
+            </div>
+          </div>
+          <ul class="fatig-mech">
+            <li id="mech1"><span class="fm-ar down">&darr;</span><div><strong>Production d'ATP</strong><span>l'énergie disponible diminue</span></div></li>
+            <li id="mech2"><span class="fm-ar up">&uarr;</span><div><strong>Déchets métaboliques</strong><span>ils s'accumulent dans le muscle</span></div></li>
+            <li id="mech3"><span class="fm-ar down">&darr;</span><div><strong>Activité nerveuse</strong><span>la commande du muscle faiblit</span></div></li>
+          </ul>
+        </div>
+        <p class="lead reveal" style="margin:1.4rem 0 1rem">La fatigue musculaire augmente le risque de blessure. Clique chaque conséquence :</p>
+        <div class="conseq reveal">
+          <button type="button" class="cq" aria-expanded="false"><span class="cq-ar">&darr;</span><span class="cq-t">Moins de force musculaire</span><span class="cq-d">Il faut plus d'effort pour accomplir la même tâche : le corps compense en forçant ailleurs.</span></button>
+          <button type="button" class="cq" aria-expanded="false"><span class="cq-ar">&rarr;</span><span class="cq-t">Biomécanique modifiée</span><span class="cq-d">Les mouvements deviennent moins efficaces, avec des compensations qui chargent les mauvaises structures.</span></button>
+          <button type="button" class="cq" aria-expanded="false"><span class="cq-ar">&darr;</span><span class="cq-t">Moins de stabilité articulaire</span><span class="cq-d">Moins de contrôle des articulations : faux mouvements et risque de blessure plus élevés.</span></button>
+        </div>
+        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><p><strong>Reconnaître et gérer la fatigue musculaire</strong> permet de maintenir la performance, de réduire le risque de blessure et de protéger sa santé à long terme.</p></div>
 
-        <h3 class="sub-h reveal">Travail statique vs dynamique</h3>
-        <div class="info reveal" data-img="images/info_statique.jpeg" tabindex="0" role="button" aria-label="Agrandir : travail statique"><img src="images/info_statique.jpeg" alt="Travail musculaire statique : flot sanguin comprimé" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
-        <p class="cap reveal">Travail statique : le muscle reste contracté, le flot sanguin est comprimé, la fatigue arrive vite.</p>
-        <div class="info reveal" data-img="images/info_dynamique.jpeg" tabindex="0" role="button" aria-label="Agrandir : travail dynamique"><img src="images/info_dynamique.jpeg" alt="Travail musculaire dynamique : meilleure circulation sanguine" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
-        <p class="cap reveal">Travail dynamique : contraction et relâchement alternent, le sang circule mieux, l'effort est plus facile à soutenir.</p>
+        <!-- Microlésions interactif -->
+        <h3 id="microlesions" class="sub-h reveal">Les microlésions, mécanisme de l'usure</h3>
+        <p class="lead reveal" style="margin-bottom:1rem">Les contractions répétées créent de minuscules lésions dans les fibres musculaires et tendineuses, qui déclenchent une inflammation. Ce qui se passe ensuite dépend du repos. Choisis un scénario :</p>
+        <div class="micro2 reveal">
+          <div class="seg-toggle" role="tablist" aria-label="Scénario de récupération">
+            <button class="active" id="recOk" role="tab" aria-selected="true">Repos suffisant</button>
+            <button id="recNo" role="tab" aria-selected="false">Repos insuffisant</button>
+          </div>
+          <div class="micro2-body">
+            <svg class="fibres" id="fibres" viewBox="0 0 200 110" aria-hidden="true">
+              <g class="fb">
+                <rect x="14" y="16" width="172" height="12" rx="6"/>
+                <rect x="14" y="36" width="172" height="12" rx="6"/>
+                <rect x="14" y="56" width="172" height="12" rx="6"/>
+                <rect x="14" y="76" width="172" height="12" rx="6"/>
+              </g>
+              <g class="lesions">
+                <circle cx="60" cy="22" r="4"/><circle cx="120" cy="42" r="4"/><circle cx="90" cy="62" r="4"/><circle cx="150" cy="82" r="4"/><circle cx="40" cy="62" r="4"/>
+              </g>
+            </svg>
+            <div class="micro2-out" id="micro2Out">
+              <div class="m2-k" id="m2k">Adaptation</div>
+              <p id="m2d">Les tissus se réparent et reviennent <b>plus forts</b> : la force musculaire et la résistance des tendons augmentent.</p>
+            </div>
+          </div>
+        </div>
+        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></div><p><strong>Le temps de récupération détermine si les tissus s'adaptent ou se détériorent.</strong> <span style="color:var(--dim)">· Docking et Cook, 2019</span></p></div>
 
+        <!-- Statique vs dynamique interactif -->
+        <h3 class="sub-h reveal">Travail statique ou dynamique</h3>
+        <p class="lead reveal" style="margin-bottom:1rem">La façon dont le muscle travaille change tout pour la circulation du sang. Compare les deux :</p>
+        <div class="sd reveal">
+          <div class="seg-toggle" role="tablist" aria-label="Type de travail musculaire">
+            <button class="active" id="sdSta" role="tab" aria-selected="true">Statique</button>
+            <button id="sdDyn" role="tab" aria-selected="false">Dynamique</button>
+          </div>
+          <div class="sd-body">
+            <div class="sd-flow" id="sdFlow"><span class="sd-dot"></span><span class="sd-dot"></span><span class="sd-dot"></span><span class="sd-dot"></span></div>
+            <div class="sd-out"><div class="sd-k" id="sdK">Muscle contracté en continu</div><p id="sdD">Le muscle reste contracté, il comprime ses propres vaisseaux : le sang circule mal et la fatigue arrive vite.</p></div>
+          </div>
+        </div>
+
+        <!-- Travail assis (texte) -->
         <h3 id="assis" class="sub-h reveal">Travail assis prolongé</h3>
-        <p class="lead reveal" style="margin-bottom:1.2rem">Le statisme musculaire fatigue le corps : même assis, les muscles travaillent. Quand un muscle reste contracté longtemps, fatigue, inconfort et douleurs peuvent s'installer.</p>
-        <div class="info reveal" data-img="images/info_assis_muscles.jpeg" tabindex="0" role="button" aria-label="Agrandir : travail assis et muscles"><img src="images/info_assis_muscles.jpeg" alt="Travail assis prolongé : même assis, les muscles travaillent" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
-        <p class="cap reveal">Même assis, les muscles travaillent en statique pour te maintenir en position.</p>
-        <div class="info reveal" data-img="images/info_assis_disque.jpeg" tabindex="0" role="button" aria-label="Agrandir : travail assis et disques du dos"><img src="images/info_assis_disque.jpeg" alt="Pourquoi rester assis longtemps peut fatiguer les disques du bas du dos" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
-        <p class="cap reveal">Rester assis longtemps augmente la pression sur les disques du bas du dos. Bouger souvent les protège.</p>
+        <p class="lead reveal" style="margin-bottom:1rem">Même assis, les muscles travaillent en statique pour te maintenir en position. Rester assis longtemps fatigue le corps et augmente la pression sur les disques du bas du dos.</p>
+        <div class="grid g3 reveal">
+          <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M9 9h6l-1 6M10 22l1-7M14 22l-1-4"/></svg></div><h4>Muscles en tension</h4><p>Les muscles posturaux restent contractés en continu, comme dans tout travail statique.</p></div>
+          <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5"/></svg></div><h4>Disques sous pression</h4><p>La position assise prolongée augmente la pression sur les disques du bas du dos.</p></div>
+          <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h4>Bouger protège</h4><p>Se lever, varier la posture et marcher un peu relance la circulation et soulage les disques.</p></div>
+        </div>
         <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 00-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0012 2z"/></svg></div><p><strong>Varier la posture, bouger souvent et prendre des micro-pauses</strong> réduit la fatigue musculaire et protège les disques du bas du dos. <a class="plink" href="#reflexes">Voir tous les bons réflexes au poste de travail &darr;</a></p></div>
+
       </div>
     </section>
 
@@ -3906,6 +4025,94 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape" && voileSim.classList.contains("ouvert") && !voile.classList.contains("ouvert")) fermerSim();
 });
 
+})();
+</script>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s);};
+  /* ---- Échelle de Borg ---- */
+  var BORG=[
+    ["Repos","Aucun effort, le muscle est au repos."],
+    ["Très facile","Effort à peine perceptible."],
+    ["Facile","Gestes légers : tu pourrais chanter."],
+    ["Modéré","On sent l'effort, mais une conversation reste possible."],
+    ["Un peu soutenu","L'effort demande de l'attention."],
+    ["Soutenu","Respiration plus forte, phrases plus courtes."],
+    ["Assez difficile","Tu préférerais ralentir."],
+    ["Très difficile","Quelques mots seulement entre deux respirations."],
+    ["Très très difficile","Tu tiens, mais pas longtemps."],
+    ["Presque maximal","À la limite de ce que tu peux donner."],
+    ["Maximal","Effort total, intenable plus de quelques secondes."]
+  ];
+  var r=$("#borgR");
+  function couleur(v){return v<=3?"#10b981":v<=6?"#f59e0b":"#e23a3c";}
+  function majBorg(){
+    var v=+r.value,c=couleur(v);
+    $("#borgN").textContent=v;
+    $("#borgL").textContent=BORG[v][0];
+    $("#borgE").textContent=BORG[v][1];
+    var pct=v*10;
+    r.style.background="linear-gradient(90deg,"+c+" "+pct+"%,#1e293b "+pct+"%)";
+    r.style.setProperty("--c",c);
+    r.setAttribute("aria-valuetext",v+" sur 10, "+BORG[v][0].toLowerCase());
+    var bv=$(".borg-val");bv.style.background=c;bv.style.color="#06140d";bv.style.borderColor=c;
+    var z=$("#borgZ"),zt,zb,zc;
+    if(v<=3){zt="Zone soutenable longtemps";zb="rgba(16,185,129,.15)";zc="#34d399";}
+    else if(v<=6){zt="Surveille la durée et prévois des pauses";zb="rgba(245,158,11,.15)";zc="#f59e0b";}
+    else{zt="Risque élevé : réduis l'effort ou récupère";zb="rgba(226,58,60,.16)";zc="#ef5a5c";}
+    z.textContent=zt;z.style.background=zb;z.style.color=zc;
+    document.querySelectorAll(".borg-range").forEach(function(el){el.style.setProperty("--accent-c",c);});
+  }
+  if(r){r.addEventListener("input",majBorg);majBorg();}
+
+  /* ---- Fatigue musculaire : batterie ---- */
+  var bat=100,fill=$("#batFill"),st=$("#batState");
+  function majBat(){
+    fill.style.width=bat+"%";
+    fill.style.background=bat>55?"linear-gradient(90deg,#10b981,#3bd17a)":bat>25?"linear-gradient(90deg,#f59e0b,#fbbf24)":"linear-gradient(90deg,#e23a3c,#ef5a5c)";
+    $("#mech1").classList.toggle("on",bat<=80);
+    $("#mech2").classList.toggle("on",bat<=60);
+    $("#mech3").classList.toggle("on",bat<=35);
+    if(bat>=100)st.textContent="Muscle reposé : pleine capacité.";
+    else if(bat>55)st.textContent="L'effort puise dans les réserves d'énergie.";
+    else if(bat>25)st.textContent="Les ressources baissent, les déchets s'accumulent.";
+    else if(bat>0)st.textContent="Réserves presque vides : la fatigue s'installe.";
+    else st.textContent="Fatigue musculaire installée : le risque de blessure grimpe.";
+  }
+  var bb=$("#batBtn"),br=$("#batRst");
+  if(bb){bb.addEventListener("click",function(){bat=Math.max(0,bat-20);majBat();});
+    br.addEventListener("click",function(){bat=100;majBat();});majBat();}
+
+  /* ---- Conséquences ---- */
+  document.querySelectorAll(".conseq .cq").forEach(function(b){
+    b.addEventListener("click",function(){var o=b.classList.toggle("open");b.setAttribute("aria-expanded",o);});
+  });
+
+  /* ---- Microlésions ---- */
+  var mo=$("#recOk"),mn=$("#recNo"),fib=$("#fibres"),wrap=document.querySelector(".micro2");
+  function setMicro(ok){
+    mo.classList.toggle("active",ok);mn.classList.toggle("active",!ok);
+    mo.setAttribute("aria-selected",ok);mn.setAttribute("aria-selected",!ok);
+    fib.classList.toggle("no",!ok);wrap.classList.toggle("bad",!ok);
+    $("#m2k").textContent=ok?"Adaptation":"Dégénérescence";
+    $("#m2d").innerHTML=ok
+      ?"Les tissus se réparent et reviennent <b>plus forts</b> : la force musculaire et la résistance des tendons augmentent."
+      :"Les microlésions s'accumulent plus vite qu'elles ne guérissent : <b>inflammation persistante</b> et dégénérescence chronique des tissus.";
+  }
+  if(mo){mo.addEventListener("click",function(){setMicro(true);});mn.addEventListener("click",function(){setMicro(false);});}
+
+  /* ---- Statique / dynamique ---- */
+  var ss=$("#sdSta"),sd=$("#sdDyn"),flow=$("#sdFlow");
+  function setSD(sta){
+    ss.classList.toggle("active",sta);sd.classList.toggle("active",!sta);
+    ss.setAttribute("aria-selected",sta);sd.setAttribute("aria-selected",!sta);
+    flow.classList.toggle("dyn",!sta);
+    $("#sdK").textContent=sta?"Muscle contracté en continu":"Contraction et relâchement alternés";
+    $("#sdD").textContent=sta
+      ?"Le muscle reste contracté, il comprime ses propres vaisseaux : le sang circule mal et la fatigue arrive vite."
+      :"Le muscle se contracte puis se relâche : le sang circule mieux, l'effort est plus facile à soutenir.";
+  }
+  if(ss){ss.addEventListener("click",function(){setSD(true);});sd.addEventListener("click",function(){setSD(false);});}
 })();
 </script>
 </body>
