@@ -424,6 +424,72 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .sd-tip{flex:1;min-width:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.45rem;text-align:center;padding:1rem .7rem;border-left:1px dashed var(--border);font-size:.8rem;color:var(--muted);line-height:1.35}
 .sd-tip .ic{font-size:1.5rem}
 .sd-ref{margin-top:.7rem;text-align:right;font-size:.78rem;color:var(--dim)}
+/* travail assis : disques animés */
+.assis-grid{display:grid;grid-template-columns:290px 1fr;gap:1.5rem;align-items:start}
+.assis-cards{display:flex;flex-direction:column;gap:1rem}
+.disc-duel{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;box-shadow:var(--shadow-card)}
+.disc-legend{grid-column:1/-1;display:flex;justify-content:center;flex-wrap:wrap;gap:1.4rem;font-size:.76rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.dl-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.4rem;vertical-align:middle}
+.dl-eau{background:#4aa3e8}.dl-nut{background:#35c06b}
+.dl-o2{font-style:normal;color:#8fd4ff;font-weight:900;margin-right:.4rem}
+.disc-side{display:flex;flex-direction:column;gap:.65rem}
+.disc-side h4{text-align:center;font-size:.92rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.ds-p{text-align:center;color:var(--muted);font-size:.85rem;line-height:1.45;margin-top:-.25rem}
+.disc-badge{align-self:center;font-weight:800;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;padding:.4rem .9rem;border-radius:8px;border:1px solid}
+.disc-badge.ok{color:#34d399;border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.08)}
+.disc-badge.no{color:#ef5a5c;border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08)}
+.disc-svg{width:100%;max-width:330px;height:auto;display:block;margin:0 auto}
+.vert-t{animation:vtp 2.4s ease-in-out infinite}
+.vert-b{animation:vbp 2.4s ease-in-out infinite}
+@keyframes vtp{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+@keyframes vbp{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.disc-anim{transform-box:fill-box;transform-origin:center;animation:discp 2.4s ease-in-out infinite}
+@keyframes discp{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.84)}}
+.disc-diff{animation:vxar 2.4s ease-in-out infinite}
+.ok-ar .da-t{animation:vtp 2.4s ease-in-out infinite}
+.ok-ar .da-b{animation:vbp 2.4s ease-in-out infinite}
+.no-ar{animation:vxar 2s ease-in-out infinite}
+.disc-static{transform-box:fill-box;transform-origin:center;animation:discst 3.2s ease-in-out infinite}
+@keyframes discst{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.95)}}
+.pin-l circle{animation:pinl 2.4s linear infinite}
+.pin-r circle{animation:pinr 2.4s linear infinite}
+.pin-l circle:nth-child(2),.pin-r circle:nth-child(2){animation-delay:-.8s}
+.pin-l circle:nth-child(3),.pin-r circle:nth-child(3){animation-delay:-1.6s}
+@keyframes pinl{0%{transform:translateX(0);opacity:0}18%{opacity:1}80%{opacity:1}100%{transform:translateX(40px);opacity:0}}
+@keyframes pinr{0%{transform:translateX(0);opacity:0}18%{opacity:1}80%{opacity:1}100%{transform:translateX(-40px);opacity:0}}
+.pout-l circle{animation:poutl 3.2s linear infinite}
+.pout-r circle{animation:poutr 3.2s linear infinite}
+.pout-l circle:nth-child(2),.pout-r circle:nth-child(2){animation-delay:-1.6s}
+@keyframes poutl{0%{transform:translateX(0);opacity:1}100%{transform:translateX(-24px);opacity:0}}
+@keyframes poutr{0%{transform:translateX(0);opacity:1}100%{transform:translateX(24px);opacity:0}}
+.disc-verdict{display:flex;align-items:center;gap:.7rem;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);padding:.7rem .9rem;font-size:.87rem;line-height:1.45;margin-top:auto}
+.dv-ic{flex-shrink:0;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;font-weight:900;color:#fff}
+.disc-verdict.ok .dv-ic{background:#10b981}.disc-verdict.no .dv-ic{background:#d22325}
+.vs{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:var(--bg-2);border:1px solid var(--border);display:grid;place-items:center;font-weight:800;font-size:.85rem;z-index:2}
+.assis-band{display:flex;align-items:center;gap:1rem;margin-top:1.3rem;background:linear-gradient(160deg,rgba(210,35,37,.14),rgba(17,24,39,.6));border:1px solid rgba(210,35,37,.45);border-radius:14px;padding:1rem 1.3rem}
+.ab-ic{flex-shrink:0;color:#ef5a5c}
+.assis-band p{font-size:.97rem;line-height:1.55}
+@media(max-width:980px){.assis-grid{grid-template-columns:1fr}.assis-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
+@media(max-width:760px){.disc-duel{grid-template-columns:1fr}.vs{display:none}}
+/* bas du dos : surcouche */
+.ec-thumb{flex-shrink:0;width:64px;height:64px;border-radius:12px;object-fit:cover;border:1px solid var(--border)}
+.panneau-assis{max-width:880px}
+.assis-modal-titre{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.3rem;color:#ef5a5c;margin:.4rem 0 .6rem;padding-right:2.4rem}
+.ax-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:1.4rem;margin-top:1rem;align-items:start}
+.ax-list{display:flex;flex-direction:column;gap:.6rem}
+.ax-item{display:flex;align-items:center;gap:.85rem;width:100%;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;cursor:pointer;font-family:inherit;color:var(--text);font-weight:700;font-size:.95rem;line-height:1.35;transition:border-color .2s}
+.ax-item:hover{border-color:rgba(210,35,37,.55)}
+.ax-item.open{border-color:rgba(210,35,37,.7)}
+.ax-ic{flex-shrink:0;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--g-red,#d22325);color:#fff}
+.ax-plus{margin-left:auto;font-size:1.25rem;font-weight:800;color:#ef5a5c;transition:transform .25s}
+.ax-item.open .ax-plus{transform:rotate(45deg)}
+.ax-d{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s,opacity .3s}
+.ax-d>p{overflow:hidden;color:var(--muted);font-size:.9rem;line-height:1.55;padding:0 .4rem}
+.ax-d.open{grid-template-rows:1fr;opacity:1;margin:.1rem 0 .3rem}
+.ax-photo{margin:0}
+.ax-photo img{width:100%;display:block;border-radius:14px;border:1px solid var(--border)}
+.ax-photo figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem;line-height:1.45}
+@media(max-width:720px){.ax-grid{grid-template-columns:1fr}}
 @media(max-width:900px){.sd-grid{grid-template-columns:1fr 1fr}.sd-list{grid-column:1/-1}}
 @media(max-width:520px){.sd-grid{grid-template-columns:1fr}.sd-fig img{height:auto;width:100%}.sd-tip{min-width:46%;border-left:none;border-top:1px dashed var(--border)}}
 
@@ -2244,14 +2310,77 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
           <p class="sd-ref">Réf. : Baillargeon et Patry, 2003; CCHST; INRS.</p>
         </div>
 
-        <!-- Travail assis (texte) -->
+        <!-- Travail assis prolongé : disques animés -->
         <h3 id="assis" class="sub-h reveal">Travail assis prolongé</h3>
-        <p class="lead reveal" style="margin-bottom:1rem">Même assis, les muscles travaillent en statique pour te maintenir en position. Rester assis longtemps fatigue le corps et augmente la pression sur les disques du bas du dos.</p>
-        <div class="grid g3 reveal">
-          <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M9 9h6l-1 6M10 22l1-7M14 22l-1-4"/></svg></div><h4>Muscles en tension</h4><p>Les muscles posturaux restent contractés en continu, comme dans tout travail statique.</p></div>
-          <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5"/></svg></div><h4>Disques sous pression</h4><p>La position assise prolongée augmente la pression sur les disques du bas du dos.</p></div>
-          <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h4>Bouger protège</h4><p>Se lever, varier la posture et marcher un peu relance la circulation et soulage les disques.</p></div>
+        <p class="lead reveal" style="margin-bottom:1.2rem">Même assis, les muscles travaillent en statique pour te maintenir en position. Rester assis longtemps fatigue le corps et augmente la pression sur les disques du bas du dos.</p>
+        <div class="assis-grid reveal">
+          <div class="assis-cards">
+            <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M9 9h6l-1 6M10 22l1-7M14 22l-1-4"/></svg></div><h4>Muscles en tension</h4><p>Les muscles posturaux restent contractés en continu, comme dans tout travail statique.</p></div>
+            <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5"/></svg></div><h4>Disques sous pression</h4><p>La position assise prolongée augmente la pression sur les disques du bas du dos.</p></div>
+            <div class="card"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h4>Bouger protège</h4><p>Se lever, varier la posture et marcher un peu relance la circulation et soulage les disques.</p></div>
+          </div>
+          <div class="disc-duel">
+            <div class="disc-legend" aria-hidden="true"><span><i class="dl-dot dl-eau"></i>Eau</span><span><i class="dl-dot dl-nut"></i>Nutriments</span><span><i class="dl-o2">O₂</i>Oxygène</span></div>
+            <div class="disc-side">
+              <h4>Les variations de pression</h4>
+              <p class="ds-p">aident à faire entrer l'eau, les nutriments et l'oxygène dans le disque.</p>
+              <div class="disc-badge ok">Mouvement = meilleure diffusion</div>
+              <svg class="disc-svg" viewBox="0 0 240 200" role="img" aria-label="Disque intervertébral en mouvement : les vertèbres pompent, l'eau, les nutriments et l'oxygène entrent dans le disque">
+                <g class="da ok-ar" stroke="#34d399" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <g class="da-t"><path d="M70 4v10M64 9l6 7 6-7"/><path d="M120 4v10M114 9l6 7 6-7"/><path d="M170 4v10M164 9l6 7 6-7"/></g>
+                  <g class="da-b"><path d="M70 196v-10M64 191l6-7 6 7"/><path d="M120 196v-10M114 191l6-7 6 7"/><path d="M170 196v-10M164 191l6-7 6 7"/></g>
+                </g>
+                <g class="vert-t"><rect x="45" y="24" width="150" height="42" rx="10" fill="#e3cf9f" stroke="#b08f55" stroke-width="2"/><circle cx="72" cy="38" r="3.5" fill="#c8a76b"/><circle cx="97" cy="52" r="3" fill="#c8a76b"/><circle cx="124" cy="36" r="4" fill="#c8a76b"/><circle cx="152" cy="50" r="3" fill="#c8a76b"/><circle cx="172" cy="37" r="3.5" fill="#c8a76b"/></g>
+                <g class="vert-b"><rect x="45" y="134" width="150" height="42" rx="10" fill="#e3cf9f" stroke="#b08f55" stroke-width="2"/><circle cx="74" cy="150" r="3.5" fill="#c8a76b"/><circle cx="100" cy="163" r="3" fill="#c8a76b"/><circle cx="126" cy="148" r="4" fill="#c8a76b"/><circle cx="154" cy="162" r="3" fill="#c8a76b"/><circle cx="170" cy="149" r="3.5" fill="#c8a76b"/></g>
+                <g class="disc-anim">
+                  <ellipse cx="120" cy="100" rx="80" ry="30" fill="#9cc3de" stroke="#4a7fa5" stroke-width="2"/>
+                  <ellipse cx="120" cy="100" rx="62" ry="22" fill="none" stroke="#4a7fa5" stroke-width="1.5" opacity=".6"/>
+                  <ellipse cx="120" cy="100" rx="45" ry="15" fill="none" stroke="#4a7fa5" stroke-width="1.5" opacity=".5"/>
+                  <ellipse cx="120" cy="100" rx="26" ry="9" fill="#d6ecf9"/>
+                  <g class="disc-diff" stroke="#2f6fb2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                    <path d="M120 90v20M115 94l5-5 5 5M115 106l5 5 5-5"/>
+                    <path d="M106 100h28M110 95l-5 5 5 5M130 95l5 5-5 5"/>
+                  </g>
+                </g>
+                <g class="pin-l"><circle cx="8" cy="92" r="3.2" fill="#4aa3e8"/><circle cx="8" cy="102" r="3.2" fill="#35c06b"/><circle cx="8" cy="112" r="3.2" fill="#8fd4ff"/></g>
+                <g class="pin-r"><circle cx="232" cy="90" r="3.2" fill="#35c06b"/><circle cx="232" cy="100" r="3.2" fill="#8fd4ff"/><circle cx="232" cy="110" r="3.2" fill="#4aa3e8"/></g>
+              </svg>
+              <div class="disc-verdict ok"><span class="dv-ic" aria-hidden="true">✓</span>Le disque reste bien hydraté et en santé.</div>
+            </div>
+            <div class="vs" aria-hidden="true">vs.</div>
+            <div class="disc-side">
+              <h4>Une pression statique prolongée</h4>
+              <p class="ds-p">comprime le disque et limite l'entrée d'eau, de nutriments et d'oxygène.</p>
+              <div class="disc-badge no">Pression statique = moins de diffusion</div>
+              <svg class="disc-svg" viewBox="0 0 240 200" role="img" aria-label="Disque intervertébral comprimé en continu : l'eau, les nutriments et l'oxygène entrent à peine">
+                <g class="da no-ar" stroke="#ef4444" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <path d="M70 4v12M63 10l7 8 7-8"/><path d="M120 4v12M113 10l7 8 7-8"/><path d="M170 4v12M163 10l7 8 7-8"/>
+                  <path d="M70 196v-12M63 190l7-8 7 8"/><path d="M120 196v-12M113 190l7-8 7 8"/><path d="M170 196v-12M163 190l7-8 7 8"/>
+                </g>
+                <g><rect x="45" y="34" width="150" height="42" rx="10" fill="#e3cf9f" stroke="#b08f55" stroke-width="2"/><circle cx="72" cy="48" r="3.5" fill="#c8a76b"/><circle cx="97" cy="62" r="3" fill="#c8a76b"/><circle cx="124" cy="46" r="4" fill="#c8a76b"/><circle cx="152" cy="60" r="3" fill="#c8a76b"/><circle cx="172" cy="47" r="3.5" fill="#c8a76b"/></g>
+                <g><rect x="45" y="124" width="150" height="42" rx="10" fill="#e3cf9f" stroke="#b08f55" stroke-width="2"/><circle cx="74" cy="140" r="3.5" fill="#c8a76b"/><circle cx="100" cy="153" r="3" fill="#c8a76b"/><circle cx="126" cy="138" r="4" fill="#c8a76b"/><circle cx="154" cy="152" r="3" fill="#c8a76b"/><circle cx="170" cy="139" r="3.5" fill="#c8a76b"/></g>
+                <g class="disc-static">
+                  <ellipse cx="120" cy="100" rx="86" ry="20" fill="#7ea6c4" stroke="#3d6c91" stroke-width="2"/>
+                  <ellipse cx="120" cy="100" rx="66" ry="14" fill="none" stroke="#3d6c91" stroke-width="1.5" opacity=".6"/>
+                  <ellipse cx="120" cy="100" rx="47" ry="9" fill="none" stroke="#3d6c91" stroke-width="1.5" opacity=".5"/>
+                  <ellipse cx="120" cy="100" rx="28" ry="5.5" fill="#b8d4e6"/>
+                </g>
+                <g class="pout-l"><circle cx="28" cy="94" r="3" fill="#35c06b"/><circle cx="28" cy="106" r="3" fill="#4aa3e8"/></g>
+                <g class="pout-r"><circle cx="212" cy="94" r="3" fill="#8fd4ff"/><circle cx="212" cy="106" r="3" fill="#35c06b"/></g>
+              </svg>
+              <div class="disc-verdict no"><span class="dv-ic" aria-hidden="true">✕</span>Moins d'hydratation, moins de nutriments : le disque s'affaiblit.</div>
+            </div>
+          </div>
         </div>
+        <button type="button" class="eval-cta reveal" data-ouvrir-assis>
+          <img class="ec-thumb" src="images/assis_basdudos.jpg" alt="" aria-hidden="true">
+          <span class="ec-txt">
+            <strong>Ce qui se passe dans le bas du dos</strong>
+            <span>Aux commandes, assis pendant des heures : moins de mouvement, moins de lordose, disque déshydraté… Vois ce que ta colonne encaisse, sans quitter la page.</span>
+          </span>
+          <span class="ec-go">Ouvrir le détail &rarr;</span>
+        </button>
+        <div class="assis-band reveal"><span class="ab-ic" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="13" r="8"/><path d="M13 9v4l2.5 2.5"/><path d="M10 2h6"/><path d="M2 9h3M1 13h4M2 17h3"/></svg></span><p><strong>Varier la posture, bouger souvent et prendre des micro-pauses</strong> réduit la fatigue musculaire et protège les disques du bas du dos.</p></div>
         <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 00-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0012 2z"/></svg></div><p><strong>Varier la posture, bouger souvent et prendre des micro-pauses</strong> réduit la fatigue musculaire et protège les disques du bas du dos. <a class="plink" href="#reflexes">Voir tous les bons réflexes au poste de travail &darr;</a></p></div>
 
       </div>
@@ -2789,6 +2918,32 @@ window.addEventListener('afterprint',function(){document.querySelectorAll('detai
   paint();
 })();
 </script>
+<!-- Bas du dos en surimpression -->
+<div class="voile-sim" id="voile-assis" role="dialog" aria-modal="true" aria-label="Ce qui se passe dans le bas du dos">
+  <div class="panneau-sim panneau-assis">
+    <button class="fermer-sim" id="fermer-assis" aria-label="Fermer">✕</button>
+    <h3 class="assis-modal-titre">Ce qui se passe dans le bas du dos</h3>
+    <p class="nuance-p">Assis aux commandes pendant des heures, le bas du dos encaisse en silence. Clique chaque point pour voir le détail.</p>
+    <div class="ax-grid">
+      <div class="ax-list">
+        <button type="button" class="ax-item" aria-expanded="false"><span class="ax-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="5" r="2.2"/><path d="M10 8v5h6l3 6"/><path d="M6 10v8h9"/></svg></span><span class="ax-t">Moins de mouvements</span><span class="ax-plus" aria-hidden="true">+</span></button>
+        <div class="ax-d"><p>Le tronc ne bouge presque plus. Sans variations de pression, le disque n'est plus « pompé » : l'eau, les nutriments et l'oxygène entrent moins (revois la comparaison animée de la section).</p></div>
+        <button type="button" class="ax-item" aria-expanded="false"><span class="ax-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M13 3c-4 3-4 6.5 0 9s4 6.5 0 9"/></svg></span><span class="ax-t">Moins de lordose lombaire</span><span class="ax-plus" aria-hidden="true">+</span></button>
+        <div class="ax-d"><p>Assis, le bas du dos perd sa courbure naturelle (la lordose lombaire). La pression se répartit mal et charge davantage l'avant des disques.</p></div>
+        <button type="button" class="ax-item" aria-expanded="false"><span class="ax-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3c3.2 4.2 5.5 7 5.5 9.8a5.5 5.5 0 11-11 0C6.5 10 8.8 7.2 12 3z"/></svg></span><span class="ax-t">Moins d'hydratation du disque</span><span class="ax-plus" aria-hidden="true">+</span></button>
+        <div class="ax-d"><p>Comprimé en continu, le disque perd son eau au fil du quart. Moins hydraté, il amortit moins bien les chocs et les vibrations de la machine.</p></div>
+        <button type="button" class="ax-item" aria-expanded="false"><span class="ax-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="ax-t">À long terme : plus de risque de dégénérescence</span><span class="ax-plus" aria-hidden="true">+</span></button>
+        <div class="ax-d"><p>Les disques du bas de la colonne, surtout L4-L5, encaissent le plus de pression en position assise. Année après année, l'usure s'accumule : c'est la dégénérescence discale.</p></div>
+      </div>
+      <figure class="ax-photo">
+        <img src="images/assis_basdudos.jpg" alt="Opérateur assis aux commandes d'une machine, colonne lombaire mise en évidence au niveau L4-L5" loading="lazy" decoding="async">
+        <figcaption>La zone L4-L5, tout en bas de la colonne, est la plus chargée en position assise.</figcaption>
+      </figure>
+    </div>
+    <p class="sd-ref" style="text-align:left;margin-top:1rem">Réf. : Kastelic, Kozinc et Sarabon, 2018; Billy, Lemieux et Chow, 2014.</p>
+  </div>
+</div>
+
 <!-- Microlésions en surimpression -->
 <div class="voile-sim" id="voile-micro" role="dialog" aria-modal="true" aria-label="Microlésions et récupération">
   <div class="panneau-sim panneau-micro">
@@ -4371,6 +4526,23 @@ document.addEventListener("keydown", e => {
     }
   }
   if(mo){mo.addEventListener("click",function(){setMicro(true);});mn.addEventListener("click",function(){setMicro(false);});setMicro(true);}
+
+  /* ---- Bas du dos : surcouche ---- */
+  var vAx=$("#voile-assis"),declAx=null;
+  function ouvrirAx(d){declAx=d;vAx.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-assis").focus();}
+  function fermerAx(){vAx.classList.remove("ouvert");document.body.style.overflow="";if(declAx&&declAx.focus)declAx.focus();}
+  document.querySelectorAll("[data-ouvrir-assis]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirAx(b);});});
+  if(vAx){
+    $("#fermer-assis").addEventListener("click",fermerAx);
+    vAx.addEventListener("click",function(e){if(e.target===vAx)fermerAx();});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&vAx.classList.contains("ouvert"))fermerAx();});
+    vAx.querySelectorAll(".ax-item").forEach(function(b){
+      b.addEventListener("click",function(){
+        var o=b.classList.toggle("open");b.setAttribute("aria-expanded",o);
+        var d=b.nextElementSibling;if(d)d.classList.toggle("open",o);
+      });
+    });
+  }
 
   /* ---- Statique / dynamique ---- */
   var ss=$("#sdSta"),sd=$("#sdDyn"),sdMod=$("#sdMod");
