@@ -413,10 +413,19 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .vx-warn svg{flex-shrink:0}
 .vx-conseq{border:1px solid var(--border);border-radius:12px;background:var(--bg-2);padding:1rem 1.2rem}
 .vxc-t{font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:#ef5a5c;margin-bottom:.4rem}
+.vxc-hint{font-weight:600;font-size:.66rem;letter-spacing:0;text-transform:none;color:var(--dim)}
 .vx-conseq ul{list-style:none}
-.vx-conseq li{display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1px dashed var(--border);font-weight:600;font-size:.94rem;line-height:1.35}
+.vx-conseq li{border-bottom:1px dashed var(--border)}
 .vx-conseq li:last-child{border-bottom:none}
+.vxc-btn{display:flex;align-items:center;gap:.8rem;width:100%;text-align:left;background:none;border:none;font-family:inherit;color:var(--text);font-weight:600;font-size:.94rem;line-height:1.35;padding:.65rem 0;cursor:pointer;transition:color .2s}
+.vxc-btn:hover,.vxc-btn[aria-expanded="true"]{color:#ef5a5c}
 .vx-conseq .ic{flex-shrink:0;display:grid;place-items:center;width:26px;color:#e8393b}
+.vxc-l{flex:1}
+.vxc-plus{flex-shrink:0;font-size:1.2rem;font-weight:800;color:#ef5a5c;transition:transform .25s}
+.vxc-btn[aria-expanded="true"] .vxc-plus{transform:rotate(45deg)}
+.vxc-d{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s,opacity .3s}
+.vxc-d>p{overflow:hidden;color:var(--muted);font-size:.86rem;line-height:1.5;padding-left:34px}
+.vxc-d.open{grid-template-rows:1fr;opacity:1;padding-bottom:.6rem}
 @media(max-width:900px){.sd-sta-x{grid-template-columns:1fr}}
 @media(max-width:520px){.vx-wrap{grid-template-columns:1fr}}
 .sd-tips{display:flex;flex-wrap:wrap;align-items:stretch;margin-top:1.3rem;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);overflow:hidden}
@@ -2318,13 +2327,28 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
               <div class="vx-warn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Même des contractions aussi faibles que <strong>2 % de la force maximale</strong> peuvent réduire l'apport sanguin.</span></div>
             </div>
             <div class="vx-conseq">
-              <div class="vxc-t">Ce que la contraction prolongée provoque</div>
+              <div class="vxc-t">Ce que la contraction prolongée provoque <span class="vxc-hint">(clique pour le détail)</span></div>
               <ul>
-                <li><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="16" height="9" rx="2"/><line x1="21.5" y1="10.5" x2="21.5" y2="14.5"/><rect x="5" y="10.5" width="4" height="4" fill="currentColor" stroke="none"/></svg></span>Fatigue</li>
-                <li><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="2.2"/><path d="M9 8v6l-2.5 7M9 14l2.5 7M9 9.5c-2 .2-3.5 1.2-4.5 3"/><path d="M15.5 6.5l2-2M16.5 9.5h2.8M15.5 12.5l2 2"/></svg></span>Inconfort</li>
-                <li><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><circle cx="5" cy="6.5" r="2.1" fill="currentColor" stroke="none"/><circle cx="19" cy="6.5" r="2.1" fill="currentColor" stroke="none"/><circle cx="5" cy="17.5" r="2.1" fill="currentColor" stroke="none"/><circle cx="19" cy="17.5" r="2.1" fill="currentColor" stroke="none"/><path d="M10 10.5L6.7 7.8M14 10.5l3.3-2.7M10 13.5l-3.3 2.7M14 13.5l3.3 2.7"/></svg></span>Accumulation de sous-produits métaboliques</li>
-                <li><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="5.5"/><line x1="12" y1="18.5" x2="12" y2="22"/><line x1="2" y1="12" x2="5.5" y2="12"/><line x1="18.5" y1="12" x2="22" y2="12"/></svg></span>Points gâchettes</li>
-                <li><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5C16.5 7 18 10 18 12s-1.5 5-6 9.5C7.5 17 6 14 6 12s1.5-5 6-9.5z"/><path d="M12 6.5c2.3 2.6 3.2 4.3 3.2 5.5s-.9 2.9-3.2 5.5c-2.3-2.6-3.2-4.3-3.2-5.5s.9-2.9 3.2-5.5z"/></svg></span>Contractures musculaires hypersensibles</li>
+                <li>
+                  <button type="button" class="vxc-btn" aria-expanded="false"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="16" height="9" rx="2"/><line x1="21.5" y1="10.5" x2="21.5" y2="14.5"/><rect x="5" y="10.5" width="4" height="4" fill="currentColor" stroke="none"/></svg></span><span class="vxc-l">Fatigue</span><span class="vxc-plus" aria-hidden="true">+</span></button>
+                  <div class="vxc-d"><p>Privé de sang, le muscle manque d'oxygène et de carburant. Il se contracte moins bien et se fatigue beaucoup plus vite, même pour un effort modéré.</p></div>
+                </li>
+                <li>
+                  <button type="button" class="vxc-btn" aria-expanded="false"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="2.2"/><path d="M9 8v6l-2.5 7M9 14l2.5 7M9 9.5c-2 .2-3.5 1.2-4.5 3"/><path d="M15.5 6.5l2-2M16.5 9.5h2.8M15.5 12.5l2 2"/></svg></span><span class="vxc-l">Inconfort</span><span class="vxc-plus" aria-hidden="true">+</span></button>
+                  <div class="vxc-d"><p>La tension continue et le manque d'irrigation réveillent les capteurs de douleur du muscle : ça tire, ça brûle ou ça lance. C'est le premier signal d'alarme.</p></div>
+                </li>
+                <li>
+                  <button type="button" class="vxc-btn" aria-expanded="false"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><circle cx="5" cy="6.5" r="2.1" fill="currentColor" stroke="none"/><circle cx="19" cy="6.5" r="2.1" fill="currentColor" stroke="none"/><circle cx="5" cy="17.5" r="2.1" fill="currentColor" stroke="none"/><circle cx="19" cy="17.5" r="2.1" fill="currentColor" stroke="none"/><path d="M10 10.5L6.7 7.8M14 10.5l3.3-2.7M10 13.5l-3.3 2.7M14 13.5l3.3 2.7"/></svg></span><span class="vxc-l">Accumulation de sous-produits métaboliques</span><span class="vxc-plus" aria-hidden="true">+</span></button>
+                  <div class="vxc-d"><p>Sans circulation pour les évacuer, les déchets de l'effort (acide lactique, ions) s'accumulent dans le muscle. Ils entretiennent la fatigue et l'irritation des tissus.</p></div>
+                </li>
+                <li>
+                  <button type="button" class="vxc-btn" aria-expanded="false"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="5.5"/><line x1="12" y1="18.5" x2="12" y2="22"/><line x1="2" y1="12" x2="5.5" y2="12"/><line x1="18.5" y1="12" x2="22" y2="12"/></svg></span><span class="vxc-l">Points gâchettes</span><span class="vxc-plus" aria-hidden="true">+</span></button>
+                  <div class="vxc-d"><p>Des petites zones du muscle restent contractées en nœud. Sensibles à la pression, elles peuvent renvoyer une douleur ailleurs dans le corps (douleur référée).</p></div>
+                </li>
+                <li>
+                  <button type="button" class="vxc-btn" aria-expanded="false"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5C16.5 7 18 10 18 12s-1.5 5-6 9.5C7.5 17 6 14 6 12s1.5-5 6-9.5z"/><path d="M12 6.5c2.3 2.6 3.2 4.3 3.2 5.5s-.9 2.9-3.2 5.5c-2.3-2.6-3.2-4.3-3.2-5.5s.9-2.9 3.2-5.5z"/></svg></span><span class="vxc-l">Contractures musculaires hypersensibles</span><span class="vxc-plus" aria-hidden="true">+</span></button>
+                  <div class="vxc-d"><p>Le muscle finit par rester crispé en permanence, douloureux au moindre contact. À ce stade, le repos seul ne suffit plus toujours à le relâcher.</p></div>
+                </li>
               </ul>
             </div>
           </div>
@@ -4682,6 +4706,15 @@ document.addEventListener("keydown", e => {
     $("#sdList").innerHTML=m.li.map(function(t){return "<li>"+t+"</li>";}).join("");
   }
   if(ss){ss.addEventListener("click",function(){setSD(true);});sd.addEventListener("click",function(){setSD(false);});}
+
+  /* ---- Conséquences statique : accordéon ---- */
+  document.querySelectorAll(".vxc-btn").forEach(function(b){
+    b.addEventListener("click",function(){
+      var o=b.getAttribute("aria-expanded")==="true";
+      b.setAttribute("aria-expanded",!o);
+      var d=b.nextElementSibling;if(d)d.classList.toggle("open",!o);
+    });
+  });
 })();
 </script>
 </body>
