@@ -362,11 +362,17 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .micro2-out p{color:var(--muted);font-size:.95rem;line-height:1.55}
 .sd-bar{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:1.2rem}
 .sd-bar .seg-toggle{margin-bottom:0}
-.sd-headline{display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap}
 .sd-mode{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:800;font-size:1.55rem;color:#ef5a5c;transition:color .3s}
 .sd.dyn .sd-mode{color:#34d399}
-.sd-sub{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);border-bottom:3px solid #ef5a5c;padding-bottom:.25rem;transition:border-color .3s}
-.sd.dyn .sd-sub{border-color:#34d399}
+.sd-ind{flex:1;min-width:220px;display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.sd-sub{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.sd-wave{width:100%;height:26px}
+.sd-wave svg{display:block;width:100%;height:100%}
+.w-flat{stroke:#ef5a5c;stroke-width:3;stroke-linecap:round;transition:opacity .3s}
+.w-sine{stroke:#34d399;stroke-width:3;stroke-linecap:round;fill:none;opacity:0;transition:opacity .3s}
+.sd.dyn .w-flat{opacity:0}
+.sd.dyn .w-sine{opacity:1;animation:sdwave 1.6s linear infinite}
+@keyframes sdwave{to{transform:translateX(-60px)}}
 .sd-grid{display:grid;grid-template-columns:auto auto 1fr;gap:1.2rem;align-items:stretch}
 .sd-fig{margin:0;background:#000;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .sd-fig img{display:block;height:225px;max-width:100%;object-fit:contain;transition:opacity .25s}
@@ -382,12 +388,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .sd-ref{margin-top:.7rem;text-align:right;font-size:.78rem;color:var(--dim)}
 @media(max-width:900px){.sd-grid{grid-template-columns:1fr 1fr}.sd-list{grid-column:1/-1}}
 @media(max-width:520px){.sd-grid{grid-template-columns:1fr}.sd-fig img{height:auto;width:100%}.sd-tip{min-width:46%;border-left:none;border-top:1px dashed var(--border)}}
-.sd-flow{flex:0 0 200px;max-width:100%;height:52px;margin-left:auto;border-radius:12px;border:1px solid var(--border);background:linear-gradient(90deg,#3a1414,#2a1a1a);display:flex;align-items:center;gap:14px;padding:0 18px;overflow:hidden;transition:background .4s}
-.sd-flow.dyn{background:linear-gradient(90deg,#0d2a1e,#10322a)}
-.sd-dot{width:14px;height:14px;border-radius:50%;background:#ef5a5c;transition:background .4s}
-.sd-flow.dyn .sd-dot{background:#34d399;animation:sdmove 1.4s linear infinite}
-.sd-flow.dyn .sd-dot:nth-child(2){animation-delay:.35s}.sd-flow.dyn .sd-dot:nth-child(3){animation-delay:.7s}.sd-flow.dyn .sd-dot:nth-child(4){animation-delay:1.05s}
-@keyframes sdmove{0%{transform:translateX(0);opacity:.4}50%{opacity:1}100%{transform:translateX(180px);opacity:.4}}
 
 /* piliers */
 .piliers{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:1.5rem}
@@ -2129,8 +2129,11 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
               <button class="active" id="sdSta" role="tab" aria-selected="true">Statique</button>
               <button id="sdDyn" role="tab" aria-selected="false">Dynamique</button>
             </div>
-            <div class="sd-headline"><span class="sd-mode" id="sdK">Statique</span><span class="sd-sub" id="sdSub">Contraction maintenue</span></div>
-            <div class="sd-flow" id="sdFlow" aria-hidden="true"><span class="sd-dot"></span><span class="sd-dot"></span><span class="sd-dot"></span><span class="sd-dot"></span></div>
+            <span class="sd-mode" id="sdK">Statique</span>
+            <div class="sd-ind">
+              <span class="sd-sub" id="sdSub">Contraction maintenue</span>
+              <div class="sd-wave" aria-hidden="true"><svg viewBox="0 0 480 26" preserveAspectRatio="none"><line class="w-flat" x1="2" y1="13" x2="478" y2="13"/><path class="w-sine" d="M0 13 Q15 -2 30 13 T60 13 T90 13 T120 13 T150 13 T180 13 T210 13 T240 13 T270 13 T300 13 T330 13 T360 13 T390 13 T420 13 T450 13 T480 13 T510 13 T540 13 T570 13 T600 13"/></svg></div>
+            </div>
           </div>
           <div class="sd-grid">
             <figure class="sd-fig"><img id="sdImg1" src="images/sd_compression.jpg" alt="Obstruction et compression du flot sanguin : le vaisseau est écrasé par la contraction" loading="lazy" decoding="async"></figure>
@@ -4281,7 +4284,7 @@ document.addEventListener("keydown", e => {
   if(mo){mo.addEventListener("click",function(){setMicro(true);});mn.addEventListener("click",function(){setMicro(false);});setMicro(true);}
 
   /* ---- Statique / dynamique ---- */
-  var ss=$("#sdSta"),sd=$("#sdDyn"),flow=$("#sdFlow"),sdMod=$("#sdMod");
+  var ss=$("#sdSta"),sd=$("#sdDyn"),sdMod=$("#sdMod");
   var SD={
     sta:{mode:"Statique",sub:"Contraction maintenue",
       img1:["images/sd_compression.jpg","Obstruction et compression du flot sanguin : le vaisseau est écrasé par la contraction"],
@@ -4295,7 +4298,6 @@ document.addEventListener("keydown", e => {
   function setSD(sta){
     ss.classList.toggle("active",sta);sd.classList.toggle("active",!sta);
     ss.setAttribute("aria-selected",sta);sd.setAttribute("aria-selected",!sta);
-    flow.classList.toggle("dyn",!sta);
     sdMod.classList.toggle("dyn",!sta);
     var m=sta?SD.sta:SD.dyn;
     $("#sdK").textContent=m.mode;
