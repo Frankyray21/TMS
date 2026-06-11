@@ -331,6 +331,27 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .cq.open .cq-d{grid-template-rows:1fr;opacity:1;margin-top:.2rem}
 .cq.open .cq-ar{background:var(--accent);color:#fff}
 
+.micro-photo{margin:0 0 .4rem;max-width:560px}
+.micro-photo .mp-col{position:relative}
+.micro-photo .mp-tag{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);color:#fff;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;padding:.25rem .6rem;border-radius:50px}
+.micro-photo img{width:100%;display:block;border-radius:14px;border:1px solid var(--border)}
+.micro-photo figcaption{color:var(--dim);font-size:.82rem;margin-top:.5rem}
+.micro-choice{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.mc-btn{display:flex;flex-direction:column;align-items:flex-start;gap:.45rem;text-align:left;font-family:inherit;color:var(--text);background:var(--card);border:2px solid var(--border);border-radius:16px;padding:1.2rem 1.3rem;cursor:pointer;transition:transform .15s,border-color .2s,background .2s,box-shadow .2s}
+.mc-btn:hover{transform:translateY(-3px)}
+.mc-btn .mc-ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center}
+.mc-btn.ok .mc-ic{background:rgba(16,185,129,.18);color:#34d399}
+.mc-btn.no .mc-ic{background:rgba(239,68,68,.18);color:#ef5a5c}
+.mc-btn .mc-t{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:1.02rem}
+.mc-btn .mc-d{color:var(--muted);font-size:.9rem;line-height:1.4}
+.mc-btn.ok.active{border-color:var(--success);background:rgba(16,185,129,.1);box-shadow:0 8px 24px rgba(16,185,129,.18)}
+.mc-btn.no.active{border-color:var(--accent);background:rgba(210,35,37,.1);box-shadow:0 8px 24px rgba(210,35,37,.2)}
+.micro-out{margin-top:1rem;padding:1rem 1.2rem;border-radius:12px;font-size:.95rem;line-height:1.55;border:1px solid var(--border);background:var(--bg-2)}
+.micro-out.ok{border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.08)}
+.micro-out.ok strong{color:#34d399}
+.micro-out.no{border-color:rgba(210,35,37,.45);background:rgba(210,35,37,.08)}
+.micro-out.no strong{color:var(--accent-l)}
+@media(max-width:560px){.micro-choice{grid-template-columns:1fr}}
 .micro2,.sd{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem;box-shadow:var(--shadow-card)}
 .seg-toggle{display:inline-flex;background:var(--bg-2);border:1px solid var(--border);border-radius:50px;padding:.25rem;margin-bottom:1.2rem;gap:.2rem}
 .seg-toggle button{border:none;background:none;color:var(--muted);font-family:inherit;font-weight:700;font-size:.88rem;padding:.5rem 1.1rem;border-radius:50px;cursor:pointer;transition:background .2s,color .2s}
@@ -2065,30 +2086,27 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 
         <!-- Microlésions interactif -->
         <h3 id="microlesions" class="sub-h reveal">Les microlésions, mécanisme de l'usure</h3>
-        <p class="lead reveal" style="margin-bottom:1rem">Les contractions répétées créent de minuscules lésions dans les fibres musculaires et tendineuses, qui déclenchent une inflammation. Ce qui se passe ensuite dépend du repos. Choisis un scénario :</p>
-        <div class="micro2 reveal">
-          <div class="seg-toggle" role="tablist" aria-label="Scénario de récupération">
-            <button class="active" id="recOk" role="tab" aria-selected="true">Repos suffisant</button>
-            <button id="recNo" role="tab" aria-selected="false">Repos insuffisant</button>
+        <p class="lead reveal" style="margin-bottom:1rem">Les contractions musculaires répétées créent des microlésions dans les fibres musculaires et tendineuses. Ces microlésions déclenchent une <strong style="color:var(--accent-l)">réponse inflammatoire</strong>.</p>
+        <figure class="micro-photo reveal">
+          <div class="mp-imgs">
+            <div class="mp-col"><span class="mp-tag">Avant</span><img src="images/info_micro_ab.jpg" alt="Fibres musculaires avant et après l'effort : apparition de microlésions et d'inflammation en rouge" loading="lazy" decoding="async"></div>
           </div>
-          <div class="micro2-body">
-            <svg class="fibres" id="fibres" viewBox="0 0 200 110" aria-hidden="true">
-              <g class="fb">
-                <rect x="14" y="16" width="172" height="12" rx="6"/>
-                <rect x="14" y="36" width="172" height="12" rx="6"/>
-                <rect x="14" y="56" width="172" height="12" rx="6"/>
-                <rect x="14" y="76" width="172" height="12" rx="6"/>
-              </g>
-              <g class="lesions">
-                <circle cx="60" cy="22" r="4"/><circle cx="120" cy="42" r="4"/><circle cx="90" cy="62" r="4"/><circle cx="150" cy="82" r="4"/><circle cx="40" cy="62" r="4"/>
-              </g>
-            </svg>
-            <div class="micro2-out" id="micro2Out">
-              <div class="m2-k" id="m2k">Adaptation</div>
-              <p id="m2d">Les tissus se réparent et reviennent <b>plus forts</b> : la force musculaire et la résistance des tendons augmentent.</p>
-            </div>
-          </div>
+          <figcaption>Avant / Après : apparition de microlésions et d'inflammation (en rouge) dans les fibres musculaires.</figcaption>
+        </figure>
+        <p class="lead reveal" style="margin:1.2rem 0 1rem">Ce qui se passe ensuite dépend du <strong>temps de récupération</strong>. Choisis un scénario :</p>
+        <div class="micro-choice reveal">
+          <button type="button" class="mc-btn ok active" id="recOk" aria-pressed="true">
+            <span class="mc-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+            <span class="mc-t">Temps de repos suffisant</span>
+            <span class="mc-d">&uarr; de la force musculaire et de la résistance tendineuse</span>
+          </button>
+          <button type="button" class="mc-btn no" id="recNo" aria-pressed="false">
+            <span class="mc-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <span class="mc-t">Temps de repos insuffisant</span>
+            <span class="mc-d">Dégénérescence chronique des tissus</span>
+          </button>
         </div>
+        <div class="micro-out" id="microOut"></div>
         <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></div><p><strong>Le temps de récupération détermine si les tissus s'adaptent ou se détériorent.</strong> <span style="color:var(--dim)">· Docking et Cook, 2019</span></p></div>
 
         <!-- Statique vs dynamique interactif -->
@@ -4185,17 +4203,20 @@ document.addEventListener("keydown", e => {
   });
 
   /* ---- Microlésions ---- */
-  var mo=$("#recOk"),mn=$("#recNo"),fib=$("#fibres"),wrap=document.querySelector(".micro2");
+  var mo=$("#recOk"),mn=$("#recNo"),mout=$("#microOut");
   function setMicro(ok){
-    mo.classList.toggle("active",ok);mn.classList.toggle("active",!ok);
-    mo.setAttribute("aria-selected",ok);mn.setAttribute("aria-selected",!ok);
-    fib.classList.toggle("no",!ok);wrap.classList.toggle("bad",!ok);
-    $("#m2k").textContent=ok?"Adaptation":"Dégénérescence";
-    $("#m2d").innerHTML=ok
-      ?"Les tissus se réparent et reviennent <b>plus forts</b> : la force musculaire et la résistance des tendons augmentent."
-      :"Les microlésions s'accumulent plus vite qu'elles ne guérissent : <b>inflammation persistante</b> et dégénérescence chronique des tissus.";
+    if(mo)mo.classList.toggle("active",ok);
+    if(mn)mn.classList.toggle("active",!ok);
+    if(mo)mo.setAttribute("aria-pressed",ok);
+    if(mn)mn.setAttribute("aria-pressed",!ok);
+    if(mout){
+      mout.classList.toggle("ok",ok);mout.classList.toggle("no",!ok);
+      mout.innerHTML=ok
+        ?"<strong>Adaptation.</strong> Avec assez de repos, les tissus réparent les microlésions et reviennent plus forts : la force musculaire et la résistance des tendons augmentent."
+        :"<strong>Dégénérescence chronique.</strong> Sans repos suffisant, les microlésions s'accumulent plus vite qu'elles ne guérissent : l'inflammation persiste et les tissus se détériorent.";
+    }
   }
-  if(mo){mo.addEventListener("click",function(){setMicro(true);});mn.addEventListener("click",function(){setMicro(false);});}
+  if(mo){mo.addEventListener("click",function(){setMicro(true);});mn.addEventListener("click",function(){setMicro(false);});setMicro(true);}
 
   /* ---- Statique / dynamique ---- */
   var ss=$("#sdSta"),sd=$("#sdDyn"),flow=$("#sdFlow");
