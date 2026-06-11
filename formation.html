@@ -1230,7 +1230,6 @@ function cpDone(panel,ti,qs,solved){
   if(!badges.has(ti)){badges.add(ti);try{localStorage.setItem('tms_badges',JSON.stringify(Array.from(badges)));}catch(e){}addScore(50);toast('🏅','Badge obtenu','Partie '+ti+' validée (+50 pts)');confetti();if(typeof sndBadge==='function')sndBadge();}
   if(typeof refreshGate==='function')refreshGate();
   if(typeof renderModules==='function')renderModules();
-  if(ti<5&&typeof themeUnlocked==='function'&&themeUnlocked(ti+1)&&typeof toast==='function')toast('🔓','Module débloqué','Le module '+(ti+1)+' est maintenant disponible.');
 }
 function buildCheckpoint(panel,ti){
   var qs=CHECK[ti];if(!qs)return;
@@ -1304,12 +1303,12 @@ function addScore(n){score+=n;try{localStorage.setItem('tms_score',score);}catch
 // ===== VERROU STRICT (parcours guidé) =====
 var STRICT=true;
 function moduleContentDone(ti){return themeSteps[ti]&&themeSteps[ti].length>0&&themeSteps[ti].every(function(i){return visited.has(i);});}
-function moduleDone(ti){return moduleContentDone(ti)&&badges.has(ti);}        // contenu vu + quiz éclair réussi
+function moduleDone(ti){return moduleContentDone(ti)&&badges.has(ti);}        // contenu vu + quiz éclair réussi (pour les badges)
 function themeUnlocked(ti){
   if(!STRICT)return true;
-  if(ti<=1)return true;                       // accueil + module 1
-  if(ti<=5)return moduleDone(ti-1);           // modules 2..5
-  return [1,2,3,4,5].every(moduleDone);       // bilan (6) + quiz (7)
+  if(ti<=1)return true;                          // accueil + module 1
+  if(ti<=5)return moduleContentDone(ti-1);       // modules 2..5 : consulter le précédent suffit
+  return [1,2,3,4,5].every(moduleContentDone);   // bilan (6) + quiz (7)
 }
 function canGo(s){return s>=0&&s<N&&themeUnlocked(steps[s].t);}
 function toast(icon,title,desc){var w=document.getElementById('toastWrap');if(!w)return;var t=document.createElement('div');t.className='toast';t.innerHTML='<span class="ti">'+icon+'</span><div><div class="tt">'+title+'</div><div class="td">'+desc+'</div></div>';w.appendChild(t);setTimeout(function(){t.style.transition='opacity .4s,transform .4s';t.style.opacity='0';t.style.transform='translateX(40px)';setTimeout(function(){t.remove();},420);},3400);}
@@ -1320,7 +1319,7 @@ function renderLocks(){
   document.querySelectorAll('.theme').forEach(function(theme){var ti=+theme.dataset.theme;var locked=!themeUnlocked(ti);theme.querySelectorAll('.subtab').forEach(function(tab){tab.classList.toggle('locked',locked);});});
   document.querySelectorAll('.mod-card').forEach(function(p){p.classList.toggle('locked',!themeUnlocked(+p.dataset.theme));});
 }
-function blockedToast(ti){toast('🔒','Module verrouillé','Termine le module '+(ti-1)+' (contenu + quiz éclair) pour débloquer.');}
+function blockedToast(ti){toast('🔒','Module verrouillé','Consulte d\'abord le module '+(ti-1)+' pour débloquer celui-ci.');}
 function attReqsMet(){var parts=true;for(var ti=1;ti<=5;ti++){if(!themeSteps[ti].every(function(i){return visited.has(i);}))parts=false;}var quiz=localStorage.getItem('tms_quiz_passed')==='1';var note=computeNote().note>=70;return{parts:parts,quiz:quiz,note:note,all:parts&&quiz&&note};}
 function renderAttest(){var reqs=document.getElementById('attReqs');if(!reqs)return;var m=attReqsMet(),nv=computeNote().note,lp=reqs.querySelector('[data-req="parts"]'),lq=reqs.querySelector('[data-req="quiz"]'),ln=reqs.querySelector('[data-req="note"]');if(lp){lp.classList.toggle('ok',m.parts);lp.querySelector('.rq').textContent=m.parts?'✓':'';}if(lq){lq.classList.toggle('ok',m.quiz);lq.querySelector('.rq').textContent=m.quiz?'✓':'';}if(ln){ln.classList.toggle('ok',m.note);ln.querySelector('.rq').textContent=m.note?'✓':'';var t=ln.querySelector('.rq-txt');if(t)t.textContent='Obtenir une note d\'au moins 70/100 (actuelle : '+nv+'/100)';}var b=document.getElementById('attBtn'),nm=document.getElementById('attName');if(b)b.disabled=!m.all;if(nm)nm.disabled=!m.all;}
 function renderProgress(){
@@ -1378,7 +1377,7 @@ function startDwell(){
   clearDwell();dwellEnd=0;
   var st=steps[cur];
   if(STRICT&&st.t>=1&&st.t<=5&&st.sub!=='check'&&st.sub!=='recap'&&cur<N-1){
-    var secs=Math.min(40,Math.max(6,Math.ceil(currentWords()/180*60)));
+    var secs=Math.min(12,Math.max(3,Math.ceil(currentWords()/240*60)));
     dwellEnd=performance.now()+secs*1000;
     dwellTimer=setInterval(function(){if(document.hidden){dwellEnd+=210;return;}if(performance.now()>=dwellEnd)clearDwell();updateNav();},210);
   }
@@ -1390,7 +1389,7 @@ function updateNav(){
   var atEnd=cur===N-1,dl=dwellLeft(),nextLocked=!atEnd&&!themeUnlocked(steps[cur+1].t);
   if(dl>0){nextBtn.disabled=true;nextBtn.classList.add('reading');nextBtn.classList.add('gate');nextBtn.innerHTML='<span class="nb-lab">Lecture… '+dl+' s</span>';return;}
   nextBtn.classList.remove('reading');
-  if(nextLocked){nextBtn.disabled=true;nextBtn.classList.add('gate');nextBtn.innerHTML='<span class="nb-lab">&#128274; Réussis le quiz éclair</span>'+ARR;return;}
+  if(nextLocked){nextBtn.disabled=true;nextBtn.classList.add('gate');nextBtn.innerHTML='<span class="nb-lab">&#128274; Termine ce module</span>'+ARR;return;}
   if(atEnd){nextBtn.disabled=true;nextBtn.innerHTML='<span class="nb-lab">Terminé !</span>'+ARR;return;}
   nextBtn.disabled=false;
   var ns=steps[cur+1],lab;if(ns.sub){var tb=themes[ns.t].querySelector('.subtab[data-sub="'+ns.sub+'"]');lab=tb?tb.textContent.trim():STEP_LBL[ns.t];}else{lab=STEP_LBL[ns.t];}
