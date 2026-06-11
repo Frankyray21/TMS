@@ -906,13 +906,13 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
   /* Positions — regroupées par famille :
      gauche = biomécanique (bleu), droite = environnementaux (vert) */
   .p-bras-leves   { left: 13.5%; top: 8%;  }
-  .p-gestes       { left: 5%;    top: 28%; }
-  .p-boite        { left: 5%;    top: 52%; }
+  .p-gestes       { left: 6.5%;  top: 28%; }
+  .p-boite        { left: 6.5%;  top: 52%; }
   .p-genou        { left: 7%;    top: 75%; }
   .p-prise        { left: 15%;   top: 93%; }
   .p-froid        { left: 86.5%; top: 8%;  }
-  .p-percussion   { left: 95%;   top: 28%; }
-  .p-passage      { left: 95%;   top: 52%; }
+  .p-percussion   { left: 93.5%; top: 28%; }
+  .p-passage      { left: 93.5%; top: 52%; }
   .p-sol          { left: 93%;   top: 75%; }
   .p-plan         { left: 85%;   top: 93%; }
 
@@ -1472,6 +1472,22 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
     .grille-pastilles { display: contents; }
   }
 
+/* ---------- Schéma interactif dans la section facteurs ---------- */
+.insitu { margin: 1.4rem 0; }
+.insitu section.bloc { margin-top: 10px; }
+.insitu .consigne { font-size: .88rem; color: var(--or, #d9a43a); margin-bottom: 8px; }
+.insitu .legende { margin-top: 0; margin-bottom: 4px; }
+.insitu .contenu { flex-direction: column; align-items: stretch; }
+.insitu aside.retenir { flex: none; width: 100%; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.insitu aside.retenir .titre { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.insitu aside.retenir p { margin-bottom: 0; font-size: .85rem; flex: 1 1 200px; }
+.insitu aside.retenir .btn-savoir { width: auto; padding: 9px 14px; }
+.insitu .cercle .nom { font-size: clamp(.6rem, 1.05vw, .92rem); }
+.insitu .sous-item { font-size: clamp(.5rem, .82vw, .78rem); }
+.insitu .pastille .libelle { font-size: clamp(.52rem, .9vw, .76rem); }
+.insitu .pastille .rond { width: clamp(38px, 4.2vw, 64px); height: clamp(38px, 4.2vw, 64px); font-size: clamp(.9rem, 1.9vw, 1.6rem); }
+.insitu .bandeau-centre { font-size: clamp(.7rem, 1.4vw, 1.15rem); padding: 7px 20px; }
+
 /* ---------- Outils de l'exploration fusionnée ---------- */
 .ipage { padding-top: 0; padding-bottom: 24px; }
 .explo-outils { display: flex; flex-direction: column; gap: 12px; margin: 6px 0 8px; }
@@ -1501,6 +1517,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <a class="toc-link" href="#comprendre"><span class="dot"></span>Comprendre les TMS</a>
       <a class="toc-link sub" href="#types">Types &amp; zones</a>
       <a class="toc-link sub" href="#facteurs">Facteurs de risque</a>
+      <a class="toc-link sub" href="#schema">Schéma interactif</a>
       <a class="toc-link sub" href="#realite">Notre réalité minière</a>
       <a class="toc-link sub" href="#evolution">Évolution</a>
       <a class="toc-link" href="#charge"><span class="dot"></span>Charge &amp; récupération</a>
@@ -1512,7 +1529,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <a class="toc-link sub" href="#postures">Bonnes postures</a>
       <a class="toc-link sub" href="#signaler">Signaler</a>
       <a class="toc-link" href="#exploration"><span class="dot"></span>Exploration interactive</a>
-      <a class="toc-link sub" href="#schema">Schéma des facteurs</a>
       <a class="toc-link sub" href="#corps">Carte du corps</a>
       <a class="toc-link sub" href="#simulateur">Simulateur</a>
       <a class="toc-link" href="#retenir"><span class="dot"></span>À retenir</a>
@@ -1602,9 +1618,130 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
           <button type="button" class="card blue faccard reveal d1" aria-expanded="false"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 17.58A5 5 0 0018 8h-1.26A8 8 0 104 16.25"/><path d="M8 16l-2 2 2 2"/></svg></div><h4>Froid et humidité</h4><p>Réduit la souplesse des tissus.</p><span class="fac-hint">En savoir plus <span class="chev">&rsaquo;</span></span><div class="fac-more"><div><p>Le froid et l'humidité de la mine raidissent muscles et tendons, qui deviennent plus vulnérables aux blessures.</p><span class="fac-todo">&rarr; Échauffe-toi, habille-toi en couches, bouge régulièrement.</span></div></div></button>
           <button type="button" class="card faccard reveal d2" aria-expanded="false"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div><h4>Postures statiques</h4><p>Rester figé longtemps.</p><span class="fac-hint">En savoir plus <span class="chev">&rsaquo;</span></span><div class="fac-more"><div><p>Tenir une même position — debout, à genoux ou assis — coupe la circulation et fatigue le muscle en continu.</p><span class="fac-todo">&rarr; Change de posture souvent, étire-toi, ne reste pas figé.</span></div></div></button>
         </div>
-        <div class="info reveal" data-img="images/info_facteurs_v2.png" tabindex="0" role="button" aria-label="Agrandir : facteurs de risque"><img src="images/info_facteurs_v2.png" alt="Schéma des facteurs de risque : familles biomécanique, individuelle et environnementale avec leurs déclencheurs reliés" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
+        <div class="insitu reveal">
+          <p class="consigne">👆 Tout est cliquable : les 3 familles, chaque mot dans les cercles, les 10 pastilles autour — chacune est reliée en pointillé à sa famille de couleur.</p>
+          <div class="legende" aria-label="Légende des couleurs">
+      <strong>Chaque pastille est reliée à sa famille :</strong>
+      <span><span class="point pb"></span>Facteurs biomécaniques</span>
+      <span><span class="point pi"></span>Facteurs individuels</span>
+      <span><span class="point pe"></span>Facteurs environnementaux</span>
+    </div>
+<section class="bloc" id="schema">
+    <div class="contenu">
+
+      <aside class="retenir ireveal">
+        <div class="titre"><span class="ampoule">💡</span> À RETENIR</div>
+        <p>Un TMS n'a pas une seule cause.</p>
+        <p>Souvent, c'est un mélange d'effort, de posture, de répétition, de fatigue et d'environnement.</p>
+        <p>Agir tôt aide à éviter que le problème s'installe.</p>
+        <button class="btn-savoir" data-cle="agir-tot">💡 Pourquoi agir tôt ?</button>
+      </aside>
+
+      <div class="schema ireveal">
+        <div class="scene" id="scene">
+
+          <svg id="svg-liaisons" aria-hidden="true"></svg>
+
+          <button class="bandeau-centre" data-cle="combinaison" data-resume="Le message clé du schéma : cliquez pour comprendre pourquoi la combinaison des facteurs augmente le risque.">LES FACTEURS DE RISQUE</button>
+
+          <!-- Les trois grandes familles -->
+          <div class="cercle bio" role="button" tabindex="0" aria-label="Facteurs biomécaniques — ouvrir la fiche" data-cle="biomecanique" data-famille="biomecanique"
+                  data-resume="Les contraintes physiques de la tâche : effort, cadence, posture, manutention, compression. Cliquez pour la fiche — ou directement sur un mot.">
+            <span class="nom">Facteurs<br>biomécaniques</span>
+            <ul>
+              <li><button class="sous-item" data-cle="efforts"><span class="si">💪</span>Effort</button></li>
+              <li><button class="sous-item" data-cle="mouvements-repetes"><span class="si">⏱️</span>Cadence</button></li>
+              <li><button class="sous-item" data-cle="postures"><span class="si">🪑</span>Posture</button></li>
+              <li><button class="sous-item" data-cle="manutention"><span class="si">📦</span>Manutention</button></li>
+              <li><button class="sous-item" data-cle="compression"><span class="si">⬇️</span>Compression</button></li>
+            </ul>
+          </div>
+
+          <div class="cercle ind" role="button" tabindex="0" aria-label="Facteurs individuels — ouvrir la fiche" data-cle="individuel" data-famille="individuel"
+                  data-resume="Ce qui appartient à la personne : récupération, capacité physique, douleur présente, antécédents, expérience.">
+            <span class="nom">Facteurs<br>individuels</span>
+            <ul>
+              <li><button class="sous-item" data-cle="recuperation"><span class="si">🛌</span>Récupération</button></li>
+              <li><button class="sous-item" data-cle="condition-physique"><span class="si">🏃</span>Capacité physique</button></li>
+              <li><button class="sous-item" data-cle="douleur-presente"><span class="si">🎯</span>Douleur présente</button></li>
+              <li><button class="sous-item" data-cle="antecedents"><span class="si">📋</span>Antécédents</button></li>
+              <li><button class="sous-item" data-cle="experience"><span class="si">⭐</span>Expérience</button></li>
+            </ul>
+          </div>
+
+          <div class="cercle env" role="button" tabindex="0" aria-label="Facteurs environnementaux — ouvrir la fiche" data-cle="environnement" data-famille="environnement"
+                  data-resume="Le contexte matériel : température, vibrations, espace, surface d'appui, niveau de travail.">
+            <span class="nom">Facteurs<br>environnementaux</span>
+            <ul>
+              <li><button class="sous-item" data-cle="temperature"><span class="si">🌡️</span>Température</button></li>
+              <li><button class="sous-item" data-cle="outils-vibrants"><span class="si">📳</span>Vibrations</button></li>
+              <li><button class="sous-item" data-cle="espace-travail"><span class="si">↔️</span>Espace</button></li>
+              <li><button class="sous-item" data-cle="surface-appui"><span class="si">🔲</span>Surface d'appui</button></li>
+              <li><button class="sous-item" data-cle="hauteur-travail"><span class="si">↕️</span>Niveau de travail</button></li>
+            </ul>
+          </div>
+
+          <button class="fleche-combo g" data-cle="combinaison" aria-label="Interaction entre les familles de facteurs" data-resume="Les familles interagissent : cliquez pour comprendre pourquoi la combinaison augmente le risque.">↔</button>
+          <button class="fleche-combo d" data-cle="combinaison" aria-label="Interaction entre les familles de facteurs" data-resume="Les familles interagissent : cliquez pour comprendre pourquoi la combinaison augmente le risque.">↔</button>
+
+          <!-- Pastilles périphériques, reliées logiquement à leur famille -->
+          <div class="grille-pastilles">
+            <button class="pastille p-bras-leves" data-cle="bras-leves" data-famille="biomecanique"
+                    data-resume="Mains au-dessus des épaules : tension constante sur les épaules. Famille : facteurs biomécaniques.">
+              <span class="rond">🙆</span><span class="libelle">Travail bras levés</span>
+            </button>
+            <button class="pastille p-gestes" data-cle="mouvements-repetes" data-famille="biomecanique"
+                    data-resume="Le même geste rapide répété sans pause : l'accumulation blesse. Famille : facteurs biomécaniques.">
+              <span class="rond">🔁</span><span class="libelle">Gestes rapides en continu</span>
+            </button>
+            <button class="pastille p-boite" data-cle="charges" data-famille="biomecanique"
+                    data-resume="Une charge portée loin du tronc multiplie l'effort du bas du dos. Famille : facteurs biomécaniques.">
+              <span class="rond">📦</span><span class="libelle">Boîte loin du corps</span>
+            </button>
+            <button class="pastille p-genou" data-cle="travail-genoux" data-famille="biomecanique"
+                    data-resume="S'agenouiller ou s'accroupir comprime le genou. Famille : facteurs biomécaniques.">
+              <span class="rond">🧎</span><span class="libelle">Appui sur genou</span>
+            </button>
+            <button class="pastille p-prise" data-cle="prise-serree" data-famille="biomecanique"
+                    data-resume="Serrer fort un outil ou pincer du bout des doigts sollicite tendons de la main et de l'avant-bras. Famille : facteurs biomécaniques.">
+              <span class="rond">✊</span><span class="libelle">Prise serrée</span>
+            </button>
+            <button class="pastille p-froid" data-cle="froid" data-famille="environnement"
+                    data-resume="Le froid raidit les muscles et réduit la dextérité. Famille : facteurs environnementaux.">
+              <span class="rond">❄️</span><span class="libelle">Froid</span>
+            </button>
+            <button class="pastille p-percussion" data-cle="outil-percussion" data-famille="environnement"
+                    data-resume="Chocs et vibrations transmis aux mains et aux bras à chaque impact. Famille : facteurs environnementaux.">
+              <span class="rond">🔨</span><span class="libelle">Outil à percussion</span>
+            </button>
+            <button class="pastille p-passage" data-cle="passage-etroit" data-famille="environnement"
+                    data-resume="Espaces étroits : torsions, épaules rentrées, charges portées de côté. Famille : facteurs environnementaux.">
+              <span class="rond">🚧</span><span class="libelle">Passage étroit</span>
+            </button>
+            <button class="pastille p-sol" data-cle="sol-inegal" data-famille="environnement"
+                    data-resume="Un sol instable impose un effort d'équilibre permanent et des faux mouvements. Famille : facteurs environnementaux.">
+              <span class="rond">⛰️</span><span class="libelle">Sol instable</span>
+            </button>
+            <button class="pastille p-plan" data-cle="hauteur-travail" data-famille="environnement"
+                    data-resume="Plan de travail trop haut : épaules levées en permanence. Famille : facteurs environnementaux.">
+              <span class="rond">📏</span><span class="libelle">Plan trop haut</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <button class="avertissement ireveal" data-cle="combinaison">
+      <span class="picto">⚠️</span>
+      <span>Le risque augmente quand plusieurs facteurs se combinent.
+        <span class="mini">Cliquez pour comprendre comment les facteurs se multiplient entre eux.</span>
+      </span>
+    </button>
+  </section>
+        </div>
         <p class="cap reveal">Un TMS n'a pas une seule cause : effort, posture, répétition, fatigue et environnement se cumulent.</p>
-        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></div><p><strong>Va plus loin :</strong> explore le <a class="plink" href="#exploration">schéma interactif des facteurs</a> — plus bas dans cette page : les 3 familles et les 10 déclencheurs sont cliquables, avec fiches détaillées, carte du corps et simulateur de poste de travail.</p></div>
+        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg></div><p><strong>Va plus loin :</strong> la <a class="plink" href="#corps">carte du corps</a>, la vidéo et le <a class="plink" href="#simulateur">simulateur de poste de travail</a> t'attendent dans la section <a class="plink" href="#exploration">Exploration interactive</a>, plus bas dans cette page.</p></div>
 
         <h3 id="realite" class="sub-h reveal">Notre réalité : sous terre, le risque se cumule</h3>
         <div class="grid g4">
@@ -1797,22 +1934,17 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <div class="wrap">
         <div class="eyebrow reveal">Base de connaissances &middot; volet interactif</div>
         <h2 class="title reveal d1">Exploration interactive</h2>
-        <p class="lead reveal d2">Tout ce que tu viens de lire, en version cliquable : le schéma des facteurs, la vidéo, la carte du corps et le simulateur de poste de travail. Ta progression est conservée d'une visite à l'autre.</p>
+        <p class="lead reveal d2">La suite du volet cliquable : la vidéo, la carte du corps et le simulateur de poste de travail. Le schéma interactif des facteurs, lui, est intégré plus haut dans la section « Facteurs de risque ». Ta progression est conservée d'une visite à l'autre.</p>
       </div>
       <div class="ipage">
         <div class="explo-outils">
-          <p class="consigne">👆 Tout est cliquable : les 3 familles, chaque mot dans les cercles, les 10 pastilles autour — chacune est reliée en pointillé à sa famille de couleur.</p>
+          
           <div class="recherche">
       <span class="loupe" aria-hidden="true">🔍</span>
       <input type="text" id="champ-recherche" placeholder="Rechercher un facteur, une zone du corps…" autocomplete="off" aria-label="Rechercher un facteur de risque">
       <ul id="resultats-recherche"></ul>
     </div>
-          <div class="legende" aria-label="Légende des couleurs">
-      <strong>Chaque pastille est reliée à sa famille :</strong>
-      <span><span class="point pb"></span>Facteurs biomécaniques</span>
-      <span><span class="point pi"></span>Facteurs individuels</span>
-      <span><span class="point pe"></span>Facteurs environnementaux</span>
-    </div>
+          
           <div class="explo-etat"><div class="anneau-bloc" title="Votre progression d'exploration du schéma">
       <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
         <circle cx="17" cy="17" r="14" fill="none" stroke="#2c2c2c" stroke-width="4"/>
@@ -1822,119 +1954,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <span id="texte-prog">0 / 13 explorés</span>
     </div><button id="btn-raz-progression">↺ Réinitialiser ma progression</button></div>
         </div>
-<section class="bloc" id="schema" style="margin-top:34px">
-    <div class="contenu">
 
-      <aside class="retenir ireveal">
-        <div class="titre"><span class="ampoule">💡</span> À RETENIR</div>
-        <p>Un TMS n'a pas une seule cause.</p>
-        <p>Souvent, c'est un mélange d'effort, de posture, de répétition, de fatigue et d'environnement.</p>
-        <p>Agir tôt aide à éviter que le problème s'installe.</p>
-        <button class="btn-savoir" data-cle="agir-tot">💡 Pourquoi agir tôt ?</button>
-      </aside>
-
-      <div class="schema ireveal">
-        <div class="scene" id="scene">
-
-          <svg id="svg-liaisons" aria-hidden="true"></svg>
-
-          <button class="bandeau-centre" data-cle="combinaison" data-resume="Le message clé du schéma : cliquez pour comprendre pourquoi la combinaison des facteurs augmente le risque.">LES FACTEURS DE RISQUE</button>
-
-          <!-- Les trois grandes familles -->
-          <div class="cercle bio" role="button" tabindex="0" aria-label="Facteurs biomécaniques — ouvrir la fiche" data-cle="biomecanique" data-famille="biomecanique"
-                  data-resume="Les contraintes physiques de la tâche : effort, cadence, posture, manutention, compression. Cliquez pour la fiche — ou directement sur un mot.">
-            <span class="nom">Facteurs<br>biomécaniques</span>
-            <ul>
-              <li><button class="sous-item" data-cle="efforts"><span class="si">💪</span>Effort</button></li>
-              <li><button class="sous-item" data-cle="mouvements-repetes"><span class="si">⏱️</span>Cadence</button></li>
-              <li><button class="sous-item" data-cle="postures"><span class="si">🪑</span>Posture</button></li>
-              <li><button class="sous-item" data-cle="manutention"><span class="si">📦</span>Manutention</button></li>
-              <li><button class="sous-item" data-cle="compression"><span class="si">⬇️</span>Compression</button></li>
-            </ul>
-          </div>
-
-          <div class="cercle ind" role="button" tabindex="0" aria-label="Facteurs individuels — ouvrir la fiche" data-cle="individuel" data-famille="individuel"
-                  data-resume="Ce qui appartient à la personne : récupération, capacité physique, douleur présente, antécédents, expérience.">
-            <span class="nom">Facteurs<br>individuels</span>
-            <ul>
-              <li><button class="sous-item" data-cle="recuperation"><span class="si">🛌</span>Récupération</button></li>
-              <li><button class="sous-item" data-cle="condition-physique"><span class="si">🏃</span>Capacité physique</button></li>
-              <li><button class="sous-item" data-cle="douleur-presente"><span class="si">🎯</span>Douleur présente</button></li>
-              <li><button class="sous-item" data-cle="antecedents"><span class="si">📋</span>Antécédents</button></li>
-              <li><button class="sous-item" data-cle="experience"><span class="si">⭐</span>Expérience</button></li>
-            </ul>
-          </div>
-
-          <div class="cercle env" role="button" tabindex="0" aria-label="Facteurs environnementaux — ouvrir la fiche" data-cle="environnement" data-famille="environnement"
-                  data-resume="Le contexte matériel : température, vibrations, espace, surface d'appui, niveau de travail.">
-            <span class="nom">Facteurs<br>environnementaux</span>
-            <ul>
-              <li><button class="sous-item" data-cle="temperature"><span class="si">🌡️</span>Température</button></li>
-              <li><button class="sous-item" data-cle="outils-vibrants"><span class="si">📳</span>Vibrations</button></li>
-              <li><button class="sous-item" data-cle="espace-travail"><span class="si">↔️</span>Espace</button></li>
-              <li><button class="sous-item" data-cle="surface-appui"><span class="si">🔲</span>Surface d'appui</button></li>
-              <li><button class="sous-item" data-cle="hauteur-travail"><span class="si">↕️</span>Niveau de travail</button></li>
-            </ul>
-          </div>
-
-          <button class="fleche-combo g" data-cle="combinaison" aria-label="Interaction entre les familles de facteurs" data-resume="Les familles interagissent : cliquez pour comprendre pourquoi la combinaison augmente le risque.">↔</button>
-          <button class="fleche-combo d" data-cle="combinaison" aria-label="Interaction entre les familles de facteurs" data-resume="Les familles interagissent : cliquez pour comprendre pourquoi la combinaison augmente le risque.">↔</button>
-
-          <!-- Pastilles périphériques, reliées logiquement à leur famille -->
-          <div class="grille-pastilles">
-            <button class="pastille p-bras-leves" data-cle="bras-leves" data-famille="biomecanique"
-                    data-resume="Mains au-dessus des épaules : tension constante sur les épaules. Famille : facteurs biomécaniques.">
-              <span class="rond">🙆</span><span class="libelle">Travail bras levés</span>
-            </button>
-            <button class="pastille p-gestes" data-cle="mouvements-repetes" data-famille="biomecanique"
-                    data-resume="Le même geste rapide répété sans pause : l'accumulation blesse. Famille : facteurs biomécaniques.">
-              <span class="rond">🔁</span><span class="libelle">Gestes rapides en continu</span>
-            </button>
-            <button class="pastille p-boite" data-cle="charges" data-famille="biomecanique"
-                    data-resume="Une charge portée loin du tronc multiplie l'effort du bas du dos. Famille : facteurs biomécaniques.">
-              <span class="rond">📦</span><span class="libelle">Boîte loin du corps</span>
-            </button>
-            <button class="pastille p-genou" data-cle="travail-genoux" data-famille="biomecanique"
-                    data-resume="S'agenouiller ou s'accroupir comprime le genou. Famille : facteurs biomécaniques.">
-              <span class="rond">🧎</span><span class="libelle">Appui sur genou</span>
-            </button>
-            <button class="pastille p-prise" data-cle="prise-serree" data-famille="biomecanique"
-                    data-resume="Serrer fort un outil ou pincer du bout des doigts sollicite tendons de la main et de l'avant-bras. Famille : facteurs biomécaniques.">
-              <span class="rond">✊</span><span class="libelle">Prise serrée</span>
-            </button>
-            <button class="pastille p-froid" data-cle="froid" data-famille="environnement"
-                    data-resume="Le froid raidit les muscles et réduit la dextérité. Famille : facteurs environnementaux.">
-              <span class="rond">❄️</span><span class="libelle">Froid</span>
-            </button>
-            <button class="pastille p-percussion" data-cle="outil-percussion" data-famille="environnement"
-                    data-resume="Chocs et vibrations transmis aux mains et aux bras à chaque impact. Famille : facteurs environnementaux.">
-              <span class="rond">🔨</span><span class="libelle">Outil à percussion</span>
-            </button>
-            <button class="pastille p-passage" data-cle="passage-etroit" data-famille="environnement"
-                    data-resume="Espaces étroits : torsions, épaules rentrées, charges portées de côté. Famille : facteurs environnementaux.">
-              <span class="rond">🚧</span><span class="libelle">Passage étroit</span>
-            </button>
-            <button class="pastille p-sol" data-cle="sol-inegal" data-famille="environnement"
-                    data-resume="Un sol instable impose un effort d'équilibre permanent et des faux mouvements. Famille : facteurs environnementaux.">
-              <span class="rond">⛰️</span><span class="libelle">Sol instable</span>
-            </button>
-            <button class="pastille p-plan" data-cle="hauteur-travail" data-famille="environnement"
-                    data-resume="Plan de travail trop haut : épaules levées en permanence. Famille : facteurs environnementaux.">
-              <span class="rond">📏</span><span class="libelle">Plan trop haut</span>
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <button class="avertissement ireveal" data-cle="combinaison">
-      <span class="picto">⚠️</span>
-      <span>Le risque augmente quand plusieurs facteurs se combinent.
-        <span class="mini">Cliquez pour comprendre comment les facteurs se multiplient entre eux.</span>
-      </span>
-    </button>
-  </section>
 <section class="bloc ireveal" id="video">
     <h2>En vidéo : <span class="accent">préserver son corps</span></h2>
     <p class="intro">Le corps est votre premier outil de travail : cette courte vidéo (2 min) montre comment l'entretenir au quotidien — sommeil, activité physique, récupération — pour mieux encaisser les contraintes du travail. C'est le volet « facteurs individuels » du schéma, en images.</p>
