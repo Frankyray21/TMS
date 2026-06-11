@@ -220,25 +220,33 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .chrono2-foot b{color:var(--accent-l)}
 @media(max-width:680px){.chrono2-bar{flex-direction:column}.cseg{flex:none!important;min-height:64px;padding:1.4rem .6rem .6rem}.cseg+.cseg::before{left:16%;right:16%;top:0;width:auto;height:1px}}
 
-/* parcours inconfort -> douleur -> lésion (fusion évolution + chronicisation) */
-.evo3{margin:1.2rem 0;border:1px solid rgba(239,68,68,.28);border-radius:16px;overflow:hidden;background:var(--card);box-shadow:var(--shadow-card)}
-.evo-head{display:flex;align-items:center;gap:.6rem;padding:.85rem 1.2rem;background:linear-gradient(90deg,rgba(16,185,129,.16),rgba(245,158,11,.13) 48%,rgba(239,68,68,.18));font-weight:700;font-size:.95rem;border-bottom:1px solid var(--border)}
-.evo-head svg{flex-shrink:0;color:var(--accent-l)}
-.evo-grid{display:grid;grid-template-columns:repeat(3,1fr)}
-.evoseg{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:2.1rem 1.15rem 1.4rem;gap:.4rem;color:#fff}
-.evoseg+.evoseg::before{content:'';position:absolute;left:0;top:10%;height:80%;width:1px;background:rgba(255,255,255,.16)}
-.es1{background:linear-gradient(180deg,rgba(16,185,129,.28),rgba(16,185,129,.05))}
-.es2{background:linear-gradient(180deg,rgba(245,158,11,.28),rgba(245,158,11,.05))}
-.es3{background:linear-gradient(180deg,rgba(239,68,68,.32),rgba(239,68,68,.07))}
-.es-tag{position:absolute;top:.6rem;left:50%;transform:translateX(-50%);background:var(--success);color:#06140d;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:.18rem .6rem;border-radius:50px;white-space:nowrap}
-.es-num{font-size:.74rem;font-weight:800;opacity:.65}
-.es-stade{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:800;font-size:1.55rem;line-height:1}
-.es-med{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;opacity:.82}
-.es-desc{font-size:.88rem;line-height:1.5;color:rgba(255,255,255,.9);margin-top:.35rem}
-.es-desc b{color:#fff;font-weight:700}
-.evo-foot{display:flex;align-items:center;gap:.5rem;padding:.75rem 1.2rem;font-size:.86rem;color:var(--muted);background:var(--bg-2)}
-.evo-foot b{color:var(--accent-l)}
-@media(max-width:680px){.evo-grid{grid-template-columns:1fr}.evoseg+.evoseg::before{left:16%;right:16%;top:0;width:auto;height:1px}}
+/* parcours inconfort -> douleur -> lésion : bannière + 3 colonnes */
+.evo3{margin:1.2rem 0}
+.evo-banner{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;background:linear-gradient(90deg,rgba(16,185,129,.28),rgba(11,15,22,0) 32%),linear-gradient(270deg,rgba(239,68,68,.26),rgba(11,15,22,0) 32%),#0d1320;border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.6rem}
+.eb-stage{display:flex;align-items:center;gap:.95rem;flex:1;min-width:215px}
+.eb1{--c:#2dd4bf}.eb2{--c:#fbbf24}.eb3{--c:#f87171}
+.eb-num{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:2px solid var(--c);color:var(--c);font-family:var(--font-display);font-weight:800;font-size:1.5rem;flex-shrink:0;box-shadow:0 0 16px rgba(0,0,0,.3),inset 0 0 10px rgba(0,0,0,.25)}
+.eb1 .eb-num{box-shadow:0 0 14px rgba(45,212,191,.3)}
+.eb2 .eb-num{box-shadow:0 0 14px rgba(251,191,36,.28)}
+.eb3 .eb-num{box-shadow:0 0 14px rgba(248,113,113,.3)}
+.eb-name{display:block;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-weight:800;font-size:1.3rem;color:#fff;line-height:1.05}
+.eb-phase{display:block;font-size:.84rem;font-weight:600;color:var(--c);margin-top:.25rem}
+.eb-arrow{flex-shrink:0;color:#fff;opacity:.9}
+.evo-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1.6rem}
+.evo-col{position:relative;display:flex;flex-direction:column;align-items:flex-start;padding:.15rem 0 0 1.2rem}
+.ev1{--c:#2dd4bf}.ev2{--c:#fbbf24}.ev3{--c:#f87171}
+.evo-col::before{content:'';position:absolute;left:3px;top:16px;bottom:10px;width:2px;background:linear-gradient(180deg,var(--c),transparent 90%)}
+.evo-col::after{content:'';position:absolute;left:0;top:5px;width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+.evo-col h4{font-size:1.02rem;font-weight:800;color:var(--c);margin-bottom:.55rem}
+.evo-col p{font-size:.92rem;line-height:1.7;color:rgba(255,255,255,.88);margin-bottom:1rem}
+.evo-col p b{color:#fff;font-weight:700}
+.ec-act{display:block;color:var(--c);font-weight:800;margin-top:.3rem}
+.ec-card{margin-top:auto;display:flex;align-items:flex-start;gap:.75rem;width:100%;border:1px solid;border-radius:12px;padding:.95rem 1.05rem;font-size:.88rem;line-height:1.5;color:rgba(255,255,255,.92)}
+.ev1 .ec-card{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.32)}
+.ev2 .ec-card{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.32)}
+.ev3 .ec-card{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.32)}
+.ec-card svg{flex-shrink:0;color:var(--c);margin-top:.1rem}
+@media(max-width:860px){.evo-cols{grid-template-columns:1fr;gap:1.4rem}.evo-banner{flex-direction:column;align-items:flex-start;gap:.9rem}.eb-arrow{transform:rotate(90deg);margin-left:15px}}
 
 /* ===== Échelle de Borg : bouton + surcouche ===== */
 .borg-cta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.1rem 1.3rem;box-shadow:var(--shadow-card)}
@@ -335,7 +343,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 
 .micro-open{display:inline-flex;align-items:center;gap:.55rem;flex-shrink:0;background:var(--g-green);border:none;color:#fff;font-family:inherit;font-weight:800;font-size:.98rem;padding:.85rem 1.5rem;border-radius:50px;cursor:pointer;box-shadow:0 8px 22px rgba(16,185,129,.35);transition:transform .15s,filter .2s,box-shadow .2s;animation:micropulse 2.8s ease-in-out infinite}
 .micro-open:hover,.micro-open:focus-visible{transform:translateY(-3px);filter:brightness(1.1);box-shadow:0 12px 30px rgba(16,185,129,.55);outline:none;animation:none}
-.micro-inline{font-size:.8rem;padding:.5rem 1rem;margin-top:.8rem;border-radius:50px;box-shadow:0 4px 14px rgba(16,185,129,.35);animation:micropulse 2.8s ease-in-out infinite}
+.micro-inline{font-size:.8rem;padding:.5rem 1rem;margin:0 0 1.1rem;border-radius:50px;box-shadow:0 4px 14px rgba(16,185,129,.35);animation:micropulse 2.8s ease-in-out infinite}
 @keyframes micropulse{0%,100%{box-shadow:0 8px 22px rgba(16,185,129,.35)}50%{box-shadow:0 8px 32px rgba(16,185,129,.65)}}
 .panneau-micro{max-width:720px}
 .micro-modal-titre{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.3rem;color:#34d399;margin:.4rem 0 .8rem;padding-right:2.4rem}
@@ -2030,35 +2038,45 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 
         <h3 id="evolution" class="sub-h reveal">L'évolution de la douleur : agir tôt</h3>
         <p class="lead reveal" style="margin-bottom:1.2rem">Un TMS s'installe par étapes. La même atteinte passe d'un simple <strong style="color:var(--accent-l)">inconfort</strong> à une <strong style="color:var(--accent-l)">douleur</strong> tenace, puis à une <strong style="color:var(--accent-l)">lésion</strong> durable. Plus la douleur dure, plus la récupération est longue, d'où l'importance d'agir dès le départ.</p>
-        <div class="evo3 reveal" role="img" aria-label="Évolution en trois stades : inconfort (phase aiguë, 0 à 6 semaines, fenêtre d'action) ; douleur (phase subaiguë, 6 à 12 semaines) ; lésion (phase chronique, plus de 12 semaines)">
-          <div class="evo-head"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg> La douleur s'aggrave avec le temps : agis dès l'inconfort</div>
-          <div class="evo-grid">
-            <div class="evoseg es1">
-              <span class="es-tag">Fenêtre d'action</span>
-              <span class="es-num">1</span>
-              <span class="es-stade">Inconfort</span>
-              <span class="es-med">Phase aiguë &middot; 0 à 6 semaines</span>
-              <span class="es-desc">Ça tire ou ça brûle <b>à l'effort</b>, puis ça passe au repos. Fatigue locale, raideur en fin de quart. <b>C'est ici qu'il faut agir.</b></span>
-              <button type="button" class="micro-open micro-inline" data-ouvrir-micro aria-label="Voir les microlésions">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Pourquoi ? Voir les microlésions
-              </button>
+        <div class="evo3 reveal">
+          <div class="evo-banner">
+            <div class="eb-stage eb1">
+              <span class="eb-num" aria-hidden="true">1</span>
+              <div><span class="eb-name">Inconfort</span><span class="eb-phase">Phase aiguë &middot; 0 à 6 semaines</span></div>
             </div>
-            <div class="evoseg es2">
-              <span class="es-num">2</span>
-              <span class="es-stade">Douleur</span>
-              <span class="es-med">Phase subaiguë &middot; 6 à 12 semaines</span>
-              <span class="es-desc">La douleur revient plus vite, dure plus longtemps et persiste <b>même hors effort</b>. Le sommeil et le rendement en souffrent.</span>
+            <svg class="eb-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="eb-stage eb2">
+              <span class="eb-num" aria-hidden="true">2</span>
+              <div><span class="eb-name">Douleur</span><span class="eb-phase">Phase subaiguë &middot; 6 à 12 semaines</span></div>
             </div>
-            <div class="evoseg es3">
-              <span class="es-num">3</span>
-              <span class="es-stade">Lésion</span>
-              <span class="es-med">Phase chronique &middot; plus de 12 semaines (3+ mois)</span>
-              <span class="es-desc">La douleur reste <b>même au repos</b>, l'atteinte est installée : gêne fonctionnelle, récupération longue et incertaine.</span>
+            <svg class="eb-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="eb-stage eb3">
+              <span class="eb-num" aria-hidden="true">3</span>
+              <div><span class="eb-name">Lésion</span><span class="eb-phase">Phase chronique &middot; 12+ semaines (3+ mois)</span></div>
             </div>
           </div>
-          <div class="evo-foot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Les lésions chroniques sont rares mais de mauvais pronostic : passé ce stade, une prise en charge devient nécessaire.</div>
+          <div class="evo-cols">
+            <div class="evo-col ev1">
+              <h4>Le bon moment pour agir</h4>
+              <p>Ça tire ou ça brûle <b>à l'effort</b>, puis ça passe au repos. Fatigue locale, raideur en fin de quart. <span class="ec-act">C'est ici qu'il faut agir.</span></p>
+              <button type="button" class="micro-open micro-inline" data-ouvrir-micro>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Pourquoi ? Voir les microlésions
+              </button>
+              <div class="ec-card"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg><span>Agir tôt = récupération rapide et performances préservées.</span></div>
+            </div>
+            <div class="evo-col ev2">
+              <h4>La douleur s'installe</h4>
+              <p>La douleur revient plus vite, dure plus longtemps et persiste <b>même hors effort</b>. Le sommeil et le rendement en souffrent.</p>
+              <div class="ec-card"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Ne pas ignorer = éviter l'aggravation.</span></div>
+            </div>
+            <div class="evo-col ev3">
+              <h4>Risque de chronicité</h4>
+              <p>La douleur reste <b>même au repos</b>, l'atteinte est installée : gênes fonctionnelles, récupération longue et incertaine.</p>
+              <div class="ec-card"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Agir maintenant = limiter les dégâts et retrouver sa capacité.</span></div>
+            </div>
+          </div>
         </div>
-        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><p><strong>Le bon moment pour agir, c'est dès l'inconfort</strong> (phase aiguë, la fenêtre verte). Plus on attend, plus on glisse vers la douleur puis la lésion, et plus la récupération est longue et incertaine.</p></div>
+        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><p><strong>Le bon moment pour agir, c'est dès l'inconfort</strong> (phase aiguë, le stade vert). Plus on attend, plus on glisse vers la douleur puis la lésion. Les lésions chroniques sont rares mais de mauvais pronostic : passé ce stade, une prise en charge devient nécessaire.</p></div>
 
 
       </div>
