@@ -381,6 +381,44 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .sd-list li{position:relative;padding-left:1.35rem;font-size:.97rem;line-height:1.45}
 .sd-list li::before{content:'';position:absolute;left:0;top:.42em;width:9px;height:9px;border-radius:50%;background:#ef5a5c;box-shadow:0 0 8px rgba(239,90,92,.7);transition:background .3s,box-shadow .3s}
 .sd.dyn .sd-list li::before{background:#34d399;box-shadow:0 0 8px rgba(52,211,153,.6)}
+.sd-sta-x{display:grid;grid-template-columns:1.3fr 1fr;gap:1.2rem;margin-top:1.3rem}
+.sd.dyn .sd-sta-x{display:none}
+.vx-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-content:start}
+.vx-panel{background:#000;border:1px solid var(--border);border-radius:12px;padding:.9rem;display:flex;flex-direction:column;gap:.6rem}
+.vx-t{text-align:center;font-weight:800;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
+.vx-svg{width:100%;height:auto;display:block}
+.vxp{fill:#fff}
+.vx-press-t{animation:vxpt 1.7s ease-in-out infinite}
+.vx-press-b{animation:vxpb 1.7s ease-in-out infinite}
+@keyframes vxpt{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes vxpb{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.vx-cells ellipse{animation:vxflow linear infinite}
+@keyframes vxflow{from{transform:translateX(0)}to{transform:translateX(265px)}}
+.vx-fast ellipse{animation-duration:3s}
+.vx-fast ellipse:nth-child(1){animation-delay:0s}
+.vx-fast ellipse:nth-child(2){animation-delay:-.65s}
+.vx-fast ellipse:nth-child(3){animation-delay:-1.3s}
+.vx-fast ellipse:nth-child(4){animation-delay:-1.9s}
+.vx-fast ellipse:nth-child(5){animation-delay:-2.5s}
+.vx-slow ellipse{animation-duration:8s}
+.vx-slow ellipse:nth-child(1){animation-delay:0s}
+.vx-slow ellipse:nth-child(2){animation-delay:-3s}
+.vx-slow ellipse:nth-child(3){animation-delay:-5.7s}
+.vx-arrow{animation:vxar 1.8s ease-in-out infinite}
+@keyframes vxar{0%,100%{opacity:.55}50%{opacity:1}}
+.vx-cap{font-size:.83rem;color:var(--muted);line-height:1.45;display:flex;gap:.55rem;align-items:flex-start}
+.vx-ic{flex-shrink:0;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:.68rem;font-weight:900;color:#fff;margin-top:.1em}
+.vx-ic.ok{background:#10b981}.vx-ic.no{background:#d22325}
+.vx-warn{grid-column:1/-1;display:flex;gap:.7rem;align-items:center;border:1px solid rgba(239,68,68,.35);border-radius:12px;background:var(--bg-2);padding:.8rem 1rem;font-size:.88rem;line-height:1.5}
+.vx-warn svg{flex-shrink:0}
+.vx-conseq{border:1px solid var(--border);border-radius:12px;background:var(--bg-2);padding:1rem 1.2rem}
+.vxc-t{font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:#ef5a5c;margin-bottom:.4rem}
+.vx-conseq ul{list-style:none}
+.vx-conseq li{display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1px dashed var(--border);font-weight:600;font-size:.94rem;line-height:1.35}
+.vx-conseq li:last-child{border-bottom:none}
+.vx-conseq .ic{font-size:1.25rem;flex-shrink:0}
+@media(max-width:900px){.sd-sta-x{grid-template-columns:1fr}}
+@media(max-width:520px){.vx-wrap{grid-template-columns:1fr}}
 .sd-tips{display:flex;flex-wrap:wrap;align-items:stretch;margin-top:1.3rem;border:1px solid var(--border);border-radius:12px;background:var(--bg-2);overflow:hidden}
 .sd-tips-lead{flex:1.5;min-width:230px;display:flex;align-items:center;padding:1rem 1.2rem;font-weight:700;font-size:.95rem;line-height:1.5}
 .sd-tip{flex:1;min-width:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.45rem;text-align:center;padding:1rem .7rem;border-left:1px dashed var(--border);font-size:.8rem;color:var(--muted);line-height:1.35}
@@ -2144,6 +2182,57 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
               <li>La fatigue arrive plus vite.</li>
               <li>Le risque de douleur augmente.</li>
             </ul>
+          </div>
+          <div class="sd-sta-x">
+            <div class="vx-wrap">
+              <div class="vx-panel">
+                <div class="vx-t">Contraction normale</div>
+                <svg class="vx-svg" viewBox="0 0 220 110" role="img" aria-label="Vaisseau sanguin ouvert : les globules circulent librement">
+                  <defs><clipPath id="vxnClip"><rect x="10" y="34" width="200" height="42" rx="21"/></clipPath></defs>
+                  <g class="vx-press-t"><path class="vxp" d="M46 5h12l-6 10z"/><path class="vxp" d="M162 5h12l-6 10z"/></g>
+                  <g class="vx-press-b"><path class="vxp" d="M46 105h12l-6-10z"/><path class="vxp" d="M162 105h12l-6-10z"/></g>
+                  <rect x="6" y="30" width="208" height="50" rx="25" fill="#3a0d10" stroke="#e8888c" stroke-width="6"/>
+                  <rect x="10" y="34" width="200" height="42" rx="21" fill="#56121a"/>
+                  <g clip-path="url(#vxnClip)" class="vx-cells vx-fast">
+                    <ellipse cx="-15" cy="45" rx="8" ry="5.5" fill="#d2262a" stroke="#ff9b9e" stroke-width="1.5"/>
+                    <ellipse cx="-15" cy="64" rx="8" ry="5.5" fill="#d2262a" stroke="#ff9b9e" stroke-width="1.5"/>
+                    <ellipse cx="-15" cy="54" rx="8" ry="5.5" fill="#d2262a" stroke="#ff9b9e" stroke-width="1.5"/>
+                    <ellipse cx="-15" cy="48" rx="8" ry="5.5" fill="#d2262a" stroke="#ff9b9e" stroke-width="1.5"/>
+                    <ellipse cx="-15" cy="61" rx="8" ry="5.5" fill="#d2262a" stroke="#ff9b9e" stroke-width="1.5"/>
+                  </g>
+                  <path class="vx-arrow" d="M64 51h58v-8l28 12-28 12v-8H64z" fill="#fff"/>
+                </svg>
+                <p class="vx-cap"><span class="vx-ic ok" aria-hidden="true">✓</span>Bon apport sanguin : oxygène et nutriments arrivent au muscle.</p>
+              </div>
+              <div class="vx-panel">
+                <div class="vx-t">Contraction prolongée</div>
+                <svg class="vx-svg" viewBox="0 0 220 110" role="img" aria-label="Vaisseau sanguin comprimé : les globules passent à peine">
+                  <defs><clipPath id="vxpClip"><path d="M6 32C60 32 75 48 110 48C145 48 160 32 214 32L214 78C160 78 145 62 110 62C75 62 60 78 6 78Z"/></clipPath></defs>
+                  <g class="vx-press-t"><path class="vxp" d="M97 4h26l-13 17z"/></g>
+                  <g class="vx-press-b"><path class="vxp" d="M97 106h26l-13-17z"/></g>
+                  <path d="M6 32C60 32 75 48 110 48C145 48 160 32 214 32L214 78C160 78 145 62 110 62C75 62 60 78 6 78Z" fill="#56121a"/>
+                  <path d="M6 32C60 32 75 48 110 48C145 48 160 32 214 32" fill="none" stroke="#e8888c" stroke-width="6" stroke-linecap="round"/>
+                  <path d="M6 78C60 78 75 62 110 62C145 62 160 78 214 78" fill="none" stroke="#e8888c" stroke-width="6" stroke-linecap="round"/>
+                  <g clip-path="url(#vxpClip)" class="vx-cells vx-slow">
+                    <ellipse cx="-15" cy="55" rx="5.5" ry="3.2" fill="#d2262a" stroke="#ff9b9e" stroke-width="1.2"/>
+                    <ellipse cx="-15" cy="55" rx="5.5" ry="3.2" fill="#d2262a" stroke="#ff9b9e" stroke-width="1.2"/>
+                    <ellipse cx="-15" cy="55" rx="5.5" ry="3.2" fill="#d2262a" stroke="#ff9b9e" stroke-width="1.2"/>
+                  </g>
+                </svg>
+                <p class="vx-cap"><span class="vx-ic no" aria-hidden="true">✕</span>Apport sanguin réduit : moins d'oxygène, moins de nutriments.</p>
+              </div>
+              <div class="vx-warn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Même des contractions aussi faibles que <strong>2 % de la force maximale</strong> peuvent réduire l'apport sanguin.</span></div>
+            </div>
+            <div class="vx-conseq">
+              <div class="vxc-t">Ce que la contraction prolongée provoque</div>
+              <ul>
+                <li><span class="ic" aria-hidden="true">🔋</span>Fatigue</li>
+                <li><span class="ic" aria-hidden="true">😖</span>Inconfort</li>
+                <li><span class="ic" aria-hidden="true">🧪</span>Accumulation de sous-produits métaboliques</li>
+                <li><span class="ic" aria-hidden="true">🎯</span>Points gâchettes</li>
+                <li><span class="ic" aria-hidden="true">💢</span>Contractures musculaires hypersensibles</li>
+              </ul>
+            </div>
           </div>
           <div class="sd-tips">
             <div class="sd-tips-lead">Alterne les tâches, change de position régulièrement et prends des micro-pauses.</div>
