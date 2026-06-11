@@ -332,13 +332,10 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .cq.open .cq-ar{background:var(--accent);color:#fff}
 
 .nuance{margin:1.3rem 0;background:linear-gradient(160deg,rgba(16,185,129,.06),rgba(17,24,39,.5));border:1px solid var(--border);border-left:4px solid var(--success);border-radius:0 16px 16px 0;padding:1.3rem 1.5rem}
-/* Microlésions CTA */
-.micro-cta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:linear-gradient(160deg,rgba(16,185,129,.08),rgba(17,24,39,.5));border:1px solid rgba(16,185,129,.35);border-left:4px solid var(--success);border-radius:0 16px 16px 0;padding:1.1rem 1.3rem;margin:1.3rem 0}
-.micro-cta-txt{flex:1;min-width:200px;display:flex;flex-direction:column}
-.micro-cta-txt strong{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.05rem}
-.micro-cta-txt span{color:var(--muted);font-size:.88rem;margin-top:.15rem}
+
 .micro-open{display:inline-flex;align-items:center;gap:.55rem;flex-shrink:0;background:var(--g-green);border:none;color:#fff;font-family:inherit;font-weight:800;font-size:.98rem;padding:.85rem 1.5rem;border-radius:50px;cursor:pointer;box-shadow:0 8px 22px rgba(16,185,129,.35);transition:transform .15s,filter .2s,box-shadow .2s;animation:micropulse 2.8s ease-in-out infinite}
 .micro-open:hover,.micro-open:focus-visible{transform:translateY(-3px);filter:brightness(1.1);box-shadow:0 12px 30px rgba(16,185,129,.55);outline:none;animation:none}
+.micro-inline{font-size:.8rem;padding:.5rem 1rem;margin-top:.8rem;border-radius:50px;box-shadow:0 4px 14px rgba(16,185,129,.35);animation:micropulse 2.8s ease-in-out infinite}
 @keyframes micropulse{0%,100%{box-shadow:0 8px 22px rgba(16,185,129,.35)}50%{box-shadow:0 8px 32px rgba(16,185,129,.65)}}
 .panneau-micro{max-width:720px}
 .micro-modal-titre{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.3rem;color:#34d399;margin:.4rem 0 .8rem;padding-right:2.4rem}
@@ -2042,6 +2039,9 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
               <span class="es-stade">Inconfort</span>
               <span class="es-med">Phase aiguë &middot; 0 à 6 semaines</span>
               <span class="es-desc">Ça tire ou ça brûle <b>à l'effort</b>, puis ça passe au repos. Fatigue locale, raideur en fin de quart. <b>C'est ici qu'il faut agir.</b></span>
+              <button type="button" class="micro-open micro-inline" data-ouvrir-micro aria-label="Voir les microlésions">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Pourquoi ? Voir les microlésions
+              </button>
             </div>
             <div class="evoseg es2">
               <span class="es-num">2</span>
@@ -2057,15 +2057,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
             </div>
           </div>
           <div class="evo-foot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Les lésions chroniques sont rares mais de mauvais pronostic : passé ce stade, une prise en charge devient nécessaire.</div>
-        </div>
-        <div class="micro-cta reveal">
-          <div class="micro-cta-txt">
-            <strong>Microlésions et récupération</strong>
-            <span>Dès l'inconfort, des microlésions se forment dans le muscle. Ce qui arrive ensuite dépend du temps de récupération.</span>
-          </div>
-          <button type="button" class="micro-open" id="microOpen" data-ouvrir-micro>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Voir les microlésions
-          </button>
         </div>
         <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><p><strong>Le bon moment pour agir, c'est dès l'inconfort</strong> (phase aiguë, la fenêtre verte). Plus on attend, plus on glisse vers la douleur puis la lésion, et plus la récupération est longue et incertaine.</p></div>
 
