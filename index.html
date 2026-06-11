@@ -578,6 +578,24 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .sleepbar{background:var(--card-2);border:1px solid var(--border);border-radius:16px;padding:1.6rem 2rem;display:flex;align-items:center;gap:2rem;margin:1.6rem 0}
 .sleepbar .t{font-family:var(--font-display);font-size:3.2rem;font-weight:800;background:var(--g-green);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;line-height:1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
 .sleepbar .t span{-webkit-text-fill-color:var(--muted);color:var(--muted);font-size:1rem}
+.sleepbar .ghost-btn{margin-left:auto;flex-shrink:0}
+/* sommeil : liens détail + accès rapides */
+.card-more{display:inline-flex;align-items:center;gap:.4rem;margin-top:.8rem;background:none;border:none;padding:0;font-family:inherit;font-size:.85rem;font-weight:700;color:var(--accent-l);cursor:pointer;transition:gap .2s}
+.card-more:hover{gap:.65rem}
+.ghost-btn{display:inline-flex;align-items:center;gap:.4rem;background:none;border:1px solid rgba(210,35,37,.5);border-radius:10px;padding:.5rem 1rem;font-family:inherit;font-size:.85rem;font-weight:700;color:#ef5a5c;cursor:pointer;transition:background .2s,border-color .2s}
+.ghost-btn:hover{background:rgba(210,35,37,.12);border-color:rgba(210,35,37,.8)}
+.sleep-quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.9rem;margin-top:1.6rem}
+.sq-btn{display:flex;align-items:center;gap:.7rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.95rem 1.05rem;font-family:inherit;font-weight:700;font-size:.92rem;color:var(--text);text-align:left;cursor:pointer;transition:border-color .2s,transform .15s}
+.sq-btn:hover{border-color:rgba(210,35,37,.5);transform:translateY(-2px)}
+.sq-btn svg{flex-shrink:0;color:#ef5a5c}
+.sq-btn .chev2{margin-left:auto;color:#ef5a5c;font-weight:800;font-size:1.2rem;line-height:1}
+.sleep-cta{display:flex;align-items:center;justify-content:center;gap:.6rem;margin:1.3rem auto 0;background:var(--g-red);color:#fff;border:none;border-radius:12px;padding:1rem 2.4rem;font-family:inherit;font-weight:800;font-size:1.02rem;cursor:pointer;box-shadow:0 10px 26px rgba(210,35,37,.35);transition:transform .15s,filter .2s}
+.sleep-cta:hover{transform:translateY(-3px);filter:brightness(1.1)}
+.panneau-sommeil{max-width:700px}
+.sl-body{color:var(--muted);font-size:.95rem;line-height:1.6;margin-top:.6rem}
+.sl-body strong{color:var(--text)}
+.sl-body ul{list-style:disc;margin:.8rem 0 0;padding-left:1.3rem}
+.sl-body li{margin:.45rem 0}
 
 /* expandable detail (accordion) */
 .xpand{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:.8rem;overflow:hidden;transition:border-color .3s,background .3s}
@@ -2482,32 +2500,25 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
         <h2 class="title reveal d1">Le sommeil</h2>
         <p class="lead reveal d2">Le réparateur numéro un de ton corps. Pendant que tu dors, ton corps se répare.</p>
         <div class="grid g4">
-          <div class="card purple reveal"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><h4>Réparation des tissus</h4><p>Muscles, tendons et articulations se reconstruisent la nuit.</p></div>
-          <div class="card green reveal d1"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><h4>Hormones de récupération</h4><p>L'hormone de croissance, en sommeil profond, répare les tissus.</p></div>
-          <div class="card blue reveal d2"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h4>Gestion de la douleur</h4><p>Bien dormir abaisse la sensibilité à la douleur.</p></div>
-          <div class="card reveal d3"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><h4>Vigilance</h4><p>Mémoire et concentration consolidées. On reste alerte.</p></div>
+          <div class="card purple reveal"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><h4>Réparation des tissus</h4><p>Muscles, tendons et articulations se reconstruisent la nuit.</p><button type="button" class="card-more" data-sleep="tissus">En savoir plus <span aria-hidden="true">&rarr;</span></button></div>
+          <div class="card green reveal d1"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><h4>Hormones de récupération</h4><p>L'hormone de croissance, en sommeil profond, répare les tissus.</p><button type="button" class="card-more" data-sleep="hormones">En savoir plus <span aria-hidden="true">&rarr;</span></button></div>
+          <div class="card blue reveal d2"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h4>Gestion de la douleur</h4><p>Bien dormir abaisse la sensibilité à la douleur.</p><button type="button" class="card-more" data-sleep="douleur">En savoir plus <span aria-hidden="true">&rarr;</span></button></div>
+          <div class="card reveal d3"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><h4>Vigilance</h4><p>Mémoire et concentration consolidées. On reste alerte.</p><button type="button" class="card-more" data-sleep="vigilance">En savoir plus <span aria-hidden="true">&rarr;</span></button></div>
         </div>
-        <div class="sleepbar reveal"><div class="t">7-9h<span> /24h</span></div><div><p style="font-weight:600;margin-bottom:.2rem">La cible de sommeil recommandée</p><p style="color:var(--muted)">La fatigue ne se rattrape pas en une seule grasse matinée : elle s'accumule comme une dette.</p></div></div>
+        <div class="sleepbar reveal"><div class="t">7-9h<span> /24h</span></div><div><p style="font-weight:600;margin-bottom:.2rem">La cible de sommeil recommandée</p><p style="color:var(--muted)">La fatigue ne se rattrape pas en une seule grasse matinée : elle s'accumule comme une dette.</p></div><button type="button" class="ghost-btn" data-sleep="dette">Pourquoi ? &rarr;</button></div>
 
         <h3 class="sub-h reveal">Manque de sommeil = plus de risques</h3>
         <div class="grid g2">
-          <div class="card reveal"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h4>Quand tu manques de sommeil</h4><ul class="plainlist"><li>Temps de réaction plus lent</li><li>Concentration et jugement réduits</li><li>Douleur ressentie plus forte</li><li>Récupération musculaire incomplète</li><li>Plus de faux mouvements et d'accidents</li></ul></div>
-          <div class="card reveal d1" style="display:flex;flex-direction:column;justify-content:center"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><h4>La fatigue conduit comme l'alcool</h4><p>Rester éveillé <strong style="color:var(--accent-l)">17 à 19 heures d'affilée</strong> affecte la vigilance autant qu'un taux d'alcool de 0,05.</p></div>
+          <div class="card reveal"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h4>Quand tu manques de sommeil</h4><ul class="plainlist"><li>Temps de réaction plus lent</li><li>Concentration et jugement réduits</li><li>Douleur ressentie plus forte</li><li>Récupération musculaire incomplète</li><li>Plus de faux mouvements et d'accidents</li></ul><button type="button" class="ghost-btn" data-sleep="signes" style="margin-top:.9rem">Voir les signes &rarr;</button></div>
+          <div class="card reveal d1" style="display:flex;flex-direction:column;justify-content:center"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><h4>La fatigue conduit comme l'alcool</h4><p>Rester éveillé <strong style="color:var(--accent-l)">17 à 19 heures d'affilée</strong> affecte la vigilance autant qu'un taux d'alcool de 0,05.</p><button type="button" class="ghost-btn" data-sleep="alcool" style="margin-top:.9rem;align-self:flex-start">Voir l'explication &rarr;</button></div>
         </div>
 
-        <h3 id="quarts" class="sub-h reveal">Dormir le jour, travailler la nuit</h3>
-        <p class="lead reveal" style="margin-bottom:1.2rem">Le corps n'aime pas naturellement dormir le jour. Ces réflexes aident à mieux récupérer entre les quarts.</p>
-        <div class="grid g3">
-          <div class="card purple reveal"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div><h4>Routine fixe</h4><p>Même rituel avant de dormir, même si c'est le matin.</p></div>
-          <div class="card green reveal d1"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><h4>Sieste stratégique</h4><p>Une courte sieste de 20 à 30 min avant un quart de nuit.</p></div>
-          <div class="card reveal d2"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div><h4>Lumière au réveil</h4><p>S'exposer à la lumière vive pour relancer la vigilance.</p></div>
+        <div class="sleep-quick reveal" id="quarts">
+          <button type="button" class="sq-btn" data-sleep="checklist"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11l3 3 5-6"/></svg> Checklist sommeil <span class="chev2" aria-hidden="true">&rsaquo;</span></button>
+          <button type="button" class="sq-btn" data-sleep="quarts"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><circle cx="12" cy="15.5" r="3"/><path d="M12 14v1.5l1 1"/></svg> Conseils avant un quart <span class="chev2" aria-hidden="true">&rsaquo;</span></button>
+          <button type="button" class="sq-btn" data-ouvrir-reflexes><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Guide pratique au poste <span class="chev2" aria-hidden="true">&rsaquo;</span></button>
         </div>
-
-        <h3 class="sub-h reveal">Bien dormir : la checklist</h3>
-        <div class="piliers">
-          <div class="pilier p2 reveal"><h4>&Agrave; faire</h4><ul><li>Vise 7 à 9 h de sommeil par 24 h, à heures régulières</li><li>Chambre fraîche, sombre et silencieuse (rideaux opaques, bouchons, masque)</li><li>Coupe les écrans 30 à 60 min avant de dormir</li><li>Bouge dans la journée, pas juste avant de dormir</li><li>Repas léger avant le sommeil</li><li>Protège ton sommeil : avertis l'entourage, coupe les notifications</li></ul></div>
-          <div class="pilier p1 reveal d1"><h4>&Agrave; éviter</h4><ul><li>Le café dans les 6 h avant le sommeil prévu (ou en fin de quart)</li><li>L'alcool pour t'endormir : il fragmente le sommeil profond</li><li>Les repas lourds juste avant de dormir</li></ul></div>
-        </div>
+        <button type="button" class="sleep-cta reveal" data-ouvrir-borg><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 14l4-4"/><path d="M3.34 19a10 10 0 1117.32 0z"/></svg> Évaluer ma fatigue <span aria-hidden="true">&rarr;</span></button>
       </div>
     </section>
 
@@ -3006,6 +3017,15 @@ window.addEventListener('afterprint',function(){document.querySelectorAll('detai
   paint();
 })();
 </script>
+<!-- Sommeil : détails en surimpression -->
+<div class="voile-sim" id="voile-sommeil" role="dialog" aria-modal="true" aria-label="Détail sommeil">
+  <div class="panneau-sim panneau-sommeil">
+    <button class="fermer-sim" id="fermer-sommeil" aria-label="Fermer">✕</button>
+    <h3 class="refl-titre" id="slTitre">Détail</h3>
+    <div class="sl-body" id="slBody"></div>
+  </div>
+</div>
+
 <!-- Bons réflexes en surimpression -->
 <div class="voile-sim" id="voile-reflexes" role="dialog" aria-modal="true" aria-label="Les bons réflexes au poste de travail">
   <div class="panneau-sim panneau-reflexes">
@@ -4650,6 +4670,32 @@ document.addEventListener("keydown", e => {
     }
   }
   if(mo){mo.addEventListener("click",function(){setMicro(true);});mn.addEventListener("click",function(){setMicro(false);});setMicro(true);}
+
+  /* ---- Sommeil : surcouche de détails ---- */
+  var SLEEP={
+    tissus:{t:"Réparation des tissus",h:"<p>C'est surtout pendant le <strong>sommeil profond</strong> que le corps répare : la circulation vers les muscles augmente et les tissus sollicités pendant le quart (muscles, tendons, articulations) se reconstruisent.</p><ul><li>Les microlésions accumulées dans la journée se réparent la nuit.</li><li>Sans assez de sommeil profond, la réparation reste incomplète : tu recommences le quart avec des tissus encore fragilisés.</li><li>Nuit après nuit, ce déficit de réparation ouvre la porte aux TMS.</li></ul>"},
+    hormones:{t:"Hormones de récupération",h:"<p>Le sommeil profond déclenche un pic d'<strong>hormone de croissance</strong>, celle qui répare muscles et tendons. En parallèle, le cortisol (hormone du stress) redescend.</p><ul><li>Moins de sommeil = moins d'hormone de croissance = réparation au ralenti.</li><li>Un cortisol qui reste élevé entretient l'inflammation et freine la récupération.</li></ul>"},
+    douleur:{t:"Gestion de la douleur",h:"<p>Bien dormir <strong>abaisse la sensibilité à la douleur</strong>. À l'inverse, après une mauvaise nuit, le même inconfort paraît plus intense.</p><ul><li>Le manque de sommeil amplifie les signaux de douleur dans le cerveau.</li><li>Douleur plus forte = gestes de compensation = plus de risque de TMS.</li><li>Bien dormir fait partie du traitement de l'inconfort, au même titre que le repos.</li></ul>"},
+    vigilance:{t:"Vigilance",h:"<p>Pendant le sommeil, le cerveau <strong>consolide la mémoire et la concentration</strong>. Reposé, tu restes alerte : tu détectes les dangers et tu gardes des gestes précis.</p><ul><li>La vigilance protège des faux mouvements et des accidents.</li><li>La concentration permet de garder les bonnes techniques de travail toute la durée du quart.</li></ul>"},
+    dette:{t:"Pourquoi 7 à 9 heures ?",h:"<p>C'est la cible recommandée pour un adulte, par 24 heures. En dessous, la fatigue <strong>s'accumule comme une dette</strong> : chaque heure manquée s'additionne, nuit après nuit.</p><ul><li>Une seule grasse matinée ne rembourse pas une semaine de nuits courtes.</li><li>La dette se rattrape progressivement : des nuits complètes et régulières pendant plusieurs jours.</li><li>La régularité compte autant que la durée : se coucher et se lever à heures fixes aide le corps à récupérer.</li></ul>"},
+    signes:{t:"Quand tu manques de sommeil",h:"<p>Les signes à reconnaître, sur toi ou un collègue :</p><ul><li><strong>Temps de réaction plus lent</strong> : tu freines, tu esquives, tu rattrapes moins vite.</li><li><strong>Concentration et jugement réduits</strong> : erreurs d'inattention, mauvaises décisions.</li><li><strong>Douleur ressentie plus forte</strong> : le même effort fait plus mal.</li><li><strong>Récupération musculaire incomplète</strong> : raideurs et fatigue dès le début du quart.</li><li><strong>Plus de faux mouvements et d'accidents</strong> : la fatigue multiplie les risques.</li></ul><p style='margin-top:.8rem'>Si tu te reconnais, protège ton prochain sommeil et adapte ton rythme : c'est de la prévention, pas de la paresse.</p>"},
+    alcool:{t:"La fatigue conduit comme l'alcool",h:"<p>Rester éveillé <strong>17 à 19 heures d'affilée</strong> dégrade la vigilance autant qu'un taux d'alcool de <strong>0,05</strong> : réflexes ralentis, jugement altéré, micro-sommeils possibles.</p><ul><li>Personne ne travaillerait avec de l'alcool dans le sang : la fatigue extrême a pourtant le même effet.</li><li>Après un long éveil, les tâches à risque (conduite, manoeuvres de machines) demandent une vigilance que le corps n'a plus.</li><li>La seule vraie solution est le sommeil : le café ne fait que masquer la fatigue un moment.</li></ul>"},
+    quarts:{t:"Conseils avant un quart",h:"<p>Le corps n'aime pas naturellement dormir le jour. Ces réflexes aident à mieux récupérer entre les quarts :</p><ul><li><strong>Routine fixe</strong> : même rituel avant de dormir, même si c'est le matin.</li><li><strong>Sieste stratégique</strong> : une courte sieste de 20 à 30 minutes avant un quart de nuit.</li><li><strong>Lumière au réveil</strong> : s'exposer à la lumière vive pour relancer la vigilance.</li></ul>"},
+    checklist:{t:"Bien dormir : la checklist",h:"<p><strong style='color:#34d399'>À faire</strong></p><ul><li>Vise 7 à 9 h de sommeil par 24 h, à heures régulières</li><li>Chambre fraîche, sombre et silencieuse (rideaux opaques, bouchons, masque)</li><li>Coupe les écrans 30 à 60 min avant de dormir</li><li>Bouge dans la journée, pas juste avant de dormir</li><li>Repas léger avant le sommeil</li><li>Protège ton sommeil : avertis l'entourage, coupe les notifications</li></ul><p style='margin-top:1rem'><strong style='color:#ef5a5c'>À éviter</strong></p><ul><li>Le café dans les 6 h avant le sommeil prévu (ou en fin de quart)</li><li>L'alcool pour t'endormir : il fragmente le sommeil profond</li><li>Les repas lourds juste avant de dormir</li></ul>"}
+  };
+  var vSl=$("#voile-sommeil"),declSl=null;
+  function ouvrirSl(d,k){
+    var m=SLEEP[k];if(!m)return;
+    $("#slTitre").textContent=m.t;$("#slBody").innerHTML=m.h;
+    declSl=d;vSl.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-sommeil").focus();
+  }
+  function fermerSl(){vSl.classList.remove("ouvert");document.body.style.overflow="";if(declSl&&declSl.focus)declSl.focus();}
+  document.querySelectorAll("[data-sleep]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirSl(b,b.getAttribute("data-sleep"));});});
+  if(vSl){
+    $("#fermer-sommeil").addEventListener("click",fermerSl);
+    vSl.addEventListener("click",function(e){if(e.target===vSl)fermerSl();});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&vSl.classList.contains("ouvert"))fermerSl();});
+  }
 
   /* ---- Bons réflexes : surcouche ---- */
   var vRf=$("#voile-reflexes"),declRf=null;
