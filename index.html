@@ -566,15 +566,6 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .plainlist{list-style:none;margin-top:.3rem}
 .plainlist li{padding:.3rem 0 .3rem 1.3rem;position:relative;color:var(--muted);font-size:.92rem}
 .plainlist li::before{content:'';position:absolute;left:0;top:.75rem;width:6px;height:6px;border-radius:50%;background:var(--accent)}
-/* plan d'action cochable */
-.actplan .card h4{margin-bottom:.7rem}
-.act{display:flex;align-items:flex-start;gap:.6rem;padding:.45rem 0;cursor:pointer;color:var(--muted);font-size:.94rem;line-height:1.45;border-bottom:1px solid rgba(255,255,255,.05)}
-.act:last-child{border-bottom:none}
-.act input{appearance:none;-webkit-appearance:none;width:20px;height:20px;flex-shrink:0;margin-top:.1rem;border:2px solid var(--dim);border-radius:6px;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .2s}
-.act input:checked{background:var(--success);border-color:var(--success)}
-.act input:checked::after{content:'\2713';color:#06140d;font-size:.8rem;font-weight:900}
-.act input:focus-visible{outline:2px solid var(--accent-l);outline-offset:2px}
-.act:has(input:checked) span{color:var(--text)}
 .sleepbar{background:var(--card-2);border:1px solid var(--border);border-radius:16px;padding:1.6rem 2rem;display:flex;align-items:center;gap:2rem;margin:1.6rem 0}
 .sleepbar .t{font-family:var(--font-display);font-size:3.2rem;font-weight:800;background:var(--g-green);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;line-height:1;font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
 .sleepbar .t span{-webkit-text-fill-color:var(--muted);color:var(--muted);font-size:1rem}
@@ -2649,25 +2640,6 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
           <div class="pilier p2 reveal d1"><h4>Pilier 2 : Maximiser la récupération</h4><p style="color:var(--muted);font-size:.98rem;line-height:1.6">Sommeil régulier de 7 à 9 h, hydratation, alimentation, mouvement : des habitudes qui aident ton corps à se réparer.</p><p style="margin-top:.8rem"><a class="plink" href="#sommeil">Revoir le sommeil &uarr;</a> &middot; <a class="plink" href="#hygiene">l'hygiène de vie &uarr;</a></p></div>
         </div>
 
-        <h3 class="sub-h reveal">Ton plan d'action dès demain <span id="actCount" style="font-weight:700;font-size:.85rem;color:var(--dim);margin-left:.4rem">0 / 9</span></h3>
-        <p class="cap reveal" style="text-align:left;margin-top:0">Coche ce que tu es prêt à appliquer : ta sélection est enregistrée sur cet appareil.</p>
-        <div class="grid g3 actplan reveal">
-          <div class="card purple"><h4>Sommeil</h4>
-            <label class="act"><input type="checkbox" data-act="s1"><span>Heure de coucher fixe</span></label>
-            <label class="act"><input type="checkbox" data-act="s2"><span>Chambre noire et fraîche</span></label>
-            <label class="act"><input type="checkbox" data-act="s3"><span>Pas de café en fin de quart</span></label>
-          </div>
-          <div class="card green"><h4>Hygiène de vie</h4>
-            <label class="act"><input type="checkbox" data-act="h1"><span>Gourde au poste de travail chaque jour</span></label>
-            <label class="act"><input type="checkbox" data-act="h2"><span>Une collation qui tient</span></label>
-            <label class="act"><input type="checkbox" data-act="h3"><span>Bouger 20 min un jour de congé</span></label>
-          </div>
-          <div class="card"><h4>Au poste de travail</h4>
-            <label class="act"><input type="checkbox" data-act="p1"><span>5 min d'échauffement</span></label>
-            <label class="act"><input type="checkbox" data-act="p2"><span>Plier les genoux, pas de torsion</span></label>
-            <label class="act"><input type="checkbox" data-act="p3"><span>Signaler tout inconfort</span></label>
-          </div>
-        </div>
         <div class="alert reveal" style="margin-top:1.8rem"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div><p><strong>Ton corps, c'est ton premier outil de travail.</strong> Prends-en soin aujourd'hui pour qu'il dure toute ta carrière.</p></div>
         <div class="reveal" style="margin-top:1.6rem;display:flex;gap:.8rem;flex-wrap:wrap"><a class="btn" href="formation.html">Suivre la formation guidée &rarr;</a><a class="btn ghost" href="#accueil">Revenir en haut</a></div>
       </div>
@@ -3013,16 +2985,6 @@ document.querySelectorAll('.faccard').forEach(function(c){
 window.addEventListener('beforeprint',function(){document.querySelectorAll('details.xpand').forEach(function(d){d.dataset.wasOpen=d.open?'1':'';d.open=true;});});
 window.addEventListener('afterprint',function(){document.querySelectorAll('details.xpand').forEach(function(d){if(!d.dataset.wasOpen)d.open=false;});});
 
-// ===== plan d'action cochable (persisté localement) =====
-(function(){
-  var boxes=Array.prototype.slice.call(document.querySelectorAll('.act input[data-act]'));if(!boxes.length)return;
-  var KEY='tms_kb_actions',saved={};
-  try{saved=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){}
-  var count=document.getElementById('actCount');
-  function paint(){var n=boxes.filter(function(b){return b.checked;}).length;if(count){count.textContent=n+' / '+boxes.length;count.style.color=n===boxes.length?'var(--success)':'var(--dim)';}}
-  boxes.forEach(function(b){b.checked=!!saved[b.dataset.act];b.addEventListener('change',function(){saved[b.dataset.act]=b.checked;try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){}paint();});});
-  paint();
-})();
 </script>
 <!-- Sommeil : détails en surimpression -->
 <div class="voile-sim" id="voile-sommeil" role="dialog" aria-modal="true" aria-label="Détail sommeil">
