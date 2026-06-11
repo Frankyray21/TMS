@@ -483,8 +483,21 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .assis-band{display:flex;justify-content:center;margin-top:1.3rem;background:linear-gradient(90deg,#a31416,#d22325 25%,#d22325 75%,#a31416);border-radius:10px;padding:.9rem 1.3rem;box-shadow:0 8px 22px rgba(210,35,37,.25)}
 .assis-band p{font-size:1rem;line-height:1.55;color:#fff;text-align:center}
 .assis-band strong{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.04em;font-size:1.2em;margin-right:.15rem}
-.assis-band a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}
-.assis-band a:hover{opacity:.85}
+.band-link{background:none;border:none;font-family:inherit;font-size:1em;color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
+.band-link:hover{opacity:.85}
+/* surcouche réflexes */
+.panneau-reflexes{max-width:760px}
+.refl-titre{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;font-size:1.3rem;color:#ef5a5c;margin:.4rem 0 .6rem;padding-right:2.4rem}
+.refl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem;margin-top:1rem}
+.refl-card{display:flex;gap:.85rem;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.95rem 1.05rem;border-left:4px solid var(--accent)}
+.refl-card.ok{border-left-color:var(--success)}
+.refl-ic{flex-shrink:0;display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:rgba(210,35,37,.14);color:#ef5a5c}
+.refl-card.ok .refl-ic{background:rgba(16,185,129,.14);color:#34d399}
+.refl-card h5{font-size:.96rem;font-weight:800;margin-bottom:.2rem}
+.refl-card p{font-size:.86rem;color:var(--muted);line-height:1.45}
+.refl-foot{margin-top:1.1rem;font-size:.9rem;color:var(--muted);line-height:1.5}
+.refl-foot a{color:var(--accent-l);font-weight:700}
+@media(max-width:620px){.refl-grid{grid-template-columns:1fr}}
 @media(max-width:760px){.disc-duel{grid-template-columns:1fr}.vs{display:none}}
 /* bas du dos : surcouche */
 .ec-thumb{flex-shrink:0;width:64px;height:64px;border-radius:12px;object-fit:cover;border:1px solid var(--border)}
@@ -2349,23 +2362,25 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
                 <g class="vert-t">
                   <path d="M48 22C48 18 56 16 70 16H170C184 16 192 18 192 22L188 56C187 63 180 66 170 66H70C60 66 53 63 52 56Z" fill="url(#dnBone)" stroke="#a8854a" stroke-width="2"/>
                   <path d="M58 21C75 18.5 165 18.5 182 21" fill="none" stroke="#fff" stroke-width="2" opacity=".4" stroke-linecap="round"/>
-                  <path d="M57 59H183" fill="none" stroke="#a8854a" stroke-width="2.5" opacity=".45" stroke-linecap="round"/>
                   <g fill="#b3925c" opacity=".55"><circle cx="72" cy="34" r="3.2"/><circle cx="93" cy="48" r="2.6"/><circle cx="118" cy="32" r="3.6"/><circle cx="145" cy="46" r="2.6"/><circle cx="168" cy="33" r="3"/><circle cx="84" cy="26" r="1.8"/><circle cx="133" cy="52" r="1.8"/><circle cx="158" cy="24" r="1.6"/><circle cx="105" cy="40" r="2"/><circle cx="178" cy="46" r="2"/></g>
+                  <path d="M58 60H182" fill="none" stroke="#cfe6f2" stroke-width="4" opacity=".85" stroke-linecap="round"/>
                 </g>
                 <g class="vert-b">
                   <path d="M52 144C53 137 60 134 70 134H170C180 134 187 137 188 144L192 178C192 182 184 184 170 184H70C56 184 48 182 48 178Z" fill="url(#dnBone)" stroke="#a8854a" stroke-width="2"/>
-                  <path d="M57 141H183" fill="none" stroke="#a8854a" stroke-width="2.5" opacity=".45" stroke-linecap="round"/>
                   <g fill="#b3925c" opacity=".55"><circle cx="74" cy="152" r="3.2"/><circle cx="98" cy="166" r="2.6"/><circle cx="124" cy="150" r="3.6"/><circle cx="150" cy="164" r="2.6"/><circle cx="170" cy="151" r="3"/><circle cx="86" cy="174" r="1.8"/><circle cx="136" cy="170" r="1.8"/><circle cx="160" cy="176" r="1.6"/><circle cx="110" cy="158" r="2"/></g>
+                  <path d="M58 140H182" fill="none" stroke="#cfe6f2" stroke-width="4" opacity=".85" stroke-linecap="round"/>
                 </g>
                 <g class="disc-bulge" fill="#9fd0eb"><ellipse cx="42" cy="100" rx="7" ry="15" opacity="0"/><ellipse cx="198" cy="100" rx="7" ry="15" opacity="0"/></g>
                 <g class="disc-anim">
-                  <ellipse cx="120" cy="100" rx="80" ry="30" fill="url(#dnAnn)" stroke="#48799e" stroke-width="2"/>
-                  <ellipse cx="120" cy="100" rx="68" ry="24.5" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".55"/>
-                  <ellipse cx="120" cy="100" rx="56" ry="19.5" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".45"/>
-                  <ellipse cx="120" cy="100" rx="44" ry="15" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".4"/>
-                  <ellipse cx="120" cy="100" rx="33" ry="11.5" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".35"/>
-                  <ellipse cx="120" cy="100" rx="24" ry="9" fill="url(#dnNuc)"/>
-                  <ellipse class="nuc-glow" cx="120" cy="100" rx="22" ry="8" fill="url(#dnGlow)"/>
+                  <ellipse cx="120" cy="100" rx="80" ry="30" fill="url(#dnAnn)" stroke="#3f6f93" stroke-width="2.5"/>
+                  <ellipse cx="120" cy="100" rx="72" ry="26.5" fill="none" stroke="#3a6b91" stroke-width="1.3" opacity=".5" stroke-dasharray="1 4"/>
+                  <ellipse cx="120" cy="100" rx="64" ry="23" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".55"/>
+                  <ellipse cx="120" cy="100" rx="56" ry="19.5" fill="none" stroke="#3a6b91" stroke-width="1.3" opacity=".5" stroke-dasharray="1 4"/>
+                  <ellipse cx="120" cy="100" rx="48" ry="16.5" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".5"/>
+                  <ellipse cx="120" cy="100" rx="40" ry="13.5" fill="none" stroke="#3a6b91" stroke-width="1.3" opacity=".45" stroke-dasharray="1 4"/>
+                  <ellipse cx="120" cy="100" rx="32" ry="11" fill="none" stroke="#4a7fa5" stroke-width="1.4" opacity=".4"/>
+                  <ellipse cx="120" cy="100" rx="25" ry="9.5" fill="url(#dnNuc)"/>
+                  <ellipse class="nuc-glow" cx="120" cy="100" rx="23" ry="8.5" fill="url(#dnGlow)"/>
                   <ellipse cx="111" cy="96.5" rx="8" ry="3" fill="#fff" opacity=".5"/>
                   <g class="disc-diff" stroke="#2f6fb2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
                     <path d="M120 90v20M115 94l5-5 5 5M115 106l5 5 5-5"/>
@@ -2397,22 +2412,24 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
                 <g>
                   <path d="M48 32C48 28 56 26 70 26H170C184 26 192 28 192 32L188 66C187 73 180 76 170 76H70C60 76 53 73 52 66Z" fill="url(#dsBone)" stroke="#a8854a" stroke-width="2"/>
                   <path d="M58 31C75 28.5 165 28.5 182 31" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/>
-                  <path d="M57 69H183" fill="none" stroke="#a8854a" stroke-width="2.5" opacity=".45" stroke-linecap="round"/>
                   <g fill="#b3925c" opacity=".55"><circle cx="72" cy="44" r="3.2"/><circle cx="93" cy="58" r="2.6"/><circle cx="118" cy="42" r="3.6"/><circle cx="145" cy="56" r="2.6"/><circle cx="168" cy="43" r="3"/><circle cx="84" cy="36" r="1.8"/><circle cx="133" cy="62" r="1.8"/><circle cx="105" cy="50" r="2"/></g>
+                  <path d="M58 70H182" fill="none" stroke="#b9d6e6" stroke-width="4" opacity=".75" stroke-linecap="round"/>
                 </g>
                 <g>
                   <path d="M52 134C53 127 60 124 70 124H170C180 124 187 127 188 134L192 168C192 172 184 174 170 174H70C56 174 48 172 48 168Z" fill="url(#dsBone)" stroke="#a8854a" stroke-width="2"/>
-                  <path d="M57 131H183" fill="none" stroke="#a8854a" stroke-width="2.5" opacity=".45" stroke-linecap="round"/>
                   <g fill="#b3925c" opacity=".55"><circle cx="74" cy="142" r="3.2"/><circle cx="98" cy="156" r="2.6"/><circle cx="124" cy="140" r="3.6"/><circle cx="150" cy="154" r="2.6"/><circle cx="170" cy="141" r="3"/><circle cx="110" cy="148" r="2"/><circle cx="136" cy="160" r="1.8"/></g>
+                  <path d="M58 130H182" fill="none" stroke="#b9d6e6" stroke-width="4" opacity=".75" stroke-linecap="round"/>
                 </g>
                 <g class="disc-stress"><ellipse cx="32" cy="100" rx="11" ry="14" fill="url(#dsStress)"/><ellipse cx="208" cy="100" rx="11" ry="14" fill="url(#dsStress)"/></g>
                 <g class="disc-static">
-                  <ellipse cx="120" cy="100" rx="88" ry="19" fill="url(#dsAnn)" stroke="#3d6c91" stroke-width="2"/>
-                  <ellipse cx="120" cy="100" rx="74" ry="15" fill="none" stroke="#3d6c91" stroke-width="1.4" opacity=".55"/>
-                  <ellipse cx="120" cy="100" rx="60" ry="11.5" fill="none" stroke="#3d6c91" stroke-width="1.4" opacity=".45"/>
-                  <ellipse cx="120" cy="100" rx="46" ry="8.5" fill="none" stroke="#3d6c91" stroke-width="1.4" opacity=".4"/>
-                  <ellipse cx="120" cy="100" rx="27" ry="5.5" fill="url(#dsNuc)"/>
-                  <ellipse cx="110" cy="98" rx="8" ry="2" fill="#fff" opacity=".4"/>
+                  <ellipse cx="120" cy="100" rx="88" ry="19" fill="url(#dsAnn)" stroke="#335f82" stroke-width="2.5"/>
+                  <ellipse cx="120" cy="100" rx="79" ry="16.5" fill="none" stroke="#2f587a" stroke-width="1.2" opacity=".5" stroke-dasharray="1 4"/>
+                  <ellipse cx="120" cy="100" rx="70" ry="14" fill="none" stroke="#3d6c91" stroke-width="1.3" opacity=".5"/>
+                  <ellipse cx="120" cy="100" rx="61" ry="11.5" fill="none" stroke="#2f587a" stroke-width="1.2" opacity=".5" stroke-dasharray="1 4"/>
+                  <ellipse cx="120" cy="100" rx="52" ry="9.5" fill="none" stroke="#3d6c91" stroke-width="1.3" opacity=".45"/>
+                  <ellipse cx="120" cy="100" rx="42" ry="7.5" fill="none" stroke="#2f587a" stroke-width="1.2" opacity=".4" stroke-dasharray="1 4"/>
+                  <ellipse cx="120" cy="100" rx="29" ry="5.5" fill="url(#dsNuc)"/>
+                  <ellipse cx="110" cy="98.5" rx="8" ry="1.8" fill="#fff" opacity=".4"/>
                 </g>
                 <g class="pout-l"><circle cx="28" cy="94" r="3" fill="#35c06b"/><circle cx="28" cy="106" r="3" fill="#4aa3e8"/></g>
                 <g class="pout-r"><circle cx="212" cy="94" r="3" fill="#8fd4ff"/><circle cx="212" cy="106" r="3" fill="#35c06b"/></g>
@@ -2428,7 +2445,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
           </span>
           <span class="ec-go">Ouvrir le détail &rarr;</span>
         </button>
-        <div class="assis-band reveal"><p><strong>Bouger souvent</strong> aide à protéger les disques du bas du dos. <a href="#reflexes">Voir tous les bons réflexes au poste de travail &darr;</a></p></div>
+        <div class="assis-band reveal"><p><strong>Bouger souvent</strong> aide à protéger les disques du bas du dos. <button type="button" class="band-link" data-ouvrir-reflexes>Voir les bons réflexes au poste de travail &rarr;</button></p></div>
 
       </div>
     </section>
@@ -2965,6 +2982,42 @@ window.addEventListener('afterprint',function(){document.querySelectorAll('detai
   paint();
 })();
 </script>
+<!-- Bons réflexes en surimpression -->
+<div class="voile-sim" id="voile-reflexes" role="dialog" aria-modal="true" aria-label="Les bons réflexes au poste de travail">
+  <div class="panneau-sim panneau-reflexes">
+    <button class="fermer-sim" id="fermer-reflexes" aria-label="Fermer">✕</button>
+    <h3 class="refl-titre">Les bons réflexes au poste de travail</h3>
+    <p class="nuance-p">Quelques gestes simples qui protègent ton dos, tes épaules et tes articulations, surtout en position assise prolongée.</p>
+    <div class="refl-grid">
+      <div class="refl-card ok">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="13" height="8" rx="1.5"/><path d="M16 13h3l2 3v1h-5"/><path d="M12 9V5h4"/></svg></span>
+        <div><h5>Charge près du corps</h5><p>Garde la charge collée à toi, dos en position naturelle, et pivote avec les pieds plutôt qu'en tordant le tronc.</p></div>
+      </div>
+      <div class="refl-card ok">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></span>
+        <div><h5>Varie tes postures</h5><p>Alterne assis, debout et en mouvement. Aucune position n'est bonne trop longtemps, même la meilleure.</p></div>
+      </div>
+      <div class="refl-card ok">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></span>
+        <div><h5>Micro-pauses</h5><p>Lève-toi quelques secondes régulièrement : ça relance la circulation et réhydrate les disques avant qu'ils ne se crispent.</p></div>
+      </div>
+      <div class="refl-card ok">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+        <div><h5>Étirements courts</h5><p>Quelques étirements ciblés au fil du quart gardent les muscles souples et soulagent le bas du dos.</p></div>
+      </div>
+      <div class="refl-card">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 002.5 2.5z"/></svg></span>
+        <div><h5>Échauffe-toi avant le quart</h5><p>Un muscle froid se blesse plus vite : 5 minutes de mobilisations valent mieux que des semaines d'arrêt.</p></div>
+      </div>
+      <div class="refl-card">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7v18L3 13v-2z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg></span>
+        <div><h5>Signale tôt</h5><p>Un inconfort qui revient n'est pas une faiblesse à cacher : pris tôt, un TMS se règle vite. Parles-en à ton superviseur.</p></div>
+      </div>
+    </div>
+    <p class="refl-foot">Tu retrouveras tous ces réflexes en détail (les 4 règles, les postures à éviter, le signalement) dans la partie <strong>« Les bons réflexes au poste de travail »</strong>, plus bas dans la page.</p>
+  </div>
+</div>
+
 <!-- Bas du dos en surimpression -->
 <div class="voile-sim" id="voile-assis" role="dialog" aria-modal="true" aria-label="Ce qui se passe dans le bas du dos">
   <div class="panneau-sim panneau-assis">
@@ -4573,6 +4626,17 @@ document.addEventListener("keydown", e => {
     }
   }
   if(mo){mo.addEventListener("click",function(){setMicro(true);});mn.addEventListener("click",function(){setMicro(false);});setMicro(true);}
+
+  /* ---- Bons réflexes : surcouche ---- */
+  var vRf=$("#voile-reflexes"),declRf=null;
+  function ouvrirRf(d){declRf=d;vRf.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-reflexes").focus();}
+  function fermerRf(){vRf.classList.remove("ouvert");document.body.style.overflow="";if(declRf&&declRf.focus)declRf.focus();}
+  document.querySelectorAll("[data-ouvrir-reflexes]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirRf(b);});});
+  if(vRf){
+    $("#fermer-reflexes").addEventListener("click",fermerRf);
+    vRf.addEventListener("click",function(e){if(e.target===vRf)fermerRf();});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&vRf.classList.contains("ouvert"))fermerRf();});
+  }
 
   /* ---- Bas du dos : surcouche ---- */
   var vAx=$("#voile-assis"),declAx=null;
