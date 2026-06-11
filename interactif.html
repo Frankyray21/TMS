@@ -153,6 +153,9 @@
   .reveal.visible { opacity: 1; transform: none; }
 
   /* ---------- En-tête ---------- */
+  header.haut .fil { font-size: .85rem; color: #999; margin-bottom: 10px; }
+  header.haut .fil a { color: #c9d4e3; text-decoration: none; font-weight: 600; }
+  header.haut .fil a:hover { color: #ff7b84; }
   header.haut h1 {
     font-size: clamp(1.8rem, 5vw, 3.4rem);
     font-weight: 900;
@@ -1176,7 +1179,7 @@ h1,h2{text-transform:uppercase}
       <a class="lien-nav" href="#video" data-section="video">Vidéo</a>
       <a class="lien-nav" href="#corps" data-section="corps">Corps humain</a>
       <a class="lien-nav" href="#simulateur" data-section="simulateur">Simulateur</a>
-      <a class="lien-page" href="index.html" title="Base de connaissances (consultation libre)">&#128214; Base de connaissances</a>
+      <a class="lien-page" href="index.html" title="Retour à la section Base de connaissances">&larr; &#128214; Base de connaissances</a>
       <a class="lien-page" href="formation.html" title="Formation guidée avec quiz et attestation">&#127891; Formation guidée</a>
     </div>
     <div class="anneau-bloc" title="Votre progression d'exploration du schéma">
@@ -1193,6 +1196,7 @@ h1,h2{text-transform:uppercase}
 <div class="page">
 
   <header class="haut" id="haut">
+    <p class="fil"><a href="index.html">&#128214; Base de connaissances</a> <span aria-hidden="true">&rsaquo;</span> Exploration interactive</p>
     <h1>Les <span class="accent">facteurs de risque</span></h1>
     <p class="sous-titre">Chez les travailleurs, le risque vient surtout de la tâche, du corps et de l'environnement immédiat.</p>
     <p class="consigne">👆 Tout est cliquable : les 3 familles, chaque mot dans les cercles, les 10 pastilles autour — chacune est reliée en pointillé à sa famille de couleur.</p>

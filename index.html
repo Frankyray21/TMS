@@ -79,6 +79,9 @@ section+section::after{content:'';position:absolute;top:-2px;left:50%;width:5px;
 h2.title{font-family:var(--font-display);font-size:clamp(2.1rem,4vw,3.1rem);font-weight:800;line-height:1.04;margin-bottom:.7rem;letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
 .lead{color:#cbd5e1;font-size:clamp(1.05rem,1.6vw,1.18rem);max-width:720px;margin-bottom:2rem;text-wrap:pretty}
 h3.sub-h{font-family:var(--font-display);font-size:clamp(1.35rem,2.5vw,1.7rem);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:2.4rem 0 1rem;display:flex;align-items:center;gap:.6rem}
+.toc-cta{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin:.9rem .9rem 0;padding:.7rem .9rem;border:1px solid rgba(210,35,37,.45);border-radius:12px;background:linear-gradient(160deg,rgba(210,35,37,.14),rgba(17,24,39,.5));color:#fff;font-size:.82rem;font-weight:700;transition:transform .2s,border-color .2s}
+.toc-cta:hover{transform:translateY(-2px);border-color:var(--brand)}
+.toc-cta .tc-sub{flex-basis:100%;color:var(--dim);font-size:.7rem;font-weight:600}
 h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);border-radius:3px}
 
 /* ===== hero ===== */
@@ -465,10 +468,9 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 <body>
 <a class="skip" href="#accueil">Aller au contenu</a>
 <div class="progress" aria-hidden="true"><i id="prog"></i></div>
-<nav class="switch" aria-label="Choisir le parcours">
-  <span class="seg active" aria-current="page">Base de connaissances</span>
-  <a class="seg" href="interactif.html">Interactif</a>
-  <a class="seg" href="formation.html">Formation guidée</a>
+<nav class="switch" aria-label="Choisir la section">
+  <span class="seg active" aria-current="page">&#128214; Base de connaissances</span>
+  <a class="seg" href="formation.html">&#127891; Formation guidée</a>
 </nav>
 
 <div class="layout">
@@ -497,6 +499,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <a class="toc-link sub" href="#signaler">Signaler</a>
       <a class="toc-link" href="#retenir"><span class="dot"></span>À retenir</a>
     </nav>
+    <a class="toc-cta" href="interactif.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg> Exploration interactive<span class="tc-sub">Schéma &middot; corps &middot; simulateur</span></a>
     <div class="toc-foot">Base de connaissances &middot; Nouveaux travailleurs<br>Sources : CNESST (2023) &middot; INSPQ</div>
   </aside>
 
@@ -525,23 +528,17 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <div class="wrap">
         <div class="eyebrow reveal">Base de connaissances &middot; Prévention des TMS &middot; Mine souterraine</div>
         <h1 class="reveal d1">Ton corps, c'est ton <span class="hl">premier outil</span> de travail.</h1>
-        <p class="reveal d2">Un outil brisé se remplace. Ton dos, tes épaules et tes genoux doivent durer. Trois façons d'apprendre, selon ton besoin :</p>
+        <p class="reveal d2">Un outil brisé se remplace. Ton dos, tes épaules et tes genoux doivent durer. Deux sections bien distinctes, selon ton besoin :</p>
         <div class="paths reveal d3">
           <a class="path-card here" href="#comprendre">
-            <span class="badge-ici">Tu es ici</span>
-            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Base de connaissances</span>
-            <h3>Explorer librement</h3>
-            <p>Consulte chaque sujet à ton rythme : zones à risque, sommeil, hygiène de vie, bons gestes.</p>
-            <span class="pmeta"><span>&#8599; Consultation libre</span><span>~10-15 min</span></span>
-          </a>
-          <a class="path-card" href="interactif.html">
-            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg> Exploration interactive</span>
-            <h3>Explorer en interactif</h3>
-            <p>Schéma des facteurs cliquable, carte du corps, vidéo et simulateur pour évaluer ton poste de travail.</p>
-            <span class="pmeta"><span>&#9737; Tout est cliquable</span><span>~10 min</span></span>
+            <span class="badge-ici">Vue par défaut</span>
+            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Section 1 &middot; Base de connaissances</span>
+            <h3>Consulter librement</h3>
+            <p>Tous les sujets à ton rythme : types de TMS, facteurs de risque, sommeil, bons gestes — avec l'exploration interactive (schéma cliquable, carte du corps, simulateur de poste de travail).</p>
+            <span class="pmeta"><span>&#8599; Consultation libre</span><span>~15-20 min</span></span>
           </a>
           <a class="path-card" href="formation.html">
-            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Formation guidée</span>
+            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Section 2 &middot; Formation guidée</span>
             <h3>Suivre la formation</h3>
             <p>Parcours pas-à-pas avec quiz, score et attestation : idéal pour les nouveaux travailleurs.</p>
             <span class="pmeta"><span>&#9654; Diapositives + quiz</span><span>~30 min</span></span>
