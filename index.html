@@ -1686,7 +1686,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
       <a class="toc-link sub" href="#realite">Notre réalité minière</a>
       <a class="toc-link sub" href="#evolution">Évolution</a>
       <a class="toc-link" href="#charge"><span class="dot"></span>Fatigue &amp; charge</a>
-      <a class="toc-link sub" href="#borg">Échelle de Borg</a>
+      <a class="toc-link sub" href="#borg">Échelle de l'effort</a>
       <a class="toc-link sub" href="#fatigue">Fatigue musculaire</a>
       <a class="toc-link sub" href="#microlesions">Microlésions</a>
       <a class="toc-link sub" href="#assis">Travail assis</a>
@@ -2040,11 +2040,11 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
         </div>
 
         <!-- Échelle de Borg interactive -->
-        <h3 id="borg" class="sub-h reveal">Percevoir l'effort : l'échelle de Borg</h3>
-        <p class="lead reveal" style="margin-bottom:1rem">Une même force peut représenter un effort très différent d'une personne à l'autre. L'échelle de Borg aide à mettre un chiffre sur ce que ton corps perçoit, de 0 (aucun effort) à 10 (effort maximal).</p>
+        <h3 id="borg" class="sub-h reveal">Percevoir l'effort : l'échelle de l'effort perçu</h3>
+        <p class="lead reveal" style="margin-bottom:1rem">Une même force peut représenter un effort très différent d'une personne à l'autre. L'échelle de l'effort perçu (aussi appelée échelle de Borg) aide à mettre un chiffre sur ce que ton corps ressent, de 0 (aucun effort) à 10 (effort maximal).</p>
         <div class="borg-cta reveal" id="borgCta">
           <div class="borg-cta-pick" id="borgPickWrap" hidden><span class="bp-n" id="borgPickN">0</span><div><strong id="borgPickL">Aucun effort</strong><span id="borgPickZ">Zone soutenable longtemps</span></div></div>
-          <div class="borg-cta-txt" id="borgCtaTxt"><strong>Situe ton effort sur l'échelle de Borg</strong><span>11 niveaux, de « aucun effort » à « maximal ».</span></div>
+          <div class="borg-cta-txt" id="borgCtaTxt"><strong>Situe ton effort sur l'échelle</strong><span>11 niveaux, de « aucun effort » à « maximal ».</span></div>
           <button type="button" class="borg-open" id="borgOpen" data-ouvrir-borg><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Ouvrir l'échelle</button>
         </div>
 
@@ -2075,7 +2075,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
         <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><p><strong>Reconnaître et gérer la fatigue musculaire</strong> permet de maintenir la performance, de réduire le risque de blessure et de protéger sa santé à long terme.</p></div>
         <div class="borg-promo reveal">
           <div class="bpr-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg></div>
-          <div class="bpr-txt"><strong>Surveille ton effort avec l'échelle de Borg</strong><span>Mettre un chiffre sur l'effort perçu (0 à 10) aide à repérer la fatigue avant qu'elle ne s'installe et à ajuster le rythme.</span></div>
+          <div class="bpr-txt"><strong>Surveille ton effort avec l'échelle de l'effort perçu</strong><span>Mettre un chiffre sur l'effort perçu (0 à 10) aide à repérer la fatigue avant qu'elle ne s'installe et à ajuster le rythme.</span></div>
           <button type="button" class="borg-open" data-ouvrir-borg><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Ouvrir l'échelle</button>
         </div>
 
@@ -2667,10 +2667,10 @@ window.addEventListener('afterprint',function(){document.querySelectorAll('detai
 })();
 </script>
 <!-- Échelle de Borg en surimpression -->
-<div class="voile-sim" id="voile-borg" role="dialog" aria-modal="true" aria-label="Échelle de Borg, effort musculaire">
+<div class="voile-sim" id="voile-borg" role="dialog" aria-modal="true" aria-label="Échelle de l'effort perçu (Borg)">
   <div class="panneau-sim panneau-borg">
     <button class="fermer-sim" id="fermer-borg" aria-label="Fermer l'échelle">✕</button>
-    <h3 class="borg-modal-titre">Échelle de Borg <span>· effort musculaire</span></h3>
+    <h3 class="borg-modal-titre">Échelle de l'effort perçu <span>· (échelle de Borg)</span></h3>
     <p class="borg-modal-sous">Clique un niveau : son sens au travail et la conduite à tenir s'affichent juste en dessous.</p>
     <div class="borg-modal-flex">
       <div class="borg-axe"><span>Intensité faible</span><span class="borg-axe-bar" aria-hidden="true"></span><span>Intensité élevée</span></div>
