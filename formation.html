@@ -87,12 +87,12 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 .subpanel{display:none}
 .subpanel.active{display:block}
 
-.stage-nav{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.15rem 2rem;background:var(--bg-2);border-top:1px solid var(--border)}
-.snav-btn{display:inline-flex;align-items:center;gap:.55rem;background:var(--card);border:1px solid var(--border);color:var(--text);padding:1.05rem 2.1rem;min-height:62px;border-radius:15px;cursor:pointer;font-family:inherit;font-size:1.15rem;font-weight:700;transition:all .2s}.snav-btn svg{width:21px;height:21px}
+.stage-nav{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:1.2rem;padding:1.25rem 1.8rem;background:var(--bg-2);border-top:1px solid var(--border)}
+.snav-btn{display:inline-flex;align-items:center;gap:.6rem;background:var(--card);border:1px solid var(--border);color:var(--text);padding:1.15rem 2.4rem;min-height:68px;border-radius:16px;cursor:pointer;font-family:inherit;font-size:1.28rem;font-weight:700;white-space:nowrap;transition:all .2s}.snav-btn svg{width:23px;height:23px}
 .snav-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent-l);transform:translateY(-1px)}
 .snav-btn:disabled{opacity:.35;cursor:not-allowed}
 .stage-center{display:flex;flex-direction:column;align-items:center;gap:.45rem}
-.slide-counter{font-size:1.05rem;font-weight:700;color:var(--dim);letter-spacing:.1em}
+.slide-counter{font-size:1.12rem;font-weight:700;color:var(--dim);letter-spacing:.08em}
 .slide-counter b{color:var(--brand)}
 
 /* ===== COMPONENTS ===== */
@@ -398,7 +398,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 .step-node.current .step-lbl{color:var(--text)}
 .step-node.done .step-lbl{color:var(--muted)}
 .step-node:hover .step-lbl{color:var(--text)}
-.nb-lab{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle}
+.nb-lab{max-width:none;white-space:nowrap;display:inline-block;vertical-align:middle}
 @media(max-width:980px){.stepper{padding:.7rem 1rem}}
 .sb-prog{margin-top:.8rem}
 .sb-prog b{color:var(--success)}
@@ -462,7 +462,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 .score-pop{position:absolute;right:.7rem;top:.2rem;color:var(--success);font-weight:800;font-size:.9rem;pointer-events:none;animation:scorePop 1s ease forwards}
 @keyframes scorePop{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}100%{opacity:0;transform:translateY(-20px)}}
 /* primary "Suivant" CTA */
-#nextBtn{background:linear-gradient(135deg,#c01e20,#8f1517);border-color:transparent;color:#fff;font-weight:800;padding:1.1rem 2.6rem;min-height:66px;font-size:1.28rem;box-shadow:0 6px 20px rgba(210,35,37,.3)}#nextBtn svg{width:23px;height:23px}
+#nextBtn{background:linear-gradient(135deg,#c01e20,#8f1517);border-color:transparent;color:#fff;font-weight:800;padding:1.2rem 3rem;min-height:74px;font-size:1.42rem;box-shadow:0 6px 22px rgba(210,35,37,.32)}#nextBtn svg{width:26px;height:26px}
 #nextBtn:hover:not(:disabled){color:#1a0f02;transform:translateY(-2px);box-shadow:0 10px 30px rgba(210,35,37,.5)}
 #nextBtn:disabled{background:var(--card);color:var(--dim);box-shadow:none}
 #nextBtn.bump{animation:nextBump .5s ease}
