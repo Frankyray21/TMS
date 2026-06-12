@@ -16,6 +16,12 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e17'/%3E%3Cpath d='M16 38a16 16 0 0 1 32 0z' fill='%23d22325'/%3E%3Crect x='28' y='16' width='8' height='12' rx='3' fill='%23d22325'/%3E%3Crect x='10' y='38' width='44' height='7' rx='3.5' fill='%23ef5a5c'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="images/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Prévention TMS">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -587,6 +593,12 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .hero-video{display:inline-flex;align-items:center;gap:.65rem;margin-top:1.4rem;background:var(--g-red);border:none;border-radius:50px;padding:.95rem 1.9rem;font-family:inherit;font-weight:800;font-size:1.08rem;color:#fff;cursor:pointer;box-shadow:0 8px 22px rgba(210,35,37,.35);transition:transform .15s,filter .2s,box-shadow .2s;animation:borgpulse 2.6s ease-in-out infinite}
 .hero-video:hover,.hero-video:focus-visible{transform:translateY(-3px);filter:brightness(1.1);box-shadow:0 12px 30px rgba(210,35,37,.5);animation:none}
 .hero-video .hv-dur{color:rgba(255,255,255,.75);font-weight:600;font-size:.9rem}
+/* installation PWA */
+.pwa-install{position:fixed;left:16px;bottom:16px;z-index:160;display:none;align-items:center;gap:.55rem;background:var(--card);border:1px solid rgba(210,35,37,.55);border-radius:50px;padding:.7rem 1.2rem;font-family:inherit;font-weight:700;font-size:.9rem;color:var(--text);cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:transform .15s,border-color .2s}
+.pwa-install.visible{display:inline-flex}
+.pwa-install:hover{transform:translateY(-2px);border-color:var(--brand)}
+.pwa-install svg{color:#ef5a5c;flex-shrink:0}
+@media print{.pwa-install{display:none!important}}
 /* quiz */
 .quiz{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.6rem;box-shadow:var(--shadow-card);margin-top:1.6rem}
 .quiz-head{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:1.4rem}
@@ -2717,6 +2729,8 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 </div>
 
 <button class="totop" id="toTop" aria-label="Revenir en haut de la page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg></button>
+
+<button class="pwa-install" id="pwaInstall"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> Installer l'application</button>
 
 <!-- RECHERCHE -->
 <div class="cmdk" id="cmdk" role="dialog" aria-modal="true" aria-label="Recherche dans la base de connaissances">
@@ -4914,6 +4928,31 @@ document.addEventListener("keydown", e => {
     });
   }
   render();
+})();
+
+/* ================================================================
+   APPLICATION HORS LIGNE (PWA)
+   ================================================================ */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
+(function () {
+  var btn = document.getElementById("pwaInstall");
+  if (!btn) return;
+  var deferred = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    deferred = e;
+    btn.classList.add("visible");
+  });
+  btn.addEventListener("click", function () {
+    if (!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function () { deferred = null; btn.classList.remove("visible"); });
+  });
+  window.addEventListener("appinstalled", function () { btn.classList.remove("visible"); });
 })();
 </script>
 </body>

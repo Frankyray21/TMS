@@ -1,0 +1,17 @@
+{
+  "name": "Prévention des TMS · Machines Roger International",
+  "short_name": "Prévention TMS",
+  "description": "Base de connaissances sur la prévention des troubles musculosquelettiques en mine souterraine : zones à risque, facteurs, fatigue, sommeil et bons réflexes au poste de travail.",
+  "lang": "fr-CA",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e17",
+  "theme_color": "#0a0e17",
+  "icons": [
+    { "src": "images/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "images/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

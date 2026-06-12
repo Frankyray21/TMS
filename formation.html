@@ -15,6 +15,12 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="images/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Prévention TMS">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e17'/%3E%3Cpath d='M16 38a16 16 0 0 1 32 0z' fill='%23d22325'/%3E%3Crect x='28' y='16' width='8' height='12' rx='3' fill='%23d22325'/%3E%3Crect x='10' y='38' width='44' height='7' rx='3.5' fill='%23ef5a5c'/%3E%3C/svg%3E">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
@@ -1894,6 +1900,11 @@ function askPin(){
   document.getElementById('coachExport').addEventListener('click',function(){var blob=new Blob([txt()],{type:'text/plain;charset=utf-8'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;var wn=(workerName()||'travailleur').replace(/\s+/g,'-').toLowerCase();a.download='resultats-tms-'+wn+'.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);});
   document.getElementById('coachPrint').addEventListener('click',function(){var layer=document.getElementById('printLayer');var note=computeNote().note,prog=Math.round(visited.size/N*100),best=+(localStorage.getItem('tms_quiz_best')||0);var tr=rows(function(ti,done,cp){return '<tr><td style="padding:.4rem;border-bottom:1px solid #ccc">'+ti+'. '+STEP_LBL[ti]+'</td><td style="padding:.4rem;border-bottom:1px solid #ccc">'+(done?'Oui':'Non')+'</td><td style="padding:.4rem;border-bottom:1px solid #ccc">'+cp+'/2</td><td style="padding:.4rem;border-bottom:1px solid #ccc">'+(badges.has(ti)?'Oui':'Non')+'</td></tr>';});layer.innerHTML='<div class="print-doc"><div class="pd-head"><img src="images/logo_roger.png"><div><div class="pd-k">Résultats de formation</div><h1>Prévention des TMS</h1><div class="pd-date">'+(workerName()||'Travailleur non identifié')+' &middot; '+todayStr()+'</div></div></div><div class="pd-cols"><div><h3>Note : '+note+'/100</h3></div><div><h3>Points : '+score+'</h3></div><div><h3>Progression : '+prog+'%</h3></div><div><h3>Quiz final : '+best+'/8</h3></div></div><table style="width:100%;border-collapse:collapse;margin-top:1rem;font-size:.9rem"><tr><th style="text-align:left;border-bottom:2px solid #d22325;padding:.4rem">Partie</th><th style="text-align:left;border-bottom:2px solid #d22325;padding:.4rem">Consultée</th><th style="text-align:left;border-bottom:2px solid #d22325;padding:.4rem">Quiz éclair</th><th style="text-align:left;border-bottom:2px solid #d22325;padding:.4rem">Badge</th></tr>'+tr+'</table><div class="pd-foot">Machines Roger International : Formation Nouveaux Travailleurs</div></div>';window.print();});
 })();
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
 </script>
 </body>
 </html>
