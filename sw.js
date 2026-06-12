@@ -1,9 +1,11 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v1";
+const VERSION = "tms-v2";
 const CORE = [
   "./",
   "index.html",
+  "index.en.html",
   "formation.html",
+  "formation.en.html",
   "interactif.html",
   "manifest.webmanifest",
   "images/assis_basdudos.jpg",
