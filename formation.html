@@ -400,6 +400,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 .hero{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--border);min-height:clamp(360px,56vh,560px);display:flex;align-items:center;margin-bottom:1.8rem}
 .hero-media{position:absolute;inset:0;z-index:0}
 .hero-bg{position:absolute;inset:0;background:radial-gradient(120% 85% at 78% 18%, rgba(226,58,60,.30), transparent 58%),radial-gradient(100% 70% at 8% 92%, rgba(59,130,246,.14), transparent 55%),radial-gradient(90% 60% at 55% 85%, rgba(245,158,11,.10), transparent 60%),linear-gradient(160deg,#0b0f19 0%,#0d1320 55%,#07090f 100%);background-size:200% 200%;animation:heroAurora 20s ease-in-out infinite alternate}
+@media(max-width:980px){.hero-bg{animation:none}}
 .hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:24px 24px;-webkit-mask-image:radial-gradient(120% 100% at 72% 28%,#000,transparent 75%);mask-image:radial-gradient(120% 100% at 72% 28%,#000,transparent 75%)}
 .hero-gl{position:absolute;inset:0;z-index:1;width:100%;height:100%;opacity:0;transition:opacity 1.8s ease}
 .hero.gl-on .hero-gl{opacity:.5}
@@ -1732,7 +1733,7 @@ renderQ();
 
 // ===== NIVEAU 7 : tunnel de mine en shader WebGL (héros) =====
 (function(){
-  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if(window.matchMedia&&(matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(max-width:980px)').matches))return;
   var hero=document.querySelector('.hero');if(!hero)return;
   var canvas=hero.querySelector('.hero-gl');if(!canvas)return;
   var gl=canvas.getContext('webgl',{antialias:false,alpha:false,powerPreference:'low-power'})||canvas.getContext('experimental-webgl');
