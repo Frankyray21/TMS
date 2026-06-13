@@ -116,7 +116,7 @@ h2.title::after{content:'';display:block;width:clamp(54px,7vw,88px);height:4px;m
 @keyframes tmsFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes tmsWipe{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes tmsSubIn{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:none}}
-section:not(.hero) h2.title.reveal{transition:none;transform-origin:left center}
+section:not(.hero) h2.title.reveal{transition:none;transform-origin:left top}
 /* titre lie au defilement : arrive plus gros + centre (--tx/--s calcules en JS, plafonnes = pas de debordement), rejoint sa taille/position en scrollant */
 @keyframes tmsTitleScroll{0%{opacity:0;transform:translateX(var(--tx,0)) scale(var(--s,1))}20%{opacity:1}100%{opacity:1;transform:none}}
 @supports not (animation-timeline: view()){section:not(.hero) h2.title.reveal.in{animation:tmsGrow .5s cubic-bezier(.22,.7,.3,1) both}}
@@ -2856,7 +2856,8 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
       var tw=r.getBoundingClientRect().width;
       t.style.animation='';
       if(!C||!tw)return;
-      var s=Math.min(1.5,(C*0.97)/tw);if(s<1)s=1;            // grossit jusqu'a +50% OU jusqu'a remplir la colonne (jamais de debordement)
+      var maxS=window.innerWidth<=980?1.2:1.5;               // mobile : +20% max (sinon le gros titre ecrase le texte autour) ; desktop : +50%
+      var s=Math.min(maxS,(C*0.97)/tw);if(s<1)s=1;           // OU jusqu'a remplir la colonne (jamais de debordement)
       var tx=(C-s*tw)/2;if(tx<0)tx=0;                        // centre le titre dans la colonne
       t.style.setProperty('--s',s.toFixed(3));
       t.style.setProperty('--tx',Math.round(tx)+'px');
