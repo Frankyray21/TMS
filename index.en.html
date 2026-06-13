@@ -124,6 +124,11 @@ section:not(.hero) h2.title.reveal{transition:none;transform-origin:left top}
 @supports not (animation-timeline: view()){section:not(.hero) h2.title.reveal.in{animation:tmsGrow .5s cubic-bezier(.22,.7,.3,1) both}}
 /* desktop avec support : titre lie au defilement (marge perf sur grand ecran) */
 @media (min-width:981px){@supports (animation-timeline: view()){section:not(.hero) h2.title.reveal{animation:tmsTitleScroll linear both;animation-timeline:view();animation-range:entry 8% cover 42%;will-change:transform}}}
+/* sections repliables : clic sur le titre pour reduire/deplier */
+section:not(.hero) h2.title{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sec-toggle{display:inline-block;margin-left:.5rem;color:var(--accent-l);font-size:.6em;vertical-align:.06em;transition:transform .3s ease}
+section.collapsed .sec-toggle{transform:rotate(-90deg)}
+section.collapsed > .wrap > :not(.eyebrow):not(.title){display:none}
 section:not(.hero) h2.title.reveal.in::after{animation:tmsWipe .45s cubic-bezier(.22,.61,.36,1) both .4s}
 section:not(.hero) .eyebrow.reveal{transition:none}
 section:not(.hero) .eyebrow.reveal.in{animation:tmsFadeUp .4s ease both .28s}
@@ -2848,23 +2853,38 @@ if(!('IntersectionObserver' in window) || RM){
 }
 // safety: never leave content hidden
 setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(el){el.classList.add('in');});},3000);
-// titre lie au defilement : calcule par titre le centrage (--tx) et l'echelle max (--s) qui ne deborde jamais
+// ===== titres : sections repliables + UNE SEULE LIGNE (police auto-reduite si trop long) + (desktop) grossissement lie au scroll =====
 (function(){
-  if(!(window.CSS&&CSS.supports&&CSS.supports('animation-timeline','view()')))return;
+  var titles=[].slice.call(document.querySelectorAll('section:not(.hero) h2.title.reveal'));
+  var viewOK=!!(window.CSS&&CSS.supports&&CSS.supports('animation-timeline','view()'));
+  // repli : chevron + bascule au clic/clavier sur le titre (mise en place unique)
+  titles.forEach(function(t){
+    var sec=t.closest('section');if(!sec)return;
+    var tog=document.createElement('span');tog.className='sec-toggle';tog.setAttribute('aria-hidden','true');
+    tog.innerHTML='<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    t.appendChild(tog);
+    t.setAttribute('role','button');t.setAttribute('tabindex','0');t.setAttribute('aria-expanded','true');
+    function toggle(){var c=sec.classList.toggle('collapsed');t.setAttribute('aria-expanded',c?'false':'true');if(!c)sec.querySelectorAll('.reveal:not(.in)').forEach(function(el){el.classList.add('in');});}
+    t.addEventListener('click',toggle);
+    t.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
+  });
+  // force chaque titre sur UNE ligne : reduit la police si le texte deborde la colonne
+  function fit(t){
+    t.style.whiteSpace='nowrap';t.style.fontSize='';
+    var a=t.style.animation;t.style.animation='none';void t.offsetWidth;
+    var avail=t.clientWidth,nat=t.scrollWidth;
+    if(nat>avail+1){var fs=parseFloat(getComputedStyle(t).fontSize);t.style.fontSize=(fs*avail/nat*0.99).toFixed(1)+'px';}
+    t.style.animation=a;
+  }
   function setup(){
-    if(window.innerWidth<=980)return;                       // mobile : pas de scroll-timeline => on saute tout le calcul (perf scroll)
-    document.querySelectorAll('section:not(.hero) h2.title.reveal').forEach(function(t){
-      t.style.animation='none';void t.offsetWidth;            // mesure hors animation
-      var C=t.clientWidth;
-      var r=document.createRange();r.selectNodeContents(t);
-      var tw=r.getBoundingClientRect().width;
-      t.style.animation='';
-      if(!C||!tw)return;
-      var maxS=window.innerWidth<=980?1.2:1.5;               // mobile : +20% max (sinon le gros titre ecrase le texte autour) ; desktop : +50%
-      var s=Math.min(maxS,(C*0.97)/tw);if(s<1)s=1;           // OU jusqu'a remplir la colonne (jamais de debordement)
-      var tx=(C-s*tw)/2;if(tx<0)tx=0;                        // centre le titre dans la colonne
-      t.style.setProperty('--s',s.toFixed(3));
-      t.style.setProperty('--tx',Math.round(tx)+'px');
+    var mobile=window.innerWidth<=980;
+    titles.forEach(function(t){
+      fit(t);                                                 // une seule ligne (toujours, mobile + desktop)
+      if(viewOK&&!mobile){                                    // desktop : grossissement lie au scroll (centrage --tx, echelle --s plafonnee)
+        t.style.animation='none';void t.offsetWidth;
+        var C=t.clientWidth,r=document.createRange();r.selectNodeContents(t);var tw=r.getBoundingClientRect().width;t.style.animation='';
+        if(C&&tw){var s=Math.min(1.5,(C*0.97)/tw);if(s<1)s=1;var tx=(C-s*tw)/2;if(tx<0)tx=0;t.style.setProperty('--s',s.toFixed(3));t.style.setProperty('--tx',Math.round(tx)+'px');}
+      }else{t.style.removeProperty('--s');t.style.removeProperty('--tx');}
     });
   }
   setup();
