@@ -1,5 +1,5 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v2";
+const VERSION = "tms-v3";
 const CORE = [
   "./",
   "index.html",
@@ -51,9 +51,10 @@ const HEAVY = ["videos/preserver-son-corps.mp4"];
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
     const cache = await caches.open(VERSION);
-    await cache.addAll(CORE);
+    /* cache:"reload" = on contourne le cache HTTP du navigateur pour stocker des copies vraiment fraîches */
+    await cache.addAll(CORE.map((u) => new Request(u, { cache: "reload" })));
     /* gros fichiers : au mieux, sans faire échouer l'installation */
-    await Promise.allSettled(HEAVY.map((u) => cache.add(u)));
+    await Promise.allSettled(HEAVY.map((u) => cache.add(new Request(u, { cache: "reload" }))));
     self.skipWaiting();
   })());
 });
