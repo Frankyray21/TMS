@@ -1,8 +1,16 @@
 <!DOCTYPE html>
-<html lang="fr" class="no-js">
+<html lang="fr" class="no-js tms-loading">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<style id="tms-loader-css">/* ecran de chargement : couvre le bref instant ou le defilement n'est pas encore fluide */
+html.tms-loading{overflow:hidden!important}
+#tmsLoader{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;background:#0a0e17;transition:opacity .35s ease,visibility .35s ease}
+#tmsLoader.gone{opacity:0;visibility:hidden;pointer-events:none}
+#tmsLoader .ld-spin{width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.16);border-top-color:#ef5a5c;animation:tmsLd .8s linear infinite}
+#tmsLoader .ld-txt{font-family:'Barlow Condensed','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:.85rem;color:#9aa3b2}
+@keyframes tmsLd{to{transform:rotate(360deg)}}</style>
+<noscript><style>html.tms-loading{overflow:auto!important}#tmsLoader{display:none!important}</style></noscript>
 <script>/* langue mémorisée : redirige un visiteur qui a déjà choisi l'autre langue (français par défaut pour les nouveaux) */
 (function(){try{
   var cur=/\.en\.html$/.test(location.pathname)?'en':'fr';
@@ -1962,6 +1970,21 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 </style>
 </head>
 <body>
+<div id="tmsLoader" role="status" aria-live="polite">
+  <div class="ld-spin" aria-hidden="true"></div>
+  <div class="ld-txt">Chargement…</div>
+</div>
+<script>/* masque l'ecran de chargement + deverrouille le defilement des que la page est utilisable */
+(function(){
+  var ld=document.getElementById('tmsLoader');if(!ld)return;
+  var de=document.documentElement,done=false;
+  function hide(){if(done)return;done=true;de.classList.remove('tms-loading');ld.classList.add('gone');setTimeout(function(){if(ld.parentNode)ld.parentNode.removeChild(ld);},400);}
+  function ready(){requestAnimationFrame(function(){requestAnimationFrame(hide);});}   // laisse passer le 1er rendu
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(ready);}
+  if(document.readyState!=='loading'){ready();}else{document.addEventListener('DOMContentLoaded',ready);}
+  setTimeout(hide,3500);   // filet de securite : ne jamais rester bloque
+})();
+</script>
 <a class="skip" href="#accueil">Aller au contenu</a>
 <div class="progress" aria-hidden="true"><i id="prog"></i></div>
 <nav class="switch" aria-label="Choisir la section">
