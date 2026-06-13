@@ -2856,7 +2856,7 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
       var tw=r.getBoundingClientRect().width;
       t.style.animation='';
       if(!C||!tw)return;
-      var s=Math.min(1.1,(C*0.97)/tw);if(s<1)s=1;            // plafonne : jamais plus large que l'ecran
+      var s=Math.min(1.5,(C*0.97)/tw);if(s<1)s=1;            // grossit jusqu'a +50% OU jusqu'a remplir la colonne (jamais de debordement)
       var tx=(C-s*tw)/2;if(tx<0)tx=0;                        // centre le titre dans la colonne
       t.style.setProperty('--s',s.toFixed(3));
       t.style.setProperty('--tx',Math.round(tx)+'px');
