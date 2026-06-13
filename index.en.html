@@ -1425,11 +1425,11 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .cp-box.lit, .cp-box:focus-visible { box-shadow: 0 0 0 2px rgba(255,90,92,.85), 0 0 18px rgba(255,60,62,.45); background: rgba(255,60,62,.08); outline: none; }
   .cp-spot.lit { box-shadow: 0 0 0 3px rgba(255,90,92,.9), 0 0 28px 10px rgba(255,60,62,.65); }
   .cp-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-  .cp-line line { stroke: #ff5a5c; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity .25s; }
-  .cp-line line:first-child { stroke-width: 9px; }
-  .cp-line line:last-child { stroke-width: 2.5px; }
-  .cp-line.lit line:first-child { opacity: .3; }
-  .cp-line.lit line:last-child { opacity: .95; }
+  .cp-line polyline { fill: none; stroke: #ff5a5c; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity .25s; }
+  .cp-line polyline:first-child { stroke-width: 9px; }
+  .cp-line polyline:last-child { stroke-width: 2.5px; }
+  .cp-line.lit polyline:first-child { opacity: .3; }
+  .cp-line.lit polyline:last-child { opacity: .95; }
 
   /* ---------- Carte du corps ---------- */
   .corps-flex {
@@ -2074,16 +2074,16 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
           <p class="corps-aide">Click a glowing dot or a label on the chart to see the affected area, the common MSDs, the factors behind them and the good habits.</p>
 <div class="corps-photo" id="corpsPhoto" hidden>
   <img src="" alt="Eight areas to watch on the human body, front and back views: click a dot to explore the area" id="corpsPhotoImg" decoding="async">
-  <button type="button" class="cp-spot" style="left:34.8%;top:26%" data-zone="cou" aria-label="Neck area"></button>
-  <button type="button" class="cp-spot" style="left:28.7%;top:31.5%" data-zone="epaules" aria-label="Shoulders area"></button>
-  <button type="button" class="cp-spot" style="left:25.8%;top:45.5%" data-zone="coudes" aria-label="Elbows area"></button>
-  <button type="button" class="cp-spot" style="left:22%;top:56.8%" data-zone="poignets-mains" aria-label="Wrists and hands area"></button>
-  <button type="button" class="cp-spot" style="left:64.7%;top:32.5%" data-zone="haut-dos" aria-label="Upper back area"></button>
-  <button type="button" class="cp-spot" style="left:64.5%;top:46.1%" data-zone="bas-dos" aria-label="Lower back area"></button>
-  <button type="button" class="cp-spot" style="left:68.1%;top:69%" data-zone="genoux" aria-label="Knees area"></button>
-  <button type="button" class="cp-spot" style="left:68%;top:87.6%" data-zone="chevilles-pieds" aria-label="Ankles and feet area"></button>
+  <button type="button" class="cp-spot" style="left:35.1%;top:26%" data-zone="cou" aria-label="Neck area"></button>
+  <button type="button" class="cp-spot" style="left:28.9%;top:31.2%" data-zone="epaules" aria-label="Shoulders area"></button>
+  <button type="button" class="cp-spot" style="left:26%;top:45.6%" data-zone="coudes" aria-label="Elbows area"></button>
+  <button type="button" class="cp-spot" style="left:22.8%;top:58.4%" data-zone="poignets-mains" aria-label="Wrists and hands area"></button>
+  <button type="button" class="cp-spot" style="left:64.6%;top:32.6%" data-zone="haut-dos" aria-label="Upper back area"></button>
+  <button type="button" class="cp-spot" style="left:64.4%;top:46.4%" data-zone="bas-dos" aria-label="Lower back area"></button>
+  <button type="button" class="cp-spot" style="left:67.7%;top:69.2%" data-zone="genoux" aria-label="Knees area"></button>
+  <button type="button" class="cp-spot" style="left:67.5%;top:87.7%" data-zone="chevilles-pieds" aria-label="Ankles and feet area"></button>
   <button type="button" class="cp-box" style="left:5%;top:18.8%;width:15.6%;height:10.1%" data-zone="cou" aria-label="Neck: open the details"></button>
-  <button type="button" class="cp-box" style="left:6.3%;top:31%;width:13.2%;height:11.8%" data-zone="epaules" aria-label="Shoulders: open the details"></button>
+  <button type="button" class="cp-box" style="left:6.3%;top:32.4%;width:13.2%;height:10.4%" data-zone="epaules" aria-label="Shoulders: open the details"></button>
   <button type="button" class="cp-box" style="left:4.6%;top:48.2%;width:14%;height:9.6%" data-zone="coudes" aria-label="Elbows: open the details"></button>
   <button type="button" class="cp-box" style="left:3.4%;top:63.4%;width:15.2%;height:11.1%" data-zone="poignets-mains" aria-label="Wrists and hands: open the details"></button>
   <button type="button" class="cp-box" style="left:78.5%;top:24.5%;width:17.3%;height:11.3%" data-zone="haut-dos" aria-label="Upper back: open the details"></button>
@@ -2091,14 +2091,14 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   <button type="button" class="cp-box" style="left:80.2%;top:61.8%;width:16%;height:10.2%" data-zone="genoux" aria-label="Knees: open the details"></button>
   <button type="button" class="cp-box" style="left:79.6%;top:78.8%;width:16.1%;height:10.6%" data-zone="chevilles-pieds" aria-label="Ankles and feet: open the details"></button>
   <svg class="cp-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-    <g class="cp-line" data-zone="cou"><line x1="20.6" y1="23.9" x2="34.8" y2="26"/><line x1="20.6" y1="23.9" x2="34.8" y2="26"/></g>
-    <g class="cp-line" data-zone="epaules"><line x1="19.5" y1="36.9" x2="28.7" y2="31.5"/><line x1="19.5" y1="36.9" x2="28.7" y2="31.5"/></g>
-    <g class="cp-line" data-zone="coudes"><line x1="18.6" y1="53" x2="25.8" y2="45.5"/><line x1="18.6" y1="53" x2="25.8" y2="45.5"/></g>
-    <g class="cp-line" data-zone="poignets-mains"><line x1="18.6" y1="69" x2="22" y2="56.8"/><line x1="18.6" y1="69" x2="22" y2="56.8"/></g>
-    <g class="cp-line" data-zone="haut-dos"><line x1="78.5" y1="30.2" x2="64.7" y2="32.5"/><line x1="78.5" y1="30.2" x2="64.7" y2="32.5"/></g>
-    <g class="cp-line" data-zone="bas-dos"><line x1="78.5" y1="46.5" x2="64.5" y2="46.1"/><line x1="78.5" y1="46.5" x2="64.5" y2="46.1"/></g>
-    <g class="cp-line" data-zone="genoux"><line x1="80.2" y1="66.9" x2="68.1" y2="69"/><line x1="80.2" y1="66.9" x2="68.1" y2="69"/></g>
-    <g class="cp-line" data-zone="chevilles-pieds"><line x1="79.6" y1="84.1" x2="68" y2="87.6"/><line x1="79.6" y1="84.1" x2="68" y2="87.6"/></g>
+    <g class="cp-line" data-zone="cou"><polyline points="20.6,22.7 28,22.7 35.1,26"/><polyline points="20.6,22.7 28,22.7 35.1,26"/></g>
+    <g class="cp-line" data-zone="epaules"><polyline points="19.5,35.5 23.5,35.5 28.9,31.2"/><polyline points="19.5,35.5 23.5,35.5 28.9,31.2"/></g>
+    <g class="cp-line" data-zone="coudes"><polyline points="18.6,51.6 21.6,51.6 26,45.6"/><polyline points="18.6,51.6 21.6,51.6 26,45.6"/></g>
+    <g class="cp-line" data-zone="poignets-mains"><polyline points="18.6,66.6 20.4,66.6 22.8,58.4"/><polyline points="18.6,66.6 20.4,66.6 22.8,58.4"/></g>
+    <g class="cp-line" data-zone="haut-dos"><polyline points="78.5,29.5 73.5,29.5 64.6,32.6"/><polyline points="78.5,29.5 73.5,29.5 64.6,32.6"/></g>
+    <g class="cp-line" data-zone="bas-dos"><polyline points="78.5,46.4 71.5,46.4 64.4,46.4"/><polyline points="78.5,46.4 71.5,46.4 64.4,46.4"/></g>
+    <g class="cp-line" data-zone="genoux"><polyline points="80.2,65.8 74.2,65.8 67.7,69.2"/><polyline points="80.2,65.8 74.2,65.8 67.7,69.2"/></g>
+    <g class="cp-line" data-zone="chevilles-pieds"><polyline points="79.6,82.8 74.6,82.8 67.5,87.7"/><polyline points="79.6,82.8 74.6,82.8 67.5,87.7"/></g>
   </svg>
 </div>
 <div class="corps-flex">
