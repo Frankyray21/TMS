@@ -119,8 +119,11 @@ h2.title::after{content:'';display:block;width:clamp(54px,7vw,88px);height:4px;m
 section:not(.hero) h2.title.reveal{transition:none;transform-origin:left top}
 /* titre lie au defilement : arrive plus gros + centre (--tx/--s calcules en JS, plafonnes = pas de debordement), rejoint sa taille/position en scrollant */
 @keyframes tmsTitleScroll{0%{opacity:0;transform:translateX(var(--tx,0)) scale(var(--s,1))}20%{opacity:1}100%{opacity:1;transform:none}}
+/* mobile OU navigateur sans scroll-timeline : grossissement minute one-shot (aucun cout au scroll = pas de jank) */
+@media (max-width:980px){section:not(.hero) h2.title.reveal.in{animation:tmsGrow .5s cubic-bezier(.22,.7,.3,1) both}}
 @supports not (animation-timeline: view()){section:not(.hero) h2.title.reveal.in{animation:tmsGrow .5s cubic-bezier(.22,.7,.3,1) both}}
-@supports (animation-timeline: view()){section:not(.hero) h2.title.reveal{animation:tmsTitleScroll linear both;animation-timeline:view();animation-range:entry 8% cover 42%}}
+/* desktop avec support : titre lie au defilement (marge perf sur grand ecran) */
+@media (min-width:981px){@supports (animation-timeline: view()){section:not(.hero) h2.title.reveal{animation:tmsTitleScroll linear both;animation-timeline:view();animation-range:entry 8% cover 42%;will-change:transform}}}
 section:not(.hero) h2.title.reveal.in::after{animation:tmsWipe .45s cubic-bezier(.22,.61,.36,1) both .4s}
 section:not(.hero) .eyebrow.reveal{transition:none}
 section:not(.hero) .eyebrow.reveal.in{animation:tmsFadeUp .4s ease both .28s}
@@ -2849,6 +2852,7 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
 (function(){
   if(!(window.CSS&&CSS.supports&&CSS.supports('animation-timeline','view()')))return;
   function setup(){
+    if(window.innerWidth<=980)return;                       // mobile : pas de scroll-timeline => on saute tout le calcul (perf scroll)
     document.querySelectorAll('section:not(.hero) h2.title.reveal').forEach(function(t){
       t.style.animation='none';void t.offsetWidth;            // mesure hors animation
       var C=t.clientWidth;
@@ -2993,7 +2997,7 @@ function enterSection(target){
 }
 if('IntersectionObserver' in window){
   var spyIO=new IntersectionObserver(function(es){
-    es.forEach(function(e){if(e.isIntersecting){var id=e.target.id;if(byId[id]){links.forEach(function(l){l.classList.remove('active','justactive');l.removeAttribute('aria-current');});byId[id].classList.add('active','justactive');byId[id].setAttribute('aria-current','true');moveInd(byId[id]);var act=byId[id];if(act.scrollIntoView&&window.innerWidth<=980){act.scrollIntoView({block:'nearest',inline:'center'});}enterSection(e.target);}}});
+    es.forEach(function(e){if(e.isIntersecting){var id=e.target.id;if(byId[id]){links.forEach(function(l){l.classList.remove('active','justactive');l.removeAttribute('aria-current');});byId[id].classList.add('active','justactive');byId[id].setAttribute('aria-current','true');moveInd(byId[id]);var act=byId[id];if(act.scrollIntoView&&window.innerWidth<=980){act.scrollIntoView({block:'nearest',inline:'center',behavior:'auto'});}enterSection(e.target);}}});
   },{rootMargin:'-30% 0px -55% 0px',threshold:0});
   targets.forEach(function(t){spyIO.observe(t);});
 }
@@ -4476,7 +4480,7 @@ document.addEventListener("mouseover", e => {
   infobulle.classList.add("visible");
 });
 document.addEventListener("mousemove", e => {
-  if (!infobulle.classList.contains("visible")) return;
+  if (surTactile || !infobulle.classList.contains("visible")) return;
   const x = Math.min(e.clientX + 16, innerWidth - infobulle.offsetWidth - 12);
   const y = Math.min(e.clientY + 18, innerHeight - infobulle.offsetHeight - 12);
   infobulle.style.left = x + "px";
