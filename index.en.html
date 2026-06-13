@@ -750,6 +750,13 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 .totop.show{opacity:1;pointer-events:auto;visibility:visible}
 .totop:hover{border-color:var(--brand);color:#fff}
 @media(max-width:980px){.totop{right:auto;left:max(1rem,env(safe-area-inset-left));bottom:calc(1rem + env(safe-area-inset-bottom))}}
+/* perf scroll mobile : pas de backdrop-blur (recalcule a chaque frame = jank) ni d'aurora animee */
+@media(max-width:980px){
+  .hero-bg{animation:none}
+  .toc{background:rgba(10,14,22,.97);backdrop-filter:none;-webkit-backdrop-filter:none}
+  .switch,.langswitch{background:rgba(20,27,40,.97);backdrop-filter:none;-webkit-backdrop-filter:none}
+  .secflag{background:rgba(11,16,27,.98);backdrop-filter:none;-webkit-backdrop-filter:none}
+}
 
 /* ===== image indisponible ===== */
 .img-missing{position:relative;min-height:120px}
@@ -854,7 +861,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   /* sélecteur de parcours en pilule flottante (bas droite) */
   .switch{top:auto;right:max(1rem,env(safe-area-inset-right));bottom:calc(1rem + env(safe-area-inset-bottom));left:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:160}
   .switch .seg{min-height:44px;padding:.5rem .9rem}
-  .langswitch{top:auto;right:auto;left:max(1rem,env(safe-area-inset-left));bottom:calc(1rem + env(safe-area-inset-bottom));z-index:160;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  .langswitch{top:auto;left:auto;right:max(1rem,env(safe-area-inset-right));bottom:calc(7rem + env(safe-area-inset-bottom));z-index:161;box-shadow:0 8px 24px rgba(0,0,0,.5)}
   .langswitch a{min-height:40px;padding:.4rem .8rem}
 }
 
@@ -2817,6 +2824,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 <script>
 document.documentElement.classList.remove('no-js');
 var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var SMALL = window.matchMedia('(max-width:980px)').matches; // mobile : on allege le hero (perf scroll)
 
 // ===== scroll progress (rAF, GPU scaleX) =====
 var prog=document.getElementById('prog'),ticking=false;
@@ -2836,13 +2844,13 @@ if(!('IntersectionObserver' in window) || RM){
 setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(el){el.classList.add('in');});},3000);
 
 // ===== hero parallax =====
-(function(){var hero=document.querySelector('.hero');if(!hero||RM)return;var mine=hero.querySelector('.hero-mine'),bg=hero.querySelector('.hero-bg'),tk=false;
+(function(){var hero=document.querySelector('.hero');if(!hero||RM||SMALL)return;var mine=hero.querySelector('.hero-mine'),bg=hero.querySelector('.hero-bg'),tk=false;
 function frame(){var y=window.scrollY;if(y<window.innerHeight){if(mine)mine.style.transform='translate3d(0,'+(y*0.14)+'px,0)';if(bg)bg.style.transform='translate3d(0,'+(y*0.08)+'px,0)';}tk=false;}
 window.addEventListener('scroll',function(){if(!tk){tk=true;requestAnimationFrame(frame);}},{passive:true});frame();})();
 
 // ===== NIVEAU 7 : tunnel de mine en shader WebGL =====
 (function(){
-  if(RM)return;
+  if(RM||SMALL)return;
   var hero=document.querySelector('.hero');if(!hero)return;
   var canvas=hero.querySelector('.hero-gl');if(!canvas)return;
   var gl=canvas.getContext('webgl',{antialias:false,alpha:false,powerPreference:'low-power'})||canvas.getContext('experimental-webgl');
