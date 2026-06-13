@@ -2861,6 +2861,7 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
 // ===== titres : sections repliables + UNE SEULE LIGNE (police auto-reduite si trop long) + (desktop) grossissement lie au scroll =====
 (function(){
   var titles=[].slice.call(document.querySelectorAll('section:not(.hero) h2.title.reveal'));
+  var subs=[].slice.call(document.querySelectorAll('section:not(.hero) h3.sub-h.reveal'));
   var viewOK=!!(window.CSS&&CSS.supports&&CSS.supports('animation-timeline','view()'));
   // repli : chevron + bascule au clic/clavier sur le titre (mise en place unique)
   titles.forEach(function(t){
@@ -2885,6 +2886,28 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
     }
     t.style.animation=a;
   }
+  // sous-titres : meme principe que fit() mais (a) le h3.sub-h est en FLEX avec une barre ::before
+  // -> on mesure le TEXTE via Range (le scrollWidth est fausse par le retrecissement flex) et on
+  // retranche barre+gap ; (b) plancher plus bas (~17px) car leur taille de base est deja petite ;
+  // (c) RE-MESURE apres reduction : l'espacement (em) et un eventuel enfant en rem ne suivent pas
+  // lineairement la taille, donc on verifie la largeur reelle et on corrige. Pas de neutralisation
+  // d'animation : tmsSubIn ne fait que translater, ce qui ne change pas la largeur mesuree.
+  function fitSub(t){
+    if(t.clientWidth<=0)return;                                     // section repliee/masquee : on garde le dernier ajustement
+    t.style.whiteSpace='nowrap';t.style.fontSize='';void t.offsetWidth;
+    var cs=getComputedStyle(t);
+    var over=(parseFloat(cs.columnGap||cs.gap)||0)+(parseFloat(getComputedStyle(t,'::before').width)||0);
+    var avail=t.clientWidth-over;
+    function txtW(){var r=document.createRange();r.selectNodeContents(t);return r.getBoundingClientRect().width;}
+    var w=txtW();
+    if(w>0&&avail>0&&w>avail+1){
+      var fs=parseFloat(cs.fontSize),target=fs*avail/w*0.98;
+      if(target<17){t.style.whiteSpace='normal';t.style.fontSize='17px';return;}  // trop long : 2 lignes a 17px
+      t.style.fontSize=target.toFixed(1)+'px';
+      var w2=txtW();                                                // largeur reelle a la nouvelle taille
+      if(w2>avail){var t2=target*avail/w2*0.98;if(t2>=17){t.style.fontSize=t2.toFixed(1)+'px';}else{t.style.whiteSpace='normal';t.style.fontSize='17px';}}
+    }
+  }
   function setup(){
     var mobile=window.innerWidth<=980;
     titles.forEach(function(t){
@@ -2895,8 +2918,10 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
         if(C&&tw){var s=Math.min(1.5,(C*0.97)/tw);if(s<1)s=1;var tx=(C-s*tw)/2;if(tx<0)tx=0;t.style.setProperty('--s',s.toFixed(3));t.style.setProperty('--tx',Math.round(tx)+'px');}
       }else{t.style.removeProperty('--s');t.style.removeProperty('--tx');}
     });
+    subs.forEach(fitSub);                                       // sous-titres sur une seule ligne (mobile + desktop)
   }
   setup();
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(setup);}  // re-mesure quand la police est chargee (sinon mesure avec la police de repli, plus large = sur-reduction)
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(setup,200);},{passive:true});
 })();
 
@@ -5088,15 +5113,19 @@ if ("serviceWorker" in navigator) {
   var box = document.getElementById("pwaInstall");
   if (!box) return;
   var go = document.getElementById("pwaGo"), x = document.getElementById("pwaX");
-  var deferred = null, hideT = null;
+  var deferred = null, hideT = null, heroOut = false, shown = false;
   function off(){ try { return localStorage.getItem("tms_pwa") === "off"; } catch(e){ return false; } }
   function place(){ if(window.innerWidth<=980){ var tb=document.querySelector(".toc"); box.style.top=(tb?Math.round(tb.getBoundingClientRect().bottom)+8:12)+"px"; } else box.style.top="12px"; }
   function show(){ if(off()||!deferred) return; place(); box.classList.add("visible"); clearTimeout(hideT); hideT=setTimeout(hide,15000); } /* ne reste pas affiche : auto-masque apres 15s */
   function hide(){ box.classList.remove("visible"); clearTimeout(hideT); }
-  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferred = e; show(); });
+  function maybeShow(){ if(shown||off()||!deferred||!heroOut) return; shown=true; show(); } /* jamais sur l'accueil (hero) : on attend d'avoir defile au-dela, puis une seule fois */
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferred = e; maybeShow(); });
   go.addEventListener("click", function () { if(!deferred){ hide(); return; } deferred.prompt(); deferred.userChoice.then(function () { deferred = null; hide(); }); });
   x.addEventListener("click", function () { hide(); try { localStorage.setItem("tms_pwa","off"); } catch(e){} }); /* fermer = ne plus reproposer */
   window.addEventListener("appinstalled", function () { hide(); try { localStorage.setItem("tms_pwa","off"); } catch(e){} });
+  var hero=document.querySelector(".hero");                          /* le bandeau ne s'affiche que hors de la vue d'accueil */
+  if(hero&&"IntersectionObserver" in window){ new IntersectionObserver(function(es){ heroOut=!es[0].isIntersecting; if(heroOut)maybeShow(); else hide(); },{threshold:0}).observe(hero); }
+  else { heroOut=true; }
 })();
 </script>
 </body>
