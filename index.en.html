@@ -2873,7 +2873,11 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
     t.style.whiteSpace='nowrap';t.style.fontSize='';
     var a=t.style.animation;t.style.animation='none';void t.offsetWidth;
     var avail=t.clientWidth,nat=t.scrollWidth;
-    if(nat>avail+1){var fs=parseFloat(getComputedStyle(t).fontSize);t.style.fontSize=(fs*avail/nat*0.99).toFixed(1)+'px';}
+    if(nat>avail+1){
+      var fs=parseFloat(getComputedStyle(t).fontSize),target=fs*avail/nat*0.99;
+      if(target>=24){t.style.fontSize=target.toFixed(1)+'px';}        // tient sur 1 ligne a une taille >= 24px
+      else{t.style.whiteSpace='normal';t.style.fontSize='24px';}      // trop long : 2 lignes a 24px (plancher lisible) plutot que minuscule
+    }
     t.style.animation=a;
   }
   function setup(){
