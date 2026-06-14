@@ -112,6 +112,8 @@ section+section::after{content:'';position:absolute;top:-2px;left:50%;width:5px;
 .secflag .sf-lbl{font-family:var(--font-display);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:1rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:980px){.secflag{left:50%;border-radius:12px;border-left:1px solid rgba(255,255,255,.09);border-top:3px solid var(--brand)}}
 @media print{.secflag{display:none!important}}
+/* perf scroll mobile : rendu paresseux des sections hors-ecran (le telephone ne rend que ce qui approche de l'ecran). Active seulement via la classe .cv, ajoutee en JS uniquement si on peut re-mesurer les titres au (re)rendu (sinon Safari/Firefox garderaient des titres mal ajustes) */
+@media (max-width:980px){html.cv section:not(.hero){content-visibility:auto;contain-intrinsic-size:auto 800px}}
 @media(prefers-reduced-motion:reduce){section:not(.hero) h2.title.reveal.in::after{animation:none!important;transform:none}}
 
 /* headings */
@@ -2819,7 +2821,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
           <span>Mise à jour : juin 2026</span>
           <span>Document de sensibilisation. Ne remplace pas un avis médical.</span>
           <button class="viewtoggle" id="viewToggle" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> <span id="viewToggleLbl">Version ordinateur</span></button>
-          <span class="foot-ver" id="footVer" title="Version du site">v1.12</span>
+          <span class="foot-ver" id="footVer" title="Version du site">v1.13</span>
         </div>
       </div>
     </footer>
@@ -2947,6 +2949,16 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
   }
   setup();
   if(document.fonts&&document.fonts.ready){document.fonts.ready.then(setup);}  // re-mesure quand la police est chargee (sinon mesure avec la police de repli, plus large = sur-reduction)
+  // rendu paresseux des sections (mobile) : on l'active SEULEMENT si on peut re-mesurer les titres au (re)rendu de chaque section
+  if('oncontentvisibilityautostatechange' in HTMLElement.prototype){
+    document.documentElement.classList.add('cv');
+    [].forEach.call(document.querySelectorAll('section:not(.hero)'),function(sec){
+      sec.addEventListener('contentvisibilityautostatechange',function(e){
+        if(e.skipped)return;                                  // section masquee (loin de l'ecran) : rien a faire
+        requestAnimationFrame(function(){var t=sec.querySelector('h2.title.reveal');if(t)fit(t);[].forEach.call(sec.querySelectorAll('h3.sub-h.reveal'),fitSub);});
+      });
+    });
+  }
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(setup,200);},{passive:true});
 })();
 

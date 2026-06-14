@@ -1,5 +1,5 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v4";
+const VERSION = "tms-v5";
 const CORE = [
   "./",
   "index.html",
@@ -46,15 +46,18 @@ const CORE = [
   "images/zones_corps.jpg",
   "videos/preserver-son-corps-affiche.jpg"
 ];
-const HEAVY = ["videos/preserver-son-corps.mp4"];
+/* pages + manifeste : doivent rester frais a chaque deploiement */
+const PAGES = ["./", "index.html", "index.en.html", "formation.html", "formation.en.html", "interactif.html", "manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
     const cache = await caches.open(VERSION);
-    /* cache:"reload" = on contourne le cache HTTP du navigateur pour stocker des copies vraiment fraîches */
-    await cache.addAll(CORE.map((u) => new Request(u, { cache: "reload" })));
-    /* gros fichiers : au mieux, sans faire échouer l'installation */
-    await Promise.allSettled(HEAVY.map((u) => cache.add(new Request(u, { cache: "reload" }))));
+    /* pages : cache:"reload" pour contourner le cache HTTP et stocker des copies vraiment fraiches */
+    await cache.addAll(PAGES.map((u) => new Request(u, { cache: "reload" })));
+    /* images : best-effort, cache HTTP autorise (revalidation 304 peu couteuse) -> pas de re-telechargement force a chaque version */
+    const ASSETS = CORE.filter((u) => PAGES.indexOf(u) === -1);
+    await Promise.allSettled(ASSETS.map((u) => cache.add(u)));
+    /* NB : la grosse video (~26 Mo) n'est plus prechargee -> elle se charge a la lecture, ce qui allege fortement le 1er chargement / les MAJ */
     self.skipWaiting();
   })());
 });
