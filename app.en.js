@@ -189,7 +189,7 @@ window.addEventListener('load',function(){document.querySelectorAll('.media img,
 
 // ===== scrollspy (TOC) + sliding indicator + aria-current =====
 var links=Array.from(document.querySelectorAll('.toc-link'));
-var byId={};links.forEach(function(l){byId[l.getAttribute('href').slice(1)]=l;});
+var byId={};links.forEach(function(l){var id=(l.hash||'').slice(1);if(id)byId[id]=l;});  // l.hash gère les href "#ancre" ET "page.html#ancre" (decoupage en parties)
 var ind=document.getElementById('tocInd');
 function moveInd(el){if(!ind||!el||window.innerWidth<=980)return;ind.style.opacity='1';ind.style.height=el.offsetHeight+'px';ind.style.transform='translateY('+el.offsetTop+'px)';}
 var targets=Object.keys(byId).map(function(id){return document.getElementById(id);}).filter(Boolean);

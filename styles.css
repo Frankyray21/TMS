@@ -1932,3 +1932,13 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 .explo-outils { display: flex; flex-direction: column; gap: 12px; margin: 6px 0 8px; }
 .explo-outils .consigne { font-size: .9rem; color: var(--or); }
 .explo-etat { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+/* ===== navigation entre les parties (pages decoupees) ===== */
+.part-nav{display:flex;justify-content:space-between;align-items:stretch;gap:1rem;max-width:1000px;margin:3.5rem auto 1rem;padding:0 3rem;flex-wrap:wrap}
+.part-nav a{text-decoration:none;display:flex;flex-direction:column;gap:.15rem;padding:.9rem 1.3rem;border-radius:14px;border:1px solid var(--border);background:rgba(26,35,50,.5);color:var(--text);transition:transform .2s,border-color .2s,background .2s}
+.part-nav .pn-prev{align-items:flex-start}
+.part-nav .pn-next{align-items:flex-end;text-align:right;margin-left:auto;background:linear-gradient(160deg,rgba(210,35,37,.22),rgba(17,24,39,.6));border-color:rgba(210,35,37,.5)}
+.part-nav a:hover{transform:translateY(-2px);border-color:var(--brand)}
+.part-nav .pn-k{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+.part-nav .pn-t{font-family:var(--font-display);font-weight:700;font-size:1.05rem}
+@media(max-width:700px){.part-nav{flex-direction:column;padding:0 1.2rem}.part-nav .pn-next{margin-left:0;align-items:flex-start;text-align:left}}
