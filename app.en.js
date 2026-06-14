@@ -305,7 +305,7 @@ document.querySelectorAll('.faccard').forEach(function(c){
   if(!cmdk||!openBtn)return;
   document.querySelectorAll('h3.sub-h').forEach(function(h,i){if(!h.id)h.id='sujet-'+i;});
   var ITEMS=[];
-  document.querySelectorAll('.toc-link').forEach(function(l){ITEMS.push({k:'Section',label:l.textContent.trim(),sub:'',go:l.getAttribute('href')});});
+  document.querySelectorAll('.toc-link').forEach(function(l){if(!l.hash)return;ITEMS.push({k:'Section',label:l.textContent.trim(),sub:'',go:l.getAttribute('href')});});
   document.querySelectorAll('h3.sub-h').forEach(function(h){ITEMS.push({k:'Topic',label:h.textContent.replace(/\s+/g,' ').replace(/:.*clique.*$/i,'').trim(),sub:'',go:'#'+h.id});});
   Object.keys(MODAL_DATA).forEach(function(key){var d=MODAL_DATA[key];ITEMS.push({k:'Card',label:d.title,sub:d.tag,modal:key,kw:(d.desc+' '+d.risk.join(' ')+' '+d.prev.join(' '))});});
   ITEMS.push({k:'Section',label:'MSD prevention quiz',sub:'#quiz',go:'#quiz',kw:'quiz test questions knowledge evaluation'});
