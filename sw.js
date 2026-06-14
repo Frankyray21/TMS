@@ -1,5 +1,5 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v5";
+const VERSION = "tms-v6";
 const CORE = [
   "./",
   "index.html",
@@ -47,7 +47,7 @@ const CORE = [
   "videos/preserver-son-corps-affiche.jpg"
 ];
 /* pages + manifeste : doivent rester frais a chaque deploiement */
-const PAGES = ["./", "index.html", "index.en.html", "formation.html", "formation.en.html", "interactif.html", "manifest.webmanifest"];
+const PAGES = ["./", "index.html", "index.en.html", "formation.html", "formation.en.html", "interactif.html", "manifest.webmanifest", "styles.css", "app.js", "app.en.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
