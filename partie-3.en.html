@@ -67,11 +67,6 @@ html.tms-loading{overflow:hidden!important}
   <span class="seg active" aria-current="page">&#128214; Knowledge base</span>
   <a class="seg" href="formation.en.html">&#127891; Guided training</a>
 </nav>
-<nav class="langswitch" aria-label="Langue / Language">
-  <a href="index.html" lang="fr" hreflang="fr">FR</a>
-  <a class="on" href="index.en.html" lang="en" hreflang="en" aria-current="true">EN</a>
-</nav>
-<script>document.querySelectorAll('.langswitch a').forEach(function(a){a.addEventListener('click',function(){try{localStorage.setItem('tms_lang',a.getAttribute('lang'));}catch(e){}});});</script>
 
 <div class="layout">
   <!-- TABLE DES MATIERES -->
@@ -81,6 +76,10 @@ html.tms-loading{overflow:hidden!important}
       <div class="sub">MSD prevention</div>
     </div>
     <button class="toc-search" id="searchOpen" aria-label="Search the page (shortcut: slash key)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span class="ts-lbl">Search…</span><kbd>/</kbd></button>
+    <nav class="langswitch" aria-label="Langue / Language">
+      <a href="index.html" lang="fr" hreflang="fr">FR</a>
+      <a class="on" href="index.en.html" lang="en" hreflang="en" aria-current="true">EN</a>
+    </nav>
     <nav class="toc-nav" id="tocNav" aria-label="Knowledge base contents">
       <span class="toc-ind" id="tocInd"></span>
       <a class="toc-link" href="index.en.html#accueil"><span class="dot"></span>Home</a>
@@ -179,7 +178,7 @@ html.tms-loading{overflow:hidden!important}
           <span>Updated: June 2026</span>
           <span>Awareness document. Does not replace medical advice.</span>
           <button class="viewtoggle" id="viewToggle" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> <span id="viewToggleLbl">Desktop version</span></button>
-          <span class="foot-ver" id="footVer" title="Site version">v1.30</span>
+          <span class="foot-ver" id="footVer" title="Site version">v1.31</span>
         </div>
       </div>
     </footer>
