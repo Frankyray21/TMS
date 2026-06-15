@@ -387,57 +387,48 @@ const DETAILS = {
   /* ----- Les trois familles ----- */
   "biomecanique": {
     categorie: "Main family", titre: "Biomechanical factors", icone: "💪", couleur: "#1b6e96",
-    description: "These are the physical demands tied directly to the task: the force you put in, how often you move, the positions you work in and the weight you handle. The more intense, frequent or drawn-out these demands are, the more your muscles, tendons and joints get pushed past their ability to recover.",
+    description: "These are the physical demands of the task: force, repetition, postures and loads, which push your body past its ability to recover.",
     exemples: [
       "Force: pushing, pulling or lifting with effort.",
       "Repetition: doing the same movement hundreds of times a shift.",
-      "Postures: working with your back hunched, your wrists bent or your neck tilted.",
-      "Loads: handling heavy objects or ones that are hard to grip.",
-      "Twisting: turning your trunk or wrists under load."
+      "Postures: working with your back hunched, your wrists bent or your neck tilted."
     ],
     prevention: [
       "Cut the weight of loads or use mechanical aids.",
       "Mix up your movements and switch between tasks.",
-      "Set up your workstation to keep neutral postures.",
-      "Get trained in proper work techniques."
+      "Set up your workstation to keep neutral postures."
     ],
     zones: ["epaules", "haut-dos", "bas-dos", "coudes", "poignets-mains"],
     voirAussi: ["manutention", "mouvements-repetes", "combinaison"]
   },
   "individuel": {
     categorie: "Main family", titre: "Individual factors", icone: "🧍", couleur: "#d97a16",
-    description: "Everyone reacts differently to the same demands. Your fitness level, built-up fatigue, sleep quality, a pain you already have or how much experience you've got all affect how well your body can take a hit and recover.",
+    description: "Your body doesn't take the same demands the same way depending on your fatigue, your sleep, your fitness, a pain you already have or your experience.",
     exemples: [
-      "Fatigue: a tired body protects itself less and compensates poorly.",
+      "Fatigue: a tired body protects itself less.",
       "Sleep: poor sleep slows down how your tissues repair.",
-      "Physical condition: weak muscle endurance makes you more vulnerable.",
-      "Pain you already have: an injury that healed badly weakens the area.",
-      "Experience: a new worker is less skilled at the efficient movements."
+      "Pain you already have: an area that healed badly stays fragile."
     ],
     prevention: [
       "Report any lasting pain early.",
       "Get good sleep and look after your overall health.",
-      "Allow a break-in period for new workers.",
-      "Match the workload to what each person can handle."
+      "Allow a break-in period for new workers."
     ],
     zones: [],
     voirAussi: ["recuperation", "fatigue", "combinaison"]
   },
   "environnement": {
     categorie: "Main family", titre: "Environmental factors", icone: "🌡️", couleur: "#5a9421",
-    description: "The physical setting where you do the task can ramp up every other demand: poorly suited tools, vibration, cold, a cramped space or unstable ground all force your body to work harder for the same result.",
+    description: "Your work setting, with poorly suited tools, vibration, cold, a cramped space or unstable ground, forces your body to work harder for the same result.",
     exemples: [
-      "Tools: a poorly maintained or wrong-sized tool takes more force.",
-      "Vibration: it wears out the tissues in your hands, arms and back.",
-      "Temperature: cold stiffens your muscles, heat wears you out.",
-      "Work space: a tight space forces awkward postures.",
-      "Unstable ground: it throws you off balance and adds to the effort of staying steady."
+      "Tools: a poorly suited tool takes more force.",
+      "Vibration: it wears out your hands, arms and back.",
+      "Cold: it stiffens your muscles and makes you grip harder."
     ],
     prevention: [
       "Pick and maintain ergonomic tools.",
       "Clear out and organize your work space.",
-      "Match your clothing and breaks to the temperature.",
-      "Keep floors clean, level and clear."
+      "Keep floors clean, level and stable."
     ],
     zones: ["poignets-mains", "bas-dos", "genoux"],
     voirAussi: ["froid", "outils-vibrants", "combinaison"]
@@ -446,17 +437,15 @@ const DETAILS = {
   /* ----- Situations à risque : famille biomécanique ----- */
   "manutention": {
     categorie: "Biomechanical sub-factor", titre: "Material handling", icone: "📦", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Lifting, carrying, pushing or pulling loads puts a heavy strain on your back, shoulders and arms. The risk goes up with the weight, how far the load is from your body, how often you do it and the posture you're in.",
+    description: "Lifting, carrying, pushing or pulling loads puts a heavy strain on your back, your shoulders and your arms.",
     exemples: [
-      "Lifting a box off the floor with a rounded back.",
+      "Lifting a load off the floor with a rounded back.",
       "Carrying a load away from your body, arms out.",
-      "Stacking bags above shoulder height.",
-      "Pulling a heavy cart over a long distance."
+      "Pulling a heavy load over a long distance."
     ],
     prevention: [
-      "Use mechanical aids (pallet jack, hand truck, lift assist).",
+      "Use a mechanical aid whenever you can.",
       "Keep the load close to your body and bend your knees.",
-      "Split up loads that are too heavy.",
       "Work in pairs for bulky objects."
     ],
     zones: ["bas-dos", "epaules", "poignets-mains"],
@@ -464,17 +453,15 @@ const DETAILS = {
   },
   "bras-leves": {
     categorie: "Risk situation · biomechanical family", titre: "Working with arms raised", icone: "🙆", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Working with your hands above your shoulders keeps the shoulder muscles and tendons under constant tension and cuts down their blood supply. It's one of the main causes of rotator cuff tendinitis.",
+    description: "Working with your hands above your shoulders keeps your shoulder tendons under tension and starves them of blood.",
     exemples: [
-      "Screwing or painting overhead.",
-      "Storing items on high shelves.",
-      "Pulling cables above your head.",
-      "Installing panels or ducts up high."
+      "Screwing or bolting overhead.",
+      "Pulling cables or ducts up high.",
+      "Installing panels or fixtures on the ceiling."
     ],
     prevention: [
-      "Use a platform or step stool to work at shoulder height.",
+      "Use a platform to work at shoulder height.",
       "Keep arms-raised tasks short and switch them up.",
-      "Use tool extensions when you can.",
       "Set up your gear within reach before you go up."
     ],
     zones: ["epaules", "cou"],
@@ -482,35 +469,31 @@ const DETAILS = {
   },
   "mouvements-repetes": {
     categorie: "Risk situation · biomechanical family", titre: "Fast non-stop movements", icone: "⏱️", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Repeating the same movement without a break stops your tissues from recovering between efforts. Even a light effort becomes harmful when you do it thousands of times: it's the build-up that injures you.",
+    description: "Repeating the same movement with no break stops your tissues from recovering, and it's the build-up that injures you.",
     exemples: [
-      "Scanning items at the till all day.",
-      "Assembling the same parts on an assembly line.",
-      "Cutting or boning at a steady pace.",
-      "Clicking and typing non-stop."
+      "Assembling the same parts non-stop.",
+      "Cutting or deburring at a steady pace.",
+      "Driving the same fastener hundreds of times a shift."
     ],
     prevention: [
       "Rotate tasks among coworkers.",
       "Build in regular micro-breaks.",
-      "Automate or mechanize the most repetitive movements.",
-      "Change how you do the movement when you can."
+      "Mechanize the most repetitive movements when you can."
     ],
     zones: ["poignets-mains", "coudes", "epaules"],
     voirAussi: ["recuperation", "prise-serree"]
   },
   "posture-statique": {
     categorie: "Risk situation · biomechanical family", titre: "Static posture", icone: "🪑", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Staying in the same position for a long time, sitting or standing, keeps your muscles tensed up and slows your blood flow. Holding still for a long stretch tires you out as much as effort does: your body needs movement to keep the blood flowing.",
+    description: "Staying in the same position for a long time, sitting or standing, keeps your muscles tensed up and slows your circulation.",
     exemples: [
-      "Sitting in front of a screen for hours without moving.",
-      "Standing still at a control station.",
+      "Standing still at a monitoring station.",
       "Holding your arms in the same position to grip a part.",
       "Driving for long hours without a break."
     ],
     prevention: [
       "Get up, walk and stretch regularly.",
       "Switch between sitting and standing.",
-      "Adjust your workstation (chair, screen, work surface) to your build.",
       "Schedule active breaks into your day."
     ],
     zones: ["cou", "haut-dos", "bas-dos"],
@@ -518,17 +501,15 @@ const DETAILS = {
   },
   "prise-serree": {
     categorie: "Risk situation · biomechanical family", titre: "Tight grip", icone: "✊", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Gripping a tool or object hard, especially with your fingertips (pinch grip), puts a heavy strain on the tendons in your hand and forearm. The risk goes up if you hold the grip a long time, repeat it, or combine it with vibration or cold.",
+    description: "Gripping a tool hard, especially with your fingertips, puts a heavy strain on the tendons in your hand and forearm.",
     exemples: [
       "Holding a power screwdriver tightly all day.",
-      "Cutting with scissors or pliers over and over.",
-      "Gripping smooth or slippery parts with your fingertips.",
-      "Carrying containers by a handle that's too thin."
+      "Cutting with pliers over and over.",
+      "Gripping smooth or slippery parts with your fingertips."
     ],
     prevention: [
       "Pick tools with handles that fit your hand.",
       "Go for a full-hand grip instead of a pinch.",
-      "Maintain your tools to cut the force needed.",
       "Wear well-fitted gloves that don't make you grip harder."
     ],
     zones: ["poignets-mains", "coudes"],
@@ -536,17 +517,15 @@ const DETAILS = {
   },
   "travail-genoux": {
     categorie: "Risk situation · biomechanical family", titre: "Kneeling", icone: "🧎", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Kneeling or crouching presses directly on the structures of your knee and bends the joint to the extreme. Held or repeated, this position leads to bursitis, meniscus damage and chronic pain.",
+    description: "Kneeling or crouching presses directly on your knee and bends the joint to the extreme.",
     exemples: [
-      "Laying flooring or tile.",
-      "Doing mechanical work down at floor level.",
-      "Gardening or weeding on your knees.",
-      "Working under low equipment."
+      "Working down at floor level for a repair.",
+      "Working under low equipment.",
+      "Staying crouched a long time to adjust a part."
     ],
     prevention: [
       "Wear knee pads or use a padded mat.",
       "Use a small bench or low seat when you can.",
-      "Raise the work up instead of going down to it.",
       "Get up and move your legs often."
     ],
     zones: ["genoux", "bas-dos"],
@@ -556,18 +535,16 @@ const DETAILS = {
   /* ----- Situation à risque : famille individuelle ----- */
   "recuperation": {
     categorie: "Individual sub-factor", titre: "Recovery", icone: "😴", couleur: "#f09430", famille: "individuel",
-    description: "Your tissues repair during breaks and rest. Without enough recovery time (breaks too far apart, overtime, poor sleep), the micro-injuries pile up faster than they heal and an MSD sets in.",
+    description: "Your body repairs its tissues during breaks and rest, and without enough recovery the micro-injuries pile up faster than they heal.",
     exemples: [
       "Working back-to-back shifts with no day off.",
       "Skipping your breaks to finish faster.",
-      "A set pace that gives you no breather between cycles.",
-      "Combining physical work with not enough sleep."
+      "A set pace that gives you no breather between cycles."
     ],
     prevention: [
-      "Take the breaks you're given and make them real breaks.",
+      "Take real breaks and make them real breaks.",
       "Alternate demanding tasks with lighter ones.",
-      "Cut down on repeated overtime.",
-      "Protect enough regular sleep."
+      "Cut down on repeated overtime."
     ],
     zones: [],
     voirAussi: ["fatigue", "sommeil", "mouvements-repetes"]
@@ -576,35 +553,31 @@ const DETAILS = {
   /* ----- Situations à risque : famille environnement ----- */
   "outils-vibrants": {
     categorie: "Environmental sub-factor", titre: "Vibration", icone: "📳", couleur: "#74b62e", famille: "environnement",
-    description: "Vibration passed into your hands and arms gradually damages the nerves, blood vessels and joints. Over the long run, it can cause hand-arm vibration syndrome (white finger, numbness, loss of dexterity).",
+    description: "A tool's vibration gradually damages the nerves, vessels and joints in your hands and arms.",
     exemples: [
-      "Using a jackhammer or a plate compactor.",
+      "Using a jackhammer or a percussion drill.",
       "Grinding or sanding for long stretches.",
-      "Working with a chainsaw or a brush cutter.",
-      "Bolting with impact wrenches over and over."
+      "Bolting with an impact wrench over and over."
     ],
     prevention: [
       "Pick anti-vibration tools and keep them well maintained.",
       "Limit your daily exposure time and switch between tasks.",
-      "Wear anti-vibration gloves.",
-      "Don't grip the tool tighter than you have to."
+      "Wear anti-vibration gloves and don't grip the tool too tight."
     ],
     zones: ["poignets-mains", "coudes", "epaules"],
     voirAussi: ["outils", "froid", "prise-serree"]
   },
   "hauteur-travail": {
     categorie: "Risk situation · environmental family", titre: "Work level", icone: "↕️", couleur: "#74b62e", famille: "environnement",
-    description: "A work surface that's too low forces you to bend over, one that's too high forces you to lift your shoulders. Either way, your body compensates with awkward postures it holds all day long.",
+    description: "Too low and your back bends, too high and your shoulders ride up, and either way your body strains for nothing.",
     exemples: [
-      "A workbench so low it makes you hunch your back.",
-      "A counter so high it forces you to raise your shoulders.",
-      "Working at the bottom of a deep bin or tank.",
-      "A screen set too low or too high for your eyes."
+      "Working on a surface so low it makes you hunch your back.",
+      "Handling equipment set so high it forces you to raise your shoulders.",
+      "Working at the bottom of an excavation or a deep opening."
     ],
     prevention: [
-      "Set the work surface height to the task and the person.",
-      "Use lift tables or adjustable supports.",
-      "Tilt or raise up deep containers.",
+      "Set the work height to the task and your size.",
+      "Use an adjustable support or a platform.",
       "Position the work between your hips and your shoulders."
     ],
     zones: ["haut-dos", "bas-dos", "epaules", "cou"],
@@ -612,20 +585,16 @@ const DETAILS = {
   },
   "froid": {
     categorie: "Risk situation · environmental family", titre: "Cold and damp", icone: "❄️", couleur: "#74b62e", famille: "environnement",
-    description: "Cold stiffens your muscles and tendons, dulls the feeling and dexterity in your hands, and pushes you to grip harder. Dampness, which is everywhere underground, makes it worse: cold, wet tissues get stiffer and more prone to injury. Cold also ramps up every other factor, especially vibration and repeated movements.",
+    description: "Cold stiffens your muscles and tendons, dulls the feeling in your hands and pushes you to grip harder, and damp makes it all worse.",
     exemples: [
-      "Working in a cold room or a refrigerated warehouse.",
-      "Handling frozen goods with bare or barely protected hands.",
-      "Working outside in winter with metal tools.",
-      "Cold drafts at a fixed workstation.",
-      "A mine drift that's cold and damp non-stop."
+      "Working in a cold, damp drift non-stop.",
+      "Handling cold metal with bare or barely protected hands.",
+      "Cold drafts at a fixed workstation."
     ],
     prevention: [
-      "Wear clothing and gloves suited to the cold.",
-      "Plan warm-up breaks in a heated room.",
-      "Warm up before demanding tasks.",
-      "Insulate tool handles and block off drafts.",
-      "Stay dry: waterproof clothing and a change of clothes."
+      "Wear clothing and gloves suited to the cold and stay dry.",
+      "Take warm-up breaks in a heated area.",
+      "Warm up before effort and insulate tool handles."
     ],
     zones: ["poignets-mains"],
     voirAussi: ["temperature", "prise-serree", "outil-percussion", "outils-vibrants"]
@@ -634,17 +603,15 @@ const DETAILS = {
   /* ----- Sous-facteurs biomécaniques ----- */
   "efforts": {
     categorie: "Biomechanical sub-factor", titre: "Effort", icone: "🏋️", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Straining to push, pull, lift or grip puts a lot of tension on your muscles and tendons. The risk goes up when the effort is intense, drawn-out, repeated or done in a bad posture.",
+    description: "Straining to push, pull, lift or grip puts your muscles and tendons under heavy tension.",
     exemples: [
-      "Pushing a heavy or poorly greased cart.",
+      "Pushing a heavy or poorly greased piece of equipment.",
       "Loosening a seized fitting with a wrench.",
-      "Pulling a pallet over rough ground.",
       "Cutting hard material with a dull tool."
     ],
     prevention: [
-      "Mechanize the most intense efforts.",
-      "Maintain your equipment to cut down on resistance.",
-      "Get into the right position before you strain.",
+      "Mechanize or use an aid for the most intense efforts.",
+      "Maintain your tools to cut down on resistance.",
       "Ask for help with the heavy one-off efforts."
     ],
     zones: ["epaules", "haut-dos", "bas-dos", "coudes"],
@@ -652,16 +619,14 @@ const DETAILS = {
   },
   "postures": {
     categorie: "Biomechanical sub-factor", titre: "Posture", icone: "🧘", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "A posture is awkward when a joint moves away from its neutral position: rounded back, bent neck, cocked wrists, arms held out. Held or repeated, it overloads the structures that hold the joint steady.",
+    description: "A joint that moves away from its neutral position, like a rounded back or a bent neck, gets overloaded fast.",
     exemples: [
       "Working with your back leaning forward.",
-      "Keeping your neck bent toward a screen or a part.",
-      "Bending your wrists to reach a control.",
-      "Reaching for objects set too far away or too low."
+      "Keeping your neck bent toward the part.",
+      "Reaching for an object set too far away or too low."
     ],
     prevention: [
       "Bring the work closer to your body.",
-      "Adjust the height and tilt of your workstation.",
       "Keep your joints close to neutral.",
       "Change position often."
     ],
@@ -670,35 +635,31 @@ const DETAILS = {
   },
   "charges": {
     categorie: "Risk situation · biomechanical family", titre: "Box away from the body", icone: "📦", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "The farther a load is held or carried from your trunk, the more the real effort blows up: held at arm's length, 10 kg loads your lower back like several dozen kilos. The distance between the load and your body is often more dangerous than the weight itself.",
+    description: "The farther a load is carried from your trunk, the more the real strain on your back blows up, well beyond its actual weight.",
     exemples: [
-      "Grabbing a box at the back of a pallet or a deep bin.",
-      "Carrying an object at arm's length to see where you're walking.",
-      "Setting a load down over an obstacle or a counter.",
-      "Handling a bulky object you can't keep close to your body."
+      "Grabbing a load at the back of a deep space.",
+      "Carrying an object at arm's length to see better.",
+      "Handling a bulky part you can't keep close to your body."
     ],
     prevention: [
       "Bring the load close to your trunk before you lift.",
       "Slide or turn the load toward you instead of reaching out.",
-      "Get as close as you can: open the bin, clear the obstacles.",
-      "Reorganize storage so you can grab heavy loads close to your body."
+      "Clear the obstacles so you can get as close as possible."
     ],
     zones: ["bas-dos", "epaules", "poignets-mains"],
     voirAussi: ["manutention", "efforts", "torsion"]
   },
   "torsion": {
     categorie: "Biomechanical sub-factor", titre: "Twisting", icone: "🌀", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Turning your trunk or your wrists during an effort piles compression and shear onto the discs and tendons. It's one of the riskiest movements for your lower back, especially with a load in your hands.",
+    description: "Turning your trunk or your wrists during an effort crushes and shears your discs and tendons, especially with a load in your hands.",
     exemples: [
-      "Twisting your trunk while holding a load instead of moving your feet.",
-      "Transferring from one bin to another by turning your upper body.",
+      "Pivoting your trunk while holding a load instead of moving your feet.",
       "Screwing by hand over and over.",
       "Reaching for an object behind you without moving."
     ],
     prevention: [
       "Pivot with your feet, never with your trunk under load.",
-      "Place bins and equipment right in front of you.",
-      "Reorganize the workstation to avoid having to twist.",
+      "Place your gear right in front of you.",
       "Use right-angle drive tools."
     ],
     zones: ["bas-dos", "poignets-mains"],
@@ -708,17 +669,15 @@ const DETAILS = {
   /* ----- Sous-facteurs individuels ----- */
   "fatigue": {
     categorie: "Individual sub-factor", titre: "Fatigue", icone: "🥱", couleur: "#f09430", famille: "individuel",
-    description: "Fatigue cuts your strength, alertness and coordination. Your movements get less precise, your body compensates with bad postures, and the warning signs slip by unnoticed.",
+    description: "When you're tired, your strength, alertness and coordination drop, your movements get sloppy and your body compensates with bad postures.",
     exemples: [
       "End of a shift, when everything feels heavier.",
       "A peak period with a long stretch of overload.",
-      "Working two physical jobs at once.",
-      "A long drive before and after work."
+      "Working two physical jobs at once."
     ],
     prevention: [
       "Take real breaks before you're worn out.",
       "Alternate demanding tasks with lighter ones.",
-      "Match your pace to the length of the shift.",
       "Listen to what your body's telling you, and speak up."
     ],
     zones: [],
@@ -726,17 +685,15 @@ const DETAILS = {
   },
   "sommeil": {
     categorie: "Individual sub-factor", titre: "Sleep", icone: "🌙", couleur: "#f09430", famille: "individuel",
-    description: "Your muscles and tendons repair themselves while you sleep. A chronic sleep debt cranks up how much pain you feel, slows your recovery and leaves your tissues weaker against the next day's demands.",
+    description: "Your muscles and tendons repair while you sleep, and a chronic shortfall cranks up the pain and weakens your tissues.",
     exemples: [
       "Rotating schedules that throw off your body clock.",
       "Night work with a cut-short day's sleep.",
-      "Insomnia tied to stress.",
-      "Screens late at night that push back when you fall asleep."
+      "Insomnia tied to stress."
     ],
     prevention: [
       "Aim for 7 to 9 hours of regular sleep.",
       "Keep your schedule as steady as you can.",
-      "Set up a dark, quiet place to sleep.",
       "Cut back on screens and stimulants late in the evening."
     ],
     zones: [],
@@ -744,54 +701,48 @@ const DETAILS = {
   },
   "condition-physique": {
     categorie: "Individual sub-factor", titre: "Physical capacity", icone: "🏃", couleur: "#f09430", famille: "individuel",
-    description: "Muscle endurance, strength and flexibility set the gap between what the task demands and what your body can give. The thinner that gap, the sooner fatigue and micro-injuries show up.",
+    description: "Your endurance, strength and flexibility set the gap between what the task demands and what your body can give, and the thinner it is, the sooner fatigue hits.",
     exemples: [
       "Going back to work after a long layoff.",
       "A sedentary lifestyle paired with physical work.",
-      "A task whose demands top out what you can do that day.",
-      "No warm-up before a big effort."
+      "A task whose demands top out what you can do that day."
     ],
     prevention: [
-      "Get regular physical activity.",
+      "Move and get regular physical activity.",
       "Warm up before demanding tasks.",
-      "Ease back in gradually after time off.",
-      "Match the task to the person, not the other way around."
+      "Ease back in gradually after time off."
     ],
     zones: [],
     voirAussi: ["experience", "fatigue"]
   },
   "douleur-presente": {
     categorie: "Individual sub-factor", titre: "Pain you already have", icone: "🤕", couleur: "#f09430", famille: "individuel",
-    description: "Pain that hangs on is a warning sign: the tissues are already overloaded. Keeping at it the same way turns a discomfort you could reverse into a settled-in injury that takes a lot longer to heal.",
+    description: "Pain that hangs on is a warning sign that your tissues are already overloaded, and carrying on as before turns the discomfort into a real injury.",
     exemples: [
       "An ache that no longer clears up between shifts.",
       "Throbbing that wakes you up at night.",
-      "Marked stiffness when you get up in the morning.",
       "Numbness or tingling in your fingers."
     ],
     prevention: [
       "Report the pain early, before it gets worse.",
       "Adjust the task or the pace for a while.",
-      "See a health professional.",
-      "Keep track of how it changes instead of gritting your teeth."
+      "See a health professional."
     ],
     zones: [],
     voirAussi: ["fatigue", "agir-tot"]
   },
   "experience": {
     categorie: "Individual sub-factor", titre: "Experience", icone: "🎓", couleur: "#f09430", famille: "individuel",
-    description: "Experience brings efficient movements: pacing your effort, getting into the right spot, seeing things coming. A new worker burns more energy for the same result and knows fewer of the workstation's traps.",
+    description: "Experience brings efficient movements: pacing your effort, getting into the right spot and seeing the workstation's traps coming.",
     exemples: [
-      "The first months at a new workstation.",
-      "Temp or seasonal staff.",
+      "Your first months at a new workstation.",
       "Coming back after a long absence.",
       "A change of tool or work method."
     ],
     prevention: [
-      "Welcome and mentor new workers.",
-      "Train people in efficient work techniques.",
-      "Ramp up the pace gradually.",
-      "Encourage questions and the room to make mistakes."
+      "Get mentored and ask questions.",
+      "Learn the efficient work techniques.",
+      "Ramp up your pace gradually."
     ],
     zones: [],
     voirAussi: ["condition-physique"]
@@ -800,53 +751,47 @@ const DETAILS = {
   /* ----- Sous-facteurs environnement ----- */
   "outils": {
     categorie: "Environmental sub-factor", titre: "Tools", icone: "🛠️", couleur: "#74b62e", famille: "environnement",
-    description: "A poorly suited or poorly maintained tool forces you to put in more force and get into bad positions. The right tool, sharpened and the right size, literally cuts the strain on your body in half.",
+    description: "A poorly suited or poorly maintained tool forces you to put in more force and get into bad positions.",
     exemples: [
       "A handle too big or too small for your hand.",
       "A heavy tool held at arm's length for long minutes.",
-      "A dull blade or bit that makes you bear down.",
-      "Ill-fitting gloves that make you lose your grip."
+      "A dull blade or bit that makes you bear down."
     ],
     prevention: [
-      "Pick ergonomic tools suited to the task and the hand.",
+      "Pick tools suited to the task and your hand.",
       "Sharpen and maintain them regularly.",
-      "Hang or counterbalance heavy tools.",
-      "Try tools out before you buy them."
+      "Hang or counterbalance heavy tools."
     ],
     zones: ["poignets-mains", "coudes", "epaules"],
     voirAussi: ["outils-vibrants", "prise-serree"]
   },
   "temperature": {
     categorie: "Environmental sub-factor", titre: "Temperature", icone: "🌡️", couleur: "#74b62e", famille: "environnement",
-    description: "Cold stiffens your tissues and dulls your dexterity; heat wears you out, dehydrates you and speeds up muscle fatigue. Either way, your body spends energy regulating itself instead of recovering.",
+    description: "Cold stiffens your tissues and dulls your dexterity, while heat wears you out and speeds up muscle fatigue.",
     exemples: [
-      "Cold room, refrigerated warehouse.",
-      "Bakehouse, foundry, overheated kitchen.",
-      "Outdoor work in the dead of summer or winter.",
+      "Working in a cold, damp drift.",
+      "Straining in an overheated, poorly ventilated area.",
       "Constant drafts at a fixed workstation."
     ],
     prevention: [
       "Match your work clothing to the temperature.",
-      "Plan breaks in a heated room.",
-      "Drink water regularly in the heat.",
-      "Acclimatize gradually to the extremes."
+      "Take breaks in a heated area.",
+      "Drink water often in the heat and acclimatize gradually."
     ],
     zones: ["poignets-mains"],
     voirAussi: ["froid"]
   },
   "espace-travail": {
     categorie: "Environmental sub-factor", titre: "Space", icone: "📐", couleur: "#74b62e", famille: "environnement",
-    description: "A tight or cluttered space forces your body to twist, crouch or work at arm's length. How the workstation is laid out directly sets which postures are possible, and so the risk.",
+    description: "A tight or cluttered space forces your body to twist, crouch or work at arm's length.",
     exemples: [
       "Working under a machine or in a cramped technical room.",
-      "A cluttered counter that pushes the work away from your body.",
-      "A space too narrow to pivot with a load.",
-      "Working in a vehicle or a cab."
+      "Not enough room to pivot with a load.",
+      "Working wedged into a cab or a narrow corner."
     ],
     prevention: [
       "Clear and organize the space before you start.",
       "Prep the job to cut down the time in an awkward position.",
-      "Rethink the layout of cluttered workstations.",
       "Keep the gear you use often within reach."
     ],
     zones: ["cou", "haut-dos", "bas-dos", "genoux"],
@@ -854,18 +799,16 @@ const DETAILS = {
   },
   "sol-inegal": {
     categorie: "Environmental sub-factor", titre: "Unstable ground", icone: "⛰️", couleur: "#74b62e", famille: "environnement",
-    description: "Ground that's unstable, slippery or cluttered makes your muscles work non-stop to keep your balance. Carrying a load over uneven ground multiplies the effort of staying steady and the risk of a wrong move.",
+    description: "Ground that's unstable, slippery or cluttered makes your muscles work non-stop to keep your balance.",
     exemples: [
-      "A worksite with rubble, mud or trenches.",
-      "A dock or ramp with drop-offs.",
-      "The slippery floor of a kitchen or a shop.",
-      "Steps and thresholds crossed over and over with loads."
+      "Walking over ground strewn with debris, mud or rock.",
+      "Crossing drop-offs, steps or thresholds with a load.",
+      "Moving across a slippery or soaked surface."
     ],
     prevention: [
       "Maintain and clear the walkways.",
       "Wear suitable, slip-resistant footwear.",
-      "Light the walkways properly.",
-      "Plan the safest routes for carrying things."
+      "Light the walkways and pick the safest routes."
     ],
     zones: ["chevilles-pieds", "genoux", "bas-dos"],
     voirAussi: ["environnement", "passage-etroit", "surface-appui"]
@@ -873,17 +816,15 @@ const DETAILS = {
 
   "compression": {
     categorie: "Biomechanical sub-factor", titre: "Compression", icone: "⬇️", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "When a part of your body presses long or hard against a hard surface, the tissues caught between the bone and the surface get crushed: circulation drops, nerves and bursae get irritated. A quiet strain, but one that adds up fast.",
+    description: "A part of your body pressed long against a hard surface crushes the tissues, cuts off circulation and irritates the nerves.",
     exemples: [
       "Resting on your knees to work on the floor.",
-      "Forearms set on the edge of a workbench or a machine.",
-      "A tool handle that always presses the same spot on your palm.",
-      "A tool or part pressed against your thigh or shoulder to hold it steady."
+      "Forearms set on the edge of a machine.",
+      "A tool or part wedged against your thigh to hold it steady."
     ],
     prevention: [
-      "Pad the pressure points (knee pads, sleeves, mats).",
-      "Round off or pad the edges of work surfaces.",
-      "Pick wide handles that spread out the pressure.",
+      "Pad the pressure points with knee pads, sleeves or mats.",
+      "Round off or pad the edges of surfaces.",
       "Change your resting position regularly."
     ],
     zones: ["genoux", "coudes", "poignets-mains"],
@@ -891,17 +832,15 @@ const DETAILS = {
   },
   "antecedents": {
     categorie: "Individual sub-factor", titre: "Medical history", icone: "📋", couleur: "#f09430", famille: "individuel",
-    description: "A past injury, an earlier MSD or a health condition (arthritis, diabetes, hernia…) leave the tissues weaker. The area that's already been hit takes the same strains less well and gets hurt again more easily.",
+    description: "A past injury or a health condition leaves your tissues weaker, and the area that's already been hit takes strain less well and gets hurt again more easily.",
     exemples: [
       "An old sprain or fracture that didn't rehab well.",
       "Tendinitis or low-back pain you've had before.",
-      "A condition that weakens nerves or joints (diabetes, arthritis).",
-      "Coming back to work after a long absence for an injury."
+      "A condition that weakens nerves or joints, like diabetes or arthritis."
     ],
     prevention: [
-      "Tell the health service about any relevant history.",
-      "Adapt the workstation or the task to the weakened area.",
-      "Plan a gradual return after an injury.",
+      "Tell the health service about your history.",
+      "Get the task adapted to the weakened area.",
       "Watch for the first signs of a flare-up and report them."
     ],
     zones: [],
@@ -909,17 +848,15 @@ const DETAILS = {
   },
   "surface-appui": {
     categorie: "Environmental sub-factor", titre: "Support surface", icone: "🔲", couleur: "#74b62e", famille: "environnement",
-    description: "The quality of the surface you stand on, kneel on or lean against changes everything: hard ground tires your legs and back, a sharp edge compresses your tissues, an unstable surface keeps you working to stay balanced.",
+    description: "The surface you stand on, kneel on or lean against changes everything for your body, since hard ground tires you and a sharp edge compresses you.",
     exemples: [
-      "Standing for hours on concrete.",
-      "Kneeling on rock or a metal floor.",
-      "Leaning against structures with sharp edges.",
-      "Working from a narrow or unstable foothold (ladder, ledge)."
+      "Standing for hours on rock or concrete.",
+      "Kneeling on a hard or metal surface.",
+      "Working from a narrow or unstable foothold."
     ],
     prevention: [
       "Use anti-fatigue mats at fixed standing stations.",
-      "Plan for knee pads or cushions for floor-level work.",
-      "Pad or round off the contact edges.",
+      "Plan for knee pads or a cushion for floor-level work.",
       "Make sure your footing is stable and wide enough before you work."
     ],
     zones: ["chevilles-pieds", "genoux", "bas-dos"],
@@ -927,36 +864,32 @@ const DETAILS = {
   },
   "outil-percussion": {
     categorie: "Risk situation · environmental family", titre: "Impact tool", icone: "🔨", couleur: "#74b62e", famille: "environnement",
-    description: "Jackhammers, rotary hammers, impact wrenches: these tools combine repeated shocks, strong vibration and a tight grip to control them. Your hands, elbows and shoulders take every impact, hundreds of times a minute.",
+    description: "Impact tools combine repeated shocks, strong vibration and a tight grip, and your hands, elbows and shoulders take every impact.",
     exemples: [
       "Breaking concrete or rock with a jackhammer.",
       "Drilling with a rotary or percussion drill.",
-      "Bolting with an impact wrench all shift long.",
-      "Using a chipping hammer or a pneumatic nailer non-stop."
+      "Bolting with an impact wrench all shift long."
     ],
     prevention: [
       "Pick anti-vibration tools and keep them well maintained.",
       "Let the weight of the tool do the work instead of bearing down hard.",
-      "Switch between tasks and limit your daily exposure time.",
-      "Wear anti-vibration gloves and keep your hands warm."
+      "Switch between tasks and wear anti-vibration gloves."
     ],
     zones: ["poignets-mains", "coudes", "epaules"],
     voirAussi: ["outils-vibrants", "prise-serree", "froid"]
   },
   "passage-etroit": {
     categorie: "Risk situation · environmental family", titre: "Narrow passage", icone: "🚧", couleur: "#74b62e", famille: "environnement",
-    description: "Moving or working in a narrow passage forces your body to twist, pull in your shoulders, duck your head or carry loads off to the side. Every move becomes an awkward posture, the kind you get in drifts, technical rooms and the spaces between machines.",
+    description: "In a narrow passage your body has to twist, pull in your shoulders or duck your head with every move.",
     exemples: [
       "Squeezing between two pieces of equipment with gear in your hands.",
       "Moving through a low drift or a service tunnel.",
-      "Passing a load over or around an obstacle.",
-      "Working in a cluttered technical room."
+      "Passing a load over or around an obstacle."
     ],
     prevention: [
       "Clear and widen the main walkways.",
       "Plan your route before you carry a load.",
-      "Split up or reposition the load so you can face the obstacle as you pass.",
-      "Reorganize storage to free up the access points you use often."
+      "Split up or reorient the load so you can face the obstacle as you pass."
     ],
     zones: ["bas-dos", "epaules", "cou"],
     voirAussi: ["espace-travail", "sol-inegal", "postures"]
@@ -965,36 +898,32 @@ const DETAILS = {
   /* ----- Messages clés ----- */
   "combinaison": {
     categorie: "Key message", titre: "How the factors combine", icone: "⚠️", couleur: "#d6111e",
-    description: "Risk factors don't add up: they multiply. A repeated movement is bearable; the same movement repeated with force, in the cold, by someone who's tired, becomes dangerous. That's why effective prevention works on several levers at once, not just one.",
+    description: "Risk factors don't add up, they multiply, and a movement repeated with force, in the cold, when you're tired, quickly turns dangerous.",
     exemples: [
-      "Repetition + force: the most common pair in upper-limb MSDs.",
-      "Vibration + cold + tight grip: the classic recipe for white finger.",
-      "Awkward posture + long duration: the quiet strain that creeps in.",
-      "Fatigue + high pace: your protective movements disappear."
+      "Repetition and force: the most common pair in upper-limb MSDs.",
+      "Vibration, cold and tight grip: the recipe for white finger.",
+      "Fatigue and a high pace: your protective movements disappear."
     ],
     prevention: [
-      "Assess the workstation as a whole, not factor by factor.",
+      "Assess your workstation as a whole, not factor by factor.",
       "Tackle the combinations you've spotted first.",
-      "Combine technical, organizational and human solutions.",
-      "Involve the workers: they know the real combinations on the ground."
+      "Speak up about the real combinations on the ground, because you know them."
     ],
     zones: [],
     voirAussi: ["biomecanique", "individuel", "environnement"]
   },
   "agir-tot": {
     categorie: "Worth remembering", titre: "Acting early changes everything", icone: "💡", couleur: "#d6111e",
-    description: "An MSD sets in by stages: discomfort at the end of the day, then pain during work, then pain that hangs on at rest. In the early stages, it's all reversible with simple adjustments. Once it's settled in, an MSD can take months to heal, if it heals.",
+    description: "An MSD sets in by stages, and caught early it's easily fixed, while once it's settled in it can take months to heal, if it heals.",
     exemples: [
-      "Stage 1: local discomfort or fatigue at the end of the day, gone after rest.",
-      "Stage 2: pain that shows up during work and hangs on into the evening.",
-      "Stage 3: constant pain, even at rest or at night.",
-      "Stage 4: limited movement at work and at home."
+      "Stage 1: discomfort at the end of the day, gone after rest.",
+      "Stage 2: pain during work that hangs on into the evening.",
+      "Stage 3: constant pain, even at rest or at night."
     ],
     prevention: [
-      "Take the first signals seriously (discomfort, stiffness, tingling).",
-      "Talk about it early: coworker, supervisor, health and safety committee.",
-      "Adjust the workstation or the pace quickly.",
-      "See someone before the pain settles in."
+      "Take the first signals seriously: discomfort, stiffness, tingling.",
+      "Talk about it early to a coworker, a supervisor or the health and safety committee.",
+      "Adjust your workstation or pace quickly, and see someone without waiting."
     ],
     zones: [],
     voirAussi: ["douleur-presente", "combinaison"]

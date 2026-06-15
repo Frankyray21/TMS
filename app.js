@@ -387,57 +387,48 @@ const DETAILS = {
   /* ----- Les trois familles ----- */
   "biomecanique": {
     categorie: "Grande famille", titre: "Facteurs biomécaniques", icone: "💪", couleur: "#1b6e96",
-    description: "Ce sont les contraintes physiques directement liées à la tâche : la force exercée, la fréquence des gestes, les positions adoptées et le poids manipulé. Plus ces contraintes sont intenses, fréquentes ou prolongées, plus les muscles, tendons et articulations sont sollicités au-delà de leur capacité de récupération.",
+    description: "Ce sont les contraintes physiques de la tâche, soit la force, la répétition, les postures et les charges, qui sollicitent ton corps au-delà de sa capacité à récupérer.",
     exemples: [
       "Efforts : pousser, tirer ou soulever en forçant.",
-      "Répétition : refaire le même geste des centaines de fois par quart de travail.",
-      "Postures : travailler le dos courbé, les poignets pliés ou le cou penché.",
-      "Charges : manipuler des objets lourds ou difficiles à saisir.",
-      "Torsion : tourner le tronc ou les poignets en effort."
+      "Répétition : refaire le même geste des centaines de fois par quart.",
+      "Postures : travailler le dos courbé, les poignets pliés ou le cou penché."
     ],
     prevention: [
-      "Réduire le poids des charges ou utiliser des aides mécaniques.",
-      "Varier les gestes et alterner les tâches.",
-      "Aménager le poste de travail pour garder des postures neutres.",
-      "Former aux bonnes techniques de travail."
+      "Réduis le poids des charges ou utilise des aides mécaniques.",
+      "Varie tes gestes et alterne les tâches.",
+      "Garde des postures neutres en aménageant ton poste."
     ],
     zones: ["epaules", "haut-dos", "bas-dos", "coudes", "poignets-mains"],
     voirAussi: ["manutention", "mouvements-repetes", "combinaison"]
   },
   "individuel": {
     categorie: "Grande famille", titre: "Facteurs individuels", icone: "🧍", couleur: "#d97a16",
-    description: "Chaque personne réagit différemment aux mêmes contraintes. L'état de forme, la fatigue accumulée, la qualité du sommeil, une douleur déjà présente ou le niveau d'expérience influencent la capacité du corps à encaisser et à récupérer.",
+    description: "Ton corps n'encaisse pas les mêmes contraintes selon ta fatigue, ton sommeil, ta forme, une douleur déjà là ou ton expérience.",
     exemples: [
-      "Fatigue : un corps fatigué se protège moins bien et compense mal.",
-      "Sommeil : un mauvais sommeil ralentit la réparation des tissus.",
-      "Condition physique : une faible endurance musculaire augmente la vulnérabilité.",
-      "Douleur déjà présente : une blessure mal guérie fragilise la zone.",
-      "Expérience : un travailleur novice maîtrise moins les gestes économes."
+      "Fatigue : un corps fatigué se protège moins bien.",
+      "Sommeil : mal dormir ralentit la réparation des tissus.",
+      "Douleur déjà présente : une zone mal guérie reste fragile."
     ],
     prevention: [
-      "Signaler tôt toute douleur persistante.",
-      "Favoriser un bon sommeil et une bonne hygiène de vie.",
-      "Prévoir une période d'adaptation pour les nouveaux travailleurs.",
-      "Adapter la charge de travail à la condition de chacun."
+      "Signale tôt toute douleur qui persiste.",
+      "Soigne ton sommeil et ton hygiène de vie.",
+      "Prévois une période d'adaptation pour les nouveaux."
     ],
     zones: [],
     voirAussi: ["recuperation", "fatigue", "combinaison"]
   },
   "environnement": {
     categorie: "Grande famille", titre: "Facteurs environnementaux", icone: "🌡️", couleur: "#5a9421",
-    description: "Le contexte matériel dans lequel la tâche est réalisée peut amplifier toutes les autres contraintes : des outils mal adaptés, des vibrations, le froid, un espace exigu ou un sol instable obligent le corps à travailler plus fort pour le même résultat.",
+    description: "Le contexte de travail, soit des outils mal adaptés, des vibrations, le froid, un espace exigu ou un sol instable, force ton corps à travailler plus fort pour le même résultat.",
     exemples: [
-      "Outils : un outil mal entretenu ou mal dimensionné exige plus de force.",
-      "Vibrations : elles fatiguent les tissus des mains, des bras et du dos.",
-      "Température : le froid raidit les muscles, la chaleur épuise.",
-      "Espace de travail : un espace restreint force des postures contraignantes.",
-      "Sol instable : il déstabilise et augmente l'effort de maintien."
+      "Outils : un outil mal adapté exige plus de force.",
+      "Vibrations : elles fatiguent les mains, les bras et le dos.",
+      "Froid : il raidit tes muscles et te fait serrer plus fort."
     ],
     prevention: [
-      "Choisir et entretenir des outils ergonomiques.",
-      "Dégager et organiser l'espace de travail.",
-      "Adapter les vêtements et les pauses à la température.",
-      "Maintenir les sols propres, plans et dégagés."
+      "Choisis et entretiens des outils ergonomiques.",
+      "Dégage et organise ton espace de travail.",
+      "Garde les sols propres, plans et stables."
     ],
     zones: ["poignets-mains", "bas-dos", "genoux"],
     voirAussi: ["froid", "outils-vibrants", "combinaison"]
@@ -446,108 +437,96 @@ const DETAILS = {
   /* ----- Situations à risque : famille biomécanique ----- */
   "manutention": {
     categorie: "Sous-facteur biomécanique", titre: "Manutention", icone: "📦", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Soulever, transporter, pousser ou tirer des charges sollicite fortement le dos, les épaules et les bras. Le risque augmente avec le poids, la distance de la charge par rapport au corps, la fréquence et la posture adoptée.",
+    description: "Soulever, transporter, pousser ou tirer des charges sollicite fortement ton dos, tes épaules et tes bras.",
     exemples: [
-      "Soulever une boîte posée au sol en arrondissant le dos.",
+      "Soulever une charge au sol en arrondissant le dos.",
       "Transporter une charge loin du corps, bras tendus.",
-      "Empiler des sacs au-dessus des épaules.",
-      "Tirer un chariot lourd sur une longue distance."
+      "Tirer une charge lourde sur une longue distance."
     ],
     prevention: [
-      "Utiliser des aides mécaniques (transpalette, diable, lève-charge).",
-      "Garder la charge près du corps et plier les genoux.",
-      "Fractionner les charges trop lourdes.",
-      "Travailler à deux pour les objets encombrants."
+      "Utilise une aide mécanique quand c'est possible.",
+      "Garde la charge près du corps et plie les genoux.",
+      "Travaille à deux pour les objets encombrants."
     ],
     zones: ["bas-dos", "epaules", "poignets-mains"],
     voirAussi: ["charges", "efforts", "torsion"]
   },
   "bras-leves": {
     categorie: "Situation à risque · famille biomécanique", titre: "Travail bras levés", icone: "🙆", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Travailler les mains au-dessus des épaules met les muscles et tendons de l'épaule en tension constante et réduit leur irrigation sanguine. C'est l'une des causes majeures de tendinites de la coiffe des rotateurs.",
+    description: "Travailler les mains au-dessus des épaules garde les tendons de ton épaule en tension et les irrigue mal.",
     exemples: [
-      "Visser ou peindre au plafond.",
-      "Ranger des articles sur des tablettes hautes.",
-      "Tirer des câbles au-dessus de la tête.",
-      "Poser des panneaux ou des conduits en hauteur."
+      "Visser ou boulonner au-dessus de la tête.",
+      "Tirer des câbles ou des conduits en hauteur.",
+      "Poser des panneaux ou des fixations au plafond."
     ],
     prevention: [
-      "Utiliser une plateforme ou un escabeau pour travailler à hauteur d'épaule.",
-      "Limiter la durée des tâches bras levés et alterner.",
-      "Utiliser des rallonges d'outils quand c'est possible.",
-      "Préparer le matériel à portée de main avant de monter."
+      "Utilise une plateforme pour travailler à hauteur d'épaule.",
+      "Limite la durée des tâches bras levés et alterne.",
+      "Prépare le matériel à portée de main avant de monter."
     ],
     zones: ["epaules", "cou"],
     voirAussi: ["hauteur-travail", "postures"]
   },
   "mouvements-repetes": {
     categorie: "Situation à risque · famille biomécanique", titre: "Gestes rapides en continu", icone: "⏱️", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Répéter le même geste sans pause empêche les tissus de récupérer entre chaque sollicitation. Même un effort faible devient dommageable quand il est répété des milliers de fois : c'est l'accumulation qui blesse.",
+    description: "Répéter le même geste sans pause empêche tes tissus de récupérer, et c'est l'accumulation qui blesse.",
     exemples: [
-      "Scanner des articles à la caisse toute la journée.",
-      "Assembler les mêmes pièces sur une chaîne de montage.",
-      "Découper ou désosser à un rythme soutenu.",
-      "Cliquer et saisir au clavier sans interruption."
+      "Assembler les mêmes pièces sans interruption.",
+      "Découper ou ébavurer à un rythme soutenu.",
+      "Visser la même fixation des centaines de fois par quart."
     ],
     prevention: [
-      "Faire une rotation des tâches entre collègues.",
-      "Introduire des micro-pauses régulières.",
-      "Automatiser ou mécaniser les gestes les plus répétitifs.",
-      "Varier la façon d'exécuter le geste quand c'est possible."
+      "Fais une rotation des tâches entre collègues.",
+      "Introduis des micro-pauses régulières.",
+      "Mécanise les gestes les plus répétitifs quand c'est possible."
     ],
     zones: ["poignets-mains", "coudes", "epaules"],
     voirAussi: ["recuperation", "prise-serree"]
   },
   "posture-statique": {
     categorie: "Situation à risque · famille biomécanique", titre: "Posture statique", icone: "🪑", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Rester longtemps dans la même position, assis ou debout, contracte les muscles en continu et ralentit la circulation sanguine. L'immobilité prolongée fatigue autant que l'effort : le corps a besoin de mouvement pour s'irriguer.",
+    description: "Rester longtemps dans la même position, assis ou debout, contracte tes muscles en continu et ralentit ta circulation.",
     exemples: [
-      "Rester assis devant un écran plusieurs heures sans bouger.",
-      "Travailler debout immobile à un poste de contrôle.",
+      "Travailler debout immobile à un poste de surveillance.",
       "Maintenir les bras dans la même position pour tenir une pièce.",
       "Conduire de longues heures sans pause."
     ],
     prevention: [
-      "Se lever, marcher et s'étirer régulièrement.",
-      "Alterner les positions assise et debout.",
-      "Régler le poste de travail (chaise, écran, plan de travail) à sa morphologie.",
-      "Planifier des pauses actives dans l'horaire."
+      "Lève-toi, marche et étire-toi régulièrement.",
+      "Alterne les positions assise et debout.",
+      "Planifie des pauses actives dans ton horaire."
     ],
     zones: ["cou", "haut-dos", "bas-dos"],
     voirAussi: ["postures", "espace-travail"]
   },
   "prise-serree": {
     categorie: "Situation à risque · famille biomécanique", titre: "Prise serrée", icone: "✊", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Serrer fort un outil ou un objet, surtout du bout des doigts (prise en pince), sollicite intensément les tendons de la main et de l'avant-bras. Le risque augmente si la prise est maintenue longtemps, répétée ou combinée à des vibrations ou au froid.",
+    description: "Serrer fort un outil, surtout du bout des doigts, sollicite intensément les tendons de ta main et de ton avant-bras.",
     exemples: [
-      "Tenir fermement un pistolet à visser toute la journée.",
-      "Couper avec des ciseaux ou des pinces à répétition.",
-      "Saisir des pièces lisses ou glissantes du bout des doigts.",
-      "Porter des contenants par une poignée trop fine."
+      "Tenir fermement une visseuse toute la journée.",
+      "Couper avec des pinces à répétition.",
+      "Saisir des pièces lisses ou glissantes du bout des doigts."
     ],
     prevention: [
-      "Choisir des outils avec des poignées adaptées à la main.",
-      "Privilégier la prise pleine main plutôt que la pince.",
-      "Entretenir les outils pour réduire la force nécessaire.",
-      "Porter des gants bien ajustés qui n'obligent pas à serrer plus."
+      "Choisis des outils avec des poignées adaptées à ta main.",
+      "Privilégie la prise pleine main plutôt que la pince.",
+      "Porte des gants ajustés qui n'obligent pas à serrer plus."
     ],
     zones: ["poignets-mains", "coudes"],
     voirAussi: ["outils", "froid", "outils-vibrants"]
   },
   "travail-genoux": {
     categorie: "Situation à risque · famille biomécanique", titre: "Appui sur genou", icone: "🧎", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "S'agenouiller ou s'accroupir comprime directement les structures du genou et plie l'articulation à l'extrême. Maintenue ou répétée, cette position favorise bursites, lésions du ménisque et douleurs chroniques.",
+    description: "T'agenouiller ou t'accroupir comprime directement ton genou et le plie à l'extrême.",
     exemples: [
-      "Poser du plancher ou de la céramique.",
-      "Faire de la mécanique au ras du sol.",
-      "Jardiner ou désherber à genoux.",
-      "Intervenir sous des équipements bas."
+      "Travailler au ras du sol pour une réparation.",
+      "Intervenir sous un équipement bas.",
+      "Rester accroupi longtemps pour ajuster une pièce."
     ],
     prevention: [
-      "Porter des genouillères ou utiliser un tapis rembourré.",
-      "Utiliser un petit banc ou un siège bas quand c'est possible.",
-      "Surélever le travail plutôt que de descendre vers lui.",
-      "Se relever et bouger les jambes fréquemment."
+      "Porte des genouillères ou pose un tapis rembourré.",
+      "Utilise un petit banc ou un siège bas quand c'est possible.",
+      "Relève-toi et bouge les jambes fréquemment."
     ],
     zones: ["genoux", "bas-dos"],
     voirAussi: ["espace-travail", "sol-inegal"]
@@ -556,18 +535,16 @@ const DETAILS = {
   /* ----- Situation à risque : famille individuelle ----- */
   "recuperation": {
     categorie: "Sous-facteur individuel", titre: "Récupération", icone: "😴", couleur: "#f09430", famille: "individuel",
-    description: "Les tissus se réparent pendant les pauses et le repos. Sans temps de récupération suffisant (pauses trop rares, heures supplémentaires, mauvais sommeil), les microlésions s'accumulent plus vite qu'elles ne guérissent et le TMS s'installe.",
+    description: "Ton corps répare ses tissus pendant les pauses et le repos, et sans assez de récupération, les microlésions s'accumulent plus vite qu'elles ne guérissent.",
     exemples: [
-      "Enchaîner les quarts de travail sans journée de repos.",
-      "Sauter ses pauses pour finir plus vite.",
-      "Cadence imposée qui ne laisse aucun répit entre les cycles.",
-      "Cumuler un travail physique et un sommeil insuffisant."
+      "Enchaîner les quarts sans journée de repos.",
+      "Sauter tes pauses pour finir plus vite.",
+      "Cadence imposée qui ne laisse aucun répit entre les cycles."
     ],
     prevention: [
-      "Respecter les pauses prévues et en faire de vraies coupures.",
-      "Alterner tâches exigeantes et tâches légères.",
-      "Limiter les heures supplémentaires répétées.",
-      "Préserver un sommeil suffisant et régulier."
+      "Prends de vraies pauses et fais-en de vraies coupures.",
+      "Alterne tâches exigeantes et tâches légères.",
+      "Limite les heures supplémentaires répétées."
     ],
     zones: [],
     voirAussi: ["fatigue", "sommeil", "mouvements-repetes"]
@@ -576,56 +553,48 @@ const DETAILS = {
   /* ----- Situations à risque : famille environnement ----- */
   "outils-vibrants": {
     categorie: "Sous-facteur environnemental", titre: "Vibrations", icone: "📳", couleur: "#74b62e", famille: "environnement",
-    description: "Les vibrations transmises aux mains et aux bras endommagent progressivement les nerfs, les vaisseaux sanguins et les articulations. À long terme, elles peuvent causer le syndrome des vibrations main-bras (doigts blancs, engourdissements, perte de dextérité).",
+    description: "Les vibrations d'un outil endommagent peu à peu les nerfs, les vaisseaux et les articulations de tes mains et de tes bras.",
     exemples: [
-      "Utiliser un marteau-piqueur ou une plaque vibrante.",
-      "Meuler ou poncer pendant de longues périodes.",
-      "Travailler à la scie mécanique ou à la débroussailleuse.",
-      "Visser avec des clés à choc à répétition."
+      "Utiliser un marteau-piqueur ou une perceuse à percussion.",
+      "Meuler ou poncer longtemps de suite.",
+      "Visser avec une clé à choc à répétition."
     ],
     prevention: [
-      "Choisir des outils antivibratiles et bien entretenus.",
-      "Limiter la durée d'exposition quotidienne et alterner les tâches.",
-      "Porter des gants antivibrations.",
-      "Éviter de serrer l'outil plus que nécessaire."
+      "Choisis des outils antivibratiles et bien entretenus.",
+      "Limite le temps d'exposition par jour et alterne les tâches.",
+      "Porte des gants antivibrations et évite de trop serrer l'outil."
     ],
     zones: ["poignets-mains", "coudes", "epaules"],
     voirAussi: ["outils", "froid", "prise-serree"]
   },
   "hauteur-travail": {
     categorie: "Situation à risque · famille environnement", titre: "Niveau de travail", icone: "↕️", couleur: "#74b62e", famille: "environnement",
-    description: "Un plan de travail trop bas force à se pencher, un plan trop haut force à lever les épaules. Dans les deux cas, le corps compense par des postures contraignantes maintenues toute la journée.",
+    description: "Quand le plan de travail est trop bas ton dos se courbe, et trop haut tes épaules montent, ton corps force pour rien dans les deux cas.",
     exemples: [
-      "Établi trop bas qui oblige à courber le dos.",
-      "Comptoir trop haut qui force à hausser les épaules.",
-      "Travailler dans le fond d'un bac ou d'une cuve profonde.",
-      "Écran placé trop bas ou trop haut par rapport aux yeux."
+      "Travailler sur une surface trop basse qui t'oblige à courber le dos.",
+      "Manœuvrer un équipement placé trop haut qui te force à hausser les épaules.",
+      "Intervenir au fond d'une excavation ou d'une ouverture profonde."
     ],
     prevention: [
-      "Régler la hauteur du plan de travail à la tâche et à la personne.",
-      "Utiliser des tables élévatrices ou des supports réglables.",
-      "Incliner ou surélever les contenants profonds.",
-      "Positionner le travail entre les hanches et les épaules."
+      "Règle la hauteur du travail à la tâche et à ta taille.",
+      "Utilise un support réglable ou une plateforme.",
+      "Place le travail entre tes hanches et tes épaules."
     ],
     zones: ["haut-dos", "bas-dos", "epaules", "cou"],
     voirAussi: ["postures", "bras-leves", "espace-travail"]
   },
   "froid": {
     categorie: "Situation à risque · famille environnement", titre: "Froid et humidité", icone: "❄️", couleur: "#74b62e", famille: "environnement",
-    description: "Le froid raidit les muscles et les tendons, réduit la sensibilité et la dextérité des mains, et pousse à serrer plus fort. L'humidité, omniprésente sous terre, accentue cet effet : des tissus froids et humides deviennent plus raides et plus vulnérables aux blessures. Le froid amplifie aussi tous les autres facteurs, notamment les vibrations et les gestes répétés.",
+    description: "Le froid raidit tes muscles et tes tendons, réduit la sensibilité de tes mains et te pousse à serrer plus fort, et l'humidité aggrave tout.",
     exemples: [
-      "Travailler en chambre froide ou en entrepôt frigorifique.",
-      "Manipuler des produits congelés à mains nues ou peu protégées.",
-      "Travailler dehors l'hiver avec des outils métalliques.",
-      "Courants d'air froid sur un poste de travail fixe.",
-      "Galerie de mine froide et humide en continu."
+      "Travailler en galerie froide et humide en continu.",
+      "Manipuler du métal froid à mains nues ou mal protégées.",
+      "Subir des courants d'air froid à un poste fixe."
     ],
     prevention: [
-      "Porter des vêtements et des gants adaptés au froid.",
-      "Prévoir des pauses de réchauffement dans un local tempéré.",
-      "S'échauffer avant les tâches exigeantes.",
-      "Isoler les poignées d'outils et couper les courants d'air.",
-      "Rester au sec : vêtements imperméables et de rechange."
+      "Porte des vêtements et des gants adaptés au froid et reste au sec.",
+      "Prends des pauses de réchauffement dans un endroit tempéré.",
+      "Échauffe-toi avant l'effort et isole les poignées d'outils."
     ],
     zones: ["poignets-mains"],
     voirAussi: ["temperature", "prise-serree", "outil-percussion", "outils-vibrants"]
@@ -634,72 +603,64 @@ const DETAILS = {
   /* ----- Sous-facteurs biomécaniques ----- */
   "efforts": {
     categorie: "Sous-facteur biomécanique", titre: "Effort", icone: "🏋️", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Forcer pour pousser, tirer, soulever ou serrer impose une tension élevée aux muscles et aux tendons. Le risque grimpe quand l'effort est intense, prolongé, répété ou réalisé dans une mauvaise posture.",
+    description: "Forcer pour pousser, tirer, soulever ou serrer met tes muscles et tes tendons sous forte tension.",
     exemples: [
-      "Pousser un chariot lourd ou mal graissé.",
-      "Desserrer un raccord grippé avec une clé.",
-      "Tirer une palette sur un sol rugueux.",
+      "Pousser un équipement lourd ou mal graissé.",
+      "Desserrer un raccord grippé à la clé.",
       "Découper une matière dure avec un outil émoussé."
     ],
     prevention: [
-      "Mécaniser les efforts les plus intenses.",
-      "Entretenir les équipements pour réduire la résistance.",
-      "Se placer correctement avant de forcer.",
-      "Demander de l'aide pour les efforts exceptionnels."
+      "Mécanise ou utilise une aide pour les efforts les plus intenses.",
+      "Entretiens tes outils pour réduire la résistance.",
+      "Demande de l'aide pour les efforts exceptionnels."
     ],
     zones: ["epaules", "haut-dos", "bas-dos", "coudes"],
     voirAussi: ["manutention", "charges", "prise-serree"]
   },
   "postures": {
     categorie: "Sous-facteur biomécanique", titre: "Posture", icone: "🧘", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Une posture est contraignante quand une articulation s'éloigne de sa position neutre : dos courbé, cou fléchi, poignets cassés, bras écartés. Maintenue ou répétée, elle surcharge les structures qui stabilisent l'articulation.",
+    description: "Une articulation qui s'éloigne de sa position neutre, comme un dos courbé ou un cou fléchi, se surcharge vite.",
     exemples: [
       "Travailler le dos penché vers l'avant.",
-      "Garder le cou fléchi vers un écran ou une pièce.",
-      "Plier les poignets pour atteindre une commande.",
-      "Atteindre des objets placés trop loin ou trop bas."
+      "Garder le cou fléchi vers la pièce.",
+      "Atteindre un objet placé trop loin ou trop bas."
     ],
     prevention: [
-      "Rapprocher le travail du corps.",
-      "Régler la hauteur et l'inclinaison du poste de travail.",
-      "Garder les articulations proches du neutre.",
-      "Changer souvent de position."
+      "Rapproche le travail de ton corps.",
+      "Garde tes articulations proches du neutre.",
+      "Change souvent de position."
     ],
     zones: ["cou", "haut-dos", "bas-dos", "poignets-mains"],
     voirAussi: ["posture-statique", "hauteur-travail"]
   },
   "charges": {
     categorie: "Situation à risque · famille biomécanique", titre: "Boîte loin du corps", icone: "📦", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Plus une charge est saisie ou portée loin du tronc, plus l'effort réel explose : à bout de bras, 10 kg imposent au bas du dos l'équivalent de plusieurs dizaines de kilos. La distance entre la charge et le corps est souvent plus dangereuse que le poids lui-même.",
+    description: "Plus une charge est portée loin de ton tronc, plus l'effort réel sur ton dos explose, bien au-delà du poids réel.",
     exemples: [
-      "Saisir une boîte au fond d'une palette ou d'un bac profond.",
-      "Porter un objet à bout de bras pour mieux voir où l'on marche.",
-      "Déposer une charge par-dessus un obstacle ou un comptoir.",
-      "Manipuler un objet volumineux impossible à coller au corps."
+      "Saisir une charge au fond d'un espace profond.",
+      "Porter un objet à bout de bras pour mieux voir.",
+      "Manipuler une pièce volumineuse impossible à coller au corps."
     ],
     prevention: [
-      "Rapprocher la charge du tronc avant de soulever.",
-      "Glisser ou pivoter la charge vers soi plutôt que de tendre les bras.",
-      "Se placer au plus près : ouvrir le bac, retirer les obstacles.",
-      "Réorganiser le stockage pour saisir les charges lourdes près du corps."
+      "Rapproche la charge de ton tronc avant de soulever.",
+      "Glisse ou pivote la charge vers toi plutôt que de tendre les bras.",
+      "Dégage les obstacles pour te placer au plus près."
     ],
     zones: ["bas-dos", "epaules", "poignets-mains"],
     voirAussi: ["manutention", "efforts", "torsion"]
   },
   "torsion": {
     categorie: "Sous-facteur biomécanique", titre: "Torsion", icone: "🌀", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Tourner le tronc ou les poignets pendant un effort combine compression et cisaillement sur les disques et les tendons. C'est l'un des gestes les plus risqués pour le bas du dos, surtout avec une charge dans les mains.",
+    description: "Tourner ton tronc ou tes poignets pendant un effort écrase et cisaille tes disques et tes tendons, surtout charge en main.",
     exemples: [
       "Pivoter le tronc en tenant une charge au lieu de bouger les pieds.",
-      "Transvaser d'un bac à l'autre en tournant le buste.",
       "Visser à la main à répétition.",
-      "Atteindre un objet derrière soi sans se déplacer."
+      "Atteindre un objet derrière toi sans te déplacer."
     ],
     prevention: [
-      "Pivoter avec les pieds, jamais avec le tronc en charge.",
-      "Placer les bacs et équipements face à soi.",
-      "Réorganiser le poste de travail pour éviter les rotations.",
-      "Utiliser des outils à renvoi d'angle."
+      "Pivote avec tes pieds, jamais avec le tronc en charge.",
+      "Place le matériel face à toi.",
+      "Utilise des outils à renvoi d'angle."
     ],
     zones: ["bas-dos", "poignets-mains"],
     voirAussi: ["manutention", "postures"]
@@ -708,90 +669,80 @@ const DETAILS = {
   /* ----- Sous-facteurs individuels ----- */
   "fatigue": {
     categorie: "Sous-facteur individuel", titre: "Fatigue", icone: "🥱", couleur: "#f09430", famille: "individuel",
-    description: "La fatigue diminue la force, la vigilance et la coordination. Les gestes deviennent moins précis, le corps compense avec de mauvaises postures et les signaux d'alerte passent inaperçus.",
+    description: "Quand tu es fatigué, ta force, ta vigilance et ta coordination baissent, tes gestes deviennent moins précis et ton corps compense par de mauvaises postures.",
     exemples: [
-      "Fin de quart de travail où tout semble plus lourd.",
+      "Fin de quart où tout semble plus lourd.",
       "Période de pointe avec surcharge prolongée.",
-      "Cumul de deux emplois physiques.",
-      "Longue route avant et après le travail."
+      "Cumul de deux emplois physiques."
     ],
     prevention: [
-      "Prendre de vraies pauses avant l'épuisement.",
-      "Alterner les tâches exigeantes et légères.",
-      "Adapter la cadence à la durée du quart.",
-      "Écouter les signaux du corps et le dire."
+      "Prends de vraies pauses avant l'épuisement.",
+      "Alterne les tâches exigeantes et légères.",
+      "Écoute les signaux de ton corps et dis-le."
     ],
     zones: [],
     voirAussi: ["sommeil", "recuperation"]
   },
   "sommeil": {
     categorie: "Sous-facteur individuel", titre: "Sommeil", icone: "🌙", couleur: "#f09430", famille: "individuel",
-    description: "C'est pendant le sommeil que les muscles et les tendons se réparent. Une dette de sommeil chronique augmente la perception de la douleur, ralentit la récupération et fragilise les tissus face aux contraintes du lendemain.",
+    description: "C'est pendant ton sommeil que tes muscles et tes tendons se réparent, et un manque chronique augmente la douleur et fragilise tes tissus.",
     exemples: [
-      "Horaires rotatifs qui dérèglent l'horloge interne.",
+      "Horaires rotatifs qui dérèglent ton horloge interne.",
       "Travail de nuit avec sommeil de jour écourté.",
-      "Insomnies liées au stress.",
-      "Écrans tard le soir qui retardent l'endormissement."
+      "Insomnies liées au stress."
     ],
     prevention: [
-      "Viser 7 à 9 heures de sommeil régulier.",
-      "Stabiliser les horaires autant que possible.",
-      "Aménager un environnement de sommeil sombre et calme.",
-      "Limiter écrans et stimulants en fin de soirée."
+      "Vise 7 à 9 heures de sommeil régulier.",
+      "Stabilise tes horaires autant que possible.",
+      "Limite les écrans et les stimulants en fin de soirée."
     ],
     zones: [],
     voirAussi: ["fatigue", "recuperation"]
   },
   "condition-physique": {
     categorie: "Sous-facteur individuel", titre: "Capacité physique", icone: "🏃", couleur: "#f09430", famille: "individuel",
-    description: "L'endurance musculaire, la force et la souplesse déterminent la marge entre ce que la tâche exige et ce que le corps peut donner. Plus la marge est mince, plus vite la fatigue et les microlésions apparaissent.",
+    description: "Ton endurance, ta force et ta souplesse fixent la marge entre ce que la tâche exige et ce que ton corps peut donner, et plus elle est mince, plus vite la fatigue arrive.",
     exemples: [
       "Reprise du travail après un long arrêt.",
       "Mode de vie sédentaire combiné à un travail physique.",
-      "Tâche dont l'exigence dépasse les capacités du moment.",
-      "Absence d'échauffement avant un gros effort."
+      "Tâche dont l'exigence dépasse tes capacités du moment."
     ],
     prevention: [
-      "Pratiquer une activité physique régulière.",
-      "S'échauffer avant les tâches exigeantes.",
-      "Reprendre graduellement après une absence.",
-      "Adapter la tâche à la personne, pas l'inverse."
+      "Bouge et pratique une activité physique régulière.",
+      "Échauffe-toi avant les tâches exigeantes.",
+      "Reprends graduellement après une absence."
     ],
     zones: [],
     voirAussi: ["experience", "fatigue"]
   },
   "douleur-presente": {
     categorie: "Sous-facteur individuel", titre: "Douleur présente", icone: "🤕", couleur: "#f09430", famille: "individuel",
-    description: "Une douleur qui persiste est un signal d'alarme : les tissus sont déjà en surcharge. Continuer à travailler de la même façon transforme une gêne réversible en lésion installée, beaucoup plus longue à guérir.",
+    description: "Une douleur qui persiste est un signal d'alarme, car tes tissus sont déjà en surcharge et continuer comme avant transforme la gêne en vraie blessure.",
     exemples: [
       "Courbature qui ne disparaît plus entre les quarts.",
-      "Élancements qui réveillent la nuit.",
-      "Raideur marquée au lever le matin.",
+      "Élancements qui te réveillent la nuit.",
       "Engourdissements ou fourmillements dans les doigts."
     ],
     prevention: [
-      "Signaler la douleur tôt, sans attendre qu'elle s'aggrave.",
-      "Ajuster temporairement la tâche ou le rythme.",
-      "Consulter un professionnel de la santé.",
-      "Suivre l'évolution plutôt que de serrer les dents."
+      "Signale ta douleur tôt, sans attendre qu'elle s'aggrave.",
+      "Ajuste temporairement ta tâche ou ton rythme.",
+      "Consulte un professionnel de la santé."
     ],
     zones: [],
     voirAussi: ["fatigue", "agir-tot"]
   },
   "experience": {
     categorie: "Sous-facteur individuel", titre: "Expérience", icone: "🎓", couleur: "#f09430", famille: "individuel",
-    description: "Avec l'expérience viennent les gestes économes : doser l'effort, se placer au bon endroit, anticiper. Un travailleur novice dépense plus d'énergie pour le même résultat et connaît moins les pièges du poste de travail.",
+    description: "Avec l'expérience viennent les gestes économes, comme doser l'effort, bien te placer et anticiper les pièges du poste.",
     exemples: [
-      "Premiers mois à un nouveau poste de travail.",
-      "Personnel intérimaire ou saisonnier.",
+      "Tes premiers mois à un nouveau poste.",
       "Retour après une longue absence.",
       "Changement d'outil ou de méthode de travail."
     ],
     prevention: [
-      "Accueillir et parrainer les nouveaux.",
-      "Former aux gestes professionnels économes.",
-      "Augmenter la cadence progressivement.",
-      "Encourager les questions et le droit à l'erreur."
+      "Fais-toi parrainer et pose des questions.",
+      "Apprends les gestes professionnels économes.",
+      "Augmente ta cadence progressivement."
     ],
     zones: [],
     voirAussi: ["condition-physique"]
@@ -800,72 +751,64 @@ const DETAILS = {
   /* ----- Sous-facteurs environnement ----- */
   "outils": {
     categorie: "Sous-facteur environnement", titre: "Outils", icone: "🛠️", couleur: "#74b62e", famille: "environnement",
-    description: "Un outil inadapté ou mal entretenu oblige à fournir plus de force et à adopter de mauvaises positions. Le bon outil, affûté et à la bonne taille, divise littéralement la contrainte sur le corps.",
+    description: "Un outil mal adapté ou mal entretenu t'oblige à forcer davantage et à prendre de mauvaises positions.",
     exemples: [
-      "Poignée trop grosse ou trop petite pour la main.",
+      "Poignée trop grosse ou trop petite pour ta main.",
       "Outil lourd tenu à bout de bras de longues minutes.",
-      "Lame ou mèche émoussée qui force à appuyer.",
-      "Gants inadaptés qui font perdre la prise."
+      "Lame ou mèche émoussée qui te force à appuyer."
     ],
     prevention: [
-      "Choisir des outils ergonomiques adaptés à la tâche et à la main.",
-      "Affûter et entretenir régulièrement.",
-      "Suspendre ou équilibrer les outils lourds.",
-      "Faire essayer les outils avant l'achat."
+      "Choisis des outils adaptés à la tâche et à ta main.",
+      "Affûte et entretiens régulièrement.",
+      "Suspends ou équilibre les outils lourds."
     ],
     zones: ["poignets-mains", "coudes", "epaules"],
     voirAussi: ["outils-vibrants", "prise-serree"]
   },
   "temperature": {
     categorie: "Sous-facteur environnement", titre: "Température", icone: "🌡️", couleur: "#74b62e", famille: "environnement",
-    description: "Le froid raidit les tissus et réduit la dextérité ; la chaleur épuise, déshydrate et accélère la fatigue musculaire. Dans les deux cas, le corps dépense de l'énergie à se réguler au lieu de récupérer.",
+    description: "Le froid raidit tes tissus et réduit ta dextérité, tandis que la chaleur t'épuise et accélère la fatigue de tes muscles.",
     exemples: [
-      "Chambre froide, entrepôt frigorifique.",
-      "Fournil, fonderie, cuisine surchauffée.",
-      "Travail extérieur en plein été ou en plein hiver.",
-      "Courants d'air permanents sur un poste de travail fixe."
+      "Travailler dans une galerie froide et humide.",
+      "Forcer dans un secteur surchauffé et mal ventilé.",
+      "Subir des courants d'air permanents à un poste fixe."
     ],
     prevention: [
-      "Adapter les vêtements de travail à la température.",
-      "Prévoir des pauses dans un local tempéré.",
-      "S'hydrater régulièrement à la chaleur.",
-      "S'acclimater progressivement aux extrêmes."
+      "Adapte tes vêtements de travail à la température.",
+      "Prends des pauses dans un endroit tempéré.",
+      "Hydrate-toi souvent à la chaleur et acclimate-toi progressivement."
     ],
     zones: ["poignets-mains"],
     voirAussi: ["froid"]
   },
   "espace-travail": {
     categorie: "Sous-facteur environnement", titre: "Espace", icone: "📐", couleur: "#74b62e", famille: "environnement",
-    description: "Un espace restreint ou encombré force le corps à se tordre, s'accroupir ou travailler à bout de bras. L'aménagement du poste de travail détermine directement les postures possibles, et donc le risque.",
+    description: "Un espace restreint ou encombré force ton corps à se tordre, à s'accroupir ou à travailler à bout de bras.",
     exemples: [
       "Intervenir sous une machine ou dans un local technique exigu.",
-      "Comptoir encombré qui repousse le travail loin du corps.",
-      "Espace trop étroit pour pivoter avec une charge.",
-      "Travailler dans un véhicule ou une cabine."
+      "Manquer de place pour pivoter avec une charge.",
+      "Travailler coincé dans une cabine ou un recoin étroit."
     ],
     prevention: [
-      "Dégager et organiser l'espace avant de commencer.",
-      "Préparer l'intervention pour limiter le temps en position contrainte.",
-      "Repenser l'implantation des postes de travail encombrés.",
-      "Garder le matériel fréquent à portée de main."
+      "Dégage et organise l'espace avant de commencer.",
+      "Prépare l'intervention pour limiter le temps en position contraignante.",
+      "Garde le matériel fréquent à portée de main."
     ],
     zones: ["cou", "haut-dos", "bas-dos", "genoux"],
     voirAussi: ["postures", "hauteur-travail", "passage-etroit", "travail-genoux"]
   },
   "sol-inegal": {
     categorie: "Sous-facteur environnement", titre: "Sol instable", icone: "⛰️", couleur: "#74b62e", famille: "environnement",
-    description: "Un sol instable, glissant ou encombré oblige les muscles à travailler en permanence pour garder l'équilibre. Porter une charge sur un sol inégal multiplie l'effort de stabilisation et le risque de faux mouvement.",
+    description: "Un sol instable, glissant ou encombré force tes muscles à travailler sans arrêt pour te tenir en équilibre.",
     exemples: [
-      "Chantier avec gravats, boue ou tranchées.",
-      "Quai ou rampe avec dénivelés.",
-      "Sol glissant d'une cuisine ou d'un atelier.",
-      "Marches et seuils répétés avec des charges."
+      "Marcher sur un sol jonché de débris, de boue ou de roches.",
+      "Franchir des dénivelés, des marches ou des seuils avec une charge.",
+      "Te déplacer sur une surface glissante ou détrempée."
     ],
     prevention: [
-      "Entretenir et dégager les voies de circulation.",
-      "Porter des chaussures adaptées et antidérapantes.",
-      "Éclairer correctement les zones de passage.",
-      "Planifier les trajets de transport les plus sûrs."
+      "Entretiens et dégage les voies de circulation.",
+      "Porte des chaussures antidérapantes adaptées.",
+      "Éclaire les zones de passage et choisis les trajets les plus sûrs."
     ],
     zones: ["chevilles-pieds", "genoux", "bas-dos"],
     voirAussi: ["environnement", "passage-etroit", "surface-appui"]
@@ -873,90 +816,80 @@ const DETAILS = {
 
   "compression": {
     categorie: "Sous-facteur biomécanique", titre: "Compression", icone: "⬇️", couleur: "#2e8fc0", famille: "biomecanique",
-    description: "Quand une partie du corps s'appuie longtemps ou fortement contre une surface dure, les tissus coincés entre l'os et la surface sont écrasés : la circulation diminue, les nerfs et les bourses s'irritent. Une contrainte discrète, mais qui s'accumule vite.",
+    description: "Une partie de ton corps appuyée longtemps contre une surface dure écrase les tissus, coupe la circulation et irrite les nerfs.",
     exemples: [
-      "S'appuyer sur les genoux pour travailler au sol.",
-      "Avant-bras posés sur l'arête d'un établi ou d'une machine.",
-      "Poignée d'outil qui presse toujours le même point de la paume.",
-      "Outil ou pièce appuyé contre la cuisse ou l'épaule pour le stabiliser."
+      "T'appuyer sur les genoux pour travailler au sol.",
+      "Avant-bras posés sur l'arête d'une machine.",
+      "Outil ou pièce calé contre la cuisse pour le stabiliser."
     ],
     prevention: [
-      "Rembourrer les points d'appui (genouillères, manchons, tapis).",
-      "Arrondir ou capitonner les arêtes des plans de travail.",
-      "Choisir des poignées larges qui répartissent la pression.",
-      "Changer régulièrement de position d'appui."
+      "Rembourre les points d'appui avec genouillères, manchons ou tapis.",
+      "Capitonne ou arrondis les arêtes des surfaces.",
+      "Change régulièrement de position d'appui."
     ],
     zones: ["genoux", "coudes", "poignets-mains"],
     voirAussi: ["travail-genoux", "prise-serree", "surface-appui"]
   },
   "antecedents": {
     categorie: "Sous-facteur individuel", titre: "Antécédents", icone: "📋", couleur: "#f09430", famille: "individuel",
-    description: "Une blessure passée, un TMS antérieur ou une condition de santé (arthrite, diabète, hernie…) laissent des tissus plus fragiles. La zone déjà touchée encaisse moins bien les mêmes contraintes et se blesse de nouveau plus facilement.",
+    description: "Une blessure passée ou une condition de santé laisse tes tissus plus fragiles, et la zone déjà touchée encaisse moins bien et se blesse plus facilement.",
     exemples: [
       "Ancienne entorse ou fracture mal rééduquée.",
-      "Tendinite ou lombalgie déjà vécue par le passé.",
-      "Condition qui fragilise nerfs ou articulations (diabète, arthrite).",
-      "Retour au travail après une longue absence pour blessure."
+      "Tendinite ou lombalgie déjà vécue.",
+      "Condition qui fragilise les nerfs ou les articulations, comme le diabète ou l'arthrite."
     ],
     prevention: [
-      "Informer le service de santé des antécédents pertinents.",
-      "Adapter le poste de travail ou la tâche à la zone fragilisée.",
-      "Planifier un retour progressif après une blessure.",
-      "Surveiller les premiers signes de récidive et les signaler."
+      "Informe le service de santé de tes antécédents.",
+      "Fais adapter ta tâche à la zone fragilisée.",
+      "Surveille les premiers signes de récidive et signale-les."
     ],
     zones: [],
     voirAussi: ["douleur-presente", "condition-physique", "agir-tot"]
   },
   "surface-appui": {
     categorie: "Sous-facteur environnemental", titre: "Surface d'appui", icone: "🔲", couleur: "#74b62e", famille: "environnement",
-    description: "La qualité de la surface sur laquelle on se tient, on s'agenouille ou on s'appuie change tout : un sol dur fatigue les jambes et le dos, une arête vive comprime les tissus, une surface instable impose des efforts d'équilibre permanents.",
+    description: "La surface sur laquelle tu te tiens, t'agenouilles ou t'appuies change tout pour ton corps, car un sol dur fatigue et une arête vive comprime.",
     exemples: [
-      "Rester debout des heures sur du béton.",
-      "S'agenouiller sur le roc ou un plancher métallique.",
-      "S'appuyer contre des structures aux arêtes vives.",
-      "Travailler depuis un appui étroit ou instable (échelle, rebord)."
+      "Rester debout des heures sur du roc ou du béton.",
+      "T'agenouiller sur une surface dure ou métallique.",
+      "Travailler depuis un appui étroit ou instable."
     ],
     prevention: [
-      "Utiliser des tapis antifatigue aux postes debout fixes.",
-      "Prévoir genouillères ou coussins pour le travail au sol.",
-      "Capitonner ou arrondir les arêtes de contact.",
-      "S'assurer d'appuis stables et assez larges avant de travailler."
+      "Utilise un tapis antifatigue aux postes debout fixes.",
+      "Prévois des genouillères ou un coussin pour le travail au sol.",
+      "Assure-toi d'appuis stables et assez larges avant de travailler."
     ],
     zones: ["chevilles-pieds", "genoux", "bas-dos"],
     voirAussi: ["sol-inegal", "compression", "travail-genoux"]
   },
   "outil-percussion": {
     categorie: "Situation à risque · famille environnement", titre: "Outil à percussion", icone: "🔨", couleur: "#74b62e", famille: "environnement",
-    description: "Marteaux-piqueurs, perforateurs, clés à choc : ces outils combinent chocs répétés, fortes vibrations et prise serrée pour les contrôler. Les mains, les coudes et les épaules encaissent chaque impact, des centaines de fois par minute.",
+    description: "Les outils à percussion combinent chocs répétés, fortes vibrations et prise serrée, et tes mains, tes coudes et tes épaules encaissent chaque impact.",
     exemples: [
       "Casser du béton ou du roc au marteau-piqueur.",
       "Forer avec un perforateur ou une foreuse à percussion.",
-      "Boulonner à la clé à choc à longueur de quart.",
-      "Utiliser un burineur ou un cloueur pneumatique en continu."
+      "Boulonner à la clé à choc tout le quart."
     ],
     prevention: [
-      "Choisir des outils antivibratiles et bien entretenus.",
-      "Laisser le poids de l'outil travailler au lieu d'appuyer fort.",
-      "Alterner les tâches et limiter le temps d'exposition quotidien.",
-      "Porter des gants antivibrations et garder les mains au chaud."
+      "Choisis des outils antivibratiles et bien entretenus.",
+      "Laisse le poids de l'outil travailler plutôt que d'appuyer fort.",
+      "Alterne les tâches et porte des gants antivibrations."
     ],
     zones: ["poignets-mains", "coudes", "epaules"],
     voirAussi: ["outils-vibrants", "prise-serree", "froid"]
   },
   "passage-etroit": {
     categorie: "Situation à risque · famille environnement", titre: "Passage étroit", icone: "🚧", couleur: "#74b62e", famille: "environnement",
-    description: "Circuler ou travailler dans un passage étroit force le corps à se tordre, rentrer les épaules, baisser la tête ou porter les charges de côté. Chaque déplacement devient une posture contrainte, typique des galeries, des locaux techniques et des espaces entre machines.",
+    description: "Dans un passage étroit, ton corps doit se tordre, rentrer les épaules ou baisser la tête à chaque déplacement.",
     exemples: [
-      "Se faufiler entre deux équipements avec du matériel dans les mains.",
+      "Te faufiler entre deux équipements avec du matériel dans les mains.",
       "Circuler dans une galerie basse ou un tunnel de service.",
-      "Passer une charge par-dessus ou autour d'un obstacle.",
-      "Travailler dans un local technique encombré."
+      "Faire passer une charge par-dessus ou autour d'un obstacle."
     ],
     prevention: [
-      "Dégager et élargir les voies de passage prioritaires.",
-      "Planifier le trajet avant de transporter une charge.",
-      "Fractionner ou réorienter la charge pour passer face à l'obstacle.",
-      "Réaménager le stockage pour libérer les accès fréquents."
+      "Dégage et élargis les voies de passage prioritaires.",
+      "Planifie ton trajet avant de transporter une charge.",
+      "Fractionne ou réoriente la charge pour passer face à l'obstacle."
     ],
     zones: ["bas-dos", "epaules", "cou"],
     voirAussi: ["espace-travail", "sol-inegal", "postures"]
@@ -965,36 +898,32 @@ const DETAILS = {
   /* ----- Messages clés ----- */
   "combinaison": {
     categorie: "Message clé", titre: "La combinaison des facteurs", icone: "⚠️", couleur: "#d6111e",
-    description: "Les facteurs de risque ne s'additionnent pas : ils se multiplient. Un geste répété est supportable ; le même geste répété avec force, dans le froid, par une personne fatiguée, devient dangereux. C'est pourquoi la prévention efficace agit sur plusieurs leviers à la fois, pas sur un seul.",
+    description: "Les facteurs de risque ne s'additionnent pas, ils se multiplient, et un geste répété avec force, dans le froid, quand tu es fatigué, devient vite dangereux.",
     exemples: [
-      "Répétition + force : le duo le plus fréquent dans les TMS du membre supérieur.",
-      "Vibrations + froid + prise serrée : cocktail typique des doigts blancs.",
-      "Posture contraignante + longue durée : la contrainte douce qui s'installe.",
-      "Fatigue + cadence élevée : les gestes de protection disparaissent."
+      "Répétition et force : le duo le plus fréquent des TMS du membre supérieur.",
+      "Vibrations, froid et prise serrée : le cocktail des doigts blancs.",
+      "Fatigue et cadence élevée : tes gestes de protection disparaissent."
     ],
     prevention: [
-      "Évaluer le poste de travail dans son ensemble, pas facteur par facteur.",
-      "Agir en priorité sur les combinaisons identifiées.",
-      "Combiner solutions techniques, organisationnelles et humaines.",
-      "Impliquer les travailleurs : ils connaissent les vraies combinaisons du terrain."
+      "Évalue ton poste dans son ensemble, pas facteur par facteur.",
+      "Agis en priorité sur les combinaisons repérées.",
+      "Parle des vraies combinaisons du terrain, car tu les connais."
     ],
     zones: [],
     voirAussi: ["biomecanique", "individuel", "environnement"]
   },
   "agir-tot": {
     categorie: "À retenir", titre: "Agir tôt, ça change tout", icone: "💡", couleur: "#d6111e",
-    description: "Un TMS s'installe par étapes : gêne en fin de journée, puis douleur pendant le travail, puis douleur qui persiste au repos. Aux premiers stades, tout est réversible avec des ajustements simples. Installé, un TMS peut prendre des mois à guérir, quand il guérit.",
+    description: "Un TMS s'installe par étapes, et pris tôt tout se corrige facilement, alors qu'installé il peut prendre des mois à guérir, quand il guérit.",
     exemples: [
-      "Stade 1 : gêne ou fatigue locale en fin de journée, qui disparaît au repos.",
-      "Stade 2 : douleur qui apparaît pendant le travail et persiste le soir.",
-      "Stade 3 : douleur continue, même au repos ou la nuit.",
-      "Stade 4 : limitation des gestes au travail et à la maison."
+      "Stade 1 : gêne en fin de journée, qui disparaît au repos.",
+      "Stade 2 : douleur pendant le travail qui persiste le soir.",
+      "Stade 3 : douleur continue, même au repos ou la nuit."
     ],
     prevention: [
-      "Prendre au sérieux les premiers signaux (gêne, raideur, fourmillements).",
-      "En parler tôt : collègue, supérieur, comité de santé-sécurité.",
-      "Ajuster rapidement le poste de travail ou le rythme.",
-      "Consulter sans attendre que la douleur s'installe."
+      "Prends au sérieux les premiers signaux : gêne, raideur, fourmillements.",
+      "Parles-en tôt à un collègue, un supérieur ou le comité de santé-sécurité.",
+      "Ajuste vite ton poste ou ton rythme, et consulte sans attendre."
     ],
     zones: [],
     voirAussi: ["douleur-presente", "combinaison"]
