@@ -713,6 +713,9 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .switch .seg{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .85rem;border-radius:50px;font-size:.84rem;font-weight:700;color:var(--muted);transition:all .2s;min-height:32px}
 .switch a.seg:hover{color:#fff;background:rgba(255,255,255,.07)}
 .switch .seg.active{background:var(--brand);color:#fff;box-shadow:0 4px 14px rgba(210,35,37,.35)}
+/* .botbar = conteneur des deux contrôles du bas. Desktop : display:contents -> transparent, .switch et .langswitch gardent leur position:fixed propre. Mobile (voir media query) : devient la barre du bas regroupant Base/Formation + FR/EN. */
+.botbar{display:contents}
+.seg-s{display:none} /* libellés courts : visibles seulement sur mobile (barre du bas) */
 /* bascule FR/EN : petit bouton flottant DISCRET dans le coin bas-droit (hors hero, hors menu de gauche, hors contenu) qui disparait au scroll (IIFE dans app.js). Desktop : coin bas-droit, alterne avec le bouton .totop (jamais affiches en meme temps : .totop n'apparait qu'en scrollant, la bascule disparait alors). */
 .langswitch{position:fixed;right:1.5rem;bottom:1.5rem;z-index:152;display:flex;gap:.12rem;background:rgba(13,19,32,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:50px;padding:.16rem;box-shadow:0 6px 18px rgba(0,0,0,.4);transition:transform .35s ease,opacity .35s ease;will-change:transform}
 .langswitch a{display:inline-flex;align-items:center;padding:.24rem .62rem;border-radius:50px;font-size:.72rem;font-weight:800;letter-spacing:.04em;color:var(--muted);transition:all .2s;min-height:28px}
@@ -729,7 +732,8 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 .totop{position:fixed;bottom:1.5rem;right:1.5rem;z-index:150;width:46px;height:46px;border-radius:50%;background:rgba(26,35,50,.72);backdrop-filter:blur(10px);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .3s,visibility .3s,border-color .2s,color .2s}
 .totop.show{opacity:1;pointer-events:auto;visibility:visible}
 .totop:hover{border-color:var(--brand);color:#fff}
-@media(max-width:980px){.totop{right:auto;left:max(1rem,env(safe-area-inset-left));bottom:calc(1rem + env(safe-area-inset-bottom))}}
+/* mobile : .totop remonte AU-DESSUS de la barre du bas (.botbar) pour ne pas la chevaucher */
+@media(max-width:980px){.totop{right:auto;left:max(1rem,env(safe-area-inset-left));bottom:calc(5.2rem + env(safe-area-inset-bottom))}}
 /* perf scroll mobile : pas de backdrop-blur (recalcule a chaque frame = jank) ni d'aurora animee */
 @media(max-width:980px){
   .hero-bg{animation:none}
@@ -844,12 +848,14 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .lb{padding:1rem;padding-top:max(1rem,env(safe-area-inset-top))}
   .lb img{max-width:94vw;max-height:82dvh}
   .lbclose{top:max(1rem,env(safe-area-inset-top))}
-  /* sélecteur de parcours en pilule flottante (bas droite) */
-  .switch{top:auto;right:max(1rem,env(safe-area-inset-right));bottom:calc(1rem + env(safe-area-inset-bottom));left:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:160}
-  .switch .seg{min-height:44px;padding:.5rem .9rem}
-  /* mobile : coin bas-droit, AU-DESSUS de la barre .switch (qui occupe le bas) ; .totop est a gauche sur mobile -> pas de collision */
-  .langswitch{right:max(1rem,env(safe-area-inset-right));bottom:calc(7rem + env(safe-area-inset-bottom));z-index:161}
-  .langswitch a{min-height:34px;padding:.3rem .66rem}
+  /* BARRE DU BAS (mobile) : regroupe le sélecteur Base/Formation + la bascule FR/EN sur une même ligne, en bas à droite. C'est de la chrome avec espace réservé (padding du footer) -> n'empiète pas sur le contenu. Largeur = contenu (ne s'étend pas jusqu'au .totop qui est à gauche). */
+  .botbar{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:calc(1rem + env(safe-area-inset-bottom));left:auto;z-index:160;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.35rem;max-width:calc(100vw - 1.6rem)}
+  .botbar .switch,.botbar .langswitch{position:static;top:auto;right:auto;bottom:auto;left:auto;z-index:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  .switch .seg{min-height:40px;padding:.4rem .56rem;font-size:.78rem}
+  .switch{gap:.18rem;padding:.2rem}
+  .langswitch a{min-height:40px;padding:.36rem .56rem}
+  /* libellés courts (Base / Formation) sur mobile pour laisser la place à FR/EN sur une ligne */
+  .seg-l{display:none}.seg-s{display:inline}
 }
 
 /* ===== reduced motion ===== */
