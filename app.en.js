@@ -2,6 +2,17 @@ document.documentElement.classList.remove('no-js');
 var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var SMALL = window.matchMedia('(max-width:980px)').matches; // mobile : on allege le hero (perf scroll)
 
+// ===== hero signature photo (Sprint 3) — drop-in =====
+// Drop images/hero.jpg (and, optionally, images/hero-mobile.jpg): the photo turns itself on, otherwise this layer stays invisible.
+(function(){
+  var hero=document.querySelector('.hero');if(!hero)return;
+  var phone=window.matchMedia('(max-width:760px)').matches;
+  function on(url){hero.style.setProperty('--hero-img','url("'+url+'")');requestAnimationFrame(function(){hero.classList.add('has-photo');});}
+  function probe(url,ok,ko){var im=new Image();im.onload=function(){ok(url);};im.onerror=ko||function(){};im.src=url;}
+  if(phone){probe('images/hero-mobile.jpg',on,function(){probe('images/hero.jpg',on);});} // fall back to desktop asset if no mobile variant
+  else{probe('images/hero.jpg',on);}
+})();
+
 // ===== scroll progress (rAF, GPU scaleX) =====
 var prog=document.getElementById('prog'),ticking=false;
 function updateProg(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;var p=max>0?h.scrollTop/max:0;prog.style.transform='scaleX('+p+')';ticking=false;}
