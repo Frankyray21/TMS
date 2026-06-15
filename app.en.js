@@ -1355,6 +1355,7 @@ const svgLiaisons = $("#svg-liaisons");
 const CIBLE_CERCLE = { biomecanique: ".cercle.bio", individuel: ".cercle.ind", environnement: ".cercle.env" };
 
 function dessinerLiaisons() {
+  if (!scene || !svgLiaisons) return;   // factors schema absent (pages without #scene)
   svgLiaisons.innerHTML = "";
   if (window.matchMedia("(max-width: 900px)").matches) return;
   const r = scene.getBoundingClientRect();
@@ -1404,7 +1405,7 @@ $$(".cercle").forEach(c => {
   c.addEventListener("blur", defocus);
 });
 
-if (window.ResizeObserver) new ResizeObserver(dessinerLiaisons).observe(scene);
+if (window.ResizeObserver && scene) new ResizeObserver(dessinerLiaisons).observe(scene);
 window.addEventListener("resize", dessinerLiaisons);
 window.addEventListener("load", dessinerLiaisons);
 dessinerLiaisons();
