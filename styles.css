@@ -713,10 +713,13 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .switch .seg{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .85rem;border-radius:50px;font-size:.84rem;font-weight:700;color:var(--muted);transition:all .2s;min-height:32px}
 .switch a.seg:hover{color:#fff;background:rgba(255,255,255,.07)}
 .switch .seg.active{background:var(--brand);color:#fff;box-shadow:0 4px 14px rgba(210,35,37,.35)}
-.langswitch{position:fixed;top:1rem;right:1.3rem;z-index:151;display:flex;gap:.15rem;background:rgba(26,35,50,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:50px;padding:.2rem}
+.langswitch{position:fixed;top:1rem;right:1.3rem;z-index:151;display:flex;gap:.15rem;background:rgba(26,35,50,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:50px;padding:.2rem;transition:transform .35s ease,opacity .35s ease;will-change:transform}
 .langswitch a{display:inline-flex;align-items:center;padding:.3rem .72rem;border-radius:50px;font-size:.78rem;font-weight:800;letter-spacing:.04em;color:var(--muted);transition:all .2s;min-height:30px}
 .langswitch a:hover{color:#fff}
 .langswitch a.on{background:var(--brand);color:#fff;box-shadow:0 3px 12px rgba(210,35,37,.35)}
+/* la bascule FR/EN ne reste pas toujours visible : presente avec le hero (haut de page), elle glisse hors champ au scroll vers le bas et revient au scroll vers le haut (voir IIFE dans app.js) */
+.langswitch.ls-hidden{opacity:0;transform:translateY(-130%);pointer-events:none}
+@media(prefers-reduced-motion:reduce){.langswitch{transition:none}}
 
 /* ===== numéros de partie fantômes ===== */
 span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-display);font-weight:800;font-size:clamp(6rem,13vw,10.5rem);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.055);pointer-events:none;user-select:none;z-index:0}
@@ -846,6 +849,8 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .switch .seg{min-height:44px;padding:.5rem .9rem}
   .langswitch{top:auto;left:auto;right:max(1rem,env(safe-area-inset-right));bottom:calc(7rem + env(safe-area-inset-bottom));z-index:161;box-shadow:0 8px 24px rgba(0,0,0,.5)}
   .langswitch a{min-height:40px;padding:.4rem .8rem}
+  /* sur mobile la pilule est ancree en bas : on la masque en glissant franchement sous le bord (au-dela de la barre .switch) + opacite */
+  .langswitch.ls-hidden{transform:translateY(300%)}
 }
 
 /* ===== reduced motion ===== */
