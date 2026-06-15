@@ -713,11 +713,13 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .switch .seg{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem .85rem;border-radius:50px;font-size:.84rem;font-weight:700;color:var(--muted);transition:all .2s;min-height:32px}
 .switch a.seg:hover{color:#fff;background:rgba(255,255,255,.07)}
 .switch .seg.active{background:var(--brand);color:#fff;box-shadow:0 4px 14px rgba(210,35,37,.35)}
-/* bascule FR/EN : integree au MENU (TOC), plus de pastille flottante sur le hero. Desktop : dans la barre laterale (sous la recherche). Mobile : dans l'en-tete qui se masque deja au scroll (.toc-hidden) -> elle ne reste donc pas a l'ecran en scrollant. */
-.langswitch{display:flex;gap:.15rem;align-self:center;margin-top:1rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:50px;padding:.2rem}
-.langswitch a{display:inline-flex;align-items:center;padding:.3rem .8rem;border-radius:50px;font-size:.78rem;font-weight:800;letter-spacing:.04em;color:var(--muted);transition:all .2s;min-height:32px}
+/* bascule FR/EN : petit bouton flottant DISCRET dans le coin bas-droit (hors hero, hors menu de gauche, hors contenu) qui disparait au scroll (IIFE dans app.js). Desktop : coin bas-droit, alterne avec le bouton .totop (jamais affiches en meme temps : .totop n'apparait qu'en scrollant, la bascule disparait alors). */
+.langswitch{position:fixed;right:1.5rem;bottom:1.5rem;z-index:152;display:flex;gap:.12rem;background:rgba(13,19,32,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:50px;padding:.16rem;box-shadow:0 6px 18px rgba(0,0,0,.4);transition:transform .35s ease,opacity .35s ease;will-change:transform}
+.langswitch a{display:inline-flex;align-items:center;padding:.24rem .62rem;border-radius:50px;font-size:.72rem;font-weight:800;letter-spacing:.04em;color:var(--muted);transition:all .2s;min-height:28px}
 .langswitch a:hover{color:#fff}
 .langswitch a.on{background:var(--brand);color:#fff;box-shadow:0 3px 12px rgba(210,35,37,.35)}
+.langswitch.ls-hidden{opacity:0;transform:translateY(180%);pointer-events:none}
+@media(prefers-reduced-motion:reduce){.langswitch{transition:none}}
 
 /* ===== numéros de partie fantômes ===== */
 span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-display);font-weight:800;font-size:clamp(6rem,13vw,10.5rem);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.055);pointer-events:none;user-select:none;z-index:0}
@@ -845,9 +847,9 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   /* sélecteur de parcours en pilule flottante (bas droite) */
   .switch{top:auto;right:max(1rem,env(safe-area-inset-right));bottom:calc(1rem + env(safe-area-inset-bottom));left:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:160}
   .switch .seg{min-height:44px;padding:.5rem .9rem}
-  /* dans l'en-tete mobile : la pilule est poussee a droite de la 1re rangee (logo / recherche) ; elle se masque avec l'en-tete au scroll */
-  .langswitch{margin:0 0 0 auto;align-self:center;flex-shrink:0}
-  .langswitch a{min-height:36px;padding:.35rem .7rem}
+  /* mobile : coin bas-droit, AU-DESSUS de la barre .switch (qui occupe le bas) ; .totop est a gauche sur mobile -> pas de collision */
+  .langswitch{right:max(1rem,env(safe-area-inset-right));bottom:calc(7rem + env(safe-area-inset-bottom));z-index:161}
+  .langswitch a{min-height:34px;padding:.3rem .66rem}
 }
 
 /* ===== reduced motion ===== */

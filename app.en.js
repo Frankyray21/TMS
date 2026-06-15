@@ -228,8 +228,10 @@ if('IntersectionObserver' in window){
 window.addEventListener('resize',function(){var a=document.querySelector('.toc-link.active');if(a)moveInd(a);});
 // en-tete mobile auto-masquant : se cache au scroll vers le bas, reapparait au scroll vers le haut (passif + rAF, zero cout)
 (function(){var toc=document.querySelector('.toc');if(!toc)return;var last=0,ticking=false;function upd(){var y=window.scrollY||document.documentElement.scrollTop||0;if(window.innerWidth>980){toc.classList.remove('toc-hidden');last=y;ticking=false;return;}if(y>last&&y>240)toc.classList.add('toc-hidden');else if(y<last-4)toc.classList.remove('toc-hidden');last=y<0?0:y;ticking=false;}window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(upd);}},{passive:true});})();
-// bascule FR/EN : memoriser la langue choisie au clic (ex-script inline du <head>, deplace ici car la pastille est maintenant dans le menu TOC)
+// bascule FR/EN : memoriser la langue choisie au clic (ex-script inline du <head>)
 document.querySelectorAll('.langswitch a').forEach(function(a){a.addEventListener('click',function(){try{localStorage.setItem('tms_lang',a.getAttribute('lang'));}catch(e){}});});
+// petit bouton FR/EN flottant (coin bas-droit) : visible en haut, disparait au scroll vers le bas, revient au scroll vers le haut / pres du sommet (passif + rAF)
+(function(){var ls=document.querySelector('.langswitch');if(!ls)return;var last=0,ticking=false;function upd(){var y=window.scrollY||document.documentElement.scrollTop||0;if(y<=140)ls.classList.remove('ls-hidden');else if(y>last+2)ls.classList.add('ls-hidden');else if(y<last-6)ls.classList.remove('ls-hidden');last=y<0?0:y;ticking=false;}upd();window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(upd);}},{passive:true});})();
 
 // ===== anchor focus for keyboard =====
 document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(){var t=document.getElementById(a.getAttribute('href').slice(1));if(t){t.setAttribute('tabindex','-1');setTimeout(function(){t.focus({preventScroll:true});},RM?0:450);}});});
