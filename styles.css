@@ -796,7 +796,8 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 @media (max-width:980px){
   html{scroll-padding-top:16px}  /* en-tête mobile non-collant : il défile avec le contenu, donc pas besoin de grand décalage d'ancre */
   .layout{flex-direction:column}
-  .toc{position:static;width:100%;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:.5rem;row-gap:.45rem;padding:.5rem .9rem;padding-top:max(.5rem,env(safe-area-inset-top));padding-left:max(.9rem,env(safe-area-inset-left));padding-right:max(.9rem,env(safe-area-inset-right));overflow:visible;box-shadow:0 4px 20px rgba(0,0,0,.45)}
+  .toc{position:sticky;top:0;width:100%;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:.5rem;row-gap:.45rem;padding:.5rem .9rem;padding-top:max(.5rem,env(safe-area-inset-top));padding-left:max(.9rem,env(safe-area-inset-left));padding-right:max(.9rem,env(safe-area-inset-right));overflow:visible;box-shadow:0 4px 20px rgba(0,0,0,.45);transition:transform .35s ease;will-change:transform}
+  .toc.toc-hidden{transform:translateY(-105%)}  /* masque au scroll vers le bas, reapparait au scroll vers le haut (JS) */
   .toc-brand{flex-direction:row;border:none;padding:0;gap:.5rem;flex-shrink:0}
   .toc-brand img{max-width:118px}.toc-brand .sub{display:none}
   .toc-search{width:auto;margin:0;padding:.55rem;min-width:44px;min-height:44px;justify-content:center;flex-shrink:0;border-radius:50%}

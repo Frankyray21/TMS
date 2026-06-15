@@ -226,6 +226,8 @@ if('IntersectionObserver' in window){
   targets.forEach(function(t){spyIO.observe(t);});
 }
 window.addEventListener('resize',function(){var a=document.querySelector('.toc-link.active');if(a)moveInd(a);});
+// en-tete mobile auto-masquant : se cache au scroll vers le bas, reapparait au scroll vers le haut (passif + rAF, zero cout)
+(function(){var toc=document.querySelector('.toc');if(!toc)return;var last=0,ticking=false;function upd(){var y=window.scrollY||document.documentElement.scrollTop||0;if(window.innerWidth>980){toc.classList.remove('toc-hidden');last=y;ticking=false;return;}if(y>last&&y>240)toc.classList.add('toc-hidden');else if(y<last-4)toc.classList.remove('toc-hidden');last=y<0?0:y;ticking=false;}window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(upd);}},{passive:true});})();
 
 // ===== anchor focus for keyboard =====
 document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(){var t=document.getElementById(a.getAttribute('href').slice(1));if(t){t.setAttribute('tabindex','-1');setTimeout(function(){t.focus({preventScroll:true});},RM?0:450);}});});
