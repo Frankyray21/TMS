@@ -1940,7 +1940,9 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 .part-nav{display:flex;justify-content:space-between;align-items:stretch;gap:1rem;max-width:1000px;margin:3.5rem auto 1rem;padding:0 3rem;flex-wrap:wrap}
 .part-nav a{text-decoration:none;display:flex;flex-direction:column;gap:.15rem;padding:.9rem 1.3rem;border-radius:14px;border:1px solid var(--border);background:rgba(26,35,50,.5);color:var(--text);transition:transform .2s,border-color .2s,background .2s}
 .part-nav .pn-prev{align-items:flex-start}
-.part-nav .pn-next{align-items:flex-end;text-align:right;margin-left:auto;background:linear-gradient(160deg,rgba(210,35,37,.22),rgba(17,24,39,.6));border-color:rgba(210,35,37,.5)}
+.part-nav .pn-next{align-items:flex-end;text-align:right;margin-left:auto;padding:1.25rem 2rem;background:linear-gradient(160deg,rgba(210,35,37,.45),rgba(210,35,37,.16));border-color:rgba(210,35,37,.75);box-shadow:0 10px 30px rgba(210,35,37,.25)}
+.part-nav .pn-next .pn-k{font-size:.85rem;color:#ffd9da}
+.part-nav .pn-next .pn-t{font-size:1.5rem;line-height:1.1}
 .part-nav a:hover{transform:translateY(-2px);border-color:var(--brand)}
 .part-nav .pn-k{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
 .part-nav .pn-t{font-family:var(--font-display);font-weight:700;font-size:1.05rem}
