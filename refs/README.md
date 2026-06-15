@@ -55,11 +55,22 @@ générer l'asset et le déposer dans `images/`.
 
 ---
 
-## 4. Option vidéo de fond (plus tard)
+## 4. Option vidéo de fond (drop-in, déjà câblé)
 
-Le même emplacement peut accueillir une vidéo de fond subtile (~15 s, boucle, < 3 Mo,
-`images/`/`videos/`) avec repli image fixe sur mobile. À faire dans un second temps —
-on garde l'image fixe comme socle pour la performance.
+L'ossature vidéo est elle aussi **en place** et suit le même principe que la photo.
+
+| Fichier | Format | Notes |
+|---|---|---|
+| `videos/hero.webm` | VP9/AV1, muet, **boucle ~10-15 s** | servi en priorité (plus léger) |
+| `videos/hero.mp4` | H.264, muet | repli pour Safari/anciens navigateurs |
+
+- Vise **< 3 Mo** au total, ~1280×720, boucle propre, mouvement **subtil** (poussière,
+  lumière, lente dérive). Muet obligatoire (autoplay).
+- Dépose le(s) fichier(s) → la vidéo s'active **automatiquement sur desktop** ; elle est
+  volontairement **désactivée sur mobile et si « mouvement réduit »** est demandé (perf +
+  accessibilité), où l'on garde la **photo fixe** comme socle.
+- Ordre de repli : **vidéo → photo (`hero.jpg`) → dégradé + WebGL**. Garde donc une
+  `images/hero.jpg` cohérente comme image-poster.
 
 ---
 

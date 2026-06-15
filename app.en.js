@@ -13,6 +13,21 @@ var SMALL = window.matchMedia('(max-width:980px)').matches; // mobile : on alleg
   else{probe('images/hero.jpg',on);}
 })();
 
+// ===== hero background video (Sprint 3, optional) — drop-in =====
+// Drop videos/hero.webm and/or videos/hero.mp4: the background video turns on (desktop, no reduced-motion). Falls back to the photo, then the gradient.
+(function(){
+  if(RM||SMALL)return; // mobile + reduced-motion: keep the still photo (perf + user preference)
+  var hero=document.querySelector('.hero');if(!hero)return;
+  var media=hero.querySelector('.hero-media');if(!media)return;
+  var v=document.createElement('video');
+  v.className='hero-video';v.muted=true;v.loop=true;v.playsInline=true;v.autoplay=true;v.preload='auto';
+  v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');
+  ['webm','mp4'].forEach(function(ext){var s=document.createElement('source');s.src='videos/hero.'+ext;s.type='video/'+ext;v.appendChild(s);});
+  // only insert the video into the DOM if a source actually loads (otherwise the element is dropped, no broken tag)
+  v.addEventListener('loadeddata',function(){media.appendChild(v);requestAnimationFrame(function(){hero.classList.add('has-video');});var p=v.play();if(p&&p.catch)p.catch(function(){});},{once:true});
+  v.load();
+})();
+
 // ===== scroll progress (rAF, GPU scaleX) =====
 var prog=document.getElementById('prog'),ticking=false;
 function updateProg(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;var p=max>0?h.scrollTop/max:0;prog.style.transform='scaleX('+p+')';ticking=false;}

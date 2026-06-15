@@ -115,6 +115,10 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .hero-photo{position:absolute;inset:0;z-index:0;background-image:var(--hero-img);background-size:cover;background-position:center 28%;opacity:0;transition:opacity 1.6s ease;will-change:opacity}
 .hero.has-photo .hero-photo{opacity:.6}
 .hero.has-photo .hero-bg{opacity:.9}
+/* video de fond optionnelle (Sprint 3) : injectee par app.js si videos/hero.webm|mp4 existe (desktop, hors reduced-motion). */
+.hero-video{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.6s ease;will-change:opacity;pointer-events:none}
+.hero.has-video .hero-video{opacity:.55}
+.hero.has-video .hero-bg{opacity:.85}
 /* tunnel de mine WebGL (niveau 7) */
 .hero-gl{position:absolute;inset:0;z-index:0;width:100%;height:100%;opacity:0;transition:opacity 1.8s ease}
 .hero.gl-on .hero-gl{opacity:.5}
