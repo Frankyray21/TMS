@@ -936,95 +936,95 @@ const ZONES = {
     img: "images/zone_cou.jpeg",
     nom: "Cou / nuque", icone: "🧣",
     tms: ["Cervicalgie", "Tensions de la nuque", "Maux de tête d'origine cervicale"],
-    description: "Le cou supporte la tête (4 à 5 kg) toute la journée. Penché vers l'avant, son effort est démultiplié : à 45 degrés de flexion, c'est l'équivalent de plus de 20 kg que les muscles cervicaux retiennent.",
+    description: "Ton cou porte le poids de ta tête toute la journée, et chaque fois que tu le penches vers l'avant, l'effort sur tes muscles cervicaux explose.",
     facteurs: ["posture-statique", "postures", "bras-leves", "espace-travail"],
     conseils: [
-      "Placer l'écran ou la tâche à hauteur des yeux.",
-      "Relâcher la nuque par de courts mouvements réguliers.",
-      "Éviter de coincer le téléphone entre l'oreille et l'épaule."
+      "Garde la tâche à hauteur des yeux pour éviter de pencher la tête.",
+      "Relâche ta nuque par de courts mouvements réguliers.",
+      "Garde la tête dans l'axe plutôt que tordue sur le côté."
     ]
   },
   "epaules": {
     img: "images/zone_epaules.jpeg",
     nom: "Épaules", icone: "💪",
     tms: ["Tendinite de la coiffe des rotateurs", "Bursite", "Capsulite"],
-    description: "L'épaule est l'articulation la plus mobile du corps, et la moins stable. Travailler les bras levés ou éloignés du corps réduit l'irrigation des tendons et les use prématurément.",
+    description: "Ton épaule est très mobile mais peu stable, et travailler les bras levés ou loin du corps use vite ses tendons.",
     facteurs: ["bras-leves", "manutention", "mouvements-repetes", "outils"],
     conseils: [
-      "Travailler les coudes près du corps.",
-      "Abaisser le plan de travail sous le niveau des épaules.",
-      "Alterner les tâches qui sollicitent les bras en hauteur."
+      "Travaille les coudes près du corps.",
+      "Garde le plan de travail sous le niveau de tes épaules.",
+      "Alterne les tâches qui sollicitent les bras en hauteur."
     ]
   },
   "haut-dos": {
     img: "images/zone_dos.jpeg",
     nom: "Haut du dos", icone: "🦴",
     tms: ["Dorsalgie", "Tensions entre les omoplates"],
-    description: "Le haut du dos encaisse les postures penchées et le travail des bras vers l'avant. Les tensions entre les omoplates sont le signal classique d'un poste de travail mal ajusté ou d'une posture statique prolongée.",
+    description: "Ton haut du dos encaisse les postures penchées et le travail des bras vers l'avant, et les tensions entre les omoplates en sont le premier signal.",
     facteurs: ["posture-statique", "hauteur-travail", "postures"],
     conseils: [
-      "Régler la hauteur du plan de travail.",
-      "Ouvrir les épaules et varier la posture régulièrement.",
-      "Rapprocher la tâche pour éviter de travailler bras tendus."
+      "Règle la hauteur du plan de travail.",
+      "Ouvre les épaules et varie ta posture régulièrement.",
+      "Rapproche la tâche pour ne pas travailler bras tendus."
     ]
   },
   "bas-dos": {
     img: "images/zone_dos.jpeg",
     nom: "Bas du dos", icone: "🦴",
     tms: ["Lombalgie", "Hernie discale", "Sciatalgie"],
-    description: "Région la plus touchée par les TMS. Les disques lombaires encaissent des pressions énormes lors des flexions et des torsions en charge : soulever 25 kg dos courbé peut imposer plusieurs centaines de kilos de pression aux disques.",
+    description: "Ton bas du dos est la zone la plus touchée par les TMS, car tes disques encaissent des pressions énormes dès que tu te plies ou te tords en charge.",
     facteurs: ["manutention", "charges", "torsion", "passage-etroit", "sol-inegal"],
     conseils: [
-      "Plier les genoux et garder la charge près du corps.",
-      "Pivoter avec les pieds plutôt qu'avec le tronc.",
-      "Utiliser les aides mécaniques disponibles."
+      "Plie les genoux et garde la charge près du corps.",
+      "Pivote avec tes pieds plutôt qu'avec le tronc.",
+      "Utilise les aides mécaniques disponibles."
     ]
   },
   "coudes": {
     img: "images/zone_coudes.jpeg",
     nom: "Coudes", icone: "🦾",
     tms: ["Épicondylite (tennis elbow)", "Épitrochléite"],
-    description: "Les tendons du coude relient les muscles de l'avant-bras qui ferment la main. Serrer, visser et tourner à répétition les enflamme : c'est la fameuse épicondylite, fréquente bien au-delà du tennis.",
+    description: "Tes coudes s'enflamment quand tu serres, visses et tournes à répétition, c'est la fameuse épicondylite.",
     facteurs: ["prise-serree", "mouvements-repetes", "outil-percussion", "outils-vibrants"],
     conseils: [
-      "Réduire la force de serrage avec de meilleurs outils.",
-      "Éviter les rotations répétées du poignet sous effort.",
-      "Faire des pauses avant la sensation de brûlure."
+      "Réduis ta force de serrage avec de meilleurs outils.",
+      "Évite les rotations répétées du poignet sous effort.",
+      "Fais des pauses avant la sensation de brûlure."
     ]
   },
   "poignets-mains": {
     img: "images/zone_poignets.jpeg",
     nom: "Poignets / mains", icone: "✋",
     tms: ["Syndrome du canal carpien", "Tendinite de De Quervain", "Syndrome des doigts blancs"],
-    description: "Des dizaines de tendons et le nerf médian passent par le poignet, un tunnel étroit. Gestes répétés, prise en pince, vibrations et froid s'y combinent plus vite que partout ailleurs.",
+    description: "Tes poignets font passer tendons et nerf dans un tunnel étroit, où gestes répétés, prise en pince, vibrations et froid se combinent vite.",
     facteurs: ["prise-serree", "mouvements-repetes", "outils-vibrants", "outil-percussion", "froid"],
     conseils: [
-      "Garder le poignet aligné avec l'avant-bras.",
-      "Alterner les mains et les types de prise.",
-      "Signaler tôt fourmillements et engourdissements nocturnes."
+      "Garde ton poignet aligné avec l'avant-bras.",
+      "Alterne les mains et les types de prise.",
+      "Signale tôt les fourmillements et engourdissements nocturnes."
     ]
   },
   "genoux": {
     img: "images/zone_genoux.jpeg",
     nom: "Genoux", icone: "🦵",
     tms: ["Bursite du genou", "Lésion du ménisque", "Syndrome fémoro-patellaire"],
-    description: "Le genou n'est pas fait pour servir de point d'appui. Le travail agenouillé comprime la bourse devant la rotule, et les accroupissements profonds répétés usent les ménisques.",
+    description: "Tes genoux ne sont pas faits pour servir d'appui, et le travail agenouillé ou accroupi répété use leurs structures.",
     facteurs: ["travail-genoux", "compression", "sol-inegal", "posture-statique"],
     conseils: [
-      "Porter des genouillères adaptées au métier.",
-      "Utiliser un tapis, un banc bas ou un siège roulant d'atelier.",
-      "Se relever et déplier les jambes souvent."
+      "Porte des genouillères adaptées à ton métier.",
+      "Utilise un tapis, un banc bas ou un siège roulant d'atelier.",
+      "Relève-toi et déplie tes jambes souvent."
     ]
   },
   "chevilles-pieds": {
     nom: "Chevilles / pieds", icone: "🦶",
     tms: ["Tendinite d'Achille", "Fasciite plantaire", "Entorses à répétition"],
-    description: "Le travail debout prolongé sur sol dur fatigue la voûte plantaire et le tendon d'Achille. Un sol inégal ou glissant ajoute les faux mouvements et les entorses au tableau.",
+    description: "Tes pieds et ton tendon d'Achille fatiguent debout sur sol dur, et un sol inégal ou glissant ajoute les faux mouvements.",
     facteurs: ["sol-inegal", "posture-statique"],
     conseils: [
-      "Porter des chaussures de travail amortissantes et adaptées.",
-      "Utiliser un tapis antifatigue aux postes de travail debout fixes.",
-      "Garder les zones de circulation planes et dégagées."
+      "Porte des chaussures de travail amortissantes et adaptées.",
+      "Utilise un tapis antifatigue aux postes debout fixes.",
+      "Garde les zones de circulation planes et dégagées."
     ]
   }
 };

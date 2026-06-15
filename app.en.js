@@ -936,23 +936,23 @@ const ZONES = {
     img: "images/zone_cou.jpeg",
     nom: "Neck", icone: "🧣",
     tms: ["Neck pain (cervicalgia)", "Neck strain", "Cervicogenic headaches"],
-    description: "Your neck holds up your head (4 to 5 kg) all day long. When you lean forward, that effort multiplies: at 45 degrees of flexion, your neck muscles are holding back the equivalent of more than 20 kg.",
+    description: "Your neck carries the weight of your head all day, and every time you lean it forward the strain on your neck muscles shoots up.",
     facteurs: ["posture-statique", "postures", "bras-leves", "espace-travail"],
     conseils: [
-      "Set your screen or task at eye level.",
+      "Keep the task at eye level so you don't have to tip your head.",
       "Loosen up your neck with short, regular movements.",
-      "Don't wedge the phone between your ear and your shoulder."
+      "Keep your head straight rather than twisted to the side."
     ]
   },
   "epaules": {
     img: "images/zone_epaules.jpeg",
     nom: "Shoulders", icone: "💪",
     tms: ["Rotator cuff tendinitis", "Bursitis", "Frozen shoulder (adhesive capsulitis)"],
-    description: "The shoulder is the most mobile joint in your body, and the least stable. Working with your arms raised or held away from your body cuts the blood flow to the tendons and wears them out before their time.",
+    description: "Your shoulder is very mobile but not very stable, and working with your arms raised or away from your body wears out its tendons fast.",
     facteurs: ["bras-leves", "manutention", "mouvements-repetes", "outils"],
     conseils: [
       "Work with your elbows close to your body.",
-      "Lower your work surface below shoulder level.",
+      "Keep your work surface below shoulder level.",
       "Switch up tasks that have you working with your arms up high."
     ]
   },
@@ -960,7 +960,7 @@ const ZONES = {
     img: "images/zone_dos.jpeg",
     nom: "Upper back", icone: "🦴",
     tms: ["Upper-back pain", "Tension between the shoulder blades"],
-    description: "Your upper back takes the hit from bent-over postures and from working with your arms reaching forward. Tension between the shoulder blades is the classic sign of a poorly adjusted workstation or a prolonged static posture.",
+    description: "Your upper back takes the hit from bent-over postures and from working with your arms reaching forward, and tension between the shoulder blades is the first sign of it.",
     facteurs: ["posture-statique", "hauteur-travail", "postures"],
     conseils: [
       "Adjust the height of your work surface.",
@@ -972,7 +972,7 @@ const ZONES = {
     img: "images/zone_dos.jpeg",
     nom: "Lower back", icone: "🦴",
     tms: ["Low-back pain", "Herniated disc", "Sciatica"],
-    description: "This is the area most affected by MSDs. The lumbar discs take on enormous pressure when you bend and twist under a load: lifting 25 kg with a rounded back can put several hundred kilos of pressure on the discs.",
+    description: "Your lower back is the area most affected by MSDs, because your discs take on enormous pressure as soon as you bend or twist under a load.",
     facteurs: ["manutention", "charges", "torsion", "passage-etroit", "sol-inegal"],
     conseils: [
       "Bend your knees and keep the load close to your body.",
@@ -984,7 +984,7 @@ const ZONES = {
     img: "images/zone_coudes.jpeg",
     nom: "Elbows", icone: "🦾",
     tms: ["Epicondylitis (tennis elbow)", "Golfer's elbow (medial epicondylitis)"],
-    description: "The tendons in your elbow connect to the forearm muscles that close your hand. Gripping, screwing and turning over and over inflames them: that's the well-known tennis elbow, common in plenty of jobs that have nothing to do with tennis.",
+    description: "Your elbows flare up when you grip, screw and turn over and over, the well-known tennis elbow.",
     facteurs: ["prise-serree", "mouvements-repetes", "outil-percussion", "outils-vibrants"],
     conseils: [
       "Cut down on grip force by using better tools.",
@@ -996,7 +996,7 @@ const ZONES = {
     img: "images/zone_poignets.jpeg",
     nom: "Wrists / hands", icone: "✋",
     tms: ["Carpal tunnel syndrome", "De Quervain's tendinitis", "White finger syndrome (vibration white finger)"],
-    description: "Dozens of tendons and the median nerve run through your wrist, a narrow tunnel. Repeated movements, pinch grips, vibration and cold add up there faster than anywhere else.",
+    description: "Your wrists run tendons and a nerve through a narrow tunnel, where repeated movements, pinch grips, vibration and cold quickly add up.",
     facteurs: ["prise-serree", "mouvements-repetes", "outils-vibrants", "outil-percussion", "froid"],
     conseils: [
       "Keep your wrist lined up with your forearm.",
@@ -1008,7 +1008,7 @@ const ZONES = {
     img: "images/zone_genoux.jpeg",
     nom: "Knees", icone: "🦵",
     tms: ["Knee bursitis", "Meniscus tear", "Patellofemoral syndrome"],
-    description: "Your knee isn't meant to be used as a resting point. Kneeling work compresses the bursa in front of your kneecap, and repeated deep squats wear down the menisci.",
+    description: "Your knees aren't meant to be used as a resting point, and repeated kneeling or squatting work wears down their structures.",
     facteurs: ["travail-genoux", "compression", "sol-inegal", "posture-statique"],
     conseils: [
       "Wear knee pads suited to your job.",
@@ -1019,7 +1019,7 @@ const ZONES = {
   "chevilles-pieds": {
     nom: "Ankles / feet", icone: "🦶",
     tms: ["Achilles tendinitis", "Plantar fasciitis", "Repeated sprains"],
-    description: "Standing for long stretches on a hard floor tires out the arch of your foot and your Achilles tendon. An uneven or slippery floor adds missteps and sprains to the mix.",
+    description: "Your feet and Achilles tendon get tired standing on a hard floor, and an uneven or slippery floor adds the missteps.",
     facteurs: ["sol-inegal", "posture-statique"],
     conseils: [
       "Wear cushioned work boots that are right for the job.",
