@@ -2004,19 +2004,22 @@ if ("serviceWorker" in navigator) {
 }
 (function () {
   var box = document.getElementById("pwaInstall");
-  if (!box) return;
-  var go = document.getElementById("pwaGo"), x = document.getElementById("pwaX");
-  var deferred = null, hideT = null, heroOut = false, shown = false;
-  function off(){ try { return localStorage.getItem("tms_pwa") === "off"; } catch(e){ return false; } }
-  function place(){ if(window.innerWidth<=980){ var tb=document.querySelector(".toc"); box.style.top=(tb?Math.round(tb.getBoundingClientRect().bottom)+8:12)+"px"; } else box.style.top="12px"; }
-  function show(){ if(off()||!deferred) return; place(); box.classList.add("visible"); clearTimeout(hideT); hideT=setTimeout(hide,15000); }
-  function hide(){ box.classList.remove("visible"); clearTimeout(hideT); }
-  function maybeShow(){ if(shown||off()||!deferred||!heroOut) return; shown=true; show(); } /* jamais sur l'accueil (hero) : on attend d'avoir defile au-dela, puis une seule fois */
+  var go = box && document.getElementById("pwaGo"), x = box && document.getElementById("pwaX");
+  var menuEls = document.querySelectorAll("[data-pwa-install]");
+  var deferred = null, heroOut = false, dismissed = false;
+  var standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  function place(){ if(!box) return; if(window.innerWidth<=980){ var tb=document.querySelector(".toc"); box.style.top=(tb?Math.round(tb.getBoundingClientRect().bottom)+8:12)+"px"; } else box.style.top="12px"; }
+  function show(){ if(!box||dismissed||!deferred) return; place(); box.classList.add("visible"); }
+  function hide(){ if(box) box.classList.remove("visible"); }
+  function maybeShow(){ if(dismissed||!deferred||!heroOut) return; show(); }
+  function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1); }
+  function toast(msg){ var t=document.getElementById("pwaToast"); if(!t){ t=document.createElement("div"); t.id="pwaToast"; t.className="pwa-toast"; t.addEventListener("click",function(){t.classList.remove("show");}); document.body.appendChild(t); } t.innerHTML=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove("show");},8000); }
+  function doInstall(){ if(deferred){ deferred.prompt(); deferred.userChoice.then(function(){ deferred=null; hide(); }); return; } if(standalone){ toast("&#10003; The app is already installed on this device."); return; } toast(isIOS()?"On iPhone / iPad: tap <b>Share</b>, then <b>“Add to Home Screen”</b>.":"To install: open your browser menu (&#8942;), then <b>“Install app”</b> or <b>“Add to Home Screen”</b>."); }
+  if(box){ go.addEventListener("click", function(){ doInstall(); }); x.addEventListener("click", function(){ dismissed=true; hide(); }); }
+  [].forEach.call(menuEls, function(el){ if(standalone){ el.style.display="none"; return; } el.addEventListener("click", function(ev){ ev.preventDefault(); doInstall(); }); });
   window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferred = e; maybeShow(); });
-  go.addEventListener("click", function () { if(!deferred){ hide(); return; } deferred.prompt(); deferred.userChoice.then(function () { deferred = null; hide(); }); });
-  x.addEventListener("click", function () { hide(); try { localStorage.setItem("tms_pwa","off"); } catch(e){} });
-  window.addEventListener("appinstalled", function () { hide(); try { localStorage.setItem("tms_pwa","off"); } catch(e){} });
-  var hero=document.querySelector(".hero");                          /* le bandeau ne s'affiche que hors de la vue d'accueil */
+  window.addEventListener("appinstalled", function () { dismissed = true; hide(); });
+  var hero=document.querySelector(".hero");
   if(hero&&"IntersectionObserver" in window){ new IntersectionObserver(function(es){ heroOut=!es[0].isIntersecting; if(heroOut)maybeShow(); else hide(); },{threshold:0}).observe(hero); }
   else { heroOut=true; }
 })();

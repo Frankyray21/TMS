@@ -617,6 +617,11 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .pwa-x{background:none;border:none;color:var(--dim);font-size:1.35rem;line-height:1;cursor:pointer;padding:.2rem .7rem .3rem;border-radius:50px}
 .pwa-x:hover{color:#fff}
 @media print{.pwa-install{display:none!important}}
+/* petit message d'aide à l'installation (iOS / quand le prompt natif n'est pas dispo), déclenché par l'entrée « Installer l'app » du menu */
+.pwa-toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:200;max-width:300px;width:calc(100% - 2.4rem);background:rgba(11,16,27,.98);border:1px solid rgba(210,35,37,.55);border-radius:14px;padding:1rem 1.15rem;box-shadow:0 16px 44px rgba(0,0,0,.6);color:var(--text);font-size:.92rem;line-height:1.55;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.pwa-toast.show{opacity:1;pointer-events:auto}
+.pwa-toast b{color:#ef5a5c}
+@media print{.pwa-toast{display:none!important}}
 /* quiz */
 .quiz{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.6rem;box-shadow:var(--shadow-card);margin-top:1.6rem}
 .quiz-head{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:1.4rem}
