@@ -100,7 +100,7 @@ section:not(.hero) .eyebrow.reveal.in{animation:tmsFadeUp .4s ease both .28s}
 section:not(.hero) h3.sub-h.reveal{transition:none}
 section:not(.hero) h3.sub-h.reveal.in{animation:tmsSubIn .45s cubic-bezier(.22,.61,.36,1) both}
 .lead{color:#cbd5e1;font-size:clamp(1.05rem,1.6vw,1.18rem);max-width:720px;margin-bottom:2rem;text-wrap:pretty}
-h3.sub-h{font-family:var(--font-display);font-size:clamp(1.35rem,2.5vw,1.7rem);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:2.4rem 0 1rem;display:flex;align-items:center;gap:.6rem}
+h3.sub-h{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2rem);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:2.4rem 0 1rem;display:flex;align-items:center;gap:.6rem}
 .toc-cta{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin:.9rem .9rem 0;padding:.7rem .9rem;border:1px solid rgba(210,35,37,.45);border-radius:12px;background:linear-gradient(160deg,rgba(210,35,37,.14),rgba(17,24,39,.5));color:#fff;font-size:.82rem;font-weight:700;transition:transform .2s,border-color .2s}
 .toc-cta:hover{transform:translateY(-2px);border-color:var(--brand)}
 .toc-cta .tc-sub{flex-basis:100%;color:var(--dim);font-size:.84rem;font-weight:600}

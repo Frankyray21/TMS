@@ -48,7 +48,7 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
   }
   // sous-titres : meme principe que fit() mais (a) le h3.sub-h est en FLEX avec une barre ::before
   // -> on mesure le TEXTE via Range (le scrollWidth est fausse par le retrecissement flex) et on
-  // retranche barre+gap ; (b) plancher plus bas (~17px) car leur taille de base est deja petite ;
+  // retranche barre+gap ; (b) plancher ~20px (sous-titres agrandis v1.38) ;
   // (c) RE-MESURE apres reduction : l'espacement (em) et un eventuel enfant en rem ne suivent pas
   // lineairement la taille, donc on verifie la largeur reelle et on corrige. Pas de neutralisation
   // d'animation : tmsSubIn ne fait que translater, ce qui ne change pas la largeur mesuree.
@@ -62,10 +62,10 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
     var w=txtW();
     if(w>0&&avail>0&&w>avail+1){
       var fs=parseFloat(cs.fontSize),target=fs*avail/w*0.98;
-      if(target<17){t.style.whiteSpace='normal';t.style.fontSize='17px';return;}  // trop long : 2 lignes a 17px
+      if(target<20){t.style.whiteSpace='normal';t.style.fontSize='20px';return;}  // trop long : 2 lignes a 20px (plancher)
       t.style.fontSize=target.toFixed(1)+'px';
       var w2=txtW();                                                // largeur reelle a la nouvelle taille
-      if(w2>avail){var t2=target*avail/w2*0.98;if(t2>=17){t.style.fontSize=t2.toFixed(1)+'px';}else{t.style.whiteSpace='normal';t.style.fontSize='17px';}}
+      if(w2>avail){var t2=target*avail/w2*0.98;if(t2>=20){t.style.fontSize=t2.toFixed(1)+'px';}else{t.style.whiteSpace='normal';t.style.fontSize='20px';}}
     }
   }
   function setup(){
