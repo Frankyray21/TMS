@@ -1,11 +1,13 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v29";
+const VERSION = "tms-v30";
 const CORE = [
   "./",
   "index.html",
   "index.en.html",
   "formation.html",
   "formation.en.html",
+  "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
+  "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "interactif.html",
   "manifest.webmanifest",
   "images/assis_basdudos.jpg",
@@ -50,7 +52,10 @@ const CORE = [
 const PAGES = ["./", "index.html", "index.en.html",
   "partie-2.html", "partie-3.html", "partie-4.html", "partie-5.html",
   "partie-2.en.html", "partie-3.en.html", "partie-4.en.html", "partie-5.en.html",
-  "formation.html", "formation.en.html", "interactif.html", "manifest.webmanifest",
+  "formation.html", "formation.en.html",
+  "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
+  "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
+  "interactif.html", "manifest.webmanifest",
   "styles.css", "formation.css", "app.js", "app.en.js"];
 
 self.addEventListener("install", (e) => {

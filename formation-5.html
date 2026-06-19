@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fr" class="no-js tms-loading">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<style id="tms-loader-css">/* ecran de chargement : couvre le bref instant ou le defilement n'est pas encore fluide */
+html.tms-loading{overflow:hidden!important}
+#tmsLoader{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;background:#0a0e17;transition:opacity .35s ease,visibility .35s ease}
+#tmsLoader.gone{opacity:0;visibility:hidden;pointer-events:none}
+#tmsLoader .ld-spin{width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.16);border-top-color:#ef5a5c;animation:tmsLd .8s linear infinite}
+#tmsLoader .ld-txt{font-family:'Barlow Condensed','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:.85rem;color:#9aa3b2}
+@keyframes tmsLd{to{transform:rotate(360deg)}}</style>
+<noscript><style>html.tms-loading{overflow:auto!important}#tmsLoader{display:none!important}</style></noscript>
+<script>/* langue mémorisée : redirige un visiteur qui a déjà choisi l'autre langue (français par défaut pour les nouveaux) */
+(function(){try{
+  var cur=/\.en\.html$/.test(location.pathname)?'en':'fr';
+  var pref=localStorage.getItem('tms_lang');
+  if(pref&&pref!==cur&&!sessionStorage.getItem('tms_lang_redir')){
+    sessionStorage.setItem('tms_lang_redir','1');
+    var f=location.pathname.split('/').pop()||'formation.html';
+    var map=pref==='en'?{'formation.html':'formation.en.html','formation.html':'formation.en.html','':'formation.en.html'}:{'formation.en.html':'formation.html','formation.en.html':'formation.html'};
+    if(map[f])location.replace(map[f]+location.hash);
+  }
+}catch(e){}})();</script>
+<title>Prévention des TMS en mine souterraine | Base de connaissances · Machines Roger International</title>
+<link rel="alternate" hreflang="fr-CA" href="formation.html">
+<link rel="alternate" hreflang="en-CA" href="formation.en.html">
+<meta name="description" content="Base de connaissances sur la prévention des troubles musculosquelettiques (TMS) en mine souterraine : zones à risque, facteurs, sommeil, hygiène de vie et bons réflexes au poste de travail. Machines Roger International.">
+<meta name="theme-color" content="#0a0e17">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CA">
+<meta property="og:title" content="Prévention des TMS · Base de connaissances | Machines Roger International">
+<meta property="og:description" content="Ton corps, c'est ton premier outil de travail. Tout savoir sur la prévention des TMS en mine souterraine.">
+<meta property="og:image" content="https://preventiontmsmri.netlify.app/images/og.jpg">
+<link rel="canonical" href="https://preventiontmsmri.netlify.app/">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e17'/%3E%3Cpath d='M16 38a16 16 0 0 1 32 0z' fill='%23d22325'/%3E%3Crect x='28' y='16' width='8' height='12' rx='3' fill='%23d22325'/%3E%3Crect x='10' y='38' width='44' height='7' rx='3.5' fill='%23ef5a5c'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="images/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Prévention TMS">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="tmsLoader" role="status" aria-live="polite">
+  <div class="ld-spin" aria-hidden="true"></div>
+  <div class="ld-txt">Chargement…</div>
+</div>
+<script>/* masque l'ecran de chargement + deverrouille le defilement des que la page est utilisable */
+(function(){
+  var ld=document.getElementById('tmsLoader');if(!ld)return;
+  var de=document.documentElement,done=false;
+  function hide(){if(done)return;done=true;de.classList.remove('tms-loading');ld.classList.add('gone');setTimeout(function(){if(ld.parentNode)ld.parentNode.removeChild(ld);},400);}
+  function ready(){requestAnimationFrame(function(){requestAnimationFrame(hide);});}   // laisse passer le 1er rendu
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(ready);}
+  if(document.readyState!=='loading'){ready();}else{document.addEventListener('DOMContentLoaded',ready);}
+  setTimeout(hide,3500);   // filet de securite : ne jamais rester bloque
+})();
+</script>
+<a class="skip" href="#reflexes">Aller au contenu</a>
+<div class="progress" aria-hidden="true"><i id="prog"></i></div>
+<nav class="switch" aria-label="Choisir la section">
+  <a class="seg" href="index.html">&#128214; Base de connaissances</a>
+  <span class="seg active" aria-current="page">&#127891; Formation guidée</span>
+</nav>
+<nav class="langswitch" aria-label="Langue / Language">
+  <a class="on" href="formation.html" lang="fr" hreflang="fr" aria-current="true">FR</a>
+  <a href="formation.en.html" lang="en" hreflang="en">EN</a>
+</nav>
+
+<div class="layout">
+  <!-- TABLE DES MATIERES -->
+  <aside class="toc">
+    <div class="toc-brand">
+      <img src="images/logo_roger.png" alt="Machines Roger International">
+      <div class="sub">Prévention des TMS</div>
+    </div>
+    <button class="toc-search" id="searchOpen" aria-label="Rechercher dans la page (raccourci : barre oblique)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span class="ts-lbl">Rechercher…</span><kbd>/</kbd></button>
+    <nav class="toc-nav" id="tocNav" aria-label="Sommaire de la base de connaissances">
+      <span class="toc-ind" id="tocInd"></span>
+      <a class="toc-link" href="formation.html#accueil"><span class="dot"></span>Accueil</a>
+      <a class="toc-link" href="#" data-ouvrir-video>🎬 Vidéo</a>
+      <a class="toc-link" href="#" data-pwa-install>📲 Installer l'app</a>
+      <a class="toc-link" href="formation.html#ampleur"><span class="tnum">!</span>L'ampleur</a>
+      <a class="toc-link" href="formation.html#comprendre"><span class="tnum">01</span>Comprendre</a>
+      <a class="toc-link sub" href="formation.html#types">Types &amp; zones</a>
+      <a class="toc-link sub" href="formation.html#corps">Carte du corps</a>
+      <a class="toc-link sub" href="formation.html#facteurs">Facteurs de risque</a>
+      <a class="toc-link sub" href="formation.html#schema">Schéma interactif</a>
+      <a class="toc-link sub" href="formation.html#realite">Notre réalité minière</a>
+      <a class="toc-link sub" href="formation.html#evolution">Évolution</a>
+      <a class="toc-link" href="formation-2.html#charge"><span class="tnum">02</span>Fatigue &amp; charge</a>
+      <a class="toc-link sub" href="formation-2.html#borg">Échelle de l'effort</a>
+      <a class="toc-link sub" href="formation-2.html#fatigue">Fatigue musculaire</a>
+      <a class="toc-link sub" href="formation-2.html#assis">Travail assis</a>
+      <a class="toc-link" href="formation-3.html#sommeil"><span class="tnum">03</span>Sommeil</a>
+      <a class="toc-link sub" href="formation-3.html#quarts">Quart de nuit</a>
+      <a class="toc-link" href="formation-4.html#hygiene"><span class="tnum">04</span>Hygiène</a>
+      <a class="toc-link" href="formation-5.html#reflexes"><span class="tnum">05</span>Réflexes</a>
+      <a class="toc-link sub" href="formation-5.html#postures">Bonnes postures</a>
+      <a class="toc-link sub" href="formation-5.html#signaler">Signaler</a>
+      <a class="toc-link" href="formation-5.html#quiz"><span class="tnum">?</span>Quiz</a>
+      <a class="toc-link" href="formation-5.html#retenir"><span class="tnum">&#10003;</span>À retenir</a>
+    </nav>
+    <a class="toc-cta" href="formation-5.html#quiz"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="10"/></svg> Teste tes connaissances<span class="tc-sub">Quiz prévention TMS</span></a>
+    <div class="toc-foot">Formation guidée &middot; Nouveaux travailleurs<br>Sources : CNESST (2023) &middot; INSPQ</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- HERO -->
+    <section id="reflexes" tabindex="-1">
+      <span class="ghost" aria-hidden="true">05</span>
+      <div class="wrap">
+        <div class="eyebrow reveal">Partie 05</div>
+        <h2 class="title reveal d1">Les bons réflexes au poste de travail</h2>
+        <p class="lead reveal d2">Ce que tu peux appliquer dès demain pour protéger ton dos, tes épaules et tes articulations.</p>
+
+        <h3 id="postures" class="sub-h reveal">Les 4 règles &amp; les postures à éviter</h3>
+        <div class="info reveal" data-img="images/info_regles.jpeg" tabindex="0" role="button" aria-label="Agrandir : les 4 règles"><img src="images/info_regles.jpeg" alt="Les 4 règles" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
+        <p class="cap reveal">Charge près du corps, dos en position naturelle, pivoter avec les pieds, hauteur de travail adaptée.</p>
+        <div class="info reveal" data-img="images/info_postures_eviter.jpeg" tabindex="0" role="button" aria-label="Agrandir : postures à éviter"><img src="images/info_postures_eviter.jpeg" alt="Postures à éviter" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
+        <p class="cap reveal">À éviter : charge loin du corps, dos arrondi, torsion du tronc, bras en extension prolongée.</p>
+        <div class="info reveal" data-img="images/info_angles.jpeg" tabindex="0" role="button" aria-label="Agrandir : positions contraignantes"><img src="images/info_angles.jpeg" alt="Positions contraignantes" loading="lazy" decoding="async"><span class="zoom"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg> Agrandir</span></div>
+        <p class="cap reveal">Au-delà de 45&deg;, la position devient contraignante : 0-20&deg; confort, 20-45&deg; à surveiller.</p>
+
+        <h3 class="sub-h reveal">Avant le quart : préparer le corps</h3>
+        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 002.5 2.5z"/></svg></div><p><strong>Un muscle froid se blesse plus facilement.</strong> 5 minutes d'échauffement valent mieux que des semaines d'arrêt.</p></div>
+        <div class="grid g3">
+          <div class="card green reveal"><div class="ic" style="font-weight:900;font-size:1.1rem">1</div><h4>Mobiliser les articulations</h4><p>Cou, épaules, poignets, hanches, genoux : quelques rotations douces.</p></div>
+          <div class="card blue reveal d1"><div class="ic" style="font-weight:900;font-size:1.1rem">2</div><h4>Activer le dos et les jambes</h4><p>Flexions légères, fentes, étirements du bas du dos.</p></div>
+          <div class="card reveal d2"><div class="ic" style="font-weight:900;font-size:1.1rem">3</div><h4>Monter en intensité</h4><p>Commencer doucement, laisser le corps se réchauffer avant l'effort lourd.</p></div>
+        </div>
+
+        <h3 class="sub-h reveal">Pendant le quart : micro-pauses et rotation</h3>
+        <div class="grid g4">
+          <div class="card purple reveal"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></div><h4>Varie tes postures</h4><p>Alterne debout, accroupi, en mouvement. Aucune posture n'est bonne trop longtemps.</p></div>
+          <div class="card reveal d1"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div><h4>Micro-pauses</h4><p>Quelques secondes pour relâcher les muscles avant qu'ils ne se crispent.</p></div>
+          <div class="card blue reveal d2"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16,8 20,5 20,16 16,13"/></svg></div><h4>Alterne les tâches</h4><p>Quand c'est possible, change de geste pour reposer les zones sollicitées.</p></div>
+          <div class="card green reveal d3"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><h4>Étirements courts</h4><p>Quelques étirements ciblés au fil du quart gardent les muscles souples.</p></div>
+        </div>
+
+        <h3 id="signaler" class="sub-h reveal">Écoute les signaux, signale tôt</h3>
+        <div class="alert reveal"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7v18L3 13v-2z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg></div><p><strong>Un inconfort qui revient n'est pas une faiblesse à cacher.</strong> C'est une information à partager vite.</p></div>
+        <div class="grid g2">
+          <div class="card reveal" style="border-left:4px solid var(--accent)"><h4>Pourquoi signaler tôt</h4><ul class="plainlist"><li>Un TMS pris tôt se soigne vite</li><li>On peut ajuster le poste de travail ou la tâche</li><li>On évite que ça devienne chronique</li><li>Ton signalement protège tes collègues</li></ul></div>
+          <div class="card green reveal d1" style="border-left:4px solid var(--success)"><h4>&Agrave; qui en parler</h4><ul class="plainlist"><li>Ton superviseur immédiat</li><li>Le conseiller ou comité santé-sécurité</li><li>Les secouristes du site au besoin</li><li>N'attends pas que ça empire</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" tabindex="-1">
+      <span class="ghost" aria-hidden="true">?</span>
+      <div class="wrap">
+        <div class="eyebrow reveal">Teste tes connaissances</div>
+        <h2 class="title reveal d1">Le quiz prévention TMS</h2>
+        <p class="lead reveal d2">Dix questions pour vérifier l'essentiel : ce qu'est un TMS, les facteurs de risque, la fatigue, le sommeil et les bons réflexes. Aucune note enregistrée, c'est pour toi.</p>
+        <div class="quiz reveal" id="quizBox">
+          <div class="quiz-head">
+            <div class="quiz-prog"><span id="qProgTxt">Question 1 / 10</span><div class="quiz-bar"><span id="qProgBar"></span></div></div>
+            <div class="quiz-score" id="qScoreLive">0 bonne réponse</div>
+          </div>
+          <div class="quiz-stage" id="qStage"></div>
+          <div class="quiz-result" id="qResult" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="retenir" tabindex="-1">
+      <span class="ghost" aria-hidden="true">&#10003;</span>
+      <div class="wrap">
+        <div class="eyebrow reveal">Conclusion</div>
+        <h2 class="title reveal d1">Ce qu'il faut retenir</h2>
+        <p class="lead reveal d2">Toute la prévention des TMS tient en deux piliers.</p>
+        <div class="piliers">
+          <div class="pilier p1 reveal"><h4>Pilier 1 : Réduire la charge</h4><p style="color:var(--muted);font-size:.98rem;line-height:1.6">Bons gestes de manutention, échauffement, micro-pauses, variation des postures et des tâches, aides mécaniques : demander de l'aide n'est pas une faiblesse.</p></div>
+          <div class="pilier p2 reveal d1"><h4>Pilier 2 : Maximiser la récupération</h4><p style="color:var(--muted);font-size:.98rem;line-height:1.6">Sommeil régulier de 7 à 9 h, hydratation, alimentation, mouvement : des habitudes qui aident ton corps à se réparer.</p></div>
+        </div>
+
+        <div class="alert reveal" style="margin-top:1.8rem"><div class="i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div><p><strong>Ton corps, c'est ton premier outil de travail.</strong> Prends-en soin aujourd'hui pour qu'il dure toute ta carrière.</p></div>
+        <div class="reveal" style="margin-top:1.6rem;display:flex;gap:.8rem;flex-wrap:wrap"><a class="btn" href="formation.html">Suivre la formation guidée &rarr;</a><a class="btn ghost" href="#reflexes">Revenir en haut</a></div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+<nav class="part-nav" aria-label="Navigation entre les parties">
+  <a class="pn-prev" href="formation-4.html"><span class="pn-k">&larr; Partie pr&eacute;c&eacute;dente</span><span class="pn-t">Partie 4 &middot; Hygi&egrave;ne de vie</span></a>
+  <a class="pn-next" href="formation.html"><span class="pn-k">&uarr; Revenir au d&eacute;but</span><span class="pn-t">Accueil &middot; Partie 1</span></a>
+</nav>
+    <footer class="foot">
+      <div class="wrap">
+        <div class="foot-grid">
+          <div>
+            <img class="foot-logo" src="images/logo_roger.png" alt="Machines Roger International">
+            <p>Prévention des troubles musculosquelettiques en mine souterraine. Parce que ton corps est ton premier outil de travail, et qu'il doit durer toute ta carrière.</p>
+          </div>
+          <div>
+            <h5>Sources &amp; références</h5>
+            <ul>
+              <li>CNESST · Statistiques sur les lésions de type TMS (2023)</li>
+              <li>INSPQ · Troubles musculosquelettiques liés au travail</li>
+              <li>Formation interne « Nouveaux travailleurs » (38 diapositives)</li>
+            </ul>
+          </div>
+          <div>
+            <h5>Navigation</h5>
+            <ul>
+              <li><a href="formation.html#comprendre">Comprendre</a></li>
+              <li><a href="formation-2.html#charge">Charge &amp; récupération</a></li>
+              <li><a href="formation-3.html#sommeil">Sommeil</a></li>
+              <li><a href="formation-4.html#hygiene">Hygiène</a></li>
+              <li><a href="formation-5.html#reflexes">Réflexes</a></li>
+              <li><a href="formation-5.html#quiz">Quiz prévention TMS &rarr;</a></li>
+              <li><a href="formation.html">Formation guidée (quiz + attestation) &rarr;</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="foot-bar">
+          <span>&copy; 2026 Machines Roger International</span>
+          <span>Mise à jour : juin 2026</span>
+          <span>Document de sensibilisation. Ne remplace pas un avis médical.</span>
+          <button class="viewtoggle" id="viewToggle" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> <span id="viewToggleLbl">Version ordinateur</span></button>
+          <span class="foot-ver" id="footVer" title="Version du site">v1.41</span>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<div class="secflag" id="secflag" role="status" aria-live="polite"><span class="sf-num" id="sfNum"></span><span class="sf-lbl" id="sfLbl"></span></div>
+<button class="totop" id="toTop" aria-label="Revenir en haut de la page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg></button>
+
+<div class="pwa-install" id="pwaInstall" role="dialog" aria-label="Installer l'application">
+  <button type="button" class="pwa-go" id="pwaGo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> Installer l'application</button>
+  <button type="button" class="pwa-x" id="pwaX" aria-label="Fermer">&times;</button>
+</div>
+
+<!-- RECHERCHE -->
+<div class="cmdk" id="cmdk" role="dialog" aria-modal="true" aria-label="Recherche dans la base de connaissances">
+  <div class="cmdk-box">
+    <input id="cmdkInput" type="search" placeholder="Rechercher : sommeil, dos, posture, genoux…" autocomplete="off" aria-label="Rechercher">
+    <div class="cmdk-list" id="cmdkList" role="listbox"></div>
+    <div class="cmdk-foot"><span>&uarr;&darr; naviguer</span><span>&crarr; ouvrir</span><span>Échap fermer</span></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" aria-describedby="mDesc">
+    <button class="mclose" id="mclose" aria-label="Fermer">&times;</button>
+    <div class="mimg"><img id="mImg" src="" alt=""></div>
+    <div class="mbody">
+      <span class="tag" id="mTag"></span>
+      <h3 id="mTitle"></h3>
+      <p class="desc" id="mDesc"></p>
+      <div class="sec risk"><h5>&#9888; Facteurs de risque</h5><ul id="mRisk"></ul></div>
+      <div class="sec prev"><h5>&#10003; Prévention</h5><ul id="mPrev"></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image agrandie"><button class="lbclose" id="lbclose" aria-label="Fermer">&times;</button><img id="lbImg" src="" alt=""></div>
+
+<!-- Vidéo en surimpression -->
+<div class="voile-sim" id="voile-video" role="dialog" aria-modal="true" aria-label="Vidéo : préserver son corps">
+  <div class="panneau-sim panneau-video">
+    <button class="fermer-sim" id="fermer-video" aria-label="Fermer la vidéo">✕</button>
+    <h3 class="refl-titre">En vidéo : préserver son corps</h3>
+    <p class="nuance-p">Le corps est ton premier outil de travail : cette courte vidéo (2 min) montre comment l'entretenir au quotidien (sommeil, activité physique, récupération) pour mieux encaisser les contraintes du travail.</p>
+    <div class="video-cadre" style="margin-top:1rem">
+      <video id="lecteur-video" controls preload="metadata" poster="videos/preserver-son-corps-affiche.jpg">
+        <source src="videos/preserver-son-corps.mp4" type="video/mp4">
+        Votre navigateur ne prend pas en charge la lecture vidéo.
+        <a href="videos/preserver-son-corps.mp4">Télécharger la vidéo</a>.
+      </video>
+      <div class="video-legende">
+        <span class="video-titre">🎬 Préserver son corps · 1 min 54</span>
+        <div class="video-puces">
+          <span class="video-pour">Pour aller plus loin :</span>
+          <button class="puce" data-cle="sommeil">🌙 Sommeil</button>
+          <button class="puce" data-cle="condition-physique">🏃 Condition physique</button>
+          <button class="puce" data-cle="recuperation">😴 Récupération</button>
+          <button class="puce" data-cle="agir-tot">💡 Agir tôt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sommeil : détails en surimpression -->
+<div class="voile-sim" id="voile-sommeil" role="dialog" aria-modal="true" aria-label="Détail sommeil">
+  <div class="panneau-sim panneau-sommeil">
+    <button class="fermer-sim" id="fermer-sommeil" aria-label="Fermer">✕</button>
+    <h3 class="refl-titre" id="slTitre">Détail</h3>
+    <div class="sl-body" id="slBody"></div>
+  </div>
+</div>
+
+<!-- Bons réflexes en surimpression -->
+<div class="voile-sim" id="voile-reflexes" role="dialog" aria-modal="true" aria-label="Les bons réflexes au poste de travail">
+  <div class="panneau-sim panneau-reflexes">
+    <button class="fermer-sim" id="fermer-reflexes" aria-label="Fermer">✕</button>
+    <h3 class="refl-titre">Les bons réflexes au poste de travail</h3>
+    <p class="nuance-p">Quelques gestes simples qui protègent ton dos, tes épaules et tes articulations, surtout en position assise prolongée.</p>
+    <div class="refl-grid">
+      <div class="refl-card ok">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="13" height="8" rx="1.5"/><path d="M16 13h3l2 3v1h-5"/><path d="M12 9V5h4"/></svg></span>
+        <div><h5>Charge près du corps</h5><p>Garde la charge collée à toi, dos en position naturelle, et pivote avec les pieds plutôt qu'en tordant le tronc.</p></div>
+      </div>
+      <div class="refl-card ok">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></span>
+        <div><h5>Varie tes postures</h5><p>Alterne assis, debout et en mouvement. Aucune position n'est bonne trop longtemps, même la meilleure.</p></div>
+      </div>
+      <div class="refl-card ok">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></span>
+        <div><h5>Micro-pauses</h5><p>Lève-toi quelques secondes régulièrement : ça relance la circulation et réhydrate les disques avant qu'ils ne se crispent.</p></div>
+      </div>
+      <div class="refl-card ok">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+        <div><h5>Étirements courts</h5><p>Quelques étirements ciblés au fil du quart gardent les muscles souples et soulagent le bas du dos.</p></div>
+      </div>
+      <div class="refl-card">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 002.5 2.5z"/></svg></span>
+        <div><h5>Échauffe-toi avant le quart</h5><p>Un muscle froid se blesse plus vite : 5 minutes de mobilisations valent mieux que des semaines d'arrêt.</p></div>
+      </div>
+      <div class="refl-card">
+        <span class="refl-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7v18L3 13v-2z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg></span>
+        <div><h5>Signale tôt</h5><p>Un inconfort qui revient n'est pas une faiblesse à cacher : pris tôt, un TMS se règle vite. Parles-en à ton superviseur.</p></div>
+      </div>
+    </div>
+    <p class="refl-foot">Tu retrouveras tous ces réflexes en détail (les 4 règles, les postures à éviter, le signalement) dans la partie <strong>« Les bons réflexes au poste de travail »</strong>, plus bas dans la page.</p>
+  </div>
+</div>
+
+<!-- Bas du dos en surimpression -->
+<div class="voile-sim" id="voile-assis" role="dialog" aria-modal="true" aria-label="Ce qui se passe dans le bas du dos">
+  <div class="panneau-sim panneau-assis">
+    <button class="fermer-sim" id="fermer-assis" aria-label="Fermer">✕</button>
+    <h3 class="assis-modal-titre">Ce qui se passe dans le bas du dos</h3>
+    <p class="nuance-p">Assis aux commandes pendant des heures, le bas du dos encaisse en silence. Clique chaque point pour voir le détail.</p>
+    <div class="ax-grid">
+      <div class="ax-list">
+        <button type="button" class="ax-item" aria-expanded="false"><span class="ax-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="5" r="2.2"/><path d="M10 8v5h6l3 6"/><path d="M6 10v8h9"/></svg></span><span class="ax-t">Moins de mouvements</span><span class="ax-plus" aria-hidden="true">+</span></button>
+        <div class="ax-d"><p>Le tronc ne bouge presque plus. Sans variations de pression, le disque n'est plus « pompé » : l'eau, les nutriments et l'oxygène entrent moins (revois la comparaison animée de la section).</p></div>
+        <button type="button" class="ax-item" aria-expanded="false"><span class="ax-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M13 3c-4 3-4 6.5 0 9s4 6.5 0 9"/></svg></span><span class="ax-t">Moins de lordose lombaire</span><span class="ax-plus" aria-hidden="true">+</span></button>
+        <div class="ax-d"><p>Assis, le bas du dos perd sa courbure naturelle (la lordose lombaire). La pression se répartit mal et charge davantage l'avant des disques.</p></div>
+        <button type="button" class="ax-item" aria-expanded="false"><span class="ax-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3c3.2 4.2 5.5 7 5.5 9.8a5.5 5.5 0 11-11 0C6.5 10 8.8 7.2 12 3z"/></svg></span><span class="ax-t">Moins d'hydratation du disque</span><span class="ax-plus" aria-hidden="true">+</span></button>
+        <div class="ax-d"><p>Comprimé en continu, le disque perd son eau au fil du quart. Moins hydraté, il amortit moins bien les chocs et les vibrations de la machine.</p></div>
+        <button type="button" class="ax-item" aria-expanded="false"><span class="ax-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="ax-t">À long terme : plus de risque de dégénérescence</span><span class="ax-plus" aria-hidden="true">+</span></button>
+        <div class="ax-d"><p>Les disques du bas de la colonne, surtout L4-L5, encaissent le plus de pression en position assise. Année après année, l'usure s'accumule : c'est la dégénérescence discale.</p></div>
+      </div>
+      <figure class="ax-photo">
+        <img src="images/assis_basdudos.jpg" alt="Opérateur assis aux commandes d'une machine, colonne lombaire mise en évidence au niveau L4-L5" loading="lazy" decoding="async">
+        <figcaption>La zone L4-L5, tout en bas de la colonne, est la plus chargée en position assise.</figcaption>
+      </figure>
+    </div>
+    <p class="sd-ref" style="text-align:left;margin-top:1rem">Réf. : Kastelic, Kozinc et Sarabon, 2018; Billy, Lemieux et Chow, 2014.</p>
+  </div>
+</div>
+
+<!-- Microlésions en surimpression -->
+<div class="voile-sim" id="voile-micro" role="dialog" aria-modal="true" aria-label="Microlésions et récupération">
+  <div class="panneau-sim panneau-micro">
+    <button class="fermer-sim" id="fermer-micro" aria-label="Fermer">✕</button>
+    <div class="nuance-lbl" style="margin-bottom:.8rem">Zoom sur le stade « inconfort »</div>
+    <h3 class="micro-modal-titre">Dès l'inconfort, des microlésions se forment déjà</h3>
+    <p class="nuance-p">Les contractions musculaires répétées créent des microlésions dans les fibres musculaires et tendineuses. Ces microlésions déclenchent une <strong style="color:var(--accent-l)">réponse inflammatoire</strong> : c'est souvent ce qu'on ressent comme un inconfort. À ce stade, l'atteinte reste réversible, et tout dépend du <strong>temps de récupération</strong>.</p>
+    <figure class="micro-photo" style="margin:1.2rem 0">
+      <div class="mp-imgs"><div class="mp-col"><span class="mp-tag">Avant / Après</span><img src="images/info_micro_ab.jpg" alt="Fibres musculaires avant et après l'effort : apparition de microlésions et d'inflammation en rouge" loading="lazy" decoding="async"></div></div>
+      <figcaption>Avant / Après : apparition de microlésions et d'inflammation (en rouge) dans les fibres musculaires.</figcaption>
+    </figure>
+    <p class="nuance-p" style="margin-top:.8rem">Choisis un scénario :</p>
+    <div class="micro-choice">
+      <button type="button" class="mc-btn ok active" id="recOk" aria-pressed="true">
+        <span class="mc-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        <span class="mc-t">Temps de repos suffisant</span>
+        <span class="mc-d">&uarr; de la force musculaire et de la résistance tendineuse</span>
+      </button>
+      <button type="button" class="mc-btn no" id="recNo" aria-pressed="false">
+        <span class="mc-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+        <span class="mc-t">Temps de repos insuffisant</span>
+        <span class="mc-d">Dégénérescence chronique des tissus</span>
+      </button>
+    </div>
+    <div class="micro-out" id="microOut"></div>
+    <p class="nuance-foot"><strong>Le temps de récupération détermine si les tissus s'adaptent ou se détériorent</strong> <span style="color:var(--dim)">· Docking et Cook, 2019</span>. C'est pourquoi agir dès l'inconfort, en laissant le corps récupérer, évite que les microlésions ne s'accumulent vers la douleur puis la lésion.</p>
+  </div>
+</div>
+
+<!-- Échelle de Borg en surimpression -->
+<div class="voile-sim" id="voile-borg" role="dialog" aria-modal="true" aria-label="Échelle de l'effort perçu (Borg)">
+  <div class="panneau-sim panneau-borg">
+    <button class="fermer-sim" id="fermer-borg" aria-label="Fermer l'échelle">✕</button>
+    <h3 class="borg-modal-titre">Échelle de l'effort perçu <span>· (échelle de Borg)</span></h3>
+    <p class="borg-modal-sous">Clique un niveau : son sens au travail et la conduite à tenir s'affichent juste en dessous.</p>
+    <div class="borg-modal-flex">
+      <div class="borg-axe"><span>Intensité faible</span><span class="borg-axe-bar" aria-hidden="true"></span><span>Intensité élevée</span></div>
+      <div class="borg-rows" id="borgRows"></div>
+    </div>
+    <div class="borg-detail" id="borgDetail" hidden>
+      <div class="bd-head"><span class="bd-n" id="bdN">0</span><div><div class="bd-l" id="bdL">Aucun effort</div><div class="bd-e" id="bdE">Pas d'effort.</div></div></div>
+      <div class="bd-zone" id="bdZone">Zone soutenable longtemps</div>
+      <p class="bd-conseil" id="bdConseil">Tu peux soutenir ce rythme longtemps.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Évaluation du poste en surimpression -->
+<div class="voile-sim" id="voile-sim" role="dialog" aria-modal="true" aria-label="Évaluation de votre poste de travail">
+  <div class="panneau-sim">
+    <button class="fermer-sim" id="fermer-sim" aria-label="Fermer l'évaluation">✕</button>
+<section class="bloc ireveal" id="simulateur">
+    <h2>Évaluez <span class="accent">votre poste de travail</span></h2>
+    <p class="intro">Cochez ce qui correspond à votre situation de travail. La jauge calcule un niveau de risque indicatif, et démontre le message clé : cocher dans <strong>plusieurs familles à la fois</strong> fait grimper le score plus vite, car les facteurs se multiplient.</p>
+
+    <div class="sim-flex">
+      <form class="sim-form" id="form-sim"></form>
+
+      <div class="sim-resultat">
+        <h3>Niveau de risque indicatif</h3>
+        <svg id="jauge" viewBox="0 0 220 130" aria-hidden="true">
+          <defs>
+            <linearGradient id="grad-jauge" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#6fc24a"/>
+              <stop offset="45%" stop-color="#e3c54a"/>
+              <stop offset="75%" stop-color="#f08a2e"/>
+              <stop offset="100%" stop-color="#e8404a"/>
+            </linearGradient>
+          </defs>
+          <path id="arc-fond" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke-width="16" stroke-linecap="round"/>
+          <path id="arc-niveau" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke="url(#grad-jauge)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+          <g id="aiguille">
+            <line x1="110" y1="112" x2="110" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="110" cy="112" r="8" fill="#fff"/>
+          </g>
+        </svg>
+        <div id="score-valeur">0</div>
+        <div id="score-niveau">Cochez des facteurs ci-contre</div>
+        <p id="sim-combo"></p>
+        <ul id="sim-conseils"></ul>
+        <button type="button" id="sim-raz">↺ Tout effacer</button>
+      </div>
+    </div>
+  </section>
+  </div>
+</div>
+
+<!-- Fenêtre de détails -->
+<div class="voile" id="voile" role="dialog" aria-modal="true" aria-labelledby="modale-titre">
+  <div class="modale" id="modale">
+    <div class="modale-entete">
+      <span class="picto" id="modale-picto"></span>
+      <h2>
+        <span class="categorie" id="modale-categorie"></span>
+        <span id="modale-titre"></span>
+      </h2>
+      <div class="modale-actions">
+        <button id="btn-lecture" title="Écouter la fiche" aria-label="Lire la fiche à voix haute">🔊</button>
+        <button id="btn-imprimer" title="Imprimer la fiche" aria-label="Imprimer la fiche">🖨️</button>
+        <button class="fermer" id="fermer" aria-label="Fermer la fenêtre">✕</button>
+      </div>
+    </div>
+    <div class="modale-corps" id="modale-corps"></div>
+    <div class="modale-pied" id="modale-pied">
+      <button id="btn-prec">← Précédent</button>
+      <span id="modale-position"></span>
+      <button id="btn-suiv">Suivant →</button>
+    </div>
+  </div>
+</div>
+
+<div id="infobulle" role="tooltip"></div>
+<div id="toasts" aria-live="polite"></div>
+<canvas id="confettis"></canvas>
+<script src="app.js" defer></script>
+</body>
+</html>
