@@ -1,5 +1,6 @@
 /* Couche « formation guidée » — par-dessus la copie de la base de connaissances.
-   (1) suivi de progression (5 parties, localStorage)  (2) mode parcours : une sous-section à la fois.
+   (1) progression (5 parties)  (2) parcours : une sous-section à la fois
+   (3) capture du score du quiz  (4) attestation (sans note minimale, sur la dernière partie).
    Chargé UNIQUEMENT sur les pages formation*.html, après app.js / app.en.js. */
 (function () {
   var path = (location.pathname.split('/').pop() || 'formation.html').toLowerCase();
@@ -9,15 +10,30 @@
   var PART = mm ? parseInt(mm[1], 10) : 1, TOTAL = 5;
   var NEXTFILE = PART < TOTAL ? (PART === 1 ? 'formation-2' : 'formation-' + (PART + 1)) + (EN ? '.en.html' : '.html') : null;
   var PREVFILE = PART > 1 ? (PART === 2 ? 'formation' : 'formation-' + (PART - 1)) + (EN ? '.en.html' : '.html') : null;
-  var KEY = 'tms_form_done';
-  var T = EN
-    ? { lbl: 'My progress', done: 'Training complete ✓', prev: 'Previous', next: 'Next', nextPart: 'Next part', finish: 'Finish' }
-    : { lbl: 'Ma progression', done: 'Formation terminée ✓', prev: 'Précédent', next: 'Suivant', nextPart: 'Partie suivante', finish: 'Terminer' };
+  var KEY = 'tms_form_done', QKEY = 'tms_form_quiz', NKEY = 'tms_form_name';
+  var T = EN ? {
+    lbl: 'My progress', done: 'Training complete ✓', prev: 'Previous', next: 'Next', nextPart: 'Next part', finish: 'Finish ✓',
+    attEy: 'Certificate', attH: 'Your training certificate',
+    gateMsg: 'Complete the 5 parts to unlock your certificate.', gateFrac: 'parts done',
+    congrats: 'Congratulations — you completed the training!', nameLbl: 'Your full name', namePh: 'First and last name',
+    gen: 'Generate / print (save as PDF)', certTitle: 'TRAINING CERTIFICATE', certSub: 'Prevention of musculoskeletal disorders (MSD)',
+    certTo: 'Awarded to', certOn: 'On', certScore: 'Quiz score', certOrg: 'Machines Roger International'
+  } : {
+    lbl: 'Ma progression', done: 'Formation terminée ✓', prev: 'Précédent', next: 'Suivant', nextPart: 'Partie suivante', finish: 'Terminer ✓',
+    attEy: 'Attestation', attH: 'Ton attestation de formation',
+    gateMsg: 'Termine les 5 parties pour débloquer ton attestation.', gateFrac: 'parties faites',
+    congrats: 'Félicitations — tu as complété la formation !', nameLbl: 'Ton nom complet', namePh: 'Prénom et nom',
+    gen: 'Générer / imprimer (enregistrer en PDF)', certTitle: 'ATTESTATION DE FORMATION', certSub: 'Prévention des troubles musculosquelettiques (TMS)',
+    certTo: 'Délivrée à', certOn: 'Le', certScore: 'Score au quiz', certOrg: 'Machines Roger International'
+  };
 
-  /* ---------- progression (5 parties) ---------- */
   function getDone() { try { return JSON.parse(localStorage.getItem(KEY) || '[]').filter(function (n) { return n >= 1 && n <= TOTAL; }); } catch (e) { return []; } }
   function saveDone(a) { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) {} }
   function markPartDone() { var d = getDone(); if (d.indexOf(PART) < 0) { d.push(PART); saveDone(d); } renderProg(); }
+  function allDone() { return getDone().length >= TOTAL; }
+  function getQuiz() { try { return JSON.parse(localStorage.getItem(QKEY) || 'null'); } catch (e) { return null; } }
+
+  /* ---------- progression ---------- */
   function renderProg() {
     var el = document.getElementById('formProg'); if (!el) return;
     var n = getDone().length;
@@ -34,7 +50,70 @@
     renderProg();
   }
 
-  /* ---------- mode parcours : une sous-section à la fois ---------- */
+  /* ---------- capture du score du quiz ---------- */
+  function captureQuiz() {
+    var box = document.getElementById('quizBox'); if (!box) return;
+    var res = document.getElementById('qResult'), live = document.getElementById('qScoreLive');
+    if (!res || !live) return;
+    function grab() {
+      if (res.hasAttribute('hidden')) return;
+      var m = (live.textContent || '').match(/\d+/);
+      if (!m) return;
+      var rec = { score: parseInt(m[0], 10), total: 10, date: new Date().toISOString().slice(0, 10) };
+      try { localStorage.setItem(QKEY, JSON.stringify(rec)); } catch (e) {}
+    }
+    new MutationObserver(grab).observe(res, { attributes: true, attributeFilter: ['hidden'], childList: true });
+    grab();
+  }
+
+  /* ---------- attestation (dernière partie) ---------- */
+  function buildAttestation() {
+    if (PART !== TOTAL) return;
+    var main = document.querySelector('main.main') || document.querySelector('.main');
+    if (!main || document.getElementById('formAttest')) return;
+    var sec = document.createElement('section');
+    sec.id = 'formAttest'; sec.setAttribute('tabindex', '-1');
+    sec.innerHTML = '<div class="wrap"><div class="eyebrow">' + T.attEy + '</div>'
+      + '<h2 class="title">' + T.attH + '</h2><div id="attGate"></div></div>';
+    main.appendChild(sec);
+  }
+  function fmtDate(iso) {
+    var d = iso ? new Date(iso) : new Date();
+    return d.toLocaleDateString(EN ? 'en-CA' : 'fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  function renderAttestGate() {
+    var g = document.getElementById('attGate'); if (!g) return;
+    if (!allDone()) {
+      g.innerHTML = '<div class="form-gate"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><p>' + T.gateMsg + '</p><span class="fg-frac">' + getDone().length + ' / ' + TOTAL + ' ' + T.gateFrac + '</span></div>';
+      return;
+    }
+    var q = getQuiz();
+    var nm = '';
+    try { nm = localStorage.getItem(NKEY) || ''; } catch (e) {}
+    g.innerHTML = '<p class="att-congrats">🎉 ' + T.congrats + '</p>'
+      + '<label class="att-field"><span>' + T.nameLbl + '</span><input type="text" id="attName" placeholder="' + T.namePh + '" autocomplete="name" value="' + nm.replace(/"/g, '&quot;') + '"></label>'
+      + '<div class="cert" id="certDoc">'
+      + '<img class="cert-logo" src="images/logo_roger.png" alt="Machines Roger International">'
+      + '<div class="cert-kick">' + T.certTitle + '</div>'
+      + '<div class="cert-sub">' + T.certSub + '</div>'
+      + '<div class="cert-to">' + T.certTo + '</div>'
+      + '<div class="cert-name" id="certName">—</div>'
+      + '<div class="cert-meta"><span>' + T.certOn + ' <b id="certDate">' + fmtDate() + '</b></span>'
+      + (q ? '<span>' + T.certScore + ' : <b>' + q.score + ' / ' + q.total + '</b></span>' : '')
+      + '</div><div class="cert-org">' + T.certOrg + '</div></div>'
+      + '<button type="button" class="btn att-print" id="attPrint" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg> ' + T.gen + '</button>';
+    var input = g.querySelector('#attName'), cn = g.querySelector('#certName'), btn = g.querySelector('#attPrint');
+    function upd() {
+      var v = (input.value || '').trim();
+      cn.textContent = v || '—';
+      btn.disabled = !v;
+      try { localStorage.setItem(NKEY, v); } catch (e) {}
+    }
+    input.addEventListener('input', upd); upd();
+    btn.addEventListener('click', function () { document.documentElement.classList.add('printing-cert'); window.print(); setTimeout(function () { document.documentElement.classList.remove('printing-cert'); }, 600); });
+  }
+
+  /* ---------- parcours : une sous-section à la fois ---------- */
   var steps = [], cur = 0;
   function buildSteps() {
     var main = document.querySelector('main.main') || document.querySelector('.main');
@@ -47,7 +126,7 @@
       var subAt = [];
       kids.forEach(function (k, i) { if (k.matches && k.matches('h3.sub-h')) subAt.push(i); });
       if (!subAt.length) { steps.push({ sec: sec, wrap: wrap, prefix: [], block: kids }); return; }
-      var prefix = kids.slice(0, subAt[0]);                       // titre + intro = contexte affiché à chaque étape de la section
+      var prefix = kids.slice(0, subAt[0]);
       for (var s = 0; s < subAt.length; s++) {
         var end = (s + 1 < subAt.length) ? subAt[s + 1] : kids.length;
         steps.push({ sec: sec, wrap: wrap, prefix: prefix, block: kids.slice(subAt[s], end) });
@@ -62,25 +141,25 @@
     [].slice.call(cs.wrap.children).forEach(function (c) { c.style.display = 'none'; });
     cs.prefix.forEach(function (n) { n.style.display = ''; });
     cs.block.forEach(function (n) { n.style.display = ''; });
+    if (cs.sec.id === 'formAttest') renderAttestGate();
     updateNav();
     try { window.scrollTo(0, 0); } catch (e) {}
-    // recalcul des composants interactifs révélés (schéma des facteurs, titres ajustés…)
     try { window.dispatchEvent(new Event('resize')); } catch (e) {}
-    var sc = cs.sec.querySelector('#scene'); if (sc) setTimeout(function () { try { window.dispatchEvent(new Event('resize')); } catch (e) {} }, 60);
+    if (cs.sec.querySelector('#scene')) setTimeout(function () { try { window.dispatchEvent(new Event('resize')); } catch (e) {} }, 60);
   }
   function updateNav() {
     var bar = document.getElementById('fnav'); if (!bar) return;
-    var pos = bar.querySelector('.fn-pos'), prev = bar.querySelector('.fn-prev'), next = bar.querySelector('.fn-next');
-    pos.textContent = (cur + 1) + ' / ' + steps.length;
-    prev.disabled = (cur === 0 && !PREVFILE);
     var last = cur === steps.length - 1;
-    next.innerHTML = (last ? (NEXTFILE ? T.nextPart : T.finish) : T.next) + ' <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-    next.classList.toggle('fn-final', last);
+    bar.querySelector('.fn-pos').textContent = (cur + 1) + ' / ' + steps.length;
+    bar.querySelector('.fn-prev').disabled = (cur === 0 && !PREVFILE);
+    var nx = bar.querySelector('.fn-next');
+    nx.innerHTML = (last ? (NEXTFILE ? T.nextPart : T.finish) : T.next) + ' <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    nx.classList.toggle('fn-final', last);
   }
   function goNext() {
     if (cur < steps.length - 1) { show(cur + 1); return; }
-    markPartDone();                                              // dernière sous-section de la partie -> partie terminée
-    if (NEXTFILE) location.href = NEXTFILE; else { var d = getDone(); if (d.indexOf(PART) < 0) d.push(PART); saveDone(d); renderProg(); }
+    markPartDone();
+    if (NEXTFILE) location.href = NEXTFILE;
   }
   function goPrev() {
     if (cur > 0) { show(cur - 1); return; }
@@ -89,22 +168,19 @@
   function buildNav() {
     if (document.getElementById('fnav')) return;
     var bar = document.createElement('div'); bar.id = 'fnav'; bar.className = 'fnav';
-    bar.innerHTML = '<button type="button" class="fn-prev" aria-label="' + T.prev + '"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> ' + T.prev + '</button>'
-      + '<span class="fn-pos" aria-live="polite"></span>'
-      + '<button type="button" class="fn-next"></button>';
+    bar.innerHTML = '<button type="button" class="fn-prev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> ' + T.prev + '</button><span class="fn-pos" aria-live="polite"></span><button type="button" class="fn-next"></button>';
     (document.querySelector('main.main') || document.querySelector('.main') || document.body).appendChild(bar);
     bar.querySelector('.fn-prev').addEventListener('click', goPrev);
     bar.querySelector('.fn-next').addEventListener('click', goNext);
   }
   function initSteps() {
     if (!buildSteps()) return;
-    document.documentElement.classList.add('fmode');            // active le style « parcours »
+    document.documentElement.classList.add('fmode');
     buildNav();
-    var start = (location.hash === '#last') ? steps.length - 1 : 0;
-    show(start);
+    show(location.hash === '#last' ? steps.length - 1 : 0);
   }
 
-  function init() { buildProg(); initSteps(); }
+  function init() { buildProg(); captureQuiz(); buildAttestation(); initSteps(); }
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
 })();

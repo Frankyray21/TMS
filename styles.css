@@ -57,6 +57,29 @@ html.fmode .part-nav,html.fmode .scroll-cue,html.fmode .foot{display:none!import
 .fnav .fn-next{background:var(--g-red);border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(210,35,37,.35)}
 .fnav .fn-next.fn-final{background:linear-gradient(90deg,#10b981,#34d399);box-shadow:0 5px 16px rgba(16,185,129,.4)}
 .fnav .fn-pos{font-size:.82rem;font-weight:800;color:var(--dim);white-space:nowrap}
+/* attestation de formation */
+.form-gate{display:flex;flex-direction:column;align-items:center;gap:.7rem;text-align:center;padding:2rem 1rem;color:var(--muted)}
+.form-gate svg{color:var(--dim)}
+.form-gate .fg-frac{font-weight:800;color:var(--accent-l)}
+.att-congrats{font-size:1.1rem;font-weight:700;color:#34d399;margin:.4rem 0 1.2rem}
+.att-field{display:block;max-width:420px;margin:0 0 1.4rem}
+.att-field span{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);font-weight:700;margin-bottom:.4rem}
+.att-field input{width:100%;background:var(--card-2);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;color:var(--text);font-family:inherit;font-size:1rem}
+.att-field input:focus{outline:none;border-color:var(--brand)}
+.cert{background:#fff;color:#111;border-radius:14px;padding:2.4rem 2rem;text-align:center;max-width:560px;margin:0 0 1.4rem;border:1px solid #ddd;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.cert-logo{height:56px;width:auto;background:#000;border-radius:8px;padding:.35rem .5rem;margin-bottom:1rem}
+.cert-kick{font-family:var(--font-display);font-weight:800;letter-spacing:.08em;font-size:1.45rem;color:#d22325}
+.cert-sub{color:#444;font-size:.95rem;margin:.3rem 0 1.5rem}
+.cert-to{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:#888}
+.cert-name{font-family:var(--font-display);font-weight:800;font-size:1.9rem;color:#111;margin:.25rem auto 1.2rem;border-bottom:2px solid #d22325;display:inline-block;padding:0 1.1rem .35rem}
+.cert-meta{display:flex;gap:1.6rem;justify-content:center;flex-wrap:wrap;color:#333;font-size:.92rem;margin-bottom:1.2rem}
+.cert-org{font-weight:700;color:#111;font-size:.9rem}
+.att-print{margin-top:.2rem}
+@media print{
+  html.printing-cert body *{visibility:hidden!important}
+  html.printing-cert #certDoc,html.printing-cert #certDoc *{visibility:visible!important}
+  html.printing-cert #certDoc{position:absolute;left:0;top:0;width:100%;max-width:none;box-shadow:none;border:none;margin:0}
+}
 .toc-link.active{color:#fff;background:rgba(210,35,37,.16);border-left-color:transparent}
 .toc-link.active .dot{background:var(--brand);transform:scale(1.5)}
 .toc-link.active .tnum{background:var(--brand);border-color:var(--brand);color:#fff}
