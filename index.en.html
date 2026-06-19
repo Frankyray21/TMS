@@ -711,35 +711,35 @@ html.tms-loading{overflow:hidden!important}
     <button class="fermer-sim" id="fermer-sim" aria-label="Close the assessment">✕</button>
 <section class="bloc ireveal" id="simulateur">
     <h2>Assess <span class="accent">your workstation</span></h2>
-    <p class="intro">Check off what matches your work situation. The gauge calculates a rough risk level, and shows the key message: checking off in <strong>several families at once</strong> drives the score up faster, because the factors multiply.</p>
+    <div class="sim-resultat sim-resultat--haut">
+      <h3>Rough risk level</h3>
+      <svg id="jauge" viewBox="0 0 220 130" aria-hidden="true">
+        <defs>
+          <linearGradient id="grad-jauge" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#6fc24a"/>
+            <stop offset="45%" stop-color="#e3c54a"/>
+            <stop offset="75%" stop-color="#f08a2e"/>
+            <stop offset="100%" stop-color="#e8404a"/>
+          </linearGradient>
+        </defs>
+        <path id="arc-fond" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke-width="16" stroke-linecap="round"/>
+        <path id="arc-niveau" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke="url(#grad-jauge)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+        <g id="aiguille">
+          <line x1="110" y1="112" x2="110" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="110" cy="112" r="8" fill="#fff"/>
+        </g>
+      </svg>
+      <div id="score-valeur">0</div>
+      <div id="score-niveau">Check off factors below</div>
+      <p id="sim-combo"></p>
+      <ul id="sim-conseils"></ul>
+      <button type="button" id="sim-raz">↺ Clear all</button>
+    </div>
+
+    <p class="intro">This exercise is for you, the worker: it helps you spot the strains of your workstation. Check off below what matches your situation — the gauge above shows a <strong>rough risk level</strong>. Checking off several families at once drives the score up faster, because the factors multiply.</p>
 
     <div class="sim-flex">
       <form class="sim-form" id="form-sim"></form>
-
-      <div class="sim-resultat">
-        <h3>Rough risk level</h3>
-        <svg id="jauge" viewBox="0 0 220 130" aria-hidden="true">
-          <defs>
-            <linearGradient id="grad-jauge" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#6fc24a"/>
-              <stop offset="45%" stop-color="#e3c54a"/>
-              <stop offset="75%" stop-color="#f08a2e"/>
-              <stop offset="100%" stop-color="#e8404a"/>
-            </linearGradient>
-          </defs>
-          <path id="arc-fond" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke-width="16" stroke-linecap="round"/>
-          <path id="arc-niveau" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke="url(#grad-jauge)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
-          <g id="aiguille">
-            <line x1="110" y1="112" x2="110" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="110" cy="112" r="8" fill="#fff"/>
-          </g>
-        </svg>
-        <div id="score-valeur">0</div>
-        <div id="score-niveau">Check off factors on the left</div>
-        <p id="sim-combo"></p>
-        <ul id="sim-conseils"></ul>
-        <button type="button" id="sim-raz">↺ Clear all</button>
-      </div>
     </div>
   </section>
   </div>

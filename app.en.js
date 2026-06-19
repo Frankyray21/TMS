@@ -1567,7 +1567,7 @@ function calculerSim() {
 
   const niveau = $("#score-niveau");
   let txt, coul;
-  if (!coches.length) { txt = "Check off the factors on the left"; coul = "#999"; }
+  if (!coches.length) { txt = "Check off the factors below"; coul = "#999"; }
   else if (pct < 25) { txt = "Low risk: stay alert"; coul = "#6fc24a"; }
   else if (pct < 50) { txt = "Moderate risk: adjustments are needed"; coul = "#e3c54a"; }
   else if (pct < 75) { txt = "High risk: act quickly"; coul = "#f08a2e"; }
