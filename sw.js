@@ -1,5 +1,5 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v30";
+const VERSION = "tms-v31";
 const CORE = [
   "./",
   "index.html",
@@ -56,7 +56,7 @@ const PAGES = ["./", "index.html", "index.en.html",
   "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "interactif.html", "manifest.webmanifest",
-  "styles.css", "formation.css", "app.js", "app.en.js"];
+  "styles.css", "formation.css", "app.js", "app.en.js", "formation.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {

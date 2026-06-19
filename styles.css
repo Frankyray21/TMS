@@ -38,6 +38,15 @@ a{color:inherit;text-decoration:none}
 .toc-link .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;transition:all .2s}
 .toc-link .tnum{font-family:var(--font-display);font-weight:800;font-size:.8rem;color:var(--accent-l);background:rgba(210,35,37,.12);border:1px solid rgba(210,35,37,.35);border-radius:6px;min-width:1.8em;text-align:center;padding:.05em 0;flex-shrink:0;line-height:1.3;transition:all .2s}
 .toc-link.sub{font-size:.85rem;font-weight:500;padding:.35rem .7rem .35rem 2.2rem;color:var(--dim)}
+/* couche formation guidée : barre de progression (injectée dans le sommaire par formation.js, pages formation seulement) */
+.form-prog{margin:.85rem 0 .2rem;padding:.7rem .8rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px}
+.form-prog .fp-top{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;margin-bottom:.45rem}
+.form-prog .fp-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);font-weight:700}
+.form-prog .fp-frac{font-size:.82rem;font-weight:800;color:var(--accent-l);white-space:nowrap}
+.form-prog .fp-track{height:7px;border-radius:5px;background:rgba(255,255,255,.09);overflow:hidden}
+.form-prog .fp-track>i{display:block;height:100%;width:0;border-radius:5px;background:var(--g-red);transition:width .5s cubic-bezier(.22,.61,.36,1)}
+.form-prog.done .fp-frac{color:#34d399}
+.form-prog.done .fp-track>i{background:linear-gradient(90deg,#10b981,#34d399)}
 .toc-link.active{color:#fff;background:rgba(210,35,37,.16);border-left-color:transparent}
 .toc-link.active .dot{background:var(--brand);transform:scale(1.5)}
 .toc-link.active .tnum{background:var(--brand);border-color:var(--brand);color:#fff}
@@ -818,6 +827,8 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .toc-link.sub{display:none}
   /* « Installer l'app » : seule sur sa ligne (pleine largeur, centrée), mise en avant */
   .toc-link[data-pwa-install]{flex:0 0 100%;justify-content:center;margin-top:.2rem;border-color:rgba(210,35,37,.55);color:#fff}
+  /* barre de progression formation : pleine largeur dans l'en-tête mobile */
+  .form-prog{flex:0 0 100%;margin:.2rem 0;padding:.5rem .65rem}
   .toc-link.active{border-color:var(--brand);background:rgba(210,35,37,.22);color:#fff;font-weight:700}
   .toc-link .dot{display:none}
   .toc-link .tnum{display:inline-flex;align-items:center;justify-content:center;min-width:1.5em;font-size:.66rem;padding:.05em .25em;line-height:1.2}
