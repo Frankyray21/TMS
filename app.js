@@ -1567,7 +1567,7 @@ function calculerSim() {
 
   const niveau = $("#score-niveau");
   let txt, coul;
-  if (!coches.length) { txt = "Cochez des facteurs ci-contre"; coul = "#999"; }
+  if (!coches.length) { txt = "Cochez des facteurs ci-dessous"; coul = "#999"; }
   else if (pct < 25) { txt = "Risque faible : restez attentif"; coul = "#6fc24a"; }
   else if (pct < 50) { txt = "Risque modéré : des ajustements s'imposent"; coul = "#e3c54a"; }
   else if (pct < 75) { txt = "Risque élevé : agissez rapidement"; coul = "#f08a2e"; }

@@ -371,35 +371,35 @@ html.tms-loading{overflow:hidden!important}
     <button class="fermer-sim" id="fermer-sim" aria-label="Fermer l'évaluation">✕</button>
 <section class="bloc ireveal" id="simulateur">
     <h2>Évaluez <span class="accent">votre poste de travail</span></h2>
-    <p class="intro">Cochez ce qui correspond à votre situation de travail. La jauge calcule un niveau de risque indicatif, et démontre le message clé : cocher dans <strong>plusieurs familles à la fois</strong> fait grimper le score plus vite, car les facteurs se multiplient.</p>
+    <div class="sim-resultat sim-resultat--haut">
+      <h3>Niveau de risque indicatif</h3>
+      <svg id="jauge" viewBox="0 0 220 130" aria-hidden="true">
+        <defs>
+          <linearGradient id="grad-jauge" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#6fc24a"/>
+            <stop offset="45%" stop-color="#e3c54a"/>
+            <stop offset="75%" stop-color="#f08a2e"/>
+            <stop offset="100%" stop-color="#e8404a"/>
+          </linearGradient>
+        </defs>
+        <path id="arc-fond" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke-width="16" stroke-linecap="round"/>
+        <path id="arc-niveau" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke="url(#grad-jauge)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+        <g id="aiguille">
+          <line x1="110" y1="112" x2="110" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="110" cy="112" r="8" fill="#fff"/>
+        </g>
+      </svg>
+      <div id="score-valeur">0</div>
+      <div id="score-niveau">Cochez des facteurs ci-dessous</div>
+      <p id="sim-combo"></p>
+      <ul id="sim-conseils"></ul>
+      <button type="button" id="sim-raz">↺ Tout effacer</button>
+    </div>
+
+    <p class="intro">Cet exercice s'adresse à vous, travailleur : il aide à repérer les contraintes de votre poste de travail. Cochez ci-dessous ce qui correspond à votre situation — la jauge ci-dessus affiche un <strong>niveau de risque indicatif</strong>. Cocher dans plusieurs familles à la fois fait grimper le score plus vite, car les facteurs se multiplient.</p>
 
     <div class="sim-flex">
       <form class="sim-form" id="form-sim"></form>
-
-      <div class="sim-resultat">
-        <h3>Niveau de risque indicatif</h3>
-        <svg id="jauge" viewBox="0 0 220 130" aria-hidden="true">
-          <defs>
-            <linearGradient id="grad-jauge" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#6fc24a"/>
-              <stop offset="45%" stop-color="#e3c54a"/>
-              <stop offset="75%" stop-color="#f08a2e"/>
-              <stop offset="100%" stop-color="#e8404a"/>
-            </linearGradient>
-          </defs>
-          <path id="arc-fond" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke-width="16" stroke-linecap="round"/>
-          <path id="arc-niveau" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke="url(#grad-jauge)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
-          <g id="aiguille">
-            <line x1="110" y1="112" x2="110" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="110" cy="112" r="8" fill="#fff"/>
-          </g>
-        </svg>
-        <div id="score-valeur">0</div>
-        <div id="score-niveau">Cochez des facteurs ci-contre</div>
-        <p id="sim-combo"></p>
-        <ul id="sim-conseils"></ul>
-        <button type="button" id="sim-raz">↺ Tout effacer</button>
-      </div>
     </div>
   </section>
   </div>
