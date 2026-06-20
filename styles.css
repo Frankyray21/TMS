@@ -1659,13 +1659,13 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   }
   .conseil-groupe:first-child { margin-top: 4px !important; }
   .conseil-groupe::before { content: none !important; }
-  /* Code couleur par famille (identique aux catégories du formulaire) */
-  .conseil-groupe.c-bio { color: #7cc3e8; }
-  .conseil-groupe.c-ind { color: #ffb567; }
-  .conseil-groupe.c-env { color: #a4d96c; }
-  .conseil-item.c-bio::before { color: #7cc3e8; }
-  .conseil-item.c-ind::before { color: #ffb567; }
-  .conseil-item.c-env::before { color: #a4d96c; }
+  /* Code couleur par famille (identique au schéma interactif des facteurs) */
+  .conseil-groupe.c-bio { color: var(--neon-bleu); }
+  .conseil-groupe.c-ind { color: var(--neon-orange); }
+  .conseil-groupe.c-env { color: var(--neon-vert); }
+  .conseil-item.c-bio::before { color: var(--neon-bleu); }
+  .conseil-item.c-ind::before { color: var(--neon-orange); }
+  .conseil-item.c-env::before { color: var(--neon-vert); }
   #sim-raz {
     display: block;
     margin: 16px auto 0;
