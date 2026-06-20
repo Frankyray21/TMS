@@ -1600,13 +1600,26 @@ function calculerSim() {
     combo.textContent = "";
   }
 
-  const ul = $("#sim-conseils");
-  ul.innerHTML = "";
-  coches.sort((a, b) => b.poids - a.poids).slice(0, 4).forEach(i => {
-    const li = document.createElement("li");
-    li.textContent = i.conseil;
-    ul.appendChild(li);
-  });
+  const remplirConseils = (ul) => {
+    if (!ul) return;
+    ul.innerHTML = "";
+    ["bio", "ind", "env"].forEach(cat => {
+      const items = coches.filter(i => i.cat === cat).sort((a, b) => b.poids - a.poids).slice(0, 4);
+      if (!items.length) return;
+      const tete = document.createElement("li");
+      tete.className = "conseil-groupe c-" + cat;
+      tete.textContent = SIM_CATS[cat];
+      ul.appendChild(tete);
+      items.forEach(i => {
+        const li = document.createElement("li");
+        li.className = "conseil-item c-" + cat;
+        li.textContent = i.conseil;
+        ul.appendChild(li);
+      });
+    });
+  };
+  remplirConseils($("#sim-conseils"));
+  remplirConseils(document.getElementById("sim-conseils-page"));
 }
 formSim.addEventListener("change", calculerSim);
 $("#sim-raz").addEventListener("click", () => {

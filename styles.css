@@ -1633,8 +1633,8 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     line-height: 1.45;
     min-height: 2.4em;
   }
-  #sim-conseils { list-style: none; margin-top: 14px; }
-  #sim-conseils li {
+  #sim-conseils, #sim-conseils-page { list-style: none; margin-top: 14px; }
+  #sim-conseils li, #sim-conseils-page li {
     position: relative;
     padding-left: 24px;
     font-size: .86rem;
@@ -1642,12 +1642,30 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     line-height: 1.45;
     margin-bottom: 8px;
   }
-  #sim-conseils li::before {
+  #sim-conseils li::before, #sim-conseils-page li::before {
     content: "✓";
     position: absolute; left: 2px;
     color: #6fc24a;
     font-weight: 700;
   }
+  /* En-tête de groupe de recommandations (par famille de facteurs) */
+  .conseil-groupe {
+    padding-left: 0 !important;
+    margin: 14px 0 7px !important;
+    font-size: .76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .conseil-groupe:first-child { margin-top: 4px !important; }
+  .conseil-groupe::before { content: none !important; }
+  /* Code couleur par famille (identique aux catégories du formulaire) */
+  .conseil-groupe.c-bio { color: #7cc3e8; }
+  .conseil-groupe.c-ind { color: #ffb567; }
+  .conseil-groupe.c-env { color: #a4d96c; }
+  .conseil-item.c-bio::before { color: #7cc3e8; }
+  .conseil-item.c-ind::before { color: #ffb567; }
+  .conseil-item.c-env::before { color: #a4d96c; }
   #sim-raz {
     display: block;
     margin: 16px auto 0;
