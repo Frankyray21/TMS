@@ -32,6 +32,9 @@ a{color:inherit;text-decoration:none}
 .toc-brand{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
 .toc-brand img{width:100%;max-width:185px;background:#000;border-radius:8px;padding:.3rem}
 .toc-brand .sub{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.toc-brand-lien{display:flex;flex-direction:column;align-items:center;gap:.6rem;text-decoration:none;color:inherit;cursor:pointer;transition:opacity .15s}
+.toc-brand-lien:hover{opacity:.85}
+.toc-brand-lien:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:8px}
 .toc-nav{position:relative;flex:1;margin-top:1.1rem;display:flex;flex-direction:column;gap:.1rem;overflow-y:auto}
 .toc-ind{position:absolute;left:0;top:0;width:3px;height:0;background:var(--brand);border-radius:3px;transform:translateY(0);transition:transform .35s cubic-bezier(.2,.7,.2,1),height .35s cubic-bezier(.2,.7,.2,1);pointer-events:none;opacity:0}
 .toc-link{display:flex;align-items:center;gap:.65rem;padding:.55rem .7rem;border-radius:8px;color:var(--accent-l);font-size:.98rem;font-weight:700;border-left:3px solid transparent;transition:color .2s,background .2s,border-color .2s,transform .2s;cursor:pointer}
