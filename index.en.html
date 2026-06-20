@@ -435,6 +435,34 @@ html.tms-loading{overflow:hidden!important}
           <span class="ec-go">Start the assessment &rarr;</span>
         </button>
 
+        <div class="eval-resultat-page" id="eval-resultat-page" hidden aria-live="polite">
+          <h3>Your rough risk level</h3>
+          <div class="erp-flex">
+            <svg class="erp-jauge" viewBox="0 0 220 130" aria-hidden="true">
+              <defs>
+                <linearGradient id="grad-jauge-page" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#6fc24a"/>
+                  <stop offset="45%" stop-color="#e3c54a"/>
+                  <stop offset="75%" stop-color="#f08a2e"/>
+                  <stop offset="100%" stop-color="#e8404a"/>
+                </linearGradient>
+              </defs>
+              <path d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke="#2a2a2a" stroke-width="16" stroke-linecap="round"/>
+              <path id="arc-niveau-page" d="M 22 112 A 88 88 0 0 1 198 112" fill="none" stroke="url(#grad-jauge-page)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+              <g id="aiguille-page">
+                <line x1="110" y1="112" x2="110" y2="38" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="110" cy="112" r="8" fill="#fff"/>
+              </g>
+            </svg>
+            <div class="erp-info">
+              <div id="score-valeur-page">0</div>
+              <div id="score-niveau-page"></div>
+              <p class="erp-hint">Result of your latest workstation assessment.</p>
+              <button type="button" class="erp-rouvrir" data-ouvrir-sim>↻ Review / edit my assessment</button>
+            </div>
+          </div>
+        </div>
+
         <h3 id="evolution" class="sub-h reveal">How pain develops: act early</h3>
         <p class="lead reveal" style="margin-bottom:1.2rem">An MSD sets in by stages. The same injury goes from simple <strong style="color:var(--accent-l)">discomfort</strong> to nagging <strong style="color:var(--accent-l)">pain</strong>, then to a lasting <strong style="color:var(--accent-l)">injury</strong>. The longer the pain lasts, the longer recovery takes, which is why it matters to act right from the start.</p>
         <div class="evo3 reveal">

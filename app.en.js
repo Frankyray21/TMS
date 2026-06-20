@@ -1576,6 +1576,21 @@ function calculerSim() {
   niveau.style.color = coul;
   $("#score-valeur").style.color = coul;
 
+  /* Mirror the result on the page (dial next to the assessment link) */
+  const arcPage = document.getElementById("arc-niveau-page");
+  if (arcPage) {
+    arcPage.setAttribute("stroke-dasharray", pct + " 100");
+    document.getElementById("aiguille-page").style.transform = "rotate(" + (-90 + pct * 1.8) + "deg)";
+    const svPage = document.getElementById("score-valeur-page");
+    svPage.textContent = pct;
+    svPage.style.color = coul;
+    const snPage = document.getElementById("score-niveau-page");
+    snPage.textContent = txt;
+    snPage.style.color = coul;
+    const cartePage = document.getElementById("eval-resultat-page");
+    if (cartePage) cartePage.hidden = coches.length === 0;
+  }
+
   const combo = $("#sim-combo");
   if (cats.size >= 2 && coches.length) {
     combo.textContent = "⚠️ Factors present in " + cats.size + " families: the combination multiplies the risk (score increased by " + Math.round((mult - 1) * 100) + " %).";
