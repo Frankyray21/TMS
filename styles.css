@@ -1662,6 +1662,57 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   }
   #sim-raz:hover { background: #333; }
 
+  /* Cadran de résultat affiché sur la page (près du lien d'évaluation) */
+  .eval-resultat-page {
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-left: 4px solid var(--or, #e3b23c);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin: 8px 0 26px;
+  }
+  .eval-resultat-page h3 {
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ccc;
+    margin-bottom: 6px;
+  }
+  .erp-flex {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .erp-jauge { width: 180px; max-width: 100%; flex-shrink: 0; }
+  #arc-niveau-page { transition: stroke-dasharray .6s ease, stroke .4s ease; }
+  #aiguille-page { transform-origin: 110px 112px; transition: transform .6s cubic-bezier(.2,.8,.3,1.15); }
+  .erp-info { flex: 1; min-width: 200px; }
+  #score-valeur-page {
+    font-size: 2.6rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+  #score-niveau-page {
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-top: 4px;
+    min-height: 1.4em;
+  }
+  .erp-hint { font-size: .82rem; color: #999; margin-top: 6px; }
+  .erp-rouvrir {
+    margin-top: 12px;
+    background: #262626;
+    color: #ddd;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .erp-rouvrir:hover { background: #333; }
+
   /* ---------- Pied de page ---------- */
   #btn-raz-progression {
     background: none;
