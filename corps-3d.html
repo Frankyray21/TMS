@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Démo · Schéma du corps en 3D interactif · Prévention des TMS</title>
+<style>
+  :root{ --brand:#d22325; --accent-l:#ef5a5c; --bg:#0a0e17; --card:#111827; --border:#1e293b; --text:#f1f5f9; --dim:#8694ad; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Barlow',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+  header{padding:1.6rem 1.2rem 0;max-width:980px;margin:0 auto;text-align:center}
+  header h1{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.01em;font-size:clamp(1.6rem,4vw,2.4rem);margin:.2rem 0}
+  header h1 .hl{color:var(--accent-l)}
+  header p{color:var(--dim);max-width:60ch;margin:.4rem auto 0;text-wrap:pretty}
+  .stage{max-width:980px;margin:1.4rem auto;padding:0 1.2rem}
+  model-viewer{width:100%;height:min(70vh,620px);background:
+      radial-gradient(120% 90% at 50% 0%, #16203400, #0a0e17 70%),
+      linear-gradient(180deg,#121a2b,#0a0e17);
+    border:1px solid var(--border);border-radius:18px;--poster-color:transparent}
+  /* Hotspots cliquables posés sur le corps */
+  .hotspot{
+    --d:18px;width:var(--d);height:var(--d);border-radius:50%;border:2px solid #fff;
+    background:rgba(210,35,37,.92);box-shadow:0 0 0 4px rgba(210,35,37,.25),0 2px 8px rgba(0,0,0,.5);
+    cursor:pointer;padding:0;transition:transform .15s}
+  .hotspot:hover,.hotspot:focus-visible{transform:scale(1.25);outline:none}
+  .hotspot .label{
+    position:absolute;left:50%;top:-8px;transform:translate(-50%,-100%);
+    background:#111827;border:1px solid var(--border);color:#fff;font-size:.8rem;font-weight:700;
+    white-space:nowrap;padding:.25rem .6rem;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .15s}
+  .hotspot:hover .label,.hotspot:focus-visible .label{opacity:1}
+  .hint{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:1rem;color:var(--dim);font-size:.9rem}
+  .hint b{color:#fff}
+  .note{max-width:760px;margin:1.6rem auto;padding:1rem 1.2rem;background:var(--card);border:1px solid var(--border);border-radius:14px;font-size:.92rem}
+  .note h2{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;font-size:1rem;letter-spacing:.04em;color:var(--accent-l);margin:0 0 .4rem}
+  .note ul{margin:.3rem 0 0;padding-left:1.1rem}
+  #out{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;border:1px solid var(--border);
+    color:#fff;padding:.7rem 1.1rem;border-radius:12px;font-size:.9rem;box-shadow:0 12px 40px rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw}
+  #out.show{opacity:1}
+  a.back{display:inline-block;margin:0 auto;color:var(--accent-l);text-decoration:none;font-weight:700}
+</style>
+<script type="module" src="vendor/model-viewer.min.js"></script>
+</head>
+<body>
+  <header>
+    <a class="back" href="index.html#corps">&larr; Retour au site</a>
+    <h1>Schéma du corps <span class="hl">en 3D</span> · démo</h1>
+    <p>Fais tourner le mannequin (glisse / pince) et <b>clique une zone</b>. Dans le site réel, chaque clic ouvrirait la fiche de la zone (cou, épaules, dos…) déjà en place.</p>
+  </header>
+
+  <div class="stage">
+    <model-viewer id="corps3d"
+      src="models/mannequin.glb"
+      alt="Mannequin humain 3D : clique une zone du corps pour l'explorer"
+      camera-controls touch-action="pan-y"
+      interaction-prompt="auto" interaction-prompt-style="basic"
+      shadow-intensity="1" shadow-softness="1" exposure="1.05"
+      min-camera-orbit="auto 0deg auto" max-camera-orbit="auto 180deg auto"
+      disable-tap>
+      <!-- Hotspots de démonstration : positions à affiner visuellement -->
+      <button class="hotspot" slot="hotspot-cou"     data-zone="cou"     data-position="0 1.55 0.06"  data-normal="0 0 1"><span class="label">Cou / nuque</span></button>
+      <button class="hotspot" slot="hotspot-epaule"  data-zone="epaules" data-position="0.18 1.45 0.02" data-normal="0 0 1"><span class="label">Épaules</span></button>
+      <button class="hotspot" slot="hotspot-dos"     data-zone="dos"     data-position="0 1.15 -0.1"   data-normal="0 0 -1"><span class="label">Dos</span></button>
+      <button class="hotspot" slot="hotspot-poignet" data-zone="poignets" data-position="0.32 1.0 0.05" data-normal="0 0 1"><span class="label">Poignets</span></button>
+      <button class="hotspot" slot="hotspot-genou"   data-zone="genoux"  data-position="0.1 0.5 0.08"  data-normal="0 0 1"><span class="label">Genoux</span></button>
+    </model-viewer>
+
+    <div class="hint">
+      <span>🖱️ <b>Glisse</b> pour tourner</span><span>🔍 <b>Pince/molette</b> pour zoomer</span><span>📍 <b>Clique</b> une pastille ou le corps</span>
+    </div>
+
+    <div class="note">
+      <h2>Comment ça marcherait dans le site</h2>
+      <ul>
+        <li>Chaque pastille rouge appelle ta fonction <code>ouvrirZone("cou")</code> existante → la fiche s'ouvre, sans rien réécrire.</li>
+        <li>La <b>carte 2D</b> actuelle reste en repli (clavier, lecteurs d'écran, navigateurs sans WebGL).</li>
+        <li><b>Poids&nbsp;:</b> ~4&nbsp;Mo (viewer + modèle). En production on compresse le modèle (Draco/meshopt, &lt;1&nbsp;Mo) et on le charge au clic sur «&nbsp;Vue 3D&nbsp;».</li>
+        <li>Le mannequin de démo (three.js / Mixamo) est à remplacer par un modèle anatomique sous licence claire (Z-Anatomy, BodyParts3D…).</li>
+      </ul>
+    </div>
+    <p style="text-align:center"><a class="back" href="index.html#corps">&larr; Retour au site</a></p>
+  </div>
+
+  <div id="out" role="status" aria-live="polite"></div>
+
+<script type="module">
+  const mv = document.getElementById('corps3d');
+  const out = document.getElementById('out');
+  let t;
+  const ZONES = { cou:'Cou / nuque', epaules:'Épaules', dos:'Dos', poignets:'Poignets', genoux:'Genoux' };
+  function toast(msg){ out.textContent = msg; out.classList.add('show'); clearTimeout(t); t = setTimeout(()=>out.classList.remove('show'), 2600); }
+
+  // Clic sur une pastille -> ici tu brancherais ouvrirZone(zone)
+  mv.querySelectorAll('.hotspot').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      const z = h.dataset.zone;
+      toast('Zone « ' + (ZONES[z]||z) + ' » → ici s\'ouvrirait la fiche (ouvrirZone("'+z+'")).');
+    });
+  });
+
+  // Aide au placement : clique le corps -> coordonnées 3D (pour positionner les vraies pastilles)
+  mv.addEventListener('click', (e)=>{
+    if (e.target.closest('.hotspot')) return;
+    const r = mv.getBoundingClientRect();
+    const p = mv.positionAndNormalFromPoint(e.clientX - r.left, e.clientY - r.top);
+    if (p){
+      const f = n => (+n).toFixed(2);
+      toast('Point 3D : ' + f(p.position.x)+' '+f(p.position.y)+' '+f(p.position.z) + '  (copie-le pour placer une pastille)');
+    }
+  });
+</script>
+</body>
+</html>
