@@ -2061,6 +2061,12 @@ if ("serviceWorker" in navigator) {
   var mv = document.getElementById("corps3d");
   if (!bar || !wrap || !mv) return;
 
+  // Mode test : la vue 3D (prototype) n'apparaît qu'avec ?test3d=1 dans l'URL.
+  // Le public ne voit que la carte 2D tant que les pastilles ne sont pas validées.
+  var TEST = /test3d/i.test(location.search) || /test3d/i.test(location.hash);
+  if (!TEST) return;
+  bar.hidden = false;
+
   var corps = document.getElementById("corps");
   var twoD = corps ? [corps.querySelector(".corps-photo"), corps.querySelector(".corps-flex")] : [];
   var loaded = false;
