@@ -2051,3 +2051,54 @@ if ("serviceWorker" in navigator) {
   if(hero&&"IntersectionObserver" in window){ new IntersectionObserver(function(es){ heroOut=!es[0].isIntersecting; if(heroOut)maybeShow(); else hide(); },{threshold:0}).observe(hero); }
   else { heroOut=true; }
 })();
+
+/* ================================================================
+   CARTE DU CORPS — bascule Vue 2D / Vue 3D (model-viewer, lazy)
+   ================================================================ */
+(function () {
+  var bar = document.querySelector(".corps-vue");
+  var wrap = document.getElementById("corps3d-wrap");
+  var mv = document.getElementById("corps3d");
+  if (!bar || !wrap || !mv) return;
+
+  var corps = document.getElementById("corps");
+  var twoD = corps ? [corps.querySelector(".corps-photo"), corps.querySelector(".corps-flex")] : [];
+  var loaded = false;
+
+  function load() {
+    if (loaded) return;
+    loaded = true;
+    // Charge le modèle + le moteur seulement maintenant (zéro coût au chargement de la page).
+    mv.setAttribute("src", "models/mannequin.glb");
+    var s = document.createElement("script");
+    s.type = "module";
+    s.src = "vendor/model-viewer.min.js";
+    document.head.appendChild(s);
+    // Une pastille 3D rejoue le clic sur la zone 2D correspondante → même fiche, zéro duplication.
+    wrap.querySelectorAll(".hotspot3d").forEach(function (h) {
+      h.addEventListener("click", function () {
+        var z = h.getAttribute("data-zone");
+        var t = document.querySelector('#corps [data-zone="' + z + '"]');
+        if (t && typeof t.dispatchEvent === "function") {
+          t.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        }
+      });
+    });
+  }
+
+  function show(threeD) {
+    wrap.hidden = !threeD;
+    twoD.forEach(function (el) { if (el) el.style.display = threeD ? "none" : ""; });
+    bar.querySelectorAll(".cv-btn").forEach(function (b) {
+      var on = (b.getAttribute("data-vue") === "3d") === threeD;
+      b.classList.toggle("actif", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (threeD) load();
+  }
+
+  bar.addEventListener("click", function (e) {
+    var b = e.target.closest(".cv-btn");
+    if (b) show(b.getAttribute("data-vue") === "3d");
+  });
+})();

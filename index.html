@@ -193,6 +193,23 @@ html.tms-loading{overflow:hidden!important}
         <h3 class="sub-h reveal">Où ça frappe le plus <span style="font-weight:400;font-size:.85rem;color:var(--dim)"> : clique une zone</span></h3>
         <div class="corps-insitu reveal" id="corps">
           <p class="corps-aide">Clique un point lumineux ou une étiquette de la planche pour voir la zone touchée, les TMS fréquents, les facteurs en cause et les bons réflexes.</p>
+          <div class="corps-vue" role="group" aria-label="Choix de l'affichage du corps">
+            <button type="button" class="cv-btn actif" data-vue="2d" aria-pressed="true">Vue 2D</button>
+            <button type="button" class="cv-btn" data-vue="3d" aria-pressed="false">Vue 3D</button>
+          </div>
+          <div class="corps-3d" id="corps3d-wrap" hidden>
+            <model-viewer id="corps3d" alt="Mannequin humain 3D : tourne-le et clique une zone du corps" camera-controls touch-action="pan-y" interaction-prompt="none" shadow-intensity="1" shadow-softness="1" exposure="1.05" min-camera-orbit="auto 25deg auto" max-camera-orbit="auto 155deg auto">
+              <button class="hotspot3d" slot="hotspot-cou" data-zone="cou" data-position="0 1.55 0.09" data-normal="0 0 1"><span class="h3-lbl">Cou / nuque</span></button>
+              <button class="hotspot3d" slot="hotspot-ep" data-zone="epaules" data-position="0.2 1.45 0.06" data-normal="0 0 1"><span class="h3-lbl">Épaules</span></button>
+              <button class="hotspot3d" slot="hotspot-hd" data-zone="haut-dos" data-position="0 1.4 -0.12" data-normal="0 0 -1"><span class="h3-lbl">Haut du dos</span></button>
+              <button class="hotspot3d" slot="hotspot-bd" data-zone="bas-dos" data-position="0 1.05 -0.14" data-normal="0 0 -1"><span class="h3-lbl">Bas du dos</span></button>
+              <button class="hotspot3d" slot="hotspot-co" data-zone="coudes" data-position="0.5 1.45 0.05" data-normal="0 0 1"><span class="h3-lbl">Coudes</span></button>
+              <button class="hotspot3d" slot="hotspot-po" data-zone="poignets-mains" data-position="0.8 1.45 0.05" data-normal="0 0 1"><span class="h3-lbl">Poignets / mains</span></button>
+              <button class="hotspot3d" slot="hotspot-ge" data-zone="genoux" data-position="0.12 0.45 0.1" data-normal="0 0 1"><span class="h3-lbl">Genoux</span></button>
+              <button class="hotspot3d" slot="hotspot-ch" data-zone="chevilles-pieds" data-position="0.12 0.08 0.12" data-normal="0 0 1"><span class="h3-lbl">Chevilles / pieds</span></button>
+            </model-viewer>
+            <p class="corps-3d-note">Vue 3D (prototype) · tourne le mannequin et clique une pastille — la même fiche s'ouvre qu'en 2D. <span>Positions des pastilles à affiner.</span></p>
+          </div>
 <div class="corps-photo" id="corpsPhoto" hidden>
   <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Huit zones sous surveillance sur le corps humain, vues de face et de dos : clique un point pour explorer la zone" id="corpsPhotoImg" decoding="async">
   <button type="button" class="cp-spot" style="left:35.1%;top:26%" data-zone="cou" aria-label="Zone cou et nuque"></button>

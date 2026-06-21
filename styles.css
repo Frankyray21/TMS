@@ -1688,6 +1688,23 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   }
   #sim-raz:hover { background: #333; }
 
+  /* ---------- Carte du corps : bascule 2D / 3D ---------- */
+  .corps-vue { display: flex; gap: 4px; width: max-content; margin: 4px auto 16px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 4px; }
+  .cv-btn { border: none; background: none; color: var(--dim); font: inherit; font-weight: 700; font-size: .85rem; padding: .45rem 1.1rem; border-radius: 999px; cursor: pointer; min-height: 40px; transition: background .2s, color .2s; }
+  .cv-btn.actif { background: var(--brand); color: #fff; }
+  .corps-3d { display: flex; flex-direction: column; align-items: center; }
+  #corps3d { width: 100%; max-width: 520px; height: min(64vh, 560px); border: 1px solid var(--border); border-radius: 18px;
+    background: radial-gradient(120% 90% at 50% 0%, rgba(22,32,52,0), #0a0e17 70%), linear-gradient(180deg, #121a2b, #0a0e17); }
+  .hotspot3d { --d: 20px; width: var(--d); height: var(--d); border-radius: 50%; border: 2px solid #fff; background: rgba(210,35,37,.92);
+    box-shadow: 0 0 0 4px rgba(210,35,37,.25), 0 2px 8px rgba(0,0,0,.5); cursor: pointer; padding: 0; transition: transform .15s; }
+  .hotspot3d[data-visible="false"] { opacity: 0; pointer-events: none; }
+  .hotspot3d:hover, .hotspot3d:focus-visible { transform: scale(1.25); outline: none; }
+  .hotspot3d .h3-lbl { position: absolute; left: 50%; top: -8px; transform: translate(-50%, -100%); background: #111827; border: 1px solid var(--border);
+    color: #fff; font-size: .78rem; font-weight: 700; white-space: nowrap; padding: .22rem .55rem; border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity .15s; }
+  .hotspot3d:hover .h3-lbl, .hotspot3d:focus-visible .h3-lbl { opacity: 1; }
+  .corps-3d-note { color: var(--dim); font-size: .85rem; margin-top: .85rem; text-align: center; max-width: 520px; }
+  .corps-3d-note span { color: var(--accent-l); }
+
   /* Cadran de résultat affiché sur la page (près du lien d'évaluation) */
   .eval-resultat-page {
     background: var(--carte);
