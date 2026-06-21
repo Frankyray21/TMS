@@ -142,7 +142,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.3rem}
 .stat{background:var(--card-2);border:1px solid var(--border);border-radius:14px;padding:1.7rem;text-align:center}
-.stat .v{font-family:var(--font-display);font-size:2.7rem;font-weight:800;background:var(--g-amber);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;font-variant-numeric:tabular-nums}
+.stat .v{font-family:var(--font-display);font-size:2.7rem;font-weight:800;color:var(--or,#e3b23c);margin-bottom:.3rem;font-variant-numeric:tabular-nums}
 .stat .l{color:var(--muted);font-size:.82rem}
 
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.3rem}
@@ -181,7 +181,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 .checklist.x li::before{content:'\2717';color:var(--danger)}
 
 .sleepbar{background:var(--card-2);border:1px solid var(--border);border-radius:14px;padding:1.4rem 2rem;display:flex;align-items:center;gap:2rem;margin:1.4rem 0}
-.sleepbar .t{font-size:2.5rem;font-weight:900;background:var(--g-green);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.sleepbar .t{font-size:2.5rem;font-weight:900;color:#58d35a;line-height:1}
 .sleepbar .u{font-size:1rem;-webkit-text-fill-color:var(--muted)}
 
 /* frise de chronicisation (bonifiée) */
@@ -291,7 +291,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 .quiz-explain strong{color:var(--info)}
 .quiz-foot{margin-top:1.3rem;display:flex;justify-content:flex-end}
 .quiz-result{text-align:center;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.8rem 2rem}
-.quiz-result .score{font-family:var(--font-display);font-size:4rem;font-weight:800;background:var(--g-amber);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;font-variant-numeric:tabular-nums}
+.quiz-result .score{font-family:var(--font-display);font-size:4rem;font-weight:800;color:var(--or,#e3b23c);line-height:1;font-variant-numeric:tabular-nums}
 .quiz-result h3{font-size:1.35rem;margin:.6rem 0 .8rem}
 .quiz-result p{color:var(--muted);margin-bottom:1.5rem}
 .btn{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,#c01e20,#8f1517);color:#fff;border:none;font-weight:700;padding:.75rem 1.5rem;border-radius:10px;cursor:pointer;font-family:inherit;font-size:.9rem;transition:all .2s}
@@ -465,7 +465,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflo
 .recap li .rk{color:var(--accent);font-weight:800;flex-shrink:0}
 .recap-tip{margin-top:1.1rem;color:var(--muted);font-size:.86rem;font-style:italic}
 .toast-wrap{position:fixed;top:1rem;right:1rem;z-index:3000;display:flex;flex-direction:column;gap:.5rem}
-.toast{background:var(--card);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:12px;padding:.8rem 1.1rem;display:flex;align-items:center;gap:.7rem;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:toastIn .4s cubic-bezier(.2,.7,.2,1);max-width:300px}
+.toast{background:var(--card);border:1px solid var(--accent);border-radius:12px;padding:.8rem 1.1rem;display:flex;align-items:center;gap:.7rem;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:toastIn .4s cubic-bezier(.2,.7,.2,1);max-width:300px}
 .toast .ti{font-size:1.6rem;flex-shrink:0}
 .toast .tt{font-weight:700;font-size:.88rem}
 .toast .td{color:var(--muted);font-size:.76rem}
