@@ -1567,10 +1567,10 @@ function calculerSim() {
 
   const niveau = $("#score-niveau");
   let txt, coul;
-  if (!coches.length) { txt = "Cochez des facteurs ci-dessous"; coul = "#999"; }
-  else if (pct < 25) { txt = "Risque faible : restez attentif"; coul = "#6fc24a"; }
+  if (!coches.length) { txt = "Coche des facteurs ci-dessous"; coul = "#999"; }
+  else if (pct < 25) { txt = "Risque faible : reste attentif"; coul = "#6fc24a"; }
   else if (pct < 50) { txt = "Risque modéré : des ajustements s'imposent"; coul = "#e3c54a"; }
-  else if (pct < 75) { txt = "Risque élevé : agissez rapidement"; coul = "#f08a2e"; }
+  else if (pct < 75) { txt = "Risque élevé : agis rapidement"; coul = "#f08a2e"; }
   else { txt = "Risque très élevé : situation prioritaire"; coul = "#e8404a"; }
   niveau.textContent = txt;
   niveau.style.color = coul;
@@ -1634,7 +1634,7 @@ calculerSim();
 const lecteurVideo = $("#lecteur-video");
 if (lecteurVideo) {
   lecteurVideo.addEventListener("ended", () => {
-    toast("Vidéo terminée ! Prolongez avec les fiches Sommeil, Condition physique et Récupération juste en dessous.", "🎬");
+    toast("Vidéo terminée ! Prolonge avec les fiches Sommeil, Condition physique et Récupération juste en dessous.", "🎬");
   });
   /* Met la vidéo en pause quand une fiche s'ouvre par-dessus */
   new MutationObserver(() => {
