@@ -15,7 +15,7 @@
      Laisser vide tant que le Worker n'est pas déployé : le site fonctionne
      normalement, il n'envoie simplement rien. Une fois le Worker en ligne,
      coller ici son URL (ex. 'https://attestations-tms.xxx.workers.dev'). */
-  var ATTEST_ENDPOINT = '';
+  var ATTEST_ENDPOINT = 'https://attestations-tms.frankyray-21.workers.dev';
   var T = EN ? {
     lbl: 'My progress', done: 'Training complete ✓', prev: 'Previous', next: 'Next', nextPart: 'Next part', finish: 'Finish ✓',
     attEy: 'Certificate', attH: 'Your training certificate',
