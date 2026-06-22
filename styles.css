@@ -1709,11 +1709,16 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .cv-btn { border: none; background: none; color: var(--dim); font: inherit; font-weight: 700; font-size: .85rem; padding: .45rem 1.1rem; border-radius: 999px; cursor: pointer; min-height: 40px; transition: background .2s, color .2s; }
   .cv-btn.actif { background: var(--brand); color: #fff; }
   .corps-3d { display: flex; flex-direction: column; align-items: center; }
-  #corps3d { width: 100%; max-width: 560px; height: min(68vh, 620px); border: 1px solid var(--border); border-radius: 18px; --min-hotspot-opacity: 0;
+  #corps3d { width: 100%; max-width: 560px; height: min(68vh, 620px); border: 1px solid var(--border); border-radius: 18px; --min-hotspot-opacity: 0; --clo: 34px;
     background:
       radial-gradient(58% 50% at 50% 34%, rgba(92,116,156,.13), transparent 70%),
       radial-gradient(46% 26% at 50% 100%, rgba(214,40,42,.17), transparent 72%),
       linear-gradient(180deg, #0b1320, #04060c 80%); }
+  /* Ordinateur : modèle nettement plus grand + étiquettes repoussées sur les côtés */
+  @media (min-width: 1024px) {
+    #corps3d { max-width: 760px; height: min(82vh, 800px); --clo: 96px; }
+    .corps-vue, .corps-layers, .corps-3d-note { max-width: 760px; }
+  }
   /* Pastille rouge lumineuse pulsante */
   .hotspot3d { --d: 15px; width: var(--d); height: var(--d); border-radius: 50%; border: 2px solid #fff; padding: 0; cursor: pointer;
     background: radial-gradient(circle at 50% 40%, #ff8a8c, #d4282a 60%);
@@ -1733,12 +1738,12 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     box-shadow: 0 6px 20px rgba(0,0,0,.5); pointer-events: none; }
   .h3-card b { color: #fff; font-size: .8rem; font-weight: 700; line-height: 1.15; white-space: nowrap; letter-spacing: .1px; }
   .h3-card i { color: #94a6ba; font-size: .655rem; font-style: normal; line-height: 1.22; }
-  .h3-card::after { content: ""; position: absolute; width: 20px; height: 1px; background: linear-gradient(90deg, rgba(255,88,90,.8), rgba(255,88,90,0)); }
-  .h3-l .h3-card { right: 26px; top: 50%; transform: translateY(-50%); text-align: right; }
-  .h3-l .h3-card::after { right: -20px; top: 50%; transform: scaleX(-1); }
-  .h3-r .h3-card { left: 26px; top: 50%; transform: translateY(-50%); }
-  .h3-r .h3-card::after { left: -20px; top: 50%; }
-  .h3-t .h3-card { left: 50%; bottom: 26px; transform: translateX(-50%); align-items: center; }
+  .h3-card::after { content: ""; position: absolute; height: 1px; background: linear-gradient(90deg, rgba(255,88,90,.85), rgba(255,88,90,0)); }
+  .h3-l .h3-card { right: var(--clo); top: 50%; transform: translateY(-50%); text-align: right; }
+  .h3-l .h3-card::after { right: calc(-1 * var(--clo)); width: var(--clo); top: 50%; transform: scaleX(-1); }
+  .h3-r .h3-card { left: var(--clo); top: 50%; transform: translateY(-50%); }
+  .h3-r .h3-card::after { left: calc(-1 * var(--clo)); width: var(--clo); top: 50%; }
+  .h3-t .h3-card { left: 50%; bottom: 34px; transform: translateX(-50%); align-items: center; }
   .h3-t .h3-card::after { display: none; }
   .corps-3d-note { color: var(--dim); font-size: .85rem; margin-top: .85rem; text-align: center; max-width: 520px; }
   .corps-3d-note span { color: var(--accent-l); }
