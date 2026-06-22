@@ -2078,7 +2078,7 @@ if ("serviceWorker" in navigator) {
     // Modèle anatomique Z-Anatomy : version légère sur mobile, version détaillée ailleurs.
     var small = Math.min(screen.width, screen.height) <= 768 ||
                 (window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
-    mv.setAttribute("src", small ? "models/corps-muscles-mobile.glb" : "models/corps-muscles-web.glb");
+    mv.setAttribute("src", small ? "models/corps-anatomie-mobile.glb" : "models/corps-anatomie-web.glb");
     var s = document.createElement("script");
     s.type = "module";
     s.src = "vendor/model-viewer.min.js";
@@ -2092,6 +2092,49 @@ if ("serviceWorker" in navigator) {
           t.dispatchEvent(new MouseEvent("click", { bubbles: true }));
         }
       });
+    });
+    setupLayers();
+  }
+
+  // Affiche/masque ou rend semi-transparent un système (matériau nommé) du modèle.
+  function setMat(name, alpha) {
+    var mdl = mv.model;
+    if (!mdl || !mdl.materials) return;
+    for (var i = 0; i < mdl.materials.length; i++) {
+      var m = mdl.materials[i];
+      if (m && m.name === name && m.pbrMetallicRoughness) {
+        var f = m.pbrMetallicRoughness.baseColorFactor || [1, 1, 1, 1];
+        m.pbrMetallicRoughness.setBaseColorFactor([f[0], f[1], f[2], alpha]);
+        if (m.setAlphaMode) m.setAlphaMode(alpha >= 0.999 ? "OPAQUE" : "BLEND");
+        return;
+      }
+    }
+  }
+
+  // Panneau de calques : œil (afficher/masquer) + curseur d'opacité par structure.
+  function setupLayers() {
+    var panel = document.getElementById("corps3dLayers");
+    if (!panel) return;
+    var rows = panel.querySelectorAll(".cl-row");
+    function applyRow(row) {
+      var op = row.querySelector(".cl-op");
+      var a = (parseInt(op.value, 10) || 0) / 100;
+      setMat(row.getAttribute("data-mat"), a);
+      var on = a > 0.01;
+      row.classList.toggle("on", on);
+      row.querySelector(".cl-tog").setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    rows.forEach(function (row) {
+      var op = row.querySelector(".cl-op");
+      row.querySelector(".cl-tog").addEventListener("click", function () {
+        op.value = row.classList.contains("on") ? 0 : 100;
+        applyRow(row);
+      });
+      op.addEventListener("input", function () { applyRow(row); });
+    });
+    mv.addEventListener("load", function () {
+      panel.hidden = false;
+      rows.forEach(applyRow);
     });
   }
 
