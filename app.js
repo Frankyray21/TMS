@@ -2105,7 +2105,11 @@ if ("serviceWorker" in navigator) {
       if (m && m.name === name && m.pbrMetallicRoughness) {
         var f = m.pbrMetallicRoughness.baseColorFactor || [1, 1, 1, 1];
         m.pbrMetallicRoughness.setBaseColorFactor([f[0], f[1], f[2], alpha]);
-        if (m.setAlphaMode) m.setAlphaMode(alpha >= 0.999 ? "OPAQUE" : "BLEND");
+        if (m.setAlphaMode) {
+          if (alpha >= 0.999) m.setAlphaMode("OPAQUE");
+          else if (alpha <= 0.01) { m.setAlphaMode("MASK"); if (m.setAlphaCutoff) m.setAlphaCutoff(0.5); } // masqué = non dessiné (mobile)
+          else m.setAlphaMode("BLEND");
+        }
         return;
       }
     }
