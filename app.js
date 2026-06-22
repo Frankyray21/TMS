@@ -2074,8 +2074,11 @@ if ("serviceWorker" in navigator) {
   function load() {
     if (loaded) return;
     loaded = true;
-    // Charge le modèle + le moteur seulement maintenant (zéro coût au chargement de la page).
-    mv.setAttribute("src", "models/mannequin.glb");
+    // Charge le moteur + le modèle seulement maintenant (zéro coût au chargement de la page).
+    // Modèle anatomique Z-Anatomy : version légère sur mobile, version détaillée ailleurs.
+    var small = Math.min(screen.width, screen.height) <= 768 ||
+                (window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
+    mv.setAttribute("src", small ? "models/corps-muscles-mobile.glb" : "models/corps-muscles-web.glb");
     var s = document.createElement("script");
     s.type = "module";
     s.src = "vendor/model-viewer.min.js";

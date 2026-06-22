@@ -198,17 +198,17 @@ html.tms-loading{overflow:hidden!important}
             <button type="button" class="cv-btn" data-vue="3d" aria-pressed="false">Vue 3D</button>
           </div>
           <div class="corps-3d" id="corps3d-wrap" hidden>
-            <model-viewer id="corps3d" alt="Mannequin humain 3D : tourne-le et clique une zone du corps" camera-controls touch-action="pan-y" interaction-prompt="none" shadow-intensity="1" shadow-softness="1" exposure="1.05" min-camera-orbit="auto 25deg auto" max-camera-orbit="auto 155deg auto">
-              <button class="hotspot3d" slot="hotspot-cou" data-zone="cou" data-position="0 1.55 0.09" data-normal="0 0 1"><span class="h3-lbl">Cou / nuque</span></button>
-              <button class="hotspot3d" slot="hotspot-ep" data-zone="epaules" data-position="0.2 1.45 0.06" data-normal="0 0 1"><span class="h3-lbl">Épaules</span></button>
-              <button class="hotspot3d" slot="hotspot-hd" data-zone="haut-dos" data-position="0 1.4 -0.12" data-normal="0 0 -1"><span class="h3-lbl">Haut du dos</span></button>
-              <button class="hotspot3d" slot="hotspot-bd" data-zone="bas-dos" data-position="0 1.05 -0.14" data-normal="0 0 -1"><span class="h3-lbl">Bas du dos</span></button>
-              <button class="hotspot3d" slot="hotspot-co" data-zone="coudes" data-position="0.5 1.45 0.05" data-normal="0 0 1"><span class="h3-lbl">Coudes</span></button>
-              <button class="hotspot3d" slot="hotspot-po" data-zone="poignets-mains" data-position="0.8 1.45 0.05" data-normal="0 0 1"><span class="h3-lbl">Poignets / mains</span></button>
-              <button class="hotspot3d" slot="hotspot-ge" data-zone="genoux" data-position="0.12 0.45 0.1" data-normal="0 0 1"><span class="h3-lbl">Genoux</span></button>
-              <button class="hotspot3d" slot="hotspot-ch" data-zone="chevilles-pieds" data-position="0.12 0.08 0.12" data-normal="0 0 1"><span class="h3-lbl">Chevilles / pieds</span></button>
+            <model-viewer id="corps3d" alt="Modèle anatomique 3D des muscles : tourne-le et clique une zone du corps" camera-controls touch-action="pan-y" interaction-prompt="none" environment-image="neutral" shadow-intensity="0.7" shadow-softness="1" exposure="1.1" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 160deg auto">
+              <button class="hotspot3d h3-t" slot="hotspot-cou" data-zone="cou" data-position="0 1.45 0.08" data-normal="0 0 1"><span class="h3-card"><b>Cou / nuque</b><i>Cervicalgie · Tensions de la nuque</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ep" data-zone="epaules" data-position="0.18 1.37 0.05" data-normal="0 0 1"><span class="h3-card"><b>Épaules</b><i>Tendinite de la coiffe · Bursite</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-hd" data-zone="haut-dos" data-position="0 1.20 -0.10" data-normal="0 0 -1"><span class="h3-card"><b>Haut du dos</b><i>Dorsalgie · Tensions entre les omoplates</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-bd" data-zone="bas-dos" data-position="0 0.97 -0.12" data-normal="0 0 -1"><span class="h3-card"><b>Bas du dos</b><i>Lombalgie · Hernie discale</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-co" data-zone="coudes" data-position="0.21 1.02 0" data-normal="0 0 1"><span class="h3-card"><b>Coudes</b><i>Épicondylite · Épitrochléite</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-po" data-zone="poignets-mains" data-position="0.22 0.80 0.02" data-normal="0 0 1"><span class="h3-card"><b>Poignets / mains</b><i>Canal carpien · De Quervain</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ge" data-zone="genoux" data-position="0.10 0.46 0.10" data-normal="0 0 1"><span class="h3-card"><b>Genoux</b><i>Bursite du genou · Ménisque</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ch" data-zone="chevilles-pieds" data-position="0.10 0.08 0.08" data-normal="0 0 1"><span class="h3-card"><b>Chevilles / pieds</b><i>Tendinite d'Achille · Fasciite plantaire</i></span></button>
             </model-viewer>
-            <p class="corps-3d-note">Vue 3D (prototype) · tourne le mannequin et clique une pastille — la même fiche s'ouvre qu'en 2D. <span>Positions des pastilles à affiner.</span></p>
+            <p class="corps-3d-note">Modèle anatomique des muscles · tourne-le et clique une pastille — la même fiche s'ouvre qu'en 2D. <span>Modèle : <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a> (CC BY-SA).</span></p>
           </div>
 <div class="corps-photo" id="corpsPhoto" hidden>
   <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Huit zones sous surveillance sur le corps humain, vues de face et de dos : clique un point pour explorer la zone" id="corpsPhotoImg" decoding="async">
