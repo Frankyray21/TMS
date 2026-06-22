@@ -1714,9 +1714,9 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
       radial-gradient(58% 50% at 50% 34%, rgba(92,116,156,.13), transparent 70%),
       radial-gradient(46% 26% at 50% 100%, rgba(214,40,42,.17), transparent 72%),
       linear-gradient(180deg, #0b1320, #04060c 80%); }
-  /* Ordinateur : modèle nettement plus grand + étiquettes repoussées sur les côtés */
+  /* Ordinateur : modèle en pleine largeur + étiquettes repoussées dans les marges */
   @media (min-width: 1024px) {
-    #corps3d { max-width: 760px; height: min(82vh, 800px); --clo: 96px; }
+    #corps3d { max-width: none; height: min(84vh, 820px); --clo: 150px; }
     .corps-vue, .corps-layers, .corps-3d-note { max-width: 760px; }
   }
   /* Pastille rouge lumineuse pulsante */
