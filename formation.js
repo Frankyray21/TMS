@@ -223,18 +223,18 @@
     bar.querySelector('.fn-pos').textContent = (cur + 1) + ' / ' + steps.length;
     bar.querySelector('.fn-prev').disabled = (cur === 0 && !PREVFILE);
     var nx = bar.querySelector('.fn-next');
+    /* Sur l'attestation : on masque « Suivant/Terminer » ; le bouton
+       « Générer / imprimer » de l'attestation est la seule action. */
+    var onAttest = steps[cur] && steps[cur].sec && steps[cur].sec.id === 'formAttest';
+    nx.style.display = onAttest ? 'none' : '';
+    if (onAttest) return;
     nx.innerHTML = (last ? (NEXTFILE ? T.nextPart : T.finish) : T.next) + ' <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
     nx.classList.toggle('fn-final', last);
   }
   function goNext() {
     if (cur < steps.length - 1) { show(cur + 1); return; }
     markPartDone();
-    if (NEXTFILE) { location.href = NEXTFILE; return; }
-    /* Dernière étape de la dernière partie : déclencher l'attestation. */
-    var pin = document.getElementById('attPrint');
-    if (pin && !pin.disabled) { pin.click(); return; }
-    var nin = document.getElementById('attName');
-    if (nin) { try { nin.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} nin.focus(); }
+    if (NEXTFILE) location.href = NEXTFILE;
   }
   function goPrev() {
     if (cur > 0) { show(cur - 1); return; }
