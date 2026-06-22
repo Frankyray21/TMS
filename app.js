@@ -2061,11 +2061,7 @@ if ("serviceWorker" in navigator) {
   var mv = document.getElementById("corps3d");
   if (!bar || !wrap || !mv) return;
 
-  // Mode test : la vue 3D (prototype) n'apparaît qu'avec ?test3d=1 dans l'URL.
-  // Le public ne voit que la carte 2D tant que les pastilles ne sont pas validées.
-  var TEST = /test3d/i.test(location.search) || /test3d/i.test(location.hash);
-  if (!TEST) return;
-  // Mode test : pas de bascule ni de carte 2D, la vue 3D s'affiche directement.
+  // Vue 3D pour tous, en remplacement de la carte 2D (repli 2D si le modèle échoue).
 
   var corps = document.getElementById("corps");
   var twoD = corps ? [corps.querySelector(".corps-photo"), corps.querySelector(".corps-flex")] : [];
@@ -2158,6 +2154,32 @@ if ("serviceWorker" in navigator) {
     if (b) show(b.getAttribute("data-vue") === "3d");
   });
 
-  // Affiche directement la 3D (la bascule reste masquée en mode test).
-  show(true);
+  // Affiche la 3D à la place de la 2D pour tous.
+  wrap.hidden = false;
+  twoD.forEach(function (el) { if (el) el.style.display = "none"; });
+  // Repli : si le modèle 3D ne charge pas (réseau/décodeur), on rebascule sur la 2D.
+  mv.addEventListener("error", function () {
+    wrap.hidden = true;
+    twoD.forEach(function (el) { if (el) el.style.display = ""; });
+  });
+  // Les pastilles ne s'affichent qu'une fois le modèle chargé (évite l'amas au coin).
+  mv.addEventListener("load", function () { wrap.classList.add("mv-ready"); });
+  // Chargement différé : on ne tire le moteur + le modèle qu'en approchant de la section.
+  var started = false;
+  function go() {
+    if (started) return; started = true;
+    load();
+    // Sécurité : si le moteur 3D ne s'est pas chargé (hors ligne / réseau bloquant), repli 2D.
+    setTimeout(function () {
+      if (!window.customElements || !window.customElements.get("model-viewer")) {
+        wrap.hidden = true;
+        twoD.forEach(function (el) { if (el) el.style.display = ""; });
+      }
+    }, 10000);
+  }
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es, obs) {
+      if (es[0].isIntersecting) { go(); obs.disconnect(); }
+    }, { rootMargin: "500px 0px" }).observe(wrap);
+  } else { go(); }
 })();
