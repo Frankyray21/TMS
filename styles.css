@@ -1726,6 +1726,12 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     .h3-card b { font-size: 1.02rem; }
     .h3-card i { font-size: .82rem; }
   }
+  /* Mobile / tablette : pas de place pour des étiquettes à côté du corps →
+     pastilles seules (agrandies pour le tactile), l'appui ouvre la fiche. */
+  @media (max-width: 1023px) {
+    #corps3d-wrap .h3-card { display: none; }
+    #corps3d-wrap .hotspot3d { --d: 22px; border-width: 3px; }
+  }
   /* Pastille rouge lumineuse pulsante */
   .hotspot3d { --d: 15px; width: var(--d); height: var(--d); border-radius: 50%; border: 2px solid #fff; padding: 0; cursor: pointer;
     background: radial-gradient(circle at 50% 40%, #ff8a8c, #d4282a 60%);

@@ -1,5 +1,5 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v56";
+const VERSION = "tms-v57";
 const CORE = [
   "./",
   "index.html",
