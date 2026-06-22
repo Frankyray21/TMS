@@ -75,7 +75,7 @@ export default {
     const score = clean(body.score, 20);   // ex. « 8/10 »
     const mine  = clean(body.mine, 80);     // optionnel
     const date  = isoDate(body.date);       // « AAAA-MM-JJ »
-    const empId = validRecId(body.employeeId);   // lien vers la liste d'employés
+    let empId = validRecId(body.employeeId);   // lien vers la liste d'employés
 
     if (!env.AIRTABLE_TOKEN) {
       return json(
@@ -83,6 +83,11 @@ export default {
         500, cors
       );
     }
+
+    // Repli : si aucun employé n'a été choisi explicitement dans la liste, on
+    // tente une correspondance EXACTE du nom (casse/accents ignorés). Ainsi le
+    // lien se fait même si la personne a tapé son nom sans cliquer la suggestion.
+    if (!empId) empId = await findEmployeeByName(name, env);
 
     // Champs envoyés à Airtable (les noms correspondent exactement aux colonnes).
     const fields = {
@@ -166,8 +171,28 @@ async function searchEmployees(q, env, cors) {
   return json({ ok: true, results }, 200, cors);
 }
 
-/* ── utilitaires ────────────────────────────────────────────────────────── */
+/* Cherche UN employé dont le nom complet correspond exactement (casse/accents
+   ignorés). Renvoie son record id, ou "" si aucun / plusieurs (ambigu). */
+async function findEmployeeByName(name, env) {
+  const term = deburr(clean(name, 120).toLowerCase()).replace(/["\\]/g, " ").trim();
+  if (term.length < 2) return "";
+  const field = stripAccentsFormula(`LOWER({${EMP_NAME_FIELD}})`);
+  const formula = `TRIM(${field})="${term}"`;
+  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${EMP_TABLE}`
+            + `?filterByFormula=${encodeURIComponent(formula)}`
+            + `&maxRecords=2&fields%5B%5D=${encodeURIComponent(EMP_NAME_FIELD)}`;
+  try {
+    const at = await fetch(url, { headers: { "Authorization": `Bearer ${env.AIRTABLE_TOKEN}` } });
+    if (!at.ok) return "";
+    const data = await at.json();
+    const recs = data.records || [];
+    return recs.length === 1 ? recs[0].id : "";
+  } catch (e) {
+    return "";
+  }
+}
 
+/* ── utilitaires ────────────────────────────────────────────────────────── */
 function corsHeaders(origin) {
   const allow = ALLOWED_ORIGINS.indexOf(origin) >= 0 ? origin : (origin || "*");
   return {
