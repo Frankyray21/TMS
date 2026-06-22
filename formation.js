@@ -10,7 +10,12 @@
   var PART = mm ? parseInt(mm[1], 10) : 1, TOTAL = 5;
   var NEXTFILE = PART < TOTAL ? (PART === 1 ? 'formation-2' : 'formation-' + (PART + 1)) + (EN ? '.en.html' : '.html') : null;
   var PREVFILE = PART > 1 ? (PART === 2 ? 'formation' : 'formation-' + (PART - 1)) + (EN ? '.en.html' : '.html') : null;
-  var KEY = 'tms_form_done', QKEY = 'tms_form_quiz', NKEY = 'tms_form_name';
+  var KEY = 'tms_form_done', QKEY = 'tms_form_quiz', NKEY = 'tms_form_name', SKEY = 'tms_form_sent';
+  /* URL du Worker Cloudflare qui enregistre l'attestation dans Airtable.
+     Laisser vide tant que le Worker n'est pas déployé : le site fonctionne
+     normalement, il n'envoie simplement rien. Une fois le Worker en ligne,
+     coller ici son URL (ex. 'https://attestations-tms.xxx.workers.dev'). */
+  var ATTEST_ENDPOINT = '';
   var T = EN ? {
     lbl: 'My progress', done: 'Training complete ✓', prev: 'Previous', next: 'Next', nextPart: 'Next part', finish: 'Finish ✓',
     attEy: 'Certificate', attH: 'Your training certificate',
@@ -81,6 +86,24 @@
     var d = iso ? new Date(iso) : new Date();
     return d.toLocaleDateString(EN ? 'en-CA' : 'fr-CA', { year: 'numeric', month: 'long', day: 'numeric' });
   }
+  /* Envoi (non bloquant) de l'attestation au Worker Cloudflare → Airtable.
+     Tolérant aux pannes : si l'envoi échoue, l'impression du PDF n'est jamais
+     bloquée. Anti-doublon : un même nom n'est envoyé qu'une fois par jour. */
+  function sendAttestation(name, q) {
+    if (!ATTEST_ENDPOINT) return;
+    name = (name || '').trim();
+    if (!name) return;
+    var sig = name + '|' + new Date().toISOString().slice(0, 10);
+    var sent = '';
+    try { sent = localStorage.getItem(SKEY) || ''; } catch (e) {}
+    if (sent === sig) return;
+    var payload = { name: name, lang: EN ? 'EN' : 'FR', date: new Date().toISOString().slice(0, 10), score: q ? (q.score + '/' + q.total) : '' };
+    try {
+      fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
+        .then(function (r) { if (r && r.ok) { try { localStorage.setItem(SKEY, sig); } catch (e) {} } })
+        .catch(function () {});
+    } catch (e) {}
+  }
   function renderAttestGate() {
     var g = document.getElementById('attGate'); if (!g) return;
     if (!allDone()) {
@@ -110,7 +133,7 @@
       try { localStorage.setItem(NKEY, v); } catch (e) {}
     }
     input.addEventListener('input', upd); upd();
-    btn.addEventListener('click', function () { document.documentElement.classList.add('printing-cert'); window.print(); setTimeout(function () { document.documentElement.classList.remove('printing-cert'); }, 600); });
+    btn.addEventListener('click', function () { sendAttestation((input.value || '').trim(), q); document.documentElement.classList.add('printing-cert'); window.print(); setTimeout(function () { document.documentElement.classList.remove('printing-cert'); }, 600); });
   }
 
   /* ---------- parcours : une sous-section à la fois ---------- */
