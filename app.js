@@ -2080,6 +2080,21 @@ if ("serviceWorker" in navigator) {
     s.type = "module";
     s.src = "vendor/model-viewer.min.js";
     document.head.appendChild(s);
+    // Rendu « X-ray » : corps translucide bleuté pour coller au visuel de l'infographie.
+    mv.addEventListener("load", function () {
+      try {
+        var mats = (mv.model && mv.model.materials) || [];
+        mats.forEach(function (m) {
+          if (m.pbrMetallicRoughness) {
+            m.pbrMetallicRoughness.setBaseColorFactor([0.40, 0.54, 0.68, 0.6]);
+            m.pbrMetallicRoughness.setMetallicFactor(0);
+            m.pbrMetallicRoughness.setRoughnessFactor(0.7);
+          }
+          if (m.setAlphaMode) m.setAlphaMode("BLEND");
+          if (m.setEmissiveFactor) m.setEmissiveFactor([0.05, 0.11, 0.16]);
+        });
+      } catch (e) { /* matériaux non modifiables : on garde le rendu par défaut */ }
+    });
     // Une pastille 3D rejoue le clic sur la zone 2D correspondante → même fiche, zéro duplication.
     wrap.querySelectorAll(".hotspot3d").forEach(function (h) {
       h.addEventListener("click", function () {

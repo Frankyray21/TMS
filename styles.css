@@ -1693,15 +1693,36 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .cv-btn { border: none; background: none; color: var(--dim); font: inherit; font-weight: 700; font-size: .85rem; padding: .45rem 1.1rem; border-radius: 999px; cursor: pointer; min-height: 40px; transition: background .2s, color .2s; }
   .cv-btn.actif { background: var(--brand); color: #fff; }
   .corps-3d { display: flex; flex-direction: column; align-items: center; }
-  #corps3d { width: 100%; max-width: 520px; height: min(64vh, 560px); border: 1px solid var(--border); border-radius: 18px;
-    background: radial-gradient(120% 90% at 50% 0%, rgba(22,32,52,0), #0a0e17 70%), linear-gradient(180deg, #121a2b, #0a0e17); }
-  .hotspot3d { --d: 20px; width: var(--d); height: var(--d); border-radius: 50%; border: 2px solid #fff; background: rgba(210,35,37,.92);
-    box-shadow: 0 0 0 4px rgba(210,35,37,.25), 0 2px 8px rgba(0,0,0,.5); cursor: pointer; padding: 0; transition: transform .15s; }
+  #corps3d { width: 100%; max-width: 560px; height: min(66vh, 600px); border: 1px solid var(--border); border-radius: 18px;
+    background:
+      radial-gradient(55% 38% at 50% 100%, rgba(210,35,37,.20), transparent 70%),
+      radial-gradient(120% 95% at 50% 0%, rgba(22,32,52,0), #04070d 72%),
+      linear-gradient(180deg, #0c1422, #04070d); }
+  /* Pastille rouge lumineuse pulsante (look infographie) */
+  .hotspot3d { --d: 18px; width: var(--d); height: var(--d); border-radius: 50%; border: 2px solid #fff; padding: 0; cursor: pointer;
+    background: radial-gradient(circle at 50% 42%, #ff7e80, #d22325 62%);
+    box-shadow: 0 0 0 5px rgba(210,35,37,.25), 0 0 18px 5px rgba(255,42,44,.6);
+    animation: h3pulse 2.1s ease-out infinite; }
+  @keyframes h3pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255,42,44,.55), 0 0 18px 5px rgba(255,42,44,.55); }
+    70%  { box-shadow: 0 0 0 15px rgba(255,42,44,0), 0 0 18px 5px rgba(255,42,44,.55); }
+    100% { box-shadow: 0 0 0 0 rgba(255,42,44,0), 0 0 18px 5px rgba(255,42,44,.55); }
+  }
   .hotspot3d[data-visible="false"] { opacity: 0; pointer-events: none; }
-  .hotspot3d:hover, .hotspot3d:focus-visible { transform: scale(1.25); outline: none; }
-  .hotspot3d .h3-lbl { position: absolute; left: 50%; top: -8px; transform: translate(-50%, -100%); background: #111827; border: 1px solid var(--border);
-    color: #fff; font-size: .78rem; font-weight: 700; white-space: nowrap; padding: .22rem .55rem; border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity .15s; }
-  .hotspot3d:hover .h3-lbl, .hotspot3d:focus-visible .h3-lbl { opacity: 1; }
+  .hotspot3d:hover, .hotspot3d:focus-visible { outline: none; transform: scale(1.18); }
+  /* Fiche-étiquette : titre blanc + TMS en gris, cadre rouge fin (façon image) */
+  .h3-card { position: absolute; display: flex; flex-direction: column; gap: 2px; max-width: 184px;
+    background: rgba(11,16,26,.94); border: 1px solid rgba(255,72,74,.5); border-radius: 11px; padding: .5rem .72rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,.55); pointer-events: none; }
+  .h3-card b { color: #fff; font-size: .9rem; font-weight: 800; line-height: 1.1; white-space: nowrap; }
+  .h3-card i { color: #9fb0c4; font-size: .72rem; font-style: normal; line-height: 1.25; }
+  .h3-card::after { content: ""; position: absolute; width: 22px; height: 1px; background: linear-gradient(90deg, rgba(255,72,74,.85), rgba(255,72,74,0)); }
+  .h3-l .h3-card { right: 30px; top: 50%; transform: translateY(-50%); }
+  .h3-l .h3-card::after { right: -22px; top: 50%; transform: scaleX(-1); }
+  .h3-r .h3-card { left: 30px; top: 50%; transform: translateY(-50%); }
+  .h3-r .h3-card::after { left: -22px; top: 50%; }
+  .h3-t .h3-card { left: 50%; bottom: 30px; transform: translateX(-50%); align-items: center; }
+  .h3-t .h3-card::after { display: none; }
   .corps-3d-note { color: var(--dim); font-size: .85rem; margin-top: .85rem; text-align: center; max-width: 520px; }
   .corps-3d-note span { color: var(--accent-l); }
 
