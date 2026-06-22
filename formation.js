@@ -22,14 +22,16 @@
     gateMsg: 'Complete the 5 parts to unlock your certificate.', gateFrac: 'parts done',
     congrats: 'Congratulations — you completed the training!', nameLbl: 'Your full name', namePh: 'First and last name',
     gen: 'Generate / print (save as PDF)', certTitle: 'TRAINING CERTIFICATE', certSub: 'Prevention of musculoskeletal disorders (MSD)',
-    certTo: 'Awarded to', certOn: 'On', certScore: 'Quiz score', certOrg: 'Machines Roger International'
+    certTo: 'Awarded to', certOn: 'On', certScore: 'Quiz score', certOrg: 'Machines Roger International',
+    empHint: 'Start typing your name, then pick it from the list', empLinked: 'Linked to your employee file ✓', empNone: 'No match — your name will be saved as typed'
   } : {
     lbl: 'Ma progression', done: 'Formation terminée ✓', prev: 'Précédent', next: 'Suivant', nextPart: 'Partie suivante', finish: 'Terminer ✓',
     attEy: 'Attestation', attH: 'Ton attestation de formation',
     gateMsg: 'Termine les 5 parties pour débloquer ton attestation.', gateFrac: 'parties faites',
     congrats: 'Félicitations — tu as complété la formation !', nameLbl: 'Ton nom complet', namePh: 'Prénom et nom',
     gen: 'Générer / imprimer (enregistrer en PDF)', certTitle: 'ATTESTATION DE FORMATION', certSub: 'Prévention des troubles musculosquelettiques (TMS)',
-    certTo: 'Délivrée à', certOn: 'Le', certScore: 'Score au quiz', certOrg: 'Machines Roger International'
+    certTo: 'Délivrée à', certOn: 'Le', certScore: 'Score au quiz', certOrg: 'Machines Roger International',
+    empHint: 'Commence à taper ton nom, puis choisis-le dans la liste', empLinked: 'Relié à ton dossier employé ✓', empNone: 'Aucune correspondance — ton nom sera enregistré tel quel'
   };
 
   function getDone() { try { return JSON.parse(localStorage.getItem(KEY) || '[]').filter(function (n) { return n >= 1 && n <= TOTAL; }); } catch (e) { return []; } }
@@ -89,7 +91,7 @@
   /* Envoi (non bloquant) de l'attestation au Worker Cloudflare → Airtable.
      Tolérant aux pannes : si l'envoi échoue, l'impression du PDF n'est jamais
      bloquée. Anti-doublon : un même nom n'est envoyé qu'une fois par jour. */
-  function sendAttestation(name, q) {
+  function sendAttestation(name, q, employeeId) {
     if (!ATTEST_ENDPOINT) return;
     name = (name || '').trim();
     if (!name) return;
@@ -97,7 +99,7 @@
     var sent = '';
     try { sent = localStorage.getItem(SKEY) || ''; } catch (e) {}
     if (sent === sig) return;
-    var payload = { name: name, lang: EN ? 'EN' : 'FR', date: new Date().toISOString().slice(0, 10), score: q ? (q.score + '/' + q.total) : '' };
+    var payload = { name: name, lang: EN ? 'EN' : 'FR', date: new Date().toISOString().slice(0, 10), score: q ? (q.score + '/' + q.total) : '', employeeId: employeeId || '' };
     try {
       fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
         .then(function (r) { if (r && r.ok) { try { localStorage.setItem(SKEY, sig); } catch (e) {} } })
@@ -114,7 +116,12 @@
     var nm = '';
     try { nm = localStorage.getItem(NKEY) || ''; } catch (e) {}
     g.innerHTML = '<p class="att-congrats">🎉 ' + T.congrats + '</p>'
-      + '<label class="att-field"><span>' + T.nameLbl + '</span><input type="text" id="attName" placeholder="' + T.namePh + '" autocomplete="name" value="' + nm.replace(/"/g, '&quot;') + '"></label>'
+      + '<div class="att-field att-emp">'
+      +   '<span>' + T.nameLbl + '</span>'
+      +   '<input type="text" id="attName" placeholder="' + T.namePh + '" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="empSugg" value="' + nm.replace(/"/g, '&quot;') + '">'
+      +   '<div id="empSugg" class="emp-sugg" role="listbox" hidden></div>'
+      +   '<p class="emp-hint" id="empHint">' + T.empHint + '</p>'
+      + '</div>'
       + '<div class="cert" id="certDoc">'
       + '<img class="cert-logo" src="images/logo_roger.png" alt="Machines Roger International">'
       + '<div class="cert-kick">' + T.certTitle + '</div>'
@@ -126,14 +133,54 @@
       + '</div><div class="cert-org">' + T.certOrg + '</div></div>'
       + '<button type="button" class="btn att-print" id="attPrint" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg> ' + T.gen + '</button>';
     var input = g.querySelector('#attName'), cn = g.querySelector('#certName'), btn = g.querySelector('#attPrint');
+    var sugg = g.querySelector('#empSugg'), hint = g.querySelector('#empHint');
+    var pickedId = '', pickedName = '';   // employé choisi dans la liste
+    function setHint(txt, ok) { if (hint) { hint.textContent = txt; hint.classList.toggle('ok', !!ok); } }
+    function db(s) { try { return s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) { return s; } }
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
     function upd() {
       var v = (input.value || '').trim();
       cn.textContent = v || '—';
       btn.disabled = !v;
       try { localStorage.setItem(NKEY, v); } catch (e) {}
+      if (pickedId && v.toLowerCase() !== pickedName.toLowerCase()) { pickedId = ''; pickedName = ''; setHint(T.empHint, false); }
     }
-    input.addEventListener('input', upd); upd();
-    btn.addEventListener('click', function () { sendAttestation((input.value || '').trim(), q); document.documentElement.classList.add('printing-cert'); window.print(); setTimeout(function () { document.documentElement.classList.remove('printing-cert'); }, 600); });
+    function hideSugg() { if (sugg) { sugg.hidden = true; sugg.innerHTML = ''; } input.setAttribute('aria-expanded', 'false'); }
+    function pick(it) { pickedId = it.id; pickedName = it.name; input.value = it.name; upd(); setHint(T.empLinked, true); hideSugg(); }
+    function hl(name, term) {
+      var t = db(name.toLowerCase()), qd = db((term || '').toLowerCase()), i = qd ? t.indexOf(qd) : -1;
+      if (i < 0) return esc(name);
+      return esc(name.slice(0, i)) + '<b>' + esc(name.slice(i, i + qd.length)) + '</b>' + esc(name.slice(i + qd.length));
+    }
+    function renderSugg(list, term) {
+      if (!sugg) return;
+      if (!list.length) { hideSugg(); setHint(T.empNone, false); return; }
+      sugg.innerHTML = '';
+      list.forEach(function (it) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'emp-item'; b.setAttribute('role', 'option');
+        b.innerHTML = hl(it.name, term);
+        b.addEventListener('mousedown', function (e) { e.preventDefault(); pick(it); });
+        sugg.appendChild(b);
+      });
+      sugg.hidden = false; input.setAttribute('aria-expanded', 'true');
+    }
+    var tmr = null, lastReq = 0;
+    function doSearch() {
+      var v = (input.value || '').trim();
+      if (!ATTEST_ENDPOINT || v.length < 2) { hideSugg(); return; }
+      var myReq = ++lastReq;
+      fetch(ATTEST_ENDPOINT + '?q=' + encodeURIComponent(v), { method: 'GET' })
+        .then(function (r) { return r && r.ok ? r.json() : null; })
+        .then(function (d) { if (myReq === lastReq && document.activeElement === input) renderSugg((d && d.results) || [], v); })
+        .catch(function () {});
+    }
+    input.addEventListener('input', function () { upd(); if (tmr) clearTimeout(tmr); tmr = setTimeout(doSearch, 220); });
+    input.addEventListener('focus', function () { if (!pickedId && (input.value || '').trim().length >= 2) doSearch(); });
+    input.addEventListener('blur', function () { setTimeout(hideSugg, 150); });
+    input.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideSugg(); });
+    upd(); setHint(T.empHint, false);
+    btn.addEventListener('click', function () { sendAttestation((input.value || '').trim(), q, pickedId); document.documentElement.classList.add('printing-cert'); window.print(); setTimeout(function () { document.documentElement.classList.remove('printing-cert'); }, 600); });
   }
 
   /* ---------- parcours : une sous-section à la fois ---------- */
@@ -164,7 +211,7 @@
     [].slice.call(cs.wrap.children).forEach(function (c) { c.style.display = 'none'; });
     cs.prefix.forEach(function (n) { n.style.display = ''; });
     cs.block.forEach(function (n) { n.style.display = ''; });
-    if (cs.sec.id === 'formAttest') renderAttestGate();
+    if (cs.sec.id === 'formAttest') { markPartDone(); renderAttestGate(); }
     updateNav();
     try { window.scrollTo(0, 0); } catch (e) {}
     try { window.dispatchEvent(new Event('resize')); } catch (e) {}
@@ -182,7 +229,12 @@
   function goNext() {
     if (cur < steps.length - 1) { show(cur + 1); return; }
     markPartDone();
-    if (NEXTFILE) location.href = NEXTFILE;
+    if (NEXTFILE) { location.href = NEXTFILE; return; }
+    /* Dernière étape de la dernière partie : déclencher l'attestation. */
+    var pin = document.getElementById('attPrint');
+    if (pin && !pin.disabled) { pin.click(); return; }
+    var nin = document.getElementById('attName');
+    if (nin) { try { nin.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} nin.focus(); }
   }
   function goPrev() {
     if (cur > 0) { show(cur - 1); return; }
