@@ -30,6 +30,9 @@ const AIRTABLE_TABLE = "tblSNMDt0yj7nBxXm";   // table « Attestations TMS (web)
 const EMP_TABLE      = "tbllKuNePDWZMr1cz";   // « Liste employé (registre formation) »
 const EMP_NAME_FIELD = "Name";                // champ principal = nom complet
 
+/* Champ pièce jointe qui reçoit l'image du certificat généré par le site. */
+const ATTACH_FIELD   = "fldBlPonYY4pypKfT";   // champ « Attestation » (image)
+
 /* Origines autorisées à appeler le Worker depuis un navigateur (CORS). */
 const ALLOWED_ORIGINS = [
   "https://frankyray21.github.io",
@@ -130,7 +133,13 @@ export default {
     }
 
     const rec = await at.json();
-    return json({ ok: true, id: rec.id, linked: !!empId }, 200, cors);
+
+    // Téléverse l'image du certificat (si fournie) dans le champ « Attestation ».
+    let imaged = false;
+    if (rec && rec.id && body.image) {
+      imaged = await uploadAttestationImage(rec.id, body.image, name, env);
+    }
+    return json({ ok: true, id: rec.id, linked: !!empId, image: imaged }, 200, cors);
   },
 };
 
@@ -189,6 +198,33 @@ async function findEmployeeByName(name, env) {
     return recs.length === 1 ? recs[0].id : "";
   } catch (e) {
     return "";
+  }
+}
+
+/* Téléverse l'image (data URL base64) du certificat dans le champ pièce jointe
+   « Attestation » du nouvel enregistrement, via l'API content d'Airtable. */
+async function uploadAttestationImage(recordId, dataUrl, name, env) {
+  try {
+    let b64 = String(dataUrl || "");
+    let ct = "image/png";
+    const m = b64.match(/^data:([^;]+);base64,(.*)$/);
+    if (m) { ct = m[1]; b64 = m[2]; }
+    if (!b64 || b64.length > 7000000) return false;   // garde-fou (~5 Mo)
+    const base = clean(name, 60).replace(/[^A-Za-z0-9 _-]/g, "").trim() || "attestation";
+    const r = await fetch(
+      `https://content.airtable.com/v0/${AIRTABLE_BASE}/${recordId}/${ATTACH_FIELD}/uploadAttachment`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${env.AIRTABLE_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contentType: ct, file: b64, filename: base + ".png" }),
+      }
+    );
+    return r.ok;
+  } catch (e) {
+    return false;
   }
 }
 

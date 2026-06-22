@@ -93,7 +93,7 @@
   /* Envoi (non bloquant) de l'attestation au Worker Cloudflare → Airtable.
      Tolérant aux pannes : si l'envoi échoue, l'impression du PDF n'est jamais
      bloquée. Anti-doublon : un même nom n'est envoyé qu'une fois par jour. */
-  function sendAttestation(name, q, employeeId) {
+  function sendAttestation(name, q, employeeId, image) {
     if (!ATTEST_ENDPOINT) return;
     name = (name || '').trim();
     if (!name) return;
@@ -101,9 +101,11 @@
     var sent = '';
     try { sent = localStorage.getItem(SKEY) || ''; } catch (e) {}
     if (sent === sig) return;
-    var payload = { name: name, lang: EN ? 'EN' : 'FR', date: new Date().toISOString().slice(0, 10), score: q ? (q.score + '/' + q.total) : '', employeeId: employeeId || '' };
+    var payload = { name: name, lang: EN ? 'EN' : 'FR', date: new Date().toISOString().slice(0, 10), score: q ? (q.score + '/' + q.total) : '', employeeId: employeeId || '', image: image || '' };
+    /* Pas de keepalive : l'image peut dépasser la limite des requêtes keepalive
+       (la page reste affichée, la requête a le temps de se terminer). */
     try {
-      fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
+      fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         .then(function (r) { if (r && r.ok) { try { localStorage.setItem(SKEY, sig); } catch (e) {} } })
         .catch(function () {});
     } catch (e) {}
@@ -190,7 +192,7 @@
     var input = document.getElementById('attName');
     var nm = input ? (input.value || '').trim() : '';
     if (!nm) { if (input) { try { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} input.focus(); } return; }
-    sendAttestation(nm, getQuiz(), input ? (input.dataset.empId || '') : '');
+    var empId = input ? (input.dataset.empId || '') : '';
     g.setAttribute('data-validated', '1');
     var field = g.querySelector('.att-emp'); if (field) field.style.display = 'none';
     var done = document.createElement('div');
@@ -199,6 +201,30 @@
     g.insertBefore(done, g.firstChild);
     var bar = document.getElementById('fnav'); if (bar) bar.style.display = 'none';
     try { done.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    /* Capture l'image du certificat puis envoie le tout (en arrière-plan). */
+    captureCertThenSend(nm, getQuiz(), empId);
+  }
+
+  /* Génère le PNG du certificat (#certDoc) puis envoie l'attestation. Tolérant :
+     si la capture échoue, l'attestation part quand même (sans image). */
+  function captureCertThenSend(nm, q, empId) {
+    var cert = document.getElementById('certDoc');
+    if (!cert || !ATTEST_ENDPOINT) { sendAttestation(nm, q, empId, ''); return; }
+    loadScreenshotLib(function () {
+      var ms = window.modernScreenshot;
+      if (!ms || !ms.domToPng) { sendAttestation(nm, q, empId, ''); return; }
+      ms.domToPng(cert, { scale: 2, backgroundColor: '#ffffff' })
+        .then(function (dataUrl) { sendAttestation(nm, q, empId, dataUrl || ''); })
+        .catch(function () { sendAttestation(nm, q, empId, ''); });
+    });
+  }
+  function loadScreenshotLib(cb) {
+    if (window.modernScreenshot && window.modernScreenshot.domToPng) { cb(); return; }
+    var s = document.createElement('script');
+    s.src = 'vendor/modern-screenshot.umd.js';
+    s.onload = function () { cb(); };
+    s.onerror = function () { cb(); };
+    document.head.appendChild(s);
   }
 
   /* ---------- parcours : une sous-section à la fois ---------- */
