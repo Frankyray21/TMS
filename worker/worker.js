@@ -30,6 +30,9 @@ const AIRTABLE_TABLE = "tblSNMDt0yj7nBxXm";   // table « Attestations TMS (web)
 const EMP_TABLE      = "tbllKuNePDWZMr1cz";   // « Liste employé (registre formation) »
 const EMP_NAME_FIELD = "Name";                // champ principal = nom complet
 
+/* Champ pièce jointe qui reçoit l'image du certificat généré par le site. */
+const ATTACH_FIELD   = "fldBlPonYY4pypKfT";   // champ « Attestation » (image)
+
 /* Origines autorisées à appeler le Worker depuis un navigateur (CORS). */
 const ALLOWED_ORIGINS = [
   "https://frankyray21.github.io",
@@ -75,7 +78,7 @@ export default {
     const score = clean(body.score, 20);   // ex. « 8/10 »
     const mine  = clean(body.mine, 80);     // optionnel
     const date  = isoDate(body.date);       // « AAAA-MM-JJ »
-    const empId = validRecId(body.employeeId);   // lien vers la liste d'employés
+    let empId = validRecId(body.employeeId);   // lien vers la liste d'employés
 
     if (!env.AIRTABLE_TOKEN) {
       return json(
@@ -83,6 +86,11 @@ export default {
         500, cors
       );
     }
+
+    // Repli : si aucun employé n'a été choisi explicitement dans la liste, on
+    // tente une correspondance EXACTE du nom (casse/accents ignorés). Ainsi le
+    // lien se fait même si la personne a tapé son nom sans cliquer la suggestion.
+    if (!empId) empId = await findEmployeeByName(name, env);
 
     // Champs envoyés à Airtable (les noms correspondent exactement aux colonnes).
     const fields = {
@@ -125,7 +133,13 @@ export default {
     }
 
     const rec = await at.json();
-    return json({ ok: true, id: rec.id, linked: !!empId }, 200, cors);
+
+    // Téléverse l'image du certificat (si fournie) dans le champ « Attestation ».
+    let imaged = false;
+    if (rec && rec.id && body.image) {
+      imaged = await uploadAttestationImage(rec.id, body.image, name, env);
+    }
+    return json({ ok: true, id: rec.id, linked: !!empId, image: imaged }, 200, cors);
   },
 };
 
@@ -166,8 +180,55 @@ async function searchEmployees(q, env, cors) {
   return json({ ok: true, results }, 200, cors);
 }
 
-/* ── utilitaires ────────────────────────────────────────────────────────── */
+/* Cherche UN employé dont le nom complet correspond exactement (casse/accents
+   ignorés). Renvoie son record id, ou "" si aucun / plusieurs (ambigu). */
+async function findEmployeeByName(name, env) {
+  const term = deburr(clean(name, 120).toLowerCase()).replace(/["\\]/g, " ").trim();
+  if (term.length < 2) return "";
+  const field = stripAccentsFormula(`LOWER({${EMP_NAME_FIELD}})`);
+  const formula = `TRIM(${field})="${term}"`;
+  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${EMP_TABLE}`
+            + `?filterByFormula=${encodeURIComponent(formula)}`
+            + `&maxRecords=2&fields%5B%5D=${encodeURIComponent(EMP_NAME_FIELD)}`;
+  try {
+    const at = await fetch(url, { headers: { "Authorization": `Bearer ${env.AIRTABLE_TOKEN}` } });
+    if (!at.ok) return "";
+    const data = await at.json();
+    const recs = data.records || [];
+    return recs.length === 1 ? recs[0].id : "";
+  } catch (e) {
+    return "";
+  }
+}
 
+/* Téléverse l'image (data URL base64) du certificat dans le champ pièce jointe
+   « Attestation » du nouvel enregistrement, via l'API content d'Airtable. */
+async function uploadAttestationImage(recordId, dataUrl, name, env) {
+  try {
+    let b64 = String(dataUrl || "");
+    let ct = "image/png";
+    const m = b64.match(/^data:([^;]+);base64,(.*)$/);
+    if (m) { ct = m[1]; b64 = m[2]; }
+    if (!b64 || b64.length > 7000000) return false;   // garde-fou (~5 Mo)
+    const base = clean(name, 60).replace(/[^A-Za-z0-9 _-]/g, "").trim() || "attestation";
+    const r = await fetch(
+      `https://content.airtable.com/v0/${AIRTABLE_BASE}/${recordId}/${ATTACH_FIELD}/uploadAttachment`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${env.AIRTABLE_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contentType: ct, file: b64, filename: base + ".png" }),
+      }
+    );
+    return r.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+/* ── utilitaires ────────────────────────────────────────────────────────── */
 function corsHeaders(origin) {
   const allow = ALLOWED_ORIGINS.indexOf(origin) >= 0 ? origin : (origin || "*");
   return {
