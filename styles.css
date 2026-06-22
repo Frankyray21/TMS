@@ -1726,6 +1726,26 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .h3-t .h3-card::after { display: none; }
   .corps-3d-note { color: var(--dim); font-size: .85rem; margin-top: .85rem; text-align: center; max-width: 520px; }
   .corps-3d-note span { color: var(--accent-l); }
+  /* Panneau de calques : structures du corps (style Z-Anatomy) */
+  .corps-layers { width: 100%; max-width: 560px; margin: 12px auto 0; display: flex; flex-direction: column; gap: 7px;
+    background: rgba(13,19,30,.62); border: 1px solid var(--border); border-radius: 13px; padding: 11px 13px; }
+  .cl-title { margin: 0 0 1px; font-size: .7rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: var(--dim); }
+  .cl-row { display: grid; grid-template-columns: 28px 1fr 116px; align-items: center; gap: 11px; }
+  .cl-tog { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border); background: #1a2334; cursor: pointer; padding: 0;
+    display: grid; place-items: center; font-size: .82rem; line-height: 1; opacity: .5; filter: grayscale(1); transition: all .15s; }
+  .cl-tog::before { content: "\1F441"; }
+  .cl-row.on .cl-tog { background: var(--brand); border-color: var(--brand); opacity: 1; filter: none; }
+  .cl-name { font-size: .9rem; font-weight: 600; color: var(--fg); }
+  .cl-name::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: middle; background: #888; }
+  .cl-row[data-mat="Muscles"] .cl-name::before { background: #c0392b; }
+  .cl-row[data-mat="Os"] .cl-name::before { background: #ddd2b0; }
+  .cl-row[data-mat="Articulations"] .cl-name::before { background: #8fb0c8; }
+  .cl-row[data-mat="Nerfs"] .cl-name::before { background: #e0c020; }
+  .cl-row:not(.on) .cl-name { color: var(--dim); }
+  .cl-op { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 3px; background: #2a374b; cursor: pointer; }
+  .cl-op::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%; background: #fff; border: 2px solid var(--brand); cursor: pointer; }
+  .cl-op::-moz-range-thumb { width: 15px; height: 15px; border-radius: 50%; background: #fff; border: 2px solid var(--brand); cursor: pointer; }
+  @media (max-width: 560px) { .cl-row { grid-template-columns: 26px 1fr 92px; gap: 8px; } }
 
   /* Cadran de résultat affiché sur la page (près du lien d'évaluation) */
   .eval-resultat-page {
