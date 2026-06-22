@@ -2065,7 +2065,7 @@ if ("serviceWorker" in navigator) {
   // Le public ne voit que la carte 2D tant que les pastilles ne sont pas validées.
   var TEST = /test3d/i.test(location.search) || /test3d/i.test(location.hash);
   if (!TEST) return;
-  bar.hidden = false;
+  // Mode test : pas de bascule ni de carte 2D, la vue 3D s'affiche directement.
 
   var corps = document.getElementById("corps");
   var twoD = corps ? [corps.querySelector(".corps-photo"), corps.querySelector(".corps-flex")] : [];
@@ -2157,4 +2157,7 @@ if ("serviceWorker" in navigator) {
     var b = e.target.closest(".cv-btn");
     if (b) show(b.getAttribute("data-vue") === "3d");
   });
+
+  // Affiche directement la 3D (la bascule reste masquée en mode test).
+  show(true);
 })();
