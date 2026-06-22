@@ -1,0 +1,11 @@
+# Configuration Wrangler — Worker « Attestations TMS (web) »
+# Permet de déployer le Worker depuis le dépôt (Cloudflare Workers Builds)
+# avec la commande de déploiement :  npx wrangler deploy
+#
+# Le code du Worker est dans worker/worker.js
+# Le secret AIRTABLE_TOKEN se règle dans le tableau de bord Cloudflare
+# (Settings → Variables and Secrets), pas ici.
+
+name = "attestations-tms"
+main = "worker/worker.js"
+compatibility_date = "2025-09-01"
