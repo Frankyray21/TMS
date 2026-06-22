@@ -1716,13 +1716,15 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
       radial-gradient(58% 50% at 50% 34%, rgba(92,116,156,.13), transparent 70%),
       radial-gradient(46% 26% at 50% 100%, rgba(214,40,42,.17), transparent 72%),
       linear-gradient(180deg, #0b1320, #04060c 80%); }
-  /* Ordinateur : modèle en pleine largeur + étiquettes repoussées dans les marges */
+  /* Ordinateur : modèle 3D à gauche, panneau « Structures » à droite */
   @media (min-width: 1024px) {
-    #corps3d { max-width: none; height: min(84vh, 820px); --clo: 150px; }
-    .corps-layers, .corps-3d-note { max-width: 760px; }
-    .h3-card { max-width: 250px; padding: .55rem .8rem; }
-    .h3-card b { font-size: 1.12rem; }
-    .h3-card i { font-size: .9rem; }
+    .corps-3d { display: grid; grid-template-columns: 1fr 288px; grid-template-areas: "viewer panel" "note note"; column-gap: 22px; align-items: start; }
+    #corps3d { grid-area: viewer; max-width: none; height: min(84vh, 820px); --clo: 66px; }
+    .corps-layers { grid-area: panel; width: 288px; max-width: none; margin-top: 0; align-self: start; }
+    .corps-3d-note { grid-area: note; max-width: 760px; justify-self: center; margin-top: 14px; }
+    .h3-card { max-width: 158px; padding: .5rem .72rem; }
+    .h3-card b { font-size: 1.02rem; }
+    .h3-card i { font-size: .82rem; }
   }
   /* Pastille rouge lumineuse pulsante */
   .hotspot3d { --d: 15px; width: var(--d); height: var(--d); border-radius: 50%; border: 2px solid #fff; padding: 0; cursor: pointer;
