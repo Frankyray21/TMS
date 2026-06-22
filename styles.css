@@ -1693,7 +1693,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .cv-btn { border: none; background: none; color: var(--dim); font: inherit; font-weight: 700; font-size: .85rem; padding: .45rem 1.1rem; border-radius: 999px; cursor: pointer; min-height: 40px; transition: background .2s, color .2s; }
   .cv-btn.actif { background: var(--brand); color: #fff; }
   .corps-3d { display: flex; flex-direction: column; align-items: center; }
-  #corps3d { width: 100%; max-width: 560px; height: min(66vh, 600px); border: 1px solid var(--border); border-radius: 18px;
+  #corps3d { width: 100%; max-width: 560px; height: min(66vh, 600px); border: 1px solid var(--border); border-radius: 18px; --min-hotspot-opacity: 0;
     background:
       radial-gradient(55% 38% at 50% 100%, rgba(210,35,37,.20), transparent 70%),
       radial-gradient(120% 95% at 50% 0%, rgba(22,32,52,0), #04070d 72%),
