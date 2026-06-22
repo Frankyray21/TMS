@@ -91,6 +91,12 @@ html.fmode .part-nav,html.fmode .scroll-cue,html.fmode .foot{display:none!import
 .emp-item b{color:var(--accent-l);font-weight:800}
 .emp-hint{margin:.5rem .1rem 0;color:var(--muted);font-size:.86rem}
 .emp-hint.ok{color:var(--success)}
+/* Message « Formation validée » (après clic sur Terminer) */
+.att-done{display:flex;align-items:center;gap:.9rem;background:rgba(16,185,129,.12);border:1px solid var(--success);border-radius:14px;padding:1rem 1.2rem;margin:0 0 1.4rem;max-width:560px}
+.att-done-ic{flex:none;width:38px;height:38px;border-radius:50%;background:var(--success);color:#04231a;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.25rem}
+.att-done>div{display:flex;flex-direction:column}
+.att-done strong{color:var(--text);font-size:1.1rem}
+.att-done span{color:var(--muted);font-size:.92rem}
 @media print{
   html.printing-cert body *{visibility:hidden!important}
   html.printing-cert #certDoc,html.printing-cert #certDoc *{visibility:visible!important}

@@ -23,7 +23,8 @@
     congrats: 'Congratulations — you completed the training!', nameLbl: 'Your full name', namePh: 'First and last name',
     gen: 'Generate / print (save as PDF)', certTitle: 'TRAINING CERTIFICATE', certSub: 'Prevention of musculoskeletal disorders (MSD)',
     certTo: 'Awarded to', certOn: 'On', certScore: 'Quiz score', certOrg: 'Machines Roger International',
-    empHint: 'Start typing your name, then pick it from the list', empLinked: 'Linked to your employee file ✓', empNone: 'No match — your name will be saved as typed'
+    empHint: 'Start typing your name, then pick it from the list', empLinked: 'Linked to your employee file ✓', empNone: 'No match — your name will be saved as typed',
+    validatedH: 'Training validated ✓', validatedP: 'Recorded. Thanks for completing the training!'
   } : {
     lbl: 'Ma progression', done: 'Formation terminée ✓', prev: 'Précédent', next: 'Suivant', nextPart: 'Partie suivante', finish: 'Terminer ✓',
     attEy: 'Attestation', attH: 'Ton attestation de formation',
@@ -31,7 +32,8 @@
     congrats: 'Félicitations — tu as complété la formation !', nameLbl: 'Ton nom complet', namePh: 'Prénom et nom',
     gen: 'Générer / imprimer (enregistrer en PDF)', certTitle: 'ATTESTATION DE FORMATION', certSub: 'Prévention des troubles musculosquelettiques (TMS)',
     certTo: 'Délivrée à', certOn: 'Le', certScore: 'Score au quiz', certOrg: 'Machines Roger International',
-    empHint: 'Commence à taper ton nom, puis choisis-le dans la liste', empLinked: 'Relié à ton dossier employé ✓', empNone: 'Aucune correspondance — ton nom sera enregistré tel quel'
+    empHint: 'Commence à taper ton nom, puis choisis-le dans la liste', empLinked: 'Relié à ton dossier employé ✓', empNone: 'Aucune correspondance — ton nom sera enregistré tel quel',
+    validatedH: 'Formation validée ✓', validatedP: 'Enregistrée. Merci pour ta participation !'
   };
 
   function getDone() { try { return JSON.parse(localStorage.getItem(KEY) || '[]').filter(function (n) { return n >= 1 && n <= TOTAL; }); } catch (e) { return []; } }
@@ -130,9 +132,8 @@
       + '<div class="cert-name" id="certName">—</div>'
       + '<div class="cert-meta"><span>' + T.certOn + ' <b id="certDate">' + fmtDate() + '</b></span>'
       + (q ? '<span>' + T.certScore + ' : <b>' + q.score + ' / ' + q.total + '</b></span>' : '')
-      + '</div><div class="cert-org">' + T.certOrg + '</div></div>'
-      + '<button type="button" class="btn att-print" id="attPrint" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg> ' + T.gen + '</button>';
-    var input = g.querySelector('#attName'), cn = g.querySelector('#certName'), btn = g.querySelector('#attPrint');
+      + '</div><div class="cert-org">' + T.certOrg + '</div></div>';
+    var input = g.querySelector('#attName'), cn = g.querySelector('#certName');
     var sugg = g.querySelector('#empSugg'), hint = g.querySelector('#empHint');
     var pickedId = '', pickedName = '';   // employé choisi dans la liste
     function setHint(txt, ok) { if (hint) { hint.textContent = txt; hint.classList.toggle('ok', !!ok); } }
@@ -141,12 +142,11 @@
     function upd() {
       var v = (input.value || '').trim();
       cn.textContent = v || '—';
-      btn.disabled = !v;
       try { localStorage.setItem(NKEY, v); } catch (e) {}
-      if (pickedId && v.toLowerCase() !== pickedName.toLowerCase()) { pickedId = ''; pickedName = ''; setHint(T.empHint, false); }
+      if (pickedId && v.toLowerCase() !== pickedName.toLowerCase()) { pickedId = ''; pickedName = ''; input.dataset.empId = ''; setHint(T.empHint, false); }
     }
     function hideSugg() { if (sugg) { sugg.hidden = true; sugg.innerHTML = ''; } input.setAttribute('aria-expanded', 'false'); }
-    function pick(it) { pickedId = it.id; pickedName = it.name; input.value = it.name; upd(); setHint(T.empLinked, true); hideSugg(); }
+    function pick(it) { pickedId = it.id; pickedName = it.name; input.value = it.name; input.dataset.empId = it.id; upd(); setHint(T.empLinked, true); hideSugg(); }
     function hl(name, term) {
       var t = db(name.toLowerCase()), qd = db((term || '').toLowerCase()), i = qd ? t.indexOf(qd) : -1;
       if (i < 0) return esc(name);
@@ -180,7 +180,25 @@
     input.addEventListener('blur', function () { setTimeout(hideSugg, 150); });
     input.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideSugg(); });
     upd(); setHint(T.empHint, false);
-    btn.addEventListener('click', function () { sendAttestation((input.value || '').trim(), q, pickedId); document.documentElement.classList.add('printing-cert'); window.print(); setTimeout(function () { document.documentElement.classList.remove('printing-cert'); }, 600); });
+  }
+
+  /* Validation finale (clic « Terminer ») : enregistre dans Airtable + message,
+     sans aucune impression. Le nom et l'employé choisi sont lus sur le champ. */
+  function validateAttestation() {
+    var g = document.getElementById('attGate'); if (!g) return;
+    if (g.getAttribute('data-validated') === '1') return;
+    var input = document.getElementById('attName');
+    var nm = input ? (input.value || '').trim() : '';
+    if (!nm) { if (input) { try { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} input.focus(); } return; }
+    sendAttestation(nm, getQuiz(), input ? (input.dataset.empId || '') : '');
+    g.setAttribute('data-validated', '1');
+    var field = g.querySelector('.att-emp'); if (field) field.style.display = 'none';
+    var done = document.createElement('div');
+    done.className = 'att-done';
+    done.innerHTML = '<span class="att-done-ic">✓</span><div><strong>' + T.validatedH + '</strong><span>' + T.validatedP + '</span></div>';
+    g.insertBefore(done, g.firstChild);
+    var bar = document.getElementById('fnav'); if (bar) bar.style.display = 'none';
+    try { done.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
   }
 
   /* ---------- parcours : une sous-section à la fois ---------- */
@@ -223,18 +241,14 @@
     bar.querySelector('.fn-pos').textContent = (cur + 1) + ' / ' + steps.length;
     bar.querySelector('.fn-prev').disabled = (cur === 0 && !PREVFILE);
     var nx = bar.querySelector('.fn-next');
-    /* Sur l'attestation : on masque « Suivant/Terminer » ; le bouton
-       « Générer / imprimer » de l'attestation est la seule action. */
-    var onAttest = steps[cur] && steps[cur].sec && steps[cur].sec.id === 'formAttest';
-    nx.style.display = onAttest ? 'none' : '';
-    if (onAttest) return;
     nx.innerHTML = (last ? (NEXTFILE ? T.nextPart : T.finish) : T.next) + ' <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
     nx.classList.toggle('fn-final', last);
   }
   function goNext() {
     if (cur < steps.length - 1) { show(cur + 1); return; }
     markPartDone();
-    if (NEXTFILE) location.href = NEXTFILE;
+    if (NEXTFILE) { location.href = NEXTFILE; return; }
+    validateAttestation();   /* dernière partie : « Terminer » valide la formation */
   }
   function goPrev() {
     if (cur > 0) { show(cur - 1); return; }
