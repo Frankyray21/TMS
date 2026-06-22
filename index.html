@@ -208,7 +208,14 @@ html.tms-loading{overflow:hidden!important}
               <button class="hotspot3d h3-r" slot="hotspot-ge" data-zone="genoux" data-position="0.10 0.46 0.10" data-normal="0 0 1"><span class="h3-card"><b>Genoux</b><i>Bursite du genou · Ménisque</i></span></button>
               <button class="hotspot3d h3-r" slot="hotspot-ch" data-zone="chevilles-pieds" data-position="0.10 0.08 0.08" data-normal="0 0 1"><span class="h3-card"><b>Chevilles / pieds</b><i>Tendinite d'Achille · Fasciite plantaire</i></span></button>
             </model-viewer>
-            <p class="corps-3d-note">Modèle anatomique des muscles · tourne-le et clique une pastille — la même fiche s'ouvre qu'en 2D. <span>Modèle : <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a> (CC BY-SA).</span></p>
+            <div class="corps-layers" id="corps3dLayers" hidden role="group" aria-label="Structures du corps à afficher">
+              <p class="cl-title">Structures</p>
+              <div class="cl-row on" data-mat="Muscles"><button class="cl-tog" type="button" aria-pressed="true" aria-label="Afficher/masquer Muscles"></button><span class="cl-name">Muscles</span><input class="cl-op" type="range" min="0" max="100" value="100" aria-label="Opacité Muscles"></div>
+              <div class="cl-row" data-mat="Os"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Afficher/masquer Os"></button><span class="cl-name">Os</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Opacité Os"></div>
+              <div class="cl-row" data-mat="Articulations"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Afficher/masquer Articulations"></button><span class="cl-name">Articulations</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Opacité Articulations"></div>
+              <div class="cl-row" data-mat="Nerfs"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Afficher/masquer Nerfs"></button><span class="cl-name">Nerfs</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Opacité Nerfs"></div>
+            </div>
+            <p class="corps-3d-note">Modèle anatomique · affiche les structures (muscles, os, articulations, nerfs), tourne le corps et clique une pastille. <span>Modèle : <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a> (CC BY-SA).</span></p>
           </div>
 <div class="corps-photo" id="corpsPhoto" hidden>
   <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Huit zones sous surveillance sur le corps humain, vues de face et de dos : clique un point pour explorer la zone" id="corpsPhotoImg" decoding="async">
