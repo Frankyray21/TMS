@@ -1,5 +1,5 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v59";
+const VERSION = "tms-v60";
 const CORE = [
   "./",
   "index.html",
@@ -30,7 +30,14 @@ const CORE = [
   "images/info_regles.jpeg",
   "images/info_statique.jpeg",
   "images/logo_roger.png",
+  "images/moyens_controle.jpg",
   "images/og.jpg",
+  "images/posture_intro.jpg",
+  "images/posture_p1.jpg",
+  "images/posture_p3.jpg",
+  "images/posture_p4.jpg",
+  "images/posture_positions.jpg",
+  "images/pression_disque.jpg",
   "images/sd_circulation.jpg",
   "images/sd_compression.jpg",
   "images/sd_tubes_dynamique.jpg",
@@ -39,6 +46,7 @@ const CORE = [
   "images/tms_carpien.jpeg",
   "images/tms_lombalgie.jpeg",
   "images/tms_tendinite.jpeg",
+  "images/travail_statique.jpg",
   "images/zone_cou.jpeg",
   "images/zone_coudes.jpeg",
   "images/zone_dos.jpeg",
