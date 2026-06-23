@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formation guidée — Prévention des TMS | Machines Roger International</title>
+<meta name="description" content="Formation guidée à la prévention des troubles musculosquelettiques (TMS) : notions courtes, quiz par module et attestation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script type="module" src="vendor/model-viewer.min.js"></script>
+<style>
+  body { background: #0a0e17; }
+  .fg-page { font-family: 'Barlow', sans-serif; }
+  .fg-kb { display: block; }
+  .fg-kb .lead { margin-top: 0; }
+  .fg-cta { transition: transform .2s, box-shadow .2s; }
+  .fg-cta:hover:not([disabled]) { transform: translateY(-1px); }
+  .fg-ghost:hover { border-color: #334155; color: #cbd5e1; }
+  .fg-seg:hover { color: #cbd5e1; }
+  .fg-not:hover:not([disabled]) { border-color: #334155 !important; }
+  .fg-opt:hover:not([disabled]) { filter: brightness(1.08); }
+  .fg-nav:hover:not([disabled]) { border-color: #334155; color: #cbd5e1; }
+  button[disabled] { opacity: .9; }
+  @keyframes fgPulse { 0%,100% { opacity: 1; r: 5; } 50% { opacity: .35; } }
+  .emp-sugg { position: absolute; left: 0; right: 0; top: 100%; z-index: 20; margin-top: 4px; background: #0d1320; border: 1px solid #1e293b; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .emp-item { display: block; width: 100%; text-align: left; background: none; border: none; color: #e2e8f0; font: inherit; padding: .55rem .8rem; cursor: pointer; }
+  .emp-item:hover, .emp-item b { background: rgba(210,35,37,.14); color: #fff; }
+  .emp-item b { background: none; color: #ef5a5c; }
+  @media print {
+    body * { visibility: hidden !important; }
+    #certDoc, #certDoc * { visibility: visible !important; }
+    #certDoc { position: absolute; left: 0; top: 0; margin: 0 !important; box-shadow: none !important; }
+  }
+</style>
+</head>
+<body class="fg-page">
+<header style="position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px;background:rgba(10,14,23,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b">
+  <a href="index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none">
+    <img src="images/logo_roger.png" alt="Machines Roger International" style="height:34px;width:auto;background:#000;border-radius:6px;padding:3px 5px;display:block">
+    <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.16em;font-size:.74rem;color:#8694ad">Prévention des TMS</span>
+  </a>
+  <nav style="display:flex;align-items:center;gap:8px">
+    <div style="display:flex;background:#0d1320;border:1px solid #1e293b;border-radius:999px;padding:3px">
+      <a class="fg-seg" href="index.html" style="text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.8rem;color:#8694ad;padding:6px 14px;border-radius:999px">Base de connaissances</a>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.8rem;color:#fff;padding:6px 14px;border-radius:999px;background:linear-gradient(135deg,#e23a3c,#a81a1c)">Formation guidée</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:2px;margin-left:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem">
+      <span style="color:#fff;padding:5px 8px;border-radius:6px;background:rgba(210,35,37,.18)">FR</span>
+      <a href="formation.en.html" style="text-decoration:none;color:#8694ad;padding:5px 8px">EN</a>
+    </div>
+  </nav>
+</header>
+
+<div id="app"></div>
+
+<span class="foot-ver" id="footVer" title="Version du site" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#475569;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v1.42</span>
+
+<script src="formation-guidee.js" defer></script>
+</body>
+</html>

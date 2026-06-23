@@ -9,6 +9,8 @@ const CORE = [
   "formation.en.html",
   "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
+  "formation-guidee.html",
+  "formation-guidee.js",
   "interactif.html",
   "manifest.webmanifest",
   "images/assis_basdudos.jpg",
@@ -31,7 +33,14 @@ const CORE = [
   "images/info_regles.jpeg",
   "images/info_statique.jpeg",
   "images/logo_roger.png",
+  "images/moyens_controle.jpg",
   "images/og.jpg",
+  "images/posture_intro.jpg",
+  "images/posture_p1.jpg",
+  "images/posture_p3.jpg",
+  "images/posture_p4.jpg",
+  "images/posture_positions.jpg",
+  "images/pression_disque.jpg",
   "images/sd_circulation.jpg",
   "images/sd_compression.jpg",
   "images/sd_tubes_dynamique.jpg",
@@ -40,6 +49,7 @@ const CORE = [
   "images/tms_carpien.jpeg",
   "images/tms_lombalgie.jpeg",
   "images/tms_tendinite.jpeg",
+  "images/travail_statique.jpg",
   "images/zone_cou.jpeg",
   "images/zone_coudes.jpeg",
   "images/zone_dos.jpeg",
@@ -56,8 +66,9 @@ const PAGES = ["./", "index.html", "index.en.html",
   "formation.html", "formation.en.html",
   "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
+  "formation-guidee.html",
   "interactif.html", "manifest.webmanifest",
-  "styles.css", "formation.css", "app.js", "app.en.js", "formation.js", "gsap.min.js", "hero-anim.js"];
+  "styles.css", "formation.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "gsap.min.js", "hero-anim.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
