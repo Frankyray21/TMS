@@ -24,6 +24,13 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v4
 
+      - name: Versionner le cache automatiquement (hash du commit)
+        run: |
+          VER="tms-${GITHUB_SHA::7}"
+          sed -i "s|const VERSION = \"[^\"]*\";|const VERSION = \"$VER\";|" sw.js
+          echo "Cache du service worker versionné : $VER"
+          grep -n 'const VERSION' sw.js
+
       - name: Configurer GitHub Pages
         uses: actions/configure-pages@v5
         with:
