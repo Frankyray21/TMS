@@ -2083,7 +2083,8 @@ if ("serviceWorker" in navigator) {
     wrap.querySelectorAll(".hotspot3d").forEach(function (h) {
       h.addEventListener("click", function () {
         var z = h.getAttribute("data-zone");
-        var t = document.querySelector('#corps [data-zone="' + z + '"]');
+        // cible une zone 2D (jamais la pastille 3D elle-même, qui porte aussi data-zone)
+        var t = document.querySelector('#corps [data-zone="' + z + '"]:not(.hotspot3d)');
         if (t && typeof t.dispatchEvent === "function") {
           t.dispatchEvent(new MouseEvent("click", { bubbles: true }));
         }
