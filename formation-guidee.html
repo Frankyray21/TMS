@@ -28,6 +28,16 @@
   .emp-item { display: block; width: 100%; text-align: left; background: none; border: none; color: #e2e8f0; font: inherit; padding: .55rem .8rem; cursor: pointer; }
   .emp-item:hover, .emp-item b { background: rgba(210,35,37,.14); color: #fff; }
   .emp-item b { background: none; color: #ef5a5c; }
+  /* Mobile : héros compact pour atteindre vite les 5 modules (ne défile pas tout l'écran) */
+  @media (max-width: 640px) {
+    .fg-hero-inner { padding: 24px 18px 26px !important; gap: 20px !important; }
+    .fg-h1 { font-size: 1.85rem !important; margin-bottom: 12px !important; }
+    .fg-hero-sub { font-size: 1rem !important; margin-bottom: 18px !important; }
+    .fg-hero-card { width: 100% !important; padding: 16px 18px !important; }
+    .fg-ring { width: 104px !important; height: 104px !important; margin: 0 auto 10px !important; }
+    .fg-ring svg { width: 104px !important; height: 104px !important; }
+    .fg-pct { font-size: 1.9rem !important; }
+  }
   @media print {
     body * { visibility: hidden !important; }
     #certDoc, #certDoc * { visibility: visible !important; }
@@ -55,7 +65,7 @@
 
 <div id="app"></div>
 
-<span class="foot-ver" id="footVer" title="Version du site" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#475569;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v1.43</span>
+<span class="foot-ver" id="footVer" title="Version du site" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#475569;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v1.44</span>
 
 <script src="formation-guidee.js" defer></script>
 </body>
