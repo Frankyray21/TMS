@@ -37,6 +37,7 @@ const CORE = [
   "images/og.jpg",
   "images/posture_intro.jpg",
   "images/posture_p1.jpg",
+  "images/posture_p2.jpg",
   "images/posture_p3.jpg",
   "images/posture_p4.jpg",
   "images/posture_positions.jpg",
