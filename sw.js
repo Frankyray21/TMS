@@ -1,5 +1,6 @@
 /* Service worker · Prévention TMS · hors ligne complet */
-const VERSION = "tms-v63";
+/* VERSION remplacée automatiquement au déploiement par le hash du commit (.github/workflows/deploy-pages.yml) */
+const VERSION = "tms-auto";
 const CORE = [
   "./",
   "index.html",
