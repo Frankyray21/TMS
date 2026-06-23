@@ -534,6 +534,8 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .sd-ref{margin-top:.7rem;text-align:right;font-size:.84rem;color:var(--dim)}
 /* travail assis : disques animés */
 .disc-duel{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.2rem;box-shadow:var(--shadow-card)}
+/* comparaison déplacée dans la fiche « bas du dos » : un peu d'air dans la modale */
+#voile-assis .disc-duel{margin:.4rem 0 1.4rem}
 .disc-legend{grid-column:1/-1;display:flex;justify-content:center;flex-wrap:wrap;gap:1.4rem;font-size:.82rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .dl-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.4rem;vertical-align:middle}
 .dl-eau{background:#4aa3e8}.dl-nut{background:#35c06b}
