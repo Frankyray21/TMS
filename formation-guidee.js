@@ -306,7 +306,7 @@
     var attBg = allDone ? 'linear-gradient(120deg,rgba(16,185,129,.12),rgba(13,19,32,.6))' : '#0d1320';
     var attKick = allDone ? '#34d399' : '#8694ad';
     var attTitle = allDone ? 'Tu as débloqué ton attestation' : 'Termine les 5 modules pour débloquer';
-    var attDesc = allDone ? "Inscris ton nom : ton attestation nominative est prête à imprimer ou enregistrer en PDF." : "Parcours les notions et réussis le quiz de chaque module (80 %) pour générer ton attestation.";
+    var attDesc = allDone ? "Inscris ton nom : ton attestation nominative est prête à imprimer ou enregistrer en PDF." : "Parcours les notions et réussis le quiz de chaque module pour générer ton attestation.";
     var attBtnBg = allDone ? 'linear-gradient(135deg,#10b981,#0e9f6e)' : '#1a2332';
     var attBtnColor = allDone ? '#fff' : '#64748b';
     var att = '<div id="attestation" style="margin-top:18px;border-radius:18px;border:1px solid ' + attBorder + ';background:' + attBg + ';padding:28px">'
@@ -319,6 +319,7 @@
       + (state.certVisible && allDone ? certBlock() : '') + '</div>';
 
     return '<div><section style="position:relative;overflow:hidden;border-bottom:1px solid #1e293b;background:radial-gradient(120% 100% at 80% -10%,#16202f 0%,#0a0e17 55%)">'
+      + '<svg viewBox="0 0 520 600" aria-hidden="true" style="position:absolute;right:-40px;top:50%;transform:translateY(-50%);height:150%;opacity:.5;pointer-events:none"><g fill="none" stroke-linecap="round"><path d="M40 600 V330 A220 220 0 0 1 480 330 V600" stroke="rgba(255,255,255,.06)" stroke-width="2"></path><path d="M130 600 V350 A130 130 0 0 1 390 350 V600" stroke="rgba(210,35,37,.34)" stroke-width="3"></path><path d="M175 600 V360 A85 85 0 0 1 345 360 V600" stroke="rgba(255,255,255,.09)" stroke-width="2"></path><circle cx="260" cy="330" r="5" fill="rgba(239,90,92,.85)" stroke="none" style="animation:fgPulse 3.2s ease-in-out infinite"></circle></g></svg>'
       + '<div class="fg-hero-inner" style="position:relative;max-width:1120px;margin:0 auto;padding:52px 28px 44px;display:flex;flex-wrap:wrap;gap:44px;align-items:center;justify-content:space-between">'
       + '<div style="flex:1 1 520px;min-width:300px">'
       + '<div style="display:inline-flex;align-items:center;gap:10px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:1rem;color:#ef5a5c;margin-bottom:14px"><span style="width:7px;height:7px;border-radius:50%;background:#d22325;box-shadow:0 0 8px rgba(210,35,37,.9)"></span>Formation guidée · Nouveaux travailleurs</div>'
@@ -408,19 +409,10 @@
       + '<button class="fg-cta" data-act="next" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:.95rem;color:#fff;background:' + nextBg + ';border:none;border-radius:999px;padding:12px 24px;cursor:pointer">' + nextLabel + '</button></div></main></div>';
   }
 
-  function pointCards(points) {
-    if (!points || !points.length) return '';
-    return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:6px">' + points.map(function (p) {
-      return '<div style="border:1px solid #1e293b;border-left:3px solid #d22325;border-radius:12px;background:rgba(13,19,32,.5);padding:15px 16px"><div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:1.05rem;color:#fff;margin-bottom:5px">' + esc(p.title) + '</div><p style="color:#cbd5e1;font-size:.95rem;margin:0">' + esc(p.text) + '</p></div>';
-    }).join('') + '</div>';
-  }
-
   function renderGeneric(n) {
-    var html = '';
-    if (n.intro) html += '<p class="lead">' + esc(n.intro) + '</p>';
-    html += pointCards(n.points);
-    html += renderExtra(n);
-    return html;
+    // Maquette Claude Design : les notions génériques n'affichent que le visuel
+    // (échelle de Borg, infographies, images…), sans intro ni cartes de points.
+    return renderExtra(n);
   }
 
   function imgBlock(src, alt) {
@@ -443,12 +435,8 @@
   }
 
   function controleWidget(n) {
-    var cards = (n.cards || []).map(function (c, i) {
-      var col = ['#d22325', '#3b82f6', '#10b981', '#8b5cf6'][i % 4];
-      return '<div style="border:1px solid #1e293b;border-radius:12px;background:rgba(13,19,32,.5);padding:15px 16px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="flex:0 0 auto;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;background:' + col + ';color:#fff">' + c.num + '</span><span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;font-size:1rem;color:#fff">' + esc(c.title) + '</span></div><p style="color:#cbd5e1;font-size:.93rem;margin:0">' + esc(c.text) + '</p></div>';
-    }).join('');
-    return imgBlock('images/moyens_controle.jpg', 'Moyens de contrôle : micro-pauses, rotation des tâches, étirements, alterner les postures')
-      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px">' + cards + '</div>';
+    // Maquette Claude Design : « moyens de contrôle » = image seule (pas de cartes).
+    return imgBlock('images/moyens_controle.jpg', 'Moyens de contrôle : micro-pauses, rotation des tâches, étirements, alterner les postures');
   }
 
   function borgWidget() {
@@ -548,7 +536,7 @@
   function renderCustom(n) {
     if (n.custom === 'cIntro') return '<div class="fg-kb"><p class="lead">Un trouble musculosquelettique (TMS), c\'est une atteinte des <strong>muscles</strong>, des <strong>tendons</strong>, des <strong>nerfs</strong>, des <strong>ligaments</strong> ou des <strong>articulations</strong>, causée ou aggravée par le travail. Rarement le résultat d\'un seul accident : il <strong style="color:var(--accent-l)">s\'installe progressivement</strong>, quand les gestes répétés, les efforts et les postures dépassent la <strong>capacité du corps à récupérer</strong>. Ça commence par un simple <strong style="color:var(--accent-l)">inconfort</strong> et ça peut finir en <strong style="color:var(--accent-l)">lésion durable</strong>.</p><div class="alert"><div class="i">' + svg('<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>', 2, 22) + '</div><div>Un TMS n\'a pas une seule cause : effort, posture, répétition, fatigue et environnement se cumulent. Agir dès le premier inconfort évite que le problème s\'installe.</div></div></div>';
     if (n.custom === 'cTypes') return '<div class="fg-kb"><p class="lead">Les formes de TMS les plus fréquentes chez les travailleurs. <strong style="color:var(--accent-l)">Le bas du dos est de loin la zone la plus touchée.</strong></p><div class="icards tms-c">'
-      + '<article class="imgcard" style="border:2px solid #d22325;box-shadow:0 0 0 4px rgba(210,35,37,.16),0 14px 38px rgba(0,0,0,.45)"><div style="position:absolute;top:.65rem;left:.65rem;z-index:3;background:linear-gradient(135deg,#e23a3c,#a81a1c);color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem;padding:.28rem .6rem;border-radius:999px">★ Le plus fréquent</div><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_lombalgie.jpeg" alt="Lombalgie" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4 style="color:#ef5a5c">Lombalgie</h4><p>Douleur du bas du dos — <strong style="color:#e2e8f0">la zone la plus atteinte</strong> chez les travailleurs.</p></div></article>'
+      + '<article class="imgcard" style="border:2px solid #d22325;box-shadow:0 0 0 4px rgba(210,35,37,.16),0 14px 38px rgba(0,0,0,.45)"><div style="position:absolute;top:.65rem;left:.65rem;z-index:3;background:linear-gradient(135deg,#e23a3c,#a81a1c);color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem;padding:.28rem .6rem;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.4)">★ Le plus fréquent</div><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_lombalgie.jpeg" alt="Lombalgie" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4 style="color:#ef5a5c">Lombalgie</h4><p>Douleur du bas du dos — <strong style="color:#e2e8f0">la zone la plus atteinte</strong> chez les travailleurs.</p></div></article>'
       + '<article class="imgcard"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_tendinite.jpeg" alt="Tendinite" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Tendinite</h4><p>Inflammation d\'un tendon : épaule, coude, poignet.</p></div></article>'
       + '<article class="imgcard"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_bursite.jpeg" alt="Bursite" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Bursite</h4><p>Inflammation des bourses séreuses : genoux, épaules.</p></div></article>'
       + '<article class="imgcard"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_carpien.jpeg" alt="Canal carpien" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Canal carpien</h4><p>Compression du nerf médian au poignet.</p></div></article></div></div>';
@@ -631,7 +619,7 @@
         var fbColor = correct ? '#34d399' : '#f87171';
         var fbBg = correct ? 'rgba(16,185,129,.08)' : 'rgba(239,68,68,.08)';
         var fbBorder = correct ? 'rgba(16,185,129,.35)' : 'rgba(239,68,68,.35)';
-        fb = '<div style="margin-top:12px;border-radius:10px;border:1px solid ' + fbBorder + ';background:' + fbBg + ';padding:12px 14px"><div style="display:flex;align-items:center;gap:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:.84rem;color:' + fbColor + ';margin-bottom:5px">' + (correct ? '✓ Bonne réponse' : '✗ À revoir') + '</div><p style="color:#dbe3ee;font-size:.93rem;margin:0 0 7px">' + esc(q.explain) + '</p><div style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#8694ad">' + svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>', 2, 13) + '<span>Référence : ' + esc(q.ref || 'CNESST') + '</span></div></div>';
+        fb = '<div style="margin-top:12px;border-radius:10px;border:1px solid ' + fbBorder + ';background:' + fbBg + ';padding:12px 14px"><div style="display:flex;align-items:center;gap:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:.84rem;color:' + fbColor + ';margin-bottom:5px">' + (correct ? '✓ Bonne réponse' : '✗ Pas tout à fait') + '</div><p style="color:#dbe3ee;font-size:.93rem;margin:0 0 7px">' + esc(q.explain) + '</p><div style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#8694ad">' + svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>', 2, 13) + '<span>Référence : ' + esc(q.ref || 'CNESST') + '</span></div></div>';
       }
       var multiHint = isMulti ? '<div style="display:inline-flex;align-items:center;gap:6px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.74rem;color:#ef5a5c;background:rgba(210,35,37,.1);border:1px solid rgba(210,35,37,.3);border-radius:6px;padding:3px 9px;margin:-4px 0 12px 26px">☑ Plusieurs réponses possibles</div>' : '';
       var cardBorder = answered ? (correct ? 'rgba(16,185,129,.4)' : 'rgba(239,68,68,.35)') : '#1e293b';
@@ -639,11 +627,11 @@
     }).join('');
 
     var resultText, resultColor;
-    if (sc.passed) { resultText = '✓ Module réussi (' + sc.score + ' / ' + sc.total + ') — tu peux continuer.'; resultColor = '#34d399'; }
-    else if (sc.answered === sc.total) { resultText = 'Pas encore : ' + sc.score + ' / ' + sc.total + ' (il faut ' + sc.need + '). Revois les explications et reprends.'; resultColor = '#f87171'; }
+    if (sc.passed) { resultText = '✓ Module réussi (' + sc.score + ' / ' + sc.total + ') — tu peux débloquer la suite.'; resultColor = '#34d399'; }
+    else if (sc.answered === sc.total) { resultText = sc.score + ' / ' + sc.total + ' — il faut au moins ' + sc.need + ' bonnes réponses (80 %). Corrige les réponses en rouge.'; resultColor = '#f87171'; }
     else { resultText = 'Réponds à toutes les questions (' + sc.answered + ' / ' + sc.total + ').'; resultColor = '#8694ad'; }
 
-    return '<p class="lead">Réponds aux ' + sc.total + ' questions du module <b style="color:#fff">' + esc(m.title) + '</b>. <span style="color:#9aa7bd">La correction et l\'explication s\'affichent dès que tu choisis une réponse</span> ; obtiens au moins 80 % pour valider le module.</p>'
+    return '<p class="lead">Réponds aux ' + sc.total + ' questions du module <b style="color:#fff">' + esc(m.title) + '</b>. <span style="color:#9aa7bd">La correction et l\'explication s\'affichent dès que tu choisis une réponse</span> ; obtiens au moins 80 % de bonnes réponses pour débloquer la suite.</p>'
       + '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 22px"><div style="flex:1 1 200px;max-width:340px;height:9px;border-radius:999px;background:#1a2332;overflow:hidden"><div style="height:100%;width:' + barPct + '%;border-radius:999px;background:' + barColor + ';transition:width .4s"></div></div><span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:.92rem;color:' + statColor + '">' + statText + '</span></div>'
       + '<div style="display:flex;flex-direction:column;gap:22px">' + qs + '</div>'
       + '<div style="margin-top:22px"><span style="font-weight:700;font-size:1rem;color:' + resultColor + '">' + resultText + '</span></div>';
