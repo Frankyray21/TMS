@@ -231,6 +231,8 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .g4{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.g2x2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:640px){.g2x2{grid-template-columns:1fr}}
 .card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem;box-shadow:var(--shadow-card);transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s,border-color .3s}
 .card::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,0) 40%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;transition:background .35s}
 .card:hover{border-color:rgba(210,35,37,.3);transform:translateY(-4px);box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 18px 44px rgba(0,0,0,.45),0 8px 30px rgba(210,35,37,.18)}
