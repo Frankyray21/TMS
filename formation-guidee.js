@@ -566,7 +566,7 @@
     return '<div class="fg-kb"><p class="lead">Sous terre, les zones les plus exposées vont de la nuque aux chevilles. <strong style="color:#e2e8f0">Tourne le modèle 3D</strong> et affiche les structures (muscles, os, articulations, nerfs) :</p>'
       + '<div class="corps-3d"><model-viewer id="corps3d" src="' + MODEL_SRC + '" loading="eager" reveal="auto" alt="Modèle anatomique 3D : tourne-le pour explorer les zones à risque" camera-controls touch-action="pan-y" interaction-prompt="none" auto-rotate environment-image="neutral" tone-mapping="aces" shadow-intensity="0.85" shadow-softness="0.75" exposure="1.05" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 160deg auto" style="width:100%;max-width:560px;height:min(64vh,560px)">' + hot + '</model-viewer>'
       + '<div class="corps-layers" role="group" aria-label="Structures du corps à afficher"><p class="cl-title">Structures</p>' + layers + '</div>'
-      + '<p class="corps-3d-note">Modèle anatomique · tourne le corps, affiche les structures et survole une pastille. <span>Modèle : Z-Anatomy (CC BY-SA).</span></p></div></div>';
+      + '<p class="corps-3d-note">Modèle anatomique · tourne le corps, affiche les structures et clique ou survole un repère. <span>Modèle : Z-Anatomy (CC BY-SA).</span></p></div></div>';
   }
 
   function renderFacteurs() {
