@@ -16,14 +16,14 @@
   .fg-kb { display: block; }
   .fg-kb .lead { margin-top: 0; }
   .fg-cta { transition: transform .2s, box-shadow .2s; }
-  .fg-cta:hover:not([disabled]) { transform: translateY(-1px); }
-  .fg-ghost:hover { border-color: #334155; color: #cbd5e1; }
-  .fg-seg:hover { color: #cbd5e1; }
-  .fg-not:hover:not([disabled]) { border-color: #334155 !important; }
+  .fg-cta:hover:not([disabled]) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(210,35,37,.45) !important; }
+  .fg-ghost:hover { border-color: #ef5a5c; color: #fff; }
+  .fg-seg:hover { color: #fff; }
+  .fg-not:hover:not([disabled]) { background: rgba(210,35,37,.08) !important; border-color: rgba(210,35,37,.4) !important; }
   .fg-opt:hover:not([disabled]) { filter: brightness(1.08); }
-  .fg-nav:hover:not([disabled]) { border-color: #334155; color: #cbd5e1; }
+  .fg-nav:hover:not([disabled]) { border-color: #ef5a5c; color: #fff; }
   button[disabled] { opacity: .9; }
-  @keyframes fgPulse { 0%,100% { opacity: 1; r: 5; } 50% { opacity: .35; } }
+  @keyframes fgPulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
   .emp-sugg { position: absolute; left: 0; right: 0; top: 100%; z-index: 20; margin-top: 4px; background: #0d1320; border: 1px solid #1e293b; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
   .emp-item { display: block; width: 100%; text-align: left; background: none; border: none; color: #e2e8f0; font: inherit; padding: .55rem .8rem; cursor: pointer; }
   .emp-item:hover, .emp-item b { background: rgba(210,35,37,.14); color: #fff; }
