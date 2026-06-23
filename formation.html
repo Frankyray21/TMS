@@ -192,7 +192,31 @@ html.tms-loading{overflow:hidden!important}
 
         <h3 class="sub-h reveal">Où ça frappe le plus <span style="font-weight:400;font-size:.85rem;color:var(--dim)"> : clique une zone</span></h3>
         <div class="corps-insitu reveal" id="corps">
-          <p class="corps-aide">Clique un point lumineux ou une étiquette de la planche pour voir la zone touchée, les TMS fréquents, les facteurs en cause et les bons réflexes.</p>
+          <p class="corps-aide">Tourne le corps en 3D, affiche les structures (muscles, os, articulations, nerfs) et clique une zone pour voir les TMS fréquents, les facteurs en cause et les bons réflexes.</p>
+          <div class="corps-vue" role="group" aria-label="Choix de l'affichage du corps" hidden>
+            <button type="button" class="cv-btn actif" data-vue="2d" aria-pressed="true">Vue 2D</button>
+            <button type="button" class="cv-btn" data-vue="3d" aria-pressed="false">Vue 3D</button>
+          </div>
+          <div class="corps-3d" id="corps3d-wrap" hidden>
+            <model-viewer id="corps3d" alt="Modèle anatomique 3D des muscles : tourne-le et clique une zone du corps" camera-controls touch-action="pan-y" interaction-prompt="none" environment-image="neutral" tone-mapping="aces" shadow-intensity="0.85" shadow-softness="0.75" exposure="1.05" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 160deg auto">
+              <button class="hotspot3d h3-t" slot="hotspot-cou" data-zone="cou" data-position="0 1.45 0.08" data-normal="0 0 1"><span class="h3-card"><b>Cou / nuque</b><i>Cervicalgie · Tensions de la nuque</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-ep" data-zone="epaules" data-position="-0.18 1.37 0.05" data-normal="0 0 1"><span class="h3-card"><b>Épaules</b><i>Tendinite de la coiffe · Bursite</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-hd" data-zone="haut-dos" data-position="0 1.20 -0.10" data-normal="0 0 -1"><span class="h3-card"><b>Haut du dos</b><i>Dorsalgie · Tensions entre les omoplates</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-bd" data-zone="bas-dos" data-position="0 0.97 -0.12" data-normal="0 0 -1"><span class="h3-card"><b>Bas du dos</b><i>Lombalgie · Hernie discale</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-co" data-zone="coudes" data-position="-0.21 1.02 0" data-normal="0 0 1"><span class="h3-card"><b>Coudes</b><i>Épicondylite · Épitrochléite</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-po" data-zone="poignets-mains" data-position="-0.22 0.80 0.02" data-normal="0 0 1"><span class="h3-card"><b>Poignets / mains</b><i>Canal carpien · De Quervain</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ge" data-zone="genoux" data-position="0.10 0.46 0.10" data-normal="0 0 1"><span class="h3-card"><b>Genoux</b><i>Bursite du genou · Ménisque</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ch" data-zone="chevilles-pieds" data-position="0.10 0.08 0.08" data-normal="0 0 1"><span class="h3-card"><b>Chevilles / pieds</b><i>Tendinite d'Achille · Fasciite plantaire</i></span></button>
+            </model-viewer>
+            <div class="corps-layers" id="corps3dLayers" hidden role="group" aria-label="Structures du corps à afficher">
+              <p class="cl-title">Structures</p>
+              <div class="cl-row on" data-mat="Muscles"><button class="cl-tog" type="button" aria-pressed="true" aria-label="Afficher/masquer Muscles"></button><span class="cl-name">Muscles</span><input class="cl-op" type="range" min="0" max="100" value="100" aria-label="Opacité Muscles"></div>
+              <div class="cl-row" data-mat="Os"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Afficher/masquer Os"></button><span class="cl-name">Os</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Opacité Os"></div>
+              <div class="cl-row" data-mat="Articulations"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Afficher/masquer Articulations"></button><span class="cl-name">Articulations</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Opacité Articulations"></div>
+              <div class="cl-row" data-mat="Nerfs"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Afficher/masquer Nerfs"></button><span class="cl-name">Nerfs</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Opacité Nerfs"></div>
+            </div>
+            <p class="corps-3d-note">Modèle anatomique · affiche les structures (muscles, os, articulations, nerfs), tourne le corps et clique une pastille. <span>Modèle : <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a> (CC BY-SA).</span></p>
+          </div>
 <div class="corps-photo" id="corpsPhoto" hidden>
   <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Huit zones sous surveillance sur le corps humain, vues de face et de dos : clique un point pour explorer la zone" id="corpsPhotoImg" decoding="async">
   <button type="button" class="cp-spot" style="left:35.1%;top:26%" data-zone="cou" aria-label="Zone cou et nuque"></button>
