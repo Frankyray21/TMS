@@ -319,6 +319,7 @@
       + (state.certVisible && allDone ? certBlock() : '') + '</div>';
 
     return '<div><section style="position:relative;overflow:hidden;border-bottom:1px solid #1e293b;background:radial-gradient(120% 100% at 80% -10%,#16202f 0%,#0a0e17 55%)">'
+      + '<svg viewBox="0 0 520 600" aria-hidden="true" style="position:absolute;right:-40px;top:50%;transform:translateY(-50%);height:150%;opacity:.5;pointer-events:none"><g fill="none" stroke-linecap="round"><path d="M40 600 V330 A220 220 0 0 1 480 330 V600" stroke="rgba(255,255,255,.06)" stroke-width="2"></path><path d="M130 600 V350 A130 130 0 0 1 390 350 V600" stroke="rgba(210,35,37,.34)" stroke-width="3"></path><path d="M175 600 V360 A85 85 0 0 1 345 360 V600" stroke="rgba(255,255,255,.09)" stroke-width="2"></path><circle cx="260" cy="330" r="5" fill="rgba(239,90,92,.85)" stroke="none" style="animation:fgPulse 3.2s ease-in-out infinite"></circle></g></svg>'
       + '<div class="fg-hero-inner" style="position:relative;max-width:1120px;margin:0 auto;padding:52px 28px 44px;display:flex;flex-wrap:wrap;gap:44px;align-items:center;justify-content:space-between">'
       + '<div style="flex:1 1 520px;min-width:300px">'
       + '<div style="display:inline-flex;align-items:center;gap:10px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:1rem;color:#ef5a5c;margin-bottom:14px"><span style="width:7px;height:7px;border-radius:50%;background:#d22325;box-shadow:0 0 8px rgba(210,35,37,.9)"></span>Formation guidée · Nouveaux travailleurs</div>'
