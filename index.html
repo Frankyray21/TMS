@@ -11,16 +11,20 @@ html.tms-loading{overflow:hidden!important}
 #tmsLoader .ld-txt{font-family:'Barlow Condensed','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:.85rem;color:#9aa3b2}
 @keyframes tmsLd{to{transform:rotate(360deg)}}</style>
 <noscript><style>html.tms-loading{overflow:auto!important}#tmsLoader{display:none!important}</style></noscript>
-<script>/* langue mémorisée : redirige un visiteur qui a déjà choisi l'autre langue (français par défaut pour les nouveaux) */
-(function(){try{
+<script>(function(){try{
+  /* « base de connaissances » demandée explicitement (lien depuis la formation) : on ne force pas la redirection */
+  if(location.search.indexOf('kb=1')!==-1){sessionStorage.setItem('tms_kb','1');}
+  /* langue mémorisée : redirige un visiteur qui a déjà choisi l'autre langue (français par défaut pour les nouveaux) */
   var cur=/\.en\.html$/.test(location.pathname)?'en':'fr';
   var pref=localStorage.getItem('tms_lang');
   if(pref&&pref!==cur&&!sessionStorage.getItem('tms_lang_redir')){
     sessionStorage.setItem('tms_lang_redir','1');
     var f=location.pathname.split('/').pop()||'index.html';
     var map=pref==='en'?{'index.html':'index.en.html','formation.html':'formation.en.html','':'index.en.html'}:{'index.en.html':'index.html','formation.en.html':'formation.html'};
-    if(map[f])location.replace(map[f]+location.hash);
+    if(map[f]){location.replace(map[f]+location.hash);return;}
   }
+  /* formation guidée = seule porte d'entrée à l'ouverture ; base de connaissances accessible depuis la formation */
+  if(sessionStorage.getItem('tms_kb')!=='1')location.replace('formation-guidee.html');
 }catch(e){}})();</script>
 <title>Prévention des TMS en mine souterraine | Base de connaissances · Machines Roger International</title>
 <link rel="alternate" hreflang="fr-CA" href="index.html">
@@ -573,7 +577,7 @@ html.tms-loading{overflow:hidden!important}
         <div class="foot-bar">
           <span>Mise à jour : juin 2026</span>
           <span>Document de sensibilisation. Ne remplace pas un avis médical.</span>
-          <span class="foot-ver" id="footVer" title="Version du site">v1.62</span>
+          <span class="foot-ver" id="footVer" title="Version du site">v1.63</span>
         </div>
       </div>
     </footer>
