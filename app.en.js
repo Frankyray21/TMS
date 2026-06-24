@@ -352,13 +352,21 @@ document.querySelectorAll('.faccard').forEach(function(c){
   if(!window.matchMedia('(max-width:980px)').matches)return;
   btn.hidden=false;
   function mode(){try{return localStorage.getItem('tms_view')||'mobile';}catch(e){return 'mobile';}}
+  // iOS Safari et plusieurs navigateurs mobiles ignorent un setAttribute('content',…)
+  // sur une balise viewport déjà en place : on la remplace pour forcer la réévaluation.
+  function setVP(content){
+    var cur=document.querySelector('meta[name="viewport"]');
+    var m=document.createElement('meta');m.setAttribute('name','viewport');m.setAttribute('content',content);
+    if(cur&&cur.parentNode)cur.parentNode.removeChild(cur);
+    document.head.appendChild(m);
+  }
   function apply(m){
     if(m==='desktop'){
       var sc=Math.max(.25,Math.min(1,screen.width/1100));
-      vp.setAttribute('content','width=1100, initial-scale='+sc.toFixed(3));
+      setVP('width=1100, initial-scale='+sc.toFixed(3));
       lbl.textContent='Mobile version';
     }else{
-      vp.setAttribute('content',MOBILE);
+      setVP(MOBILE);
       lbl.textContent='Desktop version';
     }
   }
