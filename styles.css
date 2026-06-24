@@ -348,6 +348,10 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .ev3 .ec-card{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.32)}
 .ec-card svg{flex-shrink:0;color:var(--c);margin-top:.1rem}
 @media(max-width:860px){.evo-cols{grid-template-columns:1fr;gap:1.4rem}.evo-banner{flex-direction:column;align-items:flex-start;gap:.9rem}.eb-arrow{transform:rotate(90deg);margin-left:15px}}
+/* ===== Facteurs de risque : grille responsive (évite le débordement sur mobile) ===== */
+.fg-facteurs{display:grid;grid-template-columns:minmax(180px,.85fr) repeat(3,1fr);gap:16px;align-items:stretch;margin:1rem 0 1.1rem}
+@media(max-width:860px){.fg-facteurs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.fg-facteurs{grid-template-columns:1fr}}
 
 /* ===== Échelle de Borg : bouton + surcouche ===== */
 .borg-cta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.1rem 1.3rem;box-shadow:var(--shadow-card)}
