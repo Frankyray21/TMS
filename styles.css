@@ -1756,6 +1756,23 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     #corps3d-wrap .h3-card { display: none; }
     #corps3d-wrap .hotspot3d { --d: 22px; border-width: 3px; }
   }
+  /* ===== Formation guidée (.fg-kb) — notion « zones » : pastilles propres par défaut,
+     la fiche s'ouvre au survol (ordinateur) ou au clic/appui (tactile) ===== */
+  .fg-kb .hotspot3d .h3-card { display: none; }
+  .fg-kb .hotspot3d:hover .h3-card,
+  .fg-kb .hotspot3d:focus-visible .h3-card,
+  .fg-kb .hotspot3d.h3-open .h3-card { display: flex; }
+  @media (max-width: 1023px) {
+    .fg-kb .hotspot3d { --d: 22px; border-width: 3px; }   /* pastilles plus grosses pour le tactile */
+  }
+  /* Ordinateur : le schéma occupe toute la largeur, commandes des structures dessous */
+  @media (min-width: 1024px) {
+    .fg-kb .corps-3d { grid-template-columns: 1fr; grid-template-areas: "viewer" "panel" "note"; column-gap: 0; }
+    .fg-kb .corps-3d #corps3d { grid-area: viewer; width: 100%; max-width: none; height: min(80vh, 800px); }
+    .fg-kb .corps-3d .corps-layers { grid-area: panel; width: 100%; max-width: 720px; margin: 16px auto 0; justify-self: center;
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; }
+    .fg-kb .corps-3d .corps-layers .cl-title { grid-column: 1 / -1; }
+  }
   /* Pastille rouge lumineuse pulsante */
   .hotspot3d { --d: 15px; width: var(--d); height: var(--d); border-radius: 50%; border: 2px solid #fff; padding: 0; cursor: pointer;
     background: radial-gradient(circle at 50% 40%, #ff8a8c, #d4282a 60%);
