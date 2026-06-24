@@ -10,7 +10,9 @@ const CORE = [
   "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "formation-guidee.html",
+  "formation-guidee.en.html",
   "formation-guidee.js",
+  "formation-guidee.en.js",
   "interactif.html",
   "manifest.webmanifest",
   "images/assis_basdudos.jpg",
@@ -67,9 +69,9 @@ const PAGES = ["./", "index.html", "index.en.html",
   "formation.html", "formation.en.html",
   "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
-  "formation-guidee.html",
+  "formation-guidee.html", "formation-guidee.en.html",
   "interactif.html", "manifest.webmanifest",
-  "styles.css", "formation.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "gsap.min.js", "hero-anim.js"];
+  "styles.css", "formation.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "gsap.min.js", "hero-anim.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
