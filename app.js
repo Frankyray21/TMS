@@ -343,40 +343,21 @@ document.querySelectorAll('.faccard').forEach(function(c){
 })();
 
 // ===== basculer version mobile / version ordinateur =====
+// Fiable sur mobile/PWA : le bouton recharge la page ; le viewport « bureau » est appliqué
+// dès le <head> au chargement (script inline) — pas de modification « à chaud » (ignorée sur mobile).
 (function(){
   var btn=document.getElementById('viewToggle');if(!btn)return;
-  var vp=document.querySelector('meta[name="viewport"]');if(!vp)return;
-  var MOBILE=vp.getAttribute('content');
   var lbl=document.getElementById('viewToggleLbl');
-  // afficher dès que la mise en page mobile est visible (fenêtre étroite, zoom ou téléphone)
-  if(!window.matchMedia('(max-width:980px)').matches)return;
-  btn.hidden=false;
   function mode(){try{return localStorage.getItem('tms_view')||'mobile';}catch(e){return 'mobile';}}
-  // iOS Safari et plusieurs navigateurs mobiles ignorent un setAttribute('content',…)
-  // sur une balise viewport déjà en place : on la remplace pour forcer la réévaluation.
-  function setVP(content){
-    var cur=document.querySelector('meta[name="viewport"]');
-    var m=document.createElement('meta');m.setAttribute('name','viewport');m.setAttribute('content',content);
-    if(cur&&cur.parentNode)cur.parentNode.removeChild(cur);
-    document.head.appendChild(m);
-  }
-  function apply(m){
-    if(m==='desktop'){
-      var sc=Math.max(.25,Math.min(1,screen.width/1100));
-      setVP('width=1100, initial-scale='+sc.toFixed(3));
-      lbl.textContent='Version mobile';
-    }else{
-      setVP(MOBILE);
-      lbl.textContent='Version ordinateur';
-    }
-  }
+  // visible si l'écran est étroit OU si le mode bureau est actif (pour pouvoir revenir au mobile)
+  if(!(window.matchMedia('(max-width:980px)').matches||mode()==='desktop'))return;
+  btn.hidden=false;
+  if(lbl)lbl.textContent=mode()==='desktop'?'Version mobile':'Version ordinateur';
   btn.addEventListener('click',function(){
     var m=mode()==='desktop'?'mobile':'desktop';
     try{localStorage.setItem('tms_view',m);}catch(e){}
-    apply(m);
-    window.scrollTo(0,window.scrollY); // force un recalcul propre
+    window.location.reload();
   });
-  apply(mode());
 })();
 
 // ===== impression : ouvrir tous les accordéons =====
