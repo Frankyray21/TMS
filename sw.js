@@ -113,11 +113,27 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  /* Ressources du site et polices Google : cache d'abord, réseau en complément */
+  /* Ressources du site et polices Google */
   const sameOrigin = url.origin === self.location.origin;
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
   if (sameOrigin || isFont) {
+    /* JS/CSS du site : réseau d'abord -> les mises à jour s'appliquent au prochain chargement
+       (fini l'ancien code en cache dans la PWA) ; cache en secours hors ligne.
+       Le reste (images, polices) : cache d'abord. */
+    const freshFirst = sameOrigin && /\.(js|css)(\?|$)/i.test(url.pathname);
     e.respondWith((async () => {
+      if (freshFirst) {
+        try {
+          const net = await fetch(req);
+          if (net && net.ok) {
+            const cache = await caches.open(VERSION);
+            cache.put(req, net.clone());
+          }
+          return net;
+        } catch (_) {
+          return (await caches.match(req)) || Response.error();
+        }
+      }
       const cached = await caches.match(req);
       if (cached) return cached;
       try {

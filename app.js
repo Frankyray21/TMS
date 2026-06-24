@@ -2037,6 +2037,17 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
     navigator.serviceWorker.register("sw.js").catch(function () {});
   });
+  /* MAJ auto : si un nouveau service worker prend le contrôle (après un déploiement),
+     on recharge une fois pour appliquer tout de suite la dernière version (PWA incluse).
+     Le garde sur .controller évite de recharger lors de la toute première installation. */
+  if (navigator.serviceWorker.controller) {
+    var _swReloading = false;
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (_swReloading) return;
+      _swReloading = true;
+      window.location.reload();
+    });
+  }
 }
 (function () {
   var box = document.getElementById("pwaInstall");
