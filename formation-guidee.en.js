@@ -639,7 +639,8 @@
   }
 
   /* ---------------- ACTIONS ---------------- */
-  function render() {
+  function render(keepScroll) {
+    var prevY = keepScroll ? (window.pageYOffset || document.documentElement.scrollTop || 0) : 0;
     if (mvInterval) { clearInterval(mvInterval); mvInterval = null; }
     app.innerHTML = state.view === 'viewer' ? renderViewer() : renderSommaire();
     bind();
@@ -648,7 +649,8 @@
       if (cur && cur.kind === 'notion' && cur.notion.custom === 'cZones') initModel();
     }
     if (state.view === 'sommaire' && state.certVisible) initCert();
-    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+    if (keepScroll) { try { window.scrollTo(0, prevY); } catch (e) {} }
+    else { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
   }
 
   function go(view, idx) { state.view = view; if (idx != null) state.idx = idx; state.certVisible = state.certVisible && view === 'sommaire'; render(); }
@@ -677,7 +679,7 @@
     if (qAnswered(m.quiz[qi], (state.answers[qid] || {})[qi])) return;
     state.answers[qid] = state.answers[qid] || {};
     state.answers[qid][qi] = oi;
-    saveAns(); syncModulePass(m); render();
+    saveAns(); syncModulePass(m); render(true);
   }
   function toggleMulti(qid, qi, oi) {
     var a = state.answers[qid] = state.answers[qid] || {};
@@ -685,13 +687,13 @@
     var sel = (cell && cell.sel) ? cell.sel.slice() : [];
     var k = sel.indexOf(oi); if (k >= 0) sel.splice(k, 1); else sel.push(oi);
     a[qi] = { sel: sel, done: false };
-    saveAns(); render();
+    saveAns(); render(true);
   }
   function validateMulti(qid, qi) {
     var a = state.answers[qid] = state.answers[qid] || {};
     var cell = a[qi]; if (!cell || !cell.sel || !cell.sel.length) return;
     cell.done = true;
-    saveAns(); syncModulePass(MODULES.find(function (x) { return x.id === qid; })); render();
+    saveAns(); syncModulePass(MODULES.find(function (x) { return x.id === qid; })); render(true);
   }
   function pickBorg(n) {
     state.borgSel = state.borgSel === n ? null : n;
@@ -862,6 +864,15 @@
     });
     app.querySelectorAll('[data-layer-op]').forEach(function (el) {
       el.addEventListener('input', function () { setLayerOp(el.getAttribute('data-layer-op'), el.value); });
+    });
+    // 3D markers: a click / tap opens (pins) the zone card — works on touch too (no hover).
+    app.querySelectorAll('.hotspot3d').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        var wasOpen = el.classList.contains('h3-open');
+        app.querySelectorAll('.hotspot3d.h3-open').forEach(function (o) { o.classList.remove('h3-open'); });
+        if (!wasOpen) el.classList.add('h3-open');
+      });
     });
   }
   function currentQuizId() { var st = steps(), cur = st[state.idx]; return cur && cur.kind === 'quiz' ? cur.module.id : null; }

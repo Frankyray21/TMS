@@ -1775,6 +1775,9 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     border: 1px solid rgba(255,88,90,.36); border-radius: 11px; padding: .46rem .68rem;
     box-shadow: 0 6px 20px rgba(0,0,0,.5); pointer-events: auto; cursor: pointer; transition: border-color .15s, background .15s; }
   .hotspot3d:hover .h3-card, .hotspot3d:focus-visible .h3-card, .h3-card:hover { border-color: rgba(255,88,90,.85); background: rgba(18,24,36,.92); }
+  /* Clic / appui : épingle la fiche de la zone (interactif sur ordinateur ET tactile) */
+  .hotspot3d.h3-open { z-index: 6; }
+  .hotspot3d.h3-open .h3-card { display: flex; border-color: rgba(255,88,90,.95); background: rgba(18,24,36,.96); box-shadow: 0 8px 26px rgba(0,0,0,.6); }
   .h3-card b { color: #fff; font-size: .98rem; font-weight: 700; line-height: 1.15; white-space: nowrap; letter-spacing: .1px; }
   .h3-card i { color: #9db0c4; font-size: .8rem; font-style: normal; line-height: 1.25; }
   .h3-card::after { content: ""; position: absolute; height: 1px; background: linear-gradient(90deg, rgba(255,88,90,.85), rgba(255,88,90,0)); }
