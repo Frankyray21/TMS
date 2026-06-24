@@ -342,23 +342,7 @@ document.querySelectorAll('.faccard').forEach(function(c){
   });
 })();
 
-// ===== basculer version mobile / version ordinateur =====
-// Fiable sur mobile/PWA : le bouton recharge la page ; le viewport « bureau » est appliqué
-// dès le <head> au chargement (script inline) — pas de modification « à chaud » (ignorée sur mobile).
-(function(){
-  var btn=document.getElementById('viewToggle');if(!btn)return;
-  var lbl=document.getElementById('viewToggleLbl');
-  function mode(){try{return localStorage.getItem('tms_view')||'mobile';}catch(e){return 'mobile';}}
-  // visible si l'écran est étroit OU si le mode bureau est actif (pour pouvoir revenir au mobile)
-  if(!(window.matchMedia('(max-width:980px)').matches||mode()==='desktop'))return;
-  btn.hidden=false;
-  if(lbl)lbl.textContent=mode()==='desktop'?'Mobile version':'Desktop version';
-  btn.addEventListener('click',function(){
-    var m=mode()==='desktop'?'mobile':'desktop';
-    try{localStorage.setItem('tms_view',m);}catch(e){}
-    window.location.reload();
-  });
-})();
+// Bouton « Version ordinateur / mobile » retiré : le site s'adapte automatiquement (responsive).
 
 // ===== impression : ouvrir tous les accordéons =====
 window.addEventListener('beforeprint',function(){document.querySelectorAll('details.xpand').forEach(function(d){d.dataset.wasOpen=d.open?'1':'';d.open=true;});});
