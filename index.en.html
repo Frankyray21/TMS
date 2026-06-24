@@ -141,20 +141,21 @@ html.tms-loading{overflow:hidden!important}
         <h1 class="reveal d1">Your body is your <span class="hl">number one tool</span> at work.</h1>
         <p class="reveal d2">A broken tool gets replaced. Your back, shoulders and knees have to last. Two clearly separate sections, depending on what you need:</p>
         <div class="paths reveal d3">
-          <a class="path-card here" href="#comprendre">
-            <span class="badge-ici">Default view</span>
-            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Section 1 &middot; Knowledge base</span>
-            <h3>Browse freely</h3>
-            <p>All the topics at your own pace: types of MSDs, risk factors, sleep, good habits, with interactive exploration (clickable diagram, body map, workstation simulator).</p>
-            <span class="pmeta"><span>&#8599; Browse freely</span><span>~15-20 min</span></span>
-          </a>
-          <a class="path-card" href="formation.en.html">
-            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Section 2 &middot; Guided training</span>
-            <h3>Take the training</h3>
+          <a class="path-card here" id="ctaFormation" href="formation.en.html">
+            <span class="badge-ici" id="ctaFormationBadge">Recommended</span>
+            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Guided training &middot; step by step</span>
+            <h3 id="ctaFormationTitre">Start the guided training</h3>
             <p>A step-by-step path with quiz, score and certificate: perfect for new workers.</p>
             <span class="pmeta"><span>&#9654; Slides + quiz</span><span>~30 min</span></span>
           </a>
+          <a class="path-card path-card-sec" href="#comprendre">
+            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Knowledge base</span>
+            <h3>Explore freely</h3>
+            <p>All the topics at your own pace: types of MSDs, risk factors, sleep, good habits, with interactive exploration (clickable diagram, body map, workstation simulator).</p>
+            <span class="pmeta"><span>&#8599; Browse freely</span><span>~15-20 min</span></span>
+          </a>
         </div>
+        <script>try{var _p=JSON.parse(localStorage.getItem('tms_form_progress')||'[]'),_a=JSON.parse(localStorage.getItem('tms_form_answers')||'{}');if((Array.isArray(_p)&&_p.length)||(_a&&Object.keys(_a).length)){var _t=document.getElementById('ctaFormationTitre'),_b=document.getElementById('ctaFormationBadge');if(_t)_t.textContent='Resume my training';if(_b)_b.textContent='In progress';}}catch(e){}</script>
       </div>
       <a class="scroll-cue" href="#ampleur" aria-label="Go to the next section">Scroll<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
     </section>
@@ -550,7 +551,7 @@ html.tms-loading{overflow:hidden!important}
           <span>Updated: June 2026</span>
           <span>Awareness document. Does not replace medical advice.</span>
           <button class="viewtoggle" id="viewToggle" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> <span id="viewToggleLbl">Desktop version</span></button>
-          <span class="foot-ver" id="footVer" title="Site version">v1.59</span>
+          <span class="foot-ver" id="footVer" title="Site version">v1.60</span>
         </div>
       </div>
     </footer>

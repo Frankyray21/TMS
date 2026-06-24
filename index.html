@@ -141,20 +141,21 @@ html.tms-loading{overflow:hidden!important}
         <h1 class="reveal d1">Ton corps, c'est ton <span class="hl">premier outil</span> de travail.</h1>
         <p class="reveal d2">Un outil brisé se remplace. Ton dos, tes épaules et tes genoux doivent durer. Deux sections bien distinctes, selon ton besoin :</p>
         <div class="paths reveal d3">
-          <a class="path-card here" href="#comprendre">
-            <span class="badge-ici">Vue par défaut</span>
-            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Section 1 &middot; Base de connaissances</span>
-            <h3>Consulter librement</h3>
-            <p>Tous les sujets à ton rythme : types de TMS, facteurs de risque, sommeil, bons gestes, avec l'exploration interactive (schéma cliquable, carte du corps, simulateur de poste de travail).</p>
-            <span class="pmeta"><span>&#8599; Consultation libre</span><span>~15-20 min</span></span>
-          </a>
-          <a class="path-card" href="formation.html">
-            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Section 2 &middot; Formation guidée</span>
-            <h3>Suivre la formation</h3>
+          <a class="path-card here" id="ctaFormation" href="formation-guidee.html">
+            <span class="badge-ici" id="ctaFormationBadge">Recommandé</span>
+            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Formation guidée &middot; pas à pas</span>
+            <h3 id="ctaFormationTitre">Commencer la formation guidée</h3>
             <p>Parcours pas-à-pas avec quiz, score et attestation : idéal pour les nouveaux travailleurs.</p>
             <span class="pmeta"><span>&#9654; Diapositives + quiz</span><span>~30 min</span></span>
           </a>
+          <a class="path-card path-card-sec" href="#comprendre">
+            <span class="pk"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Base de connaissances</span>
+            <h3>Explorer librement</h3>
+            <p>Tous les sujets à ton rythme : types de TMS, facteurs de risque, sommeil, bons gestes, avec l'exploration interactive (schéma cliquable, carte du corps, simulateur de poste de travail).</p>
+            <span class="pmeta"><span>&#8599; Consultation libre</span><span>~15-20 min</span></span>
+          </a>
         </div>
+        <script>try{var _p=JSON.parse(localStorage.getItem('tms_form_progress')||'[]'),_a=JSON.parse(localStorage.getItem('tms_form_answers')||'{}');if((Array.isArray(_p)&&_p.length)||(_a&&Object.keys(_a).length)){var _t=document.getElementById('ctaFormationTitre'),_b=document.getElementById('ctaFormationBadge');if(_t)_t.textContent='Reprendre ma formation';if(_b)_b.textContent='En cours';}}catch(e){}</script>
       </div>
       <a class="scroll-cue" href="#ampleur" aria-label="Aller à la suite">Défile<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
     </section>
@@ -574,7 +575,7 @@ html.tms-loading{overflow:hidden!important}
           <span>Mise à jour : juin 2026</span>
           <span>Document de sensibilisation. Ne remplace pas un avis médical.</span>
           <button class="viewtoggle" id="viewToggle" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> <span id="viewToggleLbl">Version ordinateur</span></button>
-          <span class="foot-ver" id="footVer" title="Version du site">v1.59</span>
+          <span class="foot-ver" id="footVer" title="Version du site">v1.60</span>
         </div>
       </div>
     </footer>

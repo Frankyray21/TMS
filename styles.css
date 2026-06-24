@@ -920,8 +920,10 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .hero-scrim{background:linear-gradient(0deg,rgba(7,9,15,.94),rgba(7,9,15,.45) 55%,rgba(7,9,15,.2))}
   .hero h1{font-size:clamp(2rem,8.5vw,2.9rem);margin-bottom:.7rem}
   .hero p{font-size:1rem;margin-bottom:1.1rem}
-  /* hero court sur mobile : on masque les 2 cartes de parcours (la navigation est assuree par le menu d'en-tete + la barre du bas) -> le hero tient en moins d'un ecran et disparait vite au defilement */
-  .paths{display:none}
+  /* mobile : on garde la carte primaire (formation guidee) en compact -> CTA visible ; la base de connaissances reste joignable par le menu */
+  .paths{display:grid;gap:.7rem}
+  .paths .path-card-sec{display:none}
+  .paths .path-card p{display:none}
   .hero-video{margin-top:.2rem}
   .hero-mine{right:-38%;opacity:.45}
   .scroll-cue{display:none}
