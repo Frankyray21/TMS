@@ -2035,3 +2035,124 @@ if ("serviceWorker" in navigator) {
   if(hero&&"IntersectionObserver" in window){ new IntersectionObserver(function(es){ heroOut=!es[0].isIntersecting; if(heroOut)maybeShow(); else hide(); },{threshold:0}).observe(hero); }
   else { heroOut=true; }
 })();
+
+/* ================================================================
+   CARTE DU CORPS — bascule Vue 2D / Vue 3D (model-viewer, lazy)
+   ================================================================ */
+(function () {
+  var bar = document.querySelector(".corps-vue");
+  var wrap = document.getElementById("corps3d-wrap");
+  var mv = document.getElementById("corps3d");
+  if (!bar || !wrap || !mv) return;
+
+  var corps = document.getElementById("corps");
+  var twoD = corps ? [corps.querySelector(".corps-photo"), corps.querySelector(".corps-flex")] : [];
+  var loaded = false;
+
+  function load() {
+    if (loaded) return;
+    loaded = true;
+    var small = Math.min(screen.width, screen.height) <= 768 ||
+                (window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
+    mv.setAttribute("src", small ? "models/corps-anatomie-mobile.glb" : "models/corps-anatomie-web.glb");
+    var s = document.createElement("script");
+    s.type = "module";
+    s.src = "vendor/model-viewer.min.js";
+    document.head.appendChild(s);
+    // Une pastille 3D rejoue le clic sur la zone 2D correspondante -> meme fiche, zero duplication.
+    wrap.querySelectorAll(".hotspot3d").forEach(function (h) {
+      h.addEventListener("click", function () {
+        var z = h.getAttribute("data-zone");
+        var t = document.querySelector('#corps [data-zone="' + z + '"]:not(.hotspot3d)');
+        if (t && typeof t.dispatchEvent === "function") {
+          t.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        }
+      });
+    });
+    setupLayers();
+  }
+
+  function setMat(name, alpha) {
+    var mdl = mv.model;
+    if (!mdl || !mdl.materials) return;
+    for (var i = 0; i < mdl.materials.length; i++) {
+      var m = mdl.materials[i];
+      if (m && m.name === name && m.pbrMetallicRoughness) {
+        var f = m.pbrMetallicRoughness.baseColorFactor || [1, 1, 1, 1];
+        m.pbrMetallicRoughness.setBaseColorFactor([f[0], f[1], f[2], alpha]);
+        if (m.setAlphaMode) {
+          if (alpha >= 0.999) m.setAlphaMode("OPAQUE");
+          else if (alpha <= 0.01) { m.setAlphaMode("MASK"); if (m.setAlphaCutoff) m.setAlphaCutoff(0.5); }
+          else m.setAlphaMode("BLEND");
+        }
+        return;
+      }
+    }
+  }
+
+  function setupLayers() {
+    var panel = document.getElementById("corps3dLayers");
+    if (!panel) return;
+    var rows = panel.querySelectorAll(".cl-row");
+    function applyRow(row) {
+      var op = row.querySelector(".cl-op");
+      var a = (parseInt(op.value, 10) || 0) / 100;
+      setMat(row.getAttribute("data-mat"), a);
+      var on = a > 0.01;
+      row.classList.toggle("on", on);
+      row.querySelector(".cl-tog").setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    rows.forEach(function (row) {
+      var op = row.querySelector(".cl-op");
+      row.querySelector(".cl-tog").addEventListener("click", function () {
+        op.value = row.classList.contains("on") ? 0 : 100;
+        applyRow(row);
+      });
+      op.addEventListener("input", function () { applyRow(row); });
+    });
+    mv.addEventListener("load", function () {
+      panel.hidden = false;
+      rows.forEach(applyRow);
+    });
+  }
+
+  function show(threeD) {
+    wrap.hidden = !threeD;
+    twoD.forEach(function (el) { if (el) el.style.display = threeD ? "none" : ""; });
+    bar.querySelectorAll(".cv-btn").forEach(function (b) {
+      var on = (b.getAttribute("data-vue") === "3d") === threeD;
+      b.classList.toggle("actif", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (threeD) load();
+  }
+
+  bar.addEventListener("click", function (e) {
+    var b = e.target.closest(".cv-btn");
+    if (b) show(b.getAttribute("data-vue") === "3d");
+  });
+
+  wrap.hidden = false;
+  twoD.forEach(function (el) { if (el) el.style.display = "none"; });
+  mv.addEventListener("error", function () {
+    wrap.hidden = true;
+    twoD.forEach(function (el) { if (el) el.style.display = ""; });
+  });
+  mv.addEventListener("load", function () { wrap.classList.add("mv-ready"); });
+  var started = false;
+  function go() {
+    if (started) return; started = true;
+    load();
+    setTimeout(function () {
+      if (!window.customElements || !window.customElements.get("model-viewer")) {
+        wrap.hidden = true;
+        twoD.forEach(function (el) { if (el) el.style.display = ""; });
+      }
+    }, 10000);
+  }
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es, obs) {
+      if (es[0].isIntersecting) { go(); obs.disconnect(); }
+    }, { rootMargin: "500px 0px" }).observe(wrap);
+  } else { go(); }
+})();

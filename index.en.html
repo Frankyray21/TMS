@@ -199,6 +199,30 @@ html.tms-loading{overflow:hidden!important}
         <h3 class="sub-h reveal">Where it hits the most <span style="font-weight:400;font-size:.85rem;color:var(--dim)"> : click an area</span></h3>
         <div class="corps-insitu reveal" id="corps">
           <p class="corps-aide">Click a glowing dot or a label on the chart to see the affected area, the common MSDs, the factors behind them and the good habits.</p>
+          <div class="corps-vue" role="group" aria-label="Body display choice" hidden>
+            <button type="button" class="cv-btn actif" data-vue="2d" aria-pressed="true">2D view</button>
+            <button type="button" class="cv-btn" data-vue="3d" aria-pressed="false">3D view</button>
+          </div>
+          <div class="corps-3d" id="corps3d-wrap" hidden>
+            <model-viewer id="corps3d" alt="3D anatomical model of the muscles: rotate it and click a body area" camera-controls touch-action="pan-y" interaction-prompt="none" environment-image="neutral" tone-mapping="aces" shadow-intensity="0.85" shadow-softness="0.75" exposure="1.05" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 160deg auto">
+              <button class="hotspot3d h3-t" slot="hotspot-cou" data-zone="cou" data-position="0 1.45 0.08" data-normal="0 0 1"><span class="h3-card"><b>Neck</b><i>Neck pain · Neck tension</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-ep" data-zone="epaules" data-position="-0.18 1.37 0.05" data-normal="0 0 1"><span class="h3-card"><b>Shoulders</b><i>Rotator cuff tendinitis · Bursitis</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-hd" data-zone="haut-dos" data-position="0 1.20 -0.10" data-normal="0 0 -1"><span class="h3-card"><b>Upper back</b><i>Mid-back pain · Tension between the shoulder blades</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-bd" data-zone="bas-dos" data-position="0 0.97 -0.12" data-normal="0 0 -1"><span class="h3-card"><b>Lower back</b><i>Low-back pain · Herniated disc</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-co" data-zone="coudes" data-position="-0.21 1.02 0" data-normal="0 0 1"><span class="h3-card"><b>Elbows</b><i>Lateral epicondylitis · Medial epicondylitis</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-po" data-zone="poignets-mains" data-position="-0.22 0.80 0.02" data-normal="0 0 1"><span class="h3-card"><b>Wrists / hands</b><i>Carpal tunnel syndrome · De Quervain</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ge" data-zone="genoux" data-position="0.10 0.46 0.10" data-normal="0 0 1"><span class="h3-card"><b>Knees</b><i>Knee bursitis · Meniscus</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ch" data-zone="chevilles-pieds" data-position="0.10 0.08 0.08" data-normal="0 0 1"><span class="h3-card"><b>Ankles / feet</b><i>Achilles tendinitis · Plantar fasciitis</i></span></button>
+            </model-viewer>
+            <div class="corps-layers" id="corps3dLayers" hidden role="group" aria-label="Body structures to display">
+              <p class="cl-title">Structures</p>
+              <div class="cl-row on" data-mat="Muscles"><button class="cl-tog" type="button" aria-pressed="true" aria-label="Show/hide Muscles"></button><span class="cl-name">Muscles</span><input class="cl-op" type="range" min="0" max="100" value="100" aria-label="Muscles opacity"></div>
+              <div class="cl-row" data-mat="Os"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Show/hide Bones"></button><span class="cl-name">Bones</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Bones opacity"></div>
+              <div class="cl-row" data-mat="Articulations"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Show/hide Joints"></button><span class="cl-name">Joints</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Joints opacity"></div>
+              <div class="cl-row" data-mat="Nerfs"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Show/hide Nerves"></button><span class="cl-name">Nerves</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Nerves opacity"></div>
+            </div>
+            <p class="corps-3d-note">Anatomical model · display the structures (muscles, bones, joints, nerves), rotate the body and click a marker to open its details. <span>Model: <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a> (CC BY-SA).</span></p>
+          </div>
 <div class="corps-photo" id="corpsPhoto" hidden>
   <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Eight areas to watch on the human body, front and back views: click a dot to explore the area" id="corpsPhotoImg" decoding="async">
   <button type="button" class="cp-spot" style="left:35.1%;top:26%" data-zone="cou" aria-label="Neck area"></button>
@@ -553,7 +577,7 @@ html.tms-loading{overflow:hidden!important}
         <div class="foot-bar">
           <span>Updated: June 2026</span>
           <span>Awareness document. Does not replace medical advice.</span>
-          <span class="foot-ver" id="footVer" title="Site version">v1.68</span>
+          <span class="foot-ver" id="footVer" title="Site version">v1.69</span>
         </div>
       </div>
     </footer>
