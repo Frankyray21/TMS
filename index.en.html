@@ -23,8 +23,6 @@ html.tms-loading{overflow:hidden!important}
     var map=pref==='en'?{'index.html':'index.en.html','formation.html':'formation.en.html','':'index.en.html'}:{'index.en.html':'index.html','formation.en.html':'formation.html'};
     if(map[f]){location.replace(map[f]+location.hash);return;}
   }
-  /* guided training = only entry point on open; knowledge base reachable from the training */
-  if(sessionStorage.getItem('tms_kb')!=='1')location.replace('formation-guidee.en.html');
 }catch(e){}})();</script>
 <title>MSD Prevention in Underground Mining | Knowledge Base · Machines Roger International</title>
 <link rel="alternate" hreflang="fr-CA" href="index.html">

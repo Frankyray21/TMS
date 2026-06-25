@@ -23,8 +23,6 @@ html.tms-loading{overflow:hidden!important}
     var map=pref==='en'?{'index.html':'index.en.html','formation.html':'formation.en.html','':'index.en.html'}:{'index.en.html':'index.html','formation.en.html':'formation.html'};
     if(map[f]){location.replace(map[f]+location.hash);return;}
   }
-  /* formation guidée = seule porte d'entrée à l'ouverture ; base de connaissances accessible depuis la formation */
-  if(sessionStorage.getItem('tms_kb')!=='1')location.replace('formation-guidee.html');
 }catch(e){}})();</script>
 <title>Prévention des TMS en mine souterraine | Base de connaissances · Machines Roger International</title>
 <link rel="alternate" hreflang="fr-CA" href="index.html">

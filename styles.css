@@ -2304,3 +2304,16 @@ anatomy-hero-model{position:absolute;inset:0;display:block}
 }
 @media print{ .hero-figure{display:none!important} }
 .foot-credit a{font-size:inherit}
+
+/* ============================================================
+   FORMATION GUIDÉE — écorché 3D dans le hero (réutilise AnatomyHeroModel)
+   Le modèle sert de visuel à droite ; la carte de progression reste
+   lisible par-dessus (verre dépoli). Texte et CTA inchangés.
+   ============================================================ */
+.fg-hero-visual{position:relative;flex:0 0 auto;width:330px;align-self:stretch;min-height:460px;display:flex;align-items:flex-end;justify-content:center}
+.fg-hero-anatomy{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:360px;height:100%;pointer-events:none}
+.fg-hero-anatomy::before{content:"";position:absolute;left:51%;top:28%;width:92%;height:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(224,74,52,.20),rgba(150,40,36,.06) 50%,transparent 72%);filter:blur(4px);pointer-events:none}
+@media (max-width:640px){
+  .fg-hero-visual{width:100%;min-height:0;flex-direction:column-reverse;align-items:center;gap:16px}
+  .fg-hero-anatomy{position:relative;left:auto;bottom:auto;transform:none;width:200px;height:252px;margin:0 auto}
+}
