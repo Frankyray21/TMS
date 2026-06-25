@@ -39,9 +39,9 @@
   var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Cadrage validé pour ce modèle : tête → haut des cuisses, vue 3/4.
-  var BASE_THETA = 26;          // deg — vue 3/4 de départ (jamais de face stricte, jamais de profil)
-  var AMP = 20;                 // deg — amplitude de chaque côté (balancement bien visible, sans tour à 360°)
-  var PERIOD = 9000;            // ms — boucle douce et continue
+  var BASE_THETA = 26;          // deg — angle de départ (pose fixe / reduced-motion)
+  var SPIN_PERIOD = 14000;      // ms — durée d'un tour complet (rotation 360° continue)
+  var PERIOD = 9000;            // ms — rythme du dolly et du léger basculement
   var BASE_PHI = 86;            // deg — hauteur de la caméra
   var PHI_AMP = 2.5;            // deg — léger basculement vertical, pour donner de la vie
   var BASE_RADIUS = 94;         // distance caméra de repos (le dolly oscille autour)
@@ -152,8 +152,9 @@
     var self = this, start = null;
     function frame(now) {
       if (start === null) start = now;
-      var t = (now - start) / PERIOD * Math.PI * 2;
-      var theta = BASE_THETA + AMP * Math.sin(t);
+      var ms = now - start;
+      var theta = BASE_THETA + (ms / SPIN_PERIOD) * 360; // rotation 360° continue
+      var t = ms / PERIOD * Math.PI * 2;
       var phi = BASE_PHI + PHI_AMP * Math.sin(t * 0.6);
       var r = BASE_RADIUS * (1 + 0.16 * Math.sin(t * 0.66)); // dolly caméra : gros plan ↔ dézoom
       self.mv.cameraOrbit = orbit(theta.toFixed(2), phi.toFixed(2), r.toFixed(2));
