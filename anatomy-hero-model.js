@@ -38,16 +38,20 @@
 
   var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Cadrage validé pour ce modèle : tête → haut des cuisses, vue 3/4.
-  var BASE_THETA = 26;          // deg — angle de départ (pose fixe / reduced-motion)
-  var SPIN_PERIOD = 14000;      // ms — durée d'un tour complet (rotation 360° continue)
-  var PERIOD = 9000;            // ms — rythme du dolly et du léger basculement
+  // Rotation 360° continue ; le ZOOM est piloté par le scroll : gros plan en haut
+  // de page → corps entier après avoir scrollé (le visuel reste épinglé pendant ce temps).
+  var BASE_THETA = 26;          // deg — angle de départ
+  var SPIN_PERIOD = 14000;      // ms — durée d'un tour complet (rotation 360°)
+  var PERIOD = 9000;            // ms — rythme du léger basculement vertical
   var BASE_PHI = 86;            // deg — hauteur de la caméra
-  var PHI_AMP = 2.5;            // deg — léger basculement vertical, pour donner de la vie
-  var BASE_RADIUS = 132;        // distance caméra de repos (corps grand ; les jambes se fondent dans la page)
-  var TARGET = "-0.09m -4m -0.49m";    // visée légèrement haute : tête dégagée, bas du corps fondu
+  var PHI_AMP = 2.5;            // deg — léger basculement vertical
+  var R_CLOSE = 86;             // gros plan (haut de page)
+  var R_FULL = 178;             // corps entier (après le scroll)
+  var TY_CLOSE = 6;             // visée gros plan (haut du corps)
+  var TY_FULL = -9;             // visée corps entier (centre du corps)
   var FOV = "30deg";
   function orbit(theta, phi, r) { return theta + "deg " + phi + "deg " + r + "m"; }
+  function targetStr(ty) { return "-0.09m " + ty + "m -0.49m"; }
 
   // Repli image fixe : petits écrans, appareils peu dotés ou économiseur de données.
   function prefersStatic() {
@@ -104,10 +108,10 @@
     mv.className = "ahm-mv";
     mv.setAttribute("alt", "");
     mv.setAttribute("src", this._src);
-    mv.setAttribute("camera-orbit", orbit(BASE_THETA, BASE_PHI, BASE_RADIUS));
-    mv.setAttribute("camera-target", TARGET);
+    mv.setAttribute("camera-orbit", orbit(BASE_THETA, BASE_PHI, R_CLOSE)); // départ : gros plan
+    mv.setAttribute("camera-target", targetStr(TY_CLOSE));
     mv.setAttribute("field-of-view", FOV);
-    // autorise le dolly (sinon model-viewer borne le rayon au cadrage auto)
+    // autorise le zoom au scroll (sinon model-viewer borne le rayon au cadrage auto)
     mv.setAttribute("min-camera-orbit", "auto auto 40m");
     mv.setAttribute("max-camera-orbit", "auto auto 240m");
     mv.setAttribute("interaction-prompt", "none");
@@ -132,7 +136,23 @@
 
   AnatomyHeroModel.prototype.setupVisibility = function () {
     var self = this;
-    if (RM) { if (this.mv) this.mv.cameraOrbit = orbit(BASE_THETA, BASE_PHI, BASE_RADIUS); return; } // pose fixe
+    if (RM) { // pose fixe : gros plan, sans mouvement
+      if (this.mv) { this.mv.cameraOrbit = orbit(BASE_THETA, BASE_PHI, R_CLOSE); this.mv.cameraTarget = targetStr(TY_CLOSE); }
+      return;
+    }
+
+    // Zoom piloté par le scroll : gros plan (haut) → corps entier (après ~0,8 écran).
+    this._scrollP = 0;
+    var ticking = false;
+    function readScroll() {
+      ticking = false;
+      var vh = window.innerHeight || 1;
+      self._scrollP = Math.min(Math.max(window.scrollY / (vh * 0.8), 0), 1);
+    }
+    this._onScroll = function () { if (!ticking) { ticking = true; requestAnimationFrame(readScroll); } };
+    window.addEventListener("scroll", this._onScroll, { passive: true });
+    window.addEventListener("resize", this._onScroll, { passive: true });
+    readScroll();
 
     var visible = true;
     if ("IntersectionObserver" in window) {
@@ -156,7 +176,11 @@
       var theta = BASE_THETA + (ms / SPIN_PERIOD) * 360; // rotation 360° continue
       var t = ms / PERIOD * Math.PI * 2;
       var phi = BASE_PHI + PHI_AMP * Math.sin(t * 0.6);
-      var r = BASE_RADIUS * (1 + 0.14 * (0.5 - 0.5 * Math.cos(t * 0.66))); // dolly : part du gros plan (base) puis dézoome et revient
+      var p = self._scrollP || 0;
+      var e = p * p * (3 - 2 * p);               // lissage (smoothstep)
+      var r = R_CLOSE + (R_FULL - R_CLOSE) * e;  // zoom piloté par le scroll : gros plan → corps entier
+      var ty = TY_CLOSE + (TY_FULL - TY_CLOSE) * e;
+      self.mv.cameraTarget = targetStr(ty.toFixed(2));
       self.mv.cameraOrbit = orbit(theta.toFixed(2), phi.toFixed(2), r.toFixed(2));
       self._raf = requestAnimationFrame(frame);
     }
@@ -171,6 +195,7 @@
     this.stop();
     if (this._io) this._io.disconnect();
     if (this._vio) this._vio.disconnect();
+    if (this._onScroll) { window.removeEventListener("scroll", this._onScroll); window.removeEventListener("resize", this._onScroll); }
   };
 
   if (window.customElements && !customElements.get("anatomy-hero-model")) {
