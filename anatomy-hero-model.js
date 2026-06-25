@@ -44,7 +44,7 @@
   var PERIOD = 9000;            // ms — boucle douce et continue
   var BASE_PHI = 86;            // deg — hauteur de la caméra
   var PHI_AMP = 2.5;            // deg — léger basculement vertical, pour donner de la vie
-  var BASE_RADIUS = 86;         // distance caméra (unités du modèle)
+  var BASE_RADIUS = 94;         // distance caméra de repos (le dolly oscille autour)
   var TARGET = "-0.09m 6m -0.49m";
   var FOV = "30deg";
   function orbit(theta, phi, r) { return theta + "deg " + phi + "deg " + r + "m"; }
@@ -107,6 +107,9 @@
     mv.setAttribute("camera-orbit", orbit(BASE_THETA, BASE_PHI, BASE_RADIUS));
     mv.setAttribute("camera-target", TARGET);
     mv.setAttribute("field-of-view", FOV);
+    // autorise le dolly (sinon model-viewer borne le rayon au cadrage auto)
+    mv.setAttribute("min-camera-orbit", "auto auto 55m");
+    mv.setAttribute("max-camera-orbit", "auto auto 150m");
     mv.setAttribute("interaction-prompt", "none");
     // éclairage doux et neutre, sans ombre coûteuse ni post-traitement lourd
     mv.setAttribute("environment-image", "neutral");
@@ -152,7 +155,7 @@
       var t = (now - start) / PERIOD * Math.PI * 2;
       var theta = BASE_THETA + AMP * Math.sin(t);
       var phi = BASE_PHI + PHI_AMP * Math.sin(t * 0.6);
-      var r = BASE_RADIUS * (1 + 0.018 * Math.sin(t * 0.5)); // légère « respiration »
+      var r = BASE_RADIUS * (1 + 0.16 * Math.sin(t * 0.66)); // dolly caméra : gros plan ↔ dézoom
       self.mv.cameraOrbit = orbit(theta.toFixed(2), phi.toFixed(2), r.toFixed(2));
       self._raf = requestAnimationFrame(frame);
     }
@@ -173,4 +176,31 @@
     customElements.define("anatomy-hero-model", AnatomyHeroModel);
   }
   window.AnatomyHeroModel = AnatomyHeroModel;
+
+  /* Effet scroll du hero d'accueil : l'écorché est mis en avant avec le titre en
+     haut de page, puis recule en arrière-plan (rétrécit + s'estompe) quand on
+     descend. Desktop uniquement ; respecte prefers-reduced-motion. */
+  function setupScrollRecede() {
+    if (RM) return;
+    if (!(window.matchMedia && window.matchMedia("(min-width: 981px)").matches)) return;
+    var fig = document.querySelector(".hero-anatomy");
+    if (!fig) return;
+    fig.style.willChange = "transform, opacity";
+    fig.style.transformOrigin = "center 38%";
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var vh = window.innerHeight || 1;
+      var p = Math.min(Math.max(window.scrollY / (vh * 0.8), 0), 1); // 0 = haut, 1 = hero quitté
+      var e = p * p * (3 - 2 * p);                                   // lissage (smoothstep)
+      fig.style.transform = "translateY(" + (e * 5).toFixed(2) + "%) scale(" + (1.06 - 0.32 * e).toFixed(3) + ")";
+      fig.style.opacity = (1 - 0.6 * e).toFixed(3);
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    update();
+  }
+  if (document.readyState !== "loading") setupScrollRecede();
+  else document.addEventListener("DOMContentLoaded", setupScrollRecede);
 })();
