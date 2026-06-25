@@ -546,28 +546,88 @@
     return '';
   }
 
+  var ZONE_FICHES = [
+    { z: 'cou', nom: 'Neck', icone: '🧣', img: 'images/zone_cou.jpeg',
+      tms: ['Neck pain (cervicalgia)', 'Neck tension', 'Cervicogenic headaches'],
+      desc: "Your neck carries the weight of your head all day, and every time you tilt it forward the load on your neck muscles shoots up.",
+      conseils: ["Keep the task at eye level to avoid tilting your head.", "Release your neck with short, regular movements.", "Keep your head in line rather than twisted to the side."] },
+    { z: 'epaules', nom: 'Shoulders', icone: '💪', img: 'images/zone_epaules.jpeg',
+      tms: ['Rotator cuff tendinitis', 'Bursitis', 'Frozen shoulder (capsulitis)'],
+      desc: "Your shoulder is very mobile but not very stable, and working with your arms raised or away from your body quickly wears its tendons.",
+      conseils: ["Work with your elbows close to your body.", "Keep the work surface below shoulder level.", "Alternate tasks that require working with raised arms."] },
+    { z: 'haut-dos', nom: 'Upper back', icone: '🦴', img: 'images/zone_dos.jpeg',
+      tms: ['Mid-back pain', 'Tension between the shoulder blades'],
+      desc: "Your upper back absorbs bent postures and working with your arms forward, and tension between the shoulder blades is the first warning sign.",
+      conseils: ["Adjust the height of the work surface.", "Open your shoulders and vary your posture regularly.", "Bring the task closer so you don't work with outstretched arms."] },
+    { z: 'bas-dos', nom: 'Lower back', icone: '🦴', img: 'images/zone_dos.jpeg',
+      tms: ['Low-back pain', 'Herniated disc', 'Sciatica'],
+      desc: "Your lower back is the area most affected by MSDs, because your discs take enormous pressure as soon as you bend or twist under load.",
+      conseils: ["Bend your knees and keep the load close to your body.", "Pivot with your feet rather than your trunk.", "Use the mechanical aids available."] },
+    { z: 'coudes', nom: 'Elbows', icone: '🦾', img: 'images/zone_coudes.jpeg',
+      tms: ['Lateral epicondylitis (tennis elbow)', 'Medial epicondylitis'],
+      desc: "Your elbows flare up when you grip, screw and twist repeatedly — the well-known tennis elbow.",
+      conseils: ["Reduce your gripping force with better tools.", "Avoid repeated wrist rotations under effort.", "Take breaks before the burning sensation sets in."] },
+    { z: 'poignets-mains', nom: 'Wrists / hands', icone: '✋', img: 'images/zone_poignets.jpeg',
+      tms: ['Carpal tunnel syndrome', "De Quervain's tendinitis", 'Hand-arm vibration (white fingers)'],
+      desc: "Your wrists route tendons and a nerve through a narrow tunnel, where repeated movements, pinch grips, vibration and cold quickly add up.",
+      conseils: ["Keep your wrist aligned with your forearm.", "Alternate hands and types of grip.", "Report tingling and night numbness early."] },
+    { z: 'genoux', nom: 'Knees', icone: '🦵', img: 'images/zone_genoux.jpeg',
+      tms: ['Knee bursitis', 'Meniscus injury', 'Patellofemoral syndrome'],
+      desc: "Your knees aren't made to be used as a support, and repeated kneeling or squatting wears down their structures.",
+      conseils: ["Wear knee pads suited to your job.", "Use a mat, a low bench or a workshop roller seat.", "Stand up and stretch your legs often."] },
+    { z: 'chevilles-pieds', nom: 'Ankles / feet', icone: '🦶', img: '',
+      tms: ['Achilles tendinitis', 'Plantar fasciitis', 'Recurring sprains'],
+      desc: "Your feet and Achilles tendon tire from standing on hard floors, and an uneven or slippery floor adds missteps.",
+      conseils: ["Wear cushioned work shoes suited to the job.", "Use an anti-fatigue mat at fixed standing stations.", "Keep walkways flat and clear."] }
+  ];
+  function zoneByKey(k) { for (var i = 0; i < ZONE_FICHES.length; i++) { if (ZONE_FICHES[i].z === k) return ZONE_FICHES[i]; } return null; }
+  function clearZoneActive() { app.querySelectorAll('.fg-zone-chip.active, .hotspot3d.h3-open').forEach(function (o) { o.classList.remove('active'); o.classList.remove('h3-open'); }); }
+  function openZoneFiche(k) {
+    var z = zoneByKey(k), box = document.getElementById('zoneFiche');
+    if (!z || !box) return;
+    box.innerHTML = '<button type="button" class="zf-close" aria-label="Close the card">✕</button>'
+      + (z.img ? '<img src="' + z.img + '" alt="' + esc(z.nom) + '" class="zf-img" loading="lazy" decoding="async">' : '')
+      + '<div class="zf-body"><h4 class="zf-title">' + z.icone + ' ' + esc(z.nom) + '</h4>'
+      + '<div class="zf-tms">' + z.tms.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('') + '</div>'
+      + '<p class="zf-desc">' + esc(z.desc) + '</p>'
+      + '<p class="zf-h">Good reflexes</p><ul class="zf-list">' + z.conseils.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>';
+    box.hidden = false;
+    clearZoneActive();
+    app.querySelectorAll('.fg-zone-chip[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('active'); });
+    app.querySelectorAll('.hotspot3d[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('h3-open'); });
+    var cl = box.querySelector('.zf-close');
+    if (cl) cl.addEventListener('click', function () { box.hidden = true; box.innerHTML = ''; clearZoneActive(); });
+    try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+  }
+
   function renderZones() {
     var hot = [
-      ['h3-t', 'cou', '0 1.45 0.08', '0 0 1', 'Neck', 'Neck pain · Neck tension'],
-      ['h3-l', 'ep', '-0.18 1.37 0.05', '0 0 1', 'Shoulders', 'Rotator cuff tendinitis · Bursitis'],
-      ['h3-r', 'hd', '0 1.20 -0.10', '0 0 -1', 'Upper back', 'Mid-back pain · Tension between the shoulder blades'],
-      ['h3-r', 'bd', '0 0.97 -0.12', '0 0 -1', 'Lower back', 'Low-back pain · Herniated disc'],
-      ['h3-l', 'co', '-0.21 1.02 0', '0 0 1', 'Elbows', 'Lateral epicondylitis · Medial epicondylitis'],
-      ['h3-l', 'po', '-0.22 0.80 0.02', '0 0 1', 'Wrists / hands', 'Carpal tunnel syndrome · De Quervain'],
-      ['h3-r', 'ge', '0.10 0.46 0.10', '0 0 1', 'Knees', 'Knee bursitis · Meniscus'],
-      ['h3-r', 'ch', '0.10 0.08 0.08', '0 0 1', 'Ankles / feet', "Achilles tendinitis · Plantar fasciitis"]
+      ['h3-t', 'cou', '0 1.45 0.08', '0 0 1', 'Neck', 'Neck pain · Neck tension', 'cou'],
+      ['h3-l', 'ep', '-0.18 1.37 0.05', '0 0 1', 'Shoulders', 'Rotator cuff tendinitis · Bursitis', 'epaules'],
+      ['h3-r', 'hd', '0 1.20 -0.10', '0 0 -1', 'Upper back', 'Mid-back pain · Tension between the shoulder blades', 'haut-dos'],
+      ['h3-r', 'bd', '0 0.97 -0.12', '0 0 -1', 'Lower back', 'Low-back pain · Herniated disc', 'bas-dos'],
+      ['h3-l', 'co', '-0.21 1.02 0', '0 0 1', 'Elbows', 'Lateral epicondylitis · Medial epicondylitis', 'coudes'],
+      ['h3-l', 'po', '-0.22 0.80 0.02', '0 0 1', 'Wrists / hands', 'Carpal tunnel syndrome · De Quervain', 'poignets-mains'],
+      ['h3-r', 'ge', '0.10 0.46 0.10', '0 0 1', 'Knees', 'Knee bursitis · Meniscus', 'genoux'],
+      ['h3-r', 'ch', '0.10 0.08 0.08', '0 0 1', 'Ankles / feet', "Achilles tendinitis · Plantar fasciitis", 'chevilles-pieds']
     ].map(function (h, i) {
-      return '<button class="hotspot3d ' + h[0] + '" slot="hotspot-' + i + '" data-position="' + h[2] + '" data-normal="' + h[3] + '"><span class="h3-card"><b>' + esc(h[4]) + '</b><i>' + esc(h[5]) + '</i></span></button>';
+      return '<button class="hotspot3d ' + h[0] + '" slot="hotspot-' + i + '" data-position="' + h[2] + '" data-normal="' + h[3] + '" data-zone="' + h[6] + '"><span class="h3-card"><b>' + esc(h[4]) + '</b><i>' + esc(h[5]) + '</i></span></button>';
     }).join('');
     var LAYER_LABELS = { Muscles: 'Muscles', Os: 'Bones', Articulations: 'Joints', Nerfs: 'Nerves' };
     var layers = ['Muscles', 'Os', 'Articulations', 'Nerfs'].map(function (mat) {
       var l = state.layers[mat];
       return '<div class="cl-row ' + (l.on ? 'on' : '') + '" data-mat="' + mat + '"><button class="cl-tog" type="button" aria-pressed="' + (l.on ? 'true' : 'false') + '" data-layer-toggle="' + mat + '" aria-label="Show or hide"></button><span class="cl-name">' + LAYER_LABELS[mat] + '</span><input class="cl-op" type="range" min="0" max="100" value="' + l.op + '" data-layer-op="' + mat + '" aria-label="Opacity"></div>';
     }).join('');
+    var chips = ZONE_FICHES.map(function (z) {
+      return '<button type="button" class="fg-zone-chip" data-zone="' + z.z + '"><span class="zc-ico">' + z.icone + '</span>' + esc(z.nom) + '</button>';
+    }).join('');
     return '<div class="fg-kb"><p class="lead">Underground, the most exposed areas range from the neck to the ankles. <strong style="color:#e2e8f0">Rotate the 3D model</strong> and display the structures (muscles, bones, joints, nerves):</p>'
       + '<div class="corps-3d"><model-viewer id="corps3d" src="' + MODEL_SRC + '" loading="eager" reveal="auto" alt="3D anatomical model: rotate it to explore the at-risk areas" camera-controls touch-action="pan-y" interaction-prompt="none" auto-rotate environment-image="neutral" tone-mapping="aces" shadow-intensity="0.85" shadow-softness="0.75" exposure="1.05" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 160deg auto" style="width:100%;max-width:560px;height:min(64vh,560px)">' + hot + '</model-viewer>'
       + '<div class="corps-layers" role="group" aria-label="Body structures to display"><p class="cl-title">Structures</p>' + layers + '</div>'
-      + '<p class="corps-3d-note">Anatomical model · rotate the body, display the structures and click or hover over a marker. <span>Model: Z-Anatomy (CC BY-SA).</span></p></div></div>';
+      + '<p class="corps-3d-note corps-3d-note-lg">Rotate the body, display the structures, then <strong>click an area</strong> to open its card.</p></div>'
+      + '<div class="fg-zone-pick"><p class="fg-zone-pick-t">The most affected body areas — click an area to see the frequent MSDs and the good reflexes:</p><div class="fg-zone-chips">' + chips + '</div></div>'
+      + '<div id="zoneFiche" class="fg-zone-fiche" hidden></div>'
+      + '</div>';
   }
 
   function renderFacteurs() {
@@ -865,14 +925,9 @@
     app.querySelectorAll('[data-layer-op]').forEach(function (el) {
       el.addEventListener('input', function () { setLayerOp(el.getAttribute('data-layer-op'), el.value); });
     });
-    // 3D markers: a click / tap opens (pins) the zone card — works on touch too (no hover).
-    app.querySelectorAll('.hotspot3d').forEach(function (el) {
-      el.addEventListener('click', function (e) {
-        e.preventDefault();
-        var wasOpen = el.classList.contains('h3-open');
-        app.querySelectorAll('.hotspot3d.h3-open').forEach(function (o) { o.classList.remove('h3-open'); });
-        if (!wasOpen) el.classList.add('h3-open');
-      });
+    // Body areas: a 3D marker OR an area button -> opens the detailed card (like the knowledge base).
+    app.querySelectorAll('.hotspot3d[data-zone], .fg-zone-chip[data-zone]').forEach(function (el) {
+      el.addEventListener('click', function (e) { e.preventDefault(); openZoneFiche(el.getAttribute('data-zone')); });
     });
   }
   function currentQuizId() { var st = steps(), cur = st[state.idx]; return cur && cur.kind === 'quiz' ? cur.module.id : null; }

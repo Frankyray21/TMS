@@ -546,27 +546,87 @@
     return '';
   }
 
+  var ZONE_FICHES = [
+    { z: 'cou', nom: 'Cou / nuque', icone: '🧣', img: 'images/zone_cou.jpeg',
+      tms: ['Cervicalgie', 'Tensions de la nuque', "Maux de tête d'origine cervicale"],
+      desc: "Ton cou porte le poids de ta tête toute la journée, et chaque fois que tu le penches vers l'avant, l'effort sur tes muscles cervicaux explose.",
+      conseils: ["Garde la tâche à hauteur des yeux pour éviter de pencher la tête.", "Relâche ta nuque par de courts mouvements réguliers.", "Garde la tête dans l'axe plutôt que tordue sur le côté."] },
+    { z: 'epaules', nom: 'Épaules', icone: '💪', img: 'images/zone_epaules.jpeg',
+      tms: ['Tendinite de la coiffe des rotateurs', 'Bursite', 'Capsulite'],
+      desc: "Ton épaule est très mobile mais peu stable, et travailler les bras levés ou loin du corps use vite ses tendons.",
+      conseils: ["Travaille les coudes près du corps.", "Garde le plan de travail sous le niveau de tes épaules.", "Alterne les tâches qui sollicitent les bras en hauteur."] },
+    { z: 'haut-dos', nom: 'Haut du dos', icone: '🦴', img: 'images/zone_dos.jpeg',
+      tms: ['Dorsalgie', 'Tensions entre les omoplates'],
+      desc: "Ton haut du dos encaisse les postures penchées et le travail des bras vers l'avant, et les tensions entre les omoplates en sont le premier signal.",
+      conseils: ["Règle la hauteur du plan de travail.", "Ouvre les épaules et varie ta posture régulièrement.", "Rapproche la tâche pour ne pas travailler bras tendus."] },
+    { z: 'bas-dos', nom: 'Bas du dos', icone: '🦴', img: 'images/zone_dos.jpeg',
+      tms: ['Lombalgie', 'Hernie discale', 'Sciatalgie'],
+      desc: "Ton bas du dos est la zone la plus touchée par les TMS, car tes disques encaissent des pressions énormes dès que tu te plies ou te tords en charge.",
+      conseils: ["Plie les genoux et garde la charge près du corps.", "Pivote avec tes pieds plutôt qu'avec le tronc.", "Utilise les aides mécaniques disponibles."] },
+    { z: 'coudes', nom: 'Coudes', icone: '🦾', img: 'images/zone_coudes.jpeg',
+      tms: ['Épicondylite (tennis elbow)', 'Épitrochléite'],
+      desc: "Tes coudes s'enflamment quand tu serres, visses et tournes à répétition, c'est la fameuse épicondylite.",
+      conseils: ["Réduis ta force de serrage avec de meilleurs outils.", "Évite les rotations répétées du poignet sous effort.", "Fais des pauses avant la sensation de brûlure."] },
+    { z: 'poignets-mains', nom: 'Poignets / mains', icone: '✋', img: 'images/zone_poignets.jpeg',
+      tms: ['Syndrome du canal carpien', 'Tendinite de De Quervain', 'Syndrome des doigts blancs'],
+      desc: "Tes poignets font passer tendons et nerf dans un tunnel étroit, où gestes répétés, prise en pince, vibrations et froid se combinent vite.",
+      conseils: ["Garde ton poignet aligné avec l'avant-bras.", "Alterne les mains et les types de prise.", "Signale tôt les fourmillements et engourdissements nocturnes."] },
+    { z: 'genoux', nom: 'Genoux', icone: '🦵', img: 'images/zone_genoux.jpeg',
+      tms: ['Bursite du genou', 'Lésion du ménisque', 'Syndrome fémoro-patellaire'],
+      desc: "Tes genoux ne sont pas faits pour servir d'appui, et le travail agenouillé ou accroupi répété use leurs structures.",
+      conseils: ["Porte des genouillères adaptées à ton métier.", "Utilise un tapis, un banc bas ou un siège roulant d'atelier.", "Relève-toi et déplie tes jambes souvent."] },
+    { z: 'chevilles-pieds', nom: 'Chevilles / pieds', icone: '🦶', img: '',
+      tms: ["Tendinite d'Achille", 'Fasciite plantaire', 'Entorses à répétition'],
+      desc: "Tes pieds et ton tendon d'Achille fatiguent debout sur sol dur, et un sol inégal ou glissant ajoute les faux mouvements.",
+      conseils: ["Porte des chaussures de travail amortissantes et adaptées.", "Utilise un tapis antifatigue aux postes debout fixes.", "Garde les zones de circulation planes et dégagées."] }
+  ];
+  function zoneByKey(k) { for (var i = 0; i < ZONE_FICHES.length; i++) { if (ZONE_FICHES[i].z === k) return ZONE_FICHES[i]; } return null; }
+  function clearZoneActive() { app.querySelectorAll('.fg-zone-chip.active, .hotspot3d.h3-open').forEach(function (o) { o.classList.remove('active'); o.classList.remove('h3-open'); }); }
+  function openZoneFiche(k) {
+    var z = zoneByKey(k), box = document.getElementById('zoneFiche');
+    if (!z || !box) return;
+    box.innerHTML = '<button type="button" class="zf-close" aria-label="Fermer la fiche">✕</button>'
+      + (z.img ? '<img src="' + z.img + '" alt="' + esc(z.nom) + '" class="zf-img" loading="lazy" decoding="async">' : '')
+      + '<div class="zf-body"><h4 class="zf-title">' + z.icone + ' ' + esc(z.nom) + '</h4>'
+      + '<div class="zf-tms">' + z.tms.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('') + '</div>'
+      + '<p class="zf-desc">' + esc(z.desc) + '</p>'
+      + '<p class="zf-h">Bons réflexes</p><ul class="zf-list">' + z.conseils.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>';
+    box.hidden = false;
+    clearZoneActive();
+    app.querySelectorAll('.fg-zone-chip[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('active'); });
+    app.querySelectorAll('.hotspot3d[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('h3-open'); });
+    var cl = box.querySelector('.zf-close');
+    if (cl) cl.addEventListener('click', function () { box.hidden = true; box.innerHTML = ''; clearZoneActive(); });
+    try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+  }
+
   function renderZones() {
     var hot = [
-      ['h3-t', 'cou', '0 1.45 0.08', '0 0 1', 'Cou / nuque', 'Cervicalgie · Tensions de la nuque'],
-      ['h3-l', 'ep', '-0.18 1.37 0.05', '0 0 1', 'Épaules', 'Tendinite de la coiffe · Bursite'],
-      ['h3-r', 'hd', '0 1.20 -0.10', '0 0 -1', 'Haut du dos', 'Dorsalgie · Tensions entre les omoplates'],
-      ['h3-r', 'bd', '0 0.97 -0.12', '0 0 -1', 'Bas du dos', 'Lombalgie · Hernie discale'],
-      ['h3-l', 'co', '-0.21 1.02 0', '0 0 1', 'Coudes', 'Épicondylite · Épitrochléite'],
-      ['h3-l', 'po', '-0.22 0.80 0.02', '0 0 1', 'Poignets / mains', 'Canal carpien · De Quervain'],
-      ['h3-r', 'ge', '0.10 0.46 0.10', '0 0 1', 'Genoux', 'Bursite du genou · Ménisque'],
-      ['h3-r', 'ch', '0.10 0.08 0.08', '0 0 1', 'Chevilles / pieds', "Tendinite d'Achille · Fasciite plantaire"]
+      ['h3-t', 'cou', '0 1.45 0.08', '0 0 1', 'Cou / nuque', 'Cervicalgie · Tensions de la nuque', 'cou'],
+      ['h3-l', 'ep', '-0.18 1.37 0.05', '0 0 1', 'Épaules', 'Tendinite de la coiffe · Bursite', 'epaules'],
+      ['h3-r', 'hd', '0 1.20 -0.10', '0 0 -1', 'Haut du dos', 'Dorsalgie · Tensions entre les omoplates', 'haut-dos'],
+      ['h3-r', 'bd', '0 0.97 -0.12', '0 0 -1', 'Bas du dos', 'Lombalgie · Hernie discale', 'bas-dos'],
+      ['h3-l', 'co', '-0.21 1.02 0', '0 0 1', 'Coudes', 'Épicondylite · Épitrochléite', 'coudes'],
+      ['h3-l', 'po', '-0.22 0.80 0.02', '0 0 1', 'Poignets / mains', 'Canal carpien · De Quervain', 'poignets-mains'],
+      ['h3-r', 'ge', '0.10 0.46 0.10', '0 0 1', 'Genoux', 'Bursite du genou · Ménisque', 'genoux'],
+      ['h3-r', 'ch', '0.10 0.08 0.08', '0 0 1', 'Chevilles / pieds', "Tendinite d'Achille · Fasciite plantaire", 'chevilles-pieds']
     ].map(function (h, i) {
-      return '<button class="hotspot3d ' + h[0] + '" slot="hotspot-' + i + '" data-position="' + h[2] + '" data-normal="' + h[3] + '"><span class="h3-card"><b>' + esc(h[4]) + '</b><i>' + esc(h[5]) + '</i></span></button>';
+      return '<button class="hotspot3d ' + h[0] + '" slot="hotspot-' + i + '" data-position="' + h[2] + '" data-normal="' + h[3] + '" data-zone="' + h[6] + '"><span class="h3-card"><b>' + esc(h[4]) + '</b><i>' + esc(h[5]) + '</i></span></button>';
     }).join('');
     var layers = ['Muscles', 'Os', 'Articulations', 'Nerfs'].map(function (mat) {
       var l = state.layers[mat];
       return '<div class="cl-row ' + (l.on ? 'on' : '') + '" data-mat="' + mat + '"><button class="cl-tog" type="button" aria-pressed="' + (l.on ? 'true' : 'false') + '" data-layer-toggle="' + mat + '" aria-label="Afficher ou masquer"></button><span class="cl-name">' + mat + '</span><input class="cl-op" type="range" min="0" max="100" value="' + l.op + '" data-layer-op="' + mat + '" aria-label="Opacité"></div>';
     }).join('');
+    var chips = ZONE_FICHES.map(function (z) {
+      return '<button type="button" class="fg-zone-chip" data-zone="' + z.z + '"><span class="zc-ico">' + z.icone + '</span>' + esc(z.nom) + '</button>';
+    }).join('');
     return '<div class="fg-kb"><p class="lead">Sous terre, les zones les plus exposées vont de la nuque aux chevilles. <strong style="color:#e2e8f0">Tourne le modèle 3D</strong> et affiche les structures (muscles, os, articulations, nerfs) :</p>'
       + '<div class="corps-3d"><model-viewer id="corps3d" src="' + MODEL_SRC + '" loading="eager" reveal="auto" alt="Modèle anatomique 3D : tourne-le pour explorer les zones à risque" camera-controls touch-action="pan-y" interaction-prompt="none" auto-rotate environment-image="neutral" tone-mapping="aces" shadow-intensity="0.85" shadow-softness="0.75" exposure="1.05" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 160deg auto" style="width:100%;max-width:560px;height:min(64vh,560px)">' + hot + '</model-viewer>'
       + '<div class="corps-layers" role="group" aria-label="Structures du corps à afficher"><p class="cl-title">Structures</p>' + layers + '</div>'
-      + '<p class="corps-3d-note">Modèle anatomique · tourne le corps, affiche les structures et clique ou survole un repère. <span>Modèle : Z-Anatomy (CC BY-SA).</span></p></div></div>';
+      + '<p class="corps-3d-note corps-3d-note-lg">Tourne le corps, affiche les structures, puis <strong>clique une zone</strong> pour ouvrir sa fiche.</p></div>'
+      + '<div class="fg-zone-pick"><p class="fg-zone-pick-t">Les zones du corps les plus touchées — clique une zone pour voir les TMS fréquents et les bons réflexes :</p><div class="fg-zone-chips">' + chips + '</div></div>'
+      + '<div id="zoneFiche" class="fg-zone-fiche" hidden></div>'
+      + '</div>';
   }
 
   function renderFacteurs() {
@@ -864,14 +924,9 @@
     app.querySelectorAll('[data-layer-op]').forEach(function (el) {
       el.addEventListener('input', function () { setLayerOp(el.getAttribute('data-layer-op'), el.value); });
     });
-    // Pastilles 3D : un clic / appui ouvre (épingle) la fiche de la zone — fonctionne aussi au tactile (pas de survol).
-    app.querySelectorAll('.hotspot3d').forEach(function (el) {
-      el.addEventListener('click', function (e) {
-        e.preventDefault();
-        var wasOpen = el.classList.contains('h3-open');
-        app.querySelectorAll('.hotspot3d.h3-open').forEach(function (o) { o.classList.remove('h3-open'); });
-        if (!wasOpen) el.classList.add('h3-open');
-      });
+    // Zones du corps : pastille 3D OU bouton « zone » -> ouvre la fiche détaillée (comme la base de connaissances).
+    app.querySelectorAll('.hotspot3d[data-zone], .fg-zone-chip[data-zone]').forEach(function (el) {
+      el.addEventListener('click', function (e) { e.preventDefault(); openZoneFiche(el.getAttribute('data-zone')); });
     });
   }
   function currentQuizId() { var st = steps(), cur = st[state.idx]; return cur && cur.kind === 'quiz' ? cur.module.id : null; }
