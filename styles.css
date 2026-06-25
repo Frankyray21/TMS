@@ -2288,7 +2288,7 @@ anatomy-hero-model{position:absolute;inset:0;display:block}
 .ahm-ready .ahm-poster{opacity:0}
 
 /* Écorché en arrière-plan plein cadre du hero (derrière le texte, sous le voile sombre) */
-.hero-anatomy{position:absolute;z-index:1;top:-3%;bottom:-7%;right:-2%;width:62%;max-width:780px;pointer-events:none}
+.hero-anatomy{position:absolute;z-index:1;top:0;bottom:0;right:0;width:60%;max-width:760px;pointer-events:none}
 .hero-anatomy::before{content:"";position:absolute;z-index:-1;left:52%;top:40%;width:80%;height:62%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(224,74,52,.18),rgba(150,40,36,.05) 50%,transparent 72%);filter:blur(8px)}
 /* lisibilité du texte par-dessus le modèle en arrière-plan */
 .hero-copy h1,.hero-copy>p,.hero-copy .eyebrow{text-shadow:0 2px 22px rgba(5,7,12,.8),0 1px 3px rgba(5,7,12,.7)}
