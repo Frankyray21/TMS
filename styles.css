@@ -1774,10 +1774,15 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     .fg-kb .corps-3d .corps-layers .cl-title { grid-column: 1 / -1; }
   }
   /* ===== Formation guidée — note agrandie + sélecteur de zones + fiche détaillée ===== */
-  .corps-3d-note-lg { font-size: 1.06rem !important; line-height: 1.5; color: #e2e8f0 !important; font-weight: 600; max-width: 640px !important; }
-  .corps-3d-note-lg strong { color: #ef5a5c; }
+  /* Phrases mises en évidence (callout encadré) */
+  .corps-3d-note-lg { font-size: 1.1rem !important; line-height: 1.55; color: #fff !important; font-weight: 700; max-width: 660px !important;
+    background: rgba(210,35,37,.09); border: 1px solid rgba(210,35,37,.3); border-left: 4px solid #ef5a5c; border-radius: 12px; padding: 12px 16px !important; }
+  .corps-3d-note-lg strong { color: #ff8a8c; }
   .fg-zone-pick { margin-top: 24px; }
-  .fg-zone-pick-t { color: #cbd5e1; font-size: 1rem; margin: 0 0 12px; }
+  .fg-zone-pick-t { color: #fff; font-size: 1.12rem; font-weight: 700; line-height: 1.5; margin: 0 0 14px;
+    background: rgba(210,35,37,.09); border-left: 4px solid #ef5a5c; border-radius: 0 10px 10px 0; padding: 10px 14px; }
+  .fg-zone-prog { display: inline-block; margin-left: 6px; font-size: .92rem; font-weight: 800; color: #8694ad; white-space: nowrap; }
+  .fg-zone-prog.done { color: #34d399; }
   .fg-zone-chips { display: flex; flex-wrap: wrap; gap: 9px; }
   .fg-zone-chip { display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
     font-family: 'Barlow', sans-serif; font-weight: 600; font-size: .95rem; color: #dbe3ee;
@@ -1786,6 +1791,12 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .fg-zone-chip:hover { border-color: #ef5a5c; color: #fff; }
   .fg-zone-chip.active { background: linear-gradient(135deg, #e23a3c, #a81a1c); border-color: transparent; color: #fff; box-shadow: 0 6px 18px rgba(210,35,37,.3); }
   .fg-zone-chip .zc-ico { font-size: 1.12rem; line-height: 1; }
+  /* Crochet vert : zone déjà consultée */
+  .fg-zone-chip .zc-check { display: none; margin-left: 1px; color: #34d399; font-weight: 800; font-size: 1rem; line-height: 1; }
+  .fg-zone-chip.vu { border-color: rgba(16,185,129,.55); }
+  .fg-zone-chip.vu .zc-check { display: inline; }
+  .fg-zone-chip.vu.active { border-color: transparent; }
+  .fg-zone-chip.vu.active .zc-check { color: #d1fae5; }
   /* Fiche de zone en surimpression (modale) — ouvre par-dessus sans quitter la page */
   .zfm-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 18px;
     background: rgba(4,7,13,.74); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }

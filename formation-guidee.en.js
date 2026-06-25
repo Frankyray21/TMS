@@ -7,7 +7,7 @@
 
   var ATTEST_ENDPOINT = 'https://attestations-tms.frankyray-21.workers.dev';
   var MODEL_SRC = 'models/corps-anatomie-mobile.glb';
-  var K_PROG = 'tms_form_progress', K_ANS = 'tms_form_answers', K_NAME = 'tms_form_name';
+  var K_PROG = 'tms_form_progress', K_ANS = 'tms_form_answers', K_NAME = 'tms_form_name', K_ZONES = 'tms_form_zones';
 
   /* ---------------- DONNÉES ---------------- */
   var MODULES = [
@@ -214,7 +214,7 @@
   };
 
   /* ---------------- ÉTAT ---------------- */
-  var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', borgSel: null,
+  var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', borgSel: null, zonesVues: [],
     layers: { Muscles: { on: true, op: 100 }, Os: { on: false, op: 0 }, Articulations: { on: false, op: 0 }, Nerfs: { on: false, op: 0 } } };
   var app, mvInterval = null;
 
@@ -222,9 +222,11 @@
     try { var p = JSON.parse(localStorage.getItem(K_PROG) || '[]'); if (Array.isArray(p)) state.completed = p; } catch (e) {}
     try { var a = JSON.parse(localStorage.getItem(K_ANS) || '{}'); if (a && typeof a === 'object') state.answers = a; } catch (e) {}
     try { state.certName = localStorage.getItem(K_NAME) || ''; } catch (e) {}
+    try { var zv = JSON.parse(localStorage.getItem(K_ZONES) || '[]'); if (Array.isArray(zv)) state.zonesVues = zv; } catch (e) {}
   }
   function saveProg() { try { localStorage.setItem(K_PROG, JSON.stringify(state.completed)); } catch (e) {} }
   function saveAns() { try { localStorage.setItem(K_ANS, JSON.stringify(state.answers)); } catch (e) {} }
+  function saveZones() { try { localStorage.setItem(K_ZONES, JSON.stringify(state.zonesVues)); } catch (e) {} }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function svg(p, sw, w) { sw = sw || 2; w = w || 22; return '<svg width="' + w + '" height="' + w + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + sw + '" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
@@ -582,6 +584,13 @@
   ];
   function zoneByKey(k) { for (var i = 0; i < ZONE_FICHES.length; i++) { if (ZONE_FICHES[i].z === k) return ZONE_FICHES[i]; } return null; }
   function clearZoneActive() { app.querySelectorAll('.fg-zone-chip.active, .hotspot3d.h3-open').forEach(function (o) { o.classList.remove('active'); o.classList.remove('h3-open'); }); }
+  function updateZonesProgress() {
+    var el = document.getElementById('fgZoneProg'); if (!el) return;
+    var n = 0; ZONE_FICHES.forEach(function (z) { if (state.zonesVues.indexOf(z.z) >= 0) n++; });
+    var all = n >= ZONE_FICHES.length;
+    el.textContent = all ? ('✓ All areas viewed (' + n + '/' + ZONE_FICHES.length + ')') : (n + ' / ' + ZONE_FICHES.length + ' areas viewed');
+    el.className = 'fg-zone-prog' + (all ? ' done' : '');
+  }
   function zoneEscHandler(e) { if (e.key === 'Escape' || e.key === 'Esc') closeZoneFiche(); }
   function closeZoneFiche() {
     var box = document.getElementById('zoneFiche');
@@ -604,6 +613,9 @@
     clearZoneActive();
     app.querySelectorAll('.fg-zone-chip[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('active'); });
     app.querySelectorAll('.hotspot3d[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('h3-open'); });
+    if (state.zonesVues.indexOf(k) < 0) { state.zonesVues.push(k); saveZones(); }
+    app.querySelectorAll('.fg-zone-chip[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('vu'); });
+    updateZonesProgress();
     var cl = box.querySelector('.zf-close');
     if (cl) cl.addEventListener('click', closeZoneFiche);
     document.removeEventListener('keydown', zoneEscHandler);
@@ -631,13 +643,14 @@
       return '<div class="cl-row ' + (l.on ? 'on' : '') + '" data-mat="' + mat + '"><button class="cl-tog" type="button" aria-pressed="' + (l.on ? 'true' : 'false') + '" data-layer-toggle="' + mat + '" aria-label="Show or hide"></button><span class="cl-name">' + LAYER_LABELS[mat] + '</span><input class="cl-op" type="range" min="0" max="100" value="' + l.op + '" data-layer-op="' + mat + '" aria-label="Opacity"></div>';
     }).join('');
     var chips = ZONE_FICHES.map(function (z) {
-      return '<button type="button" class="fg-zone-chip" data-zone="' + z.z + '"><span class="zc-ico">' + z.icone + '</span>' + esc(z.nom) + '</button>';
+      var vu = state.zonesVues.indexOf(z.z) >= 0;
+      return '<button type="button" class="fg-zone-chip' + (vu ? ' vu' : '') + '" data-zone="' + z.z + '"><span class="zc-ico">' + z.icone + '</span>' + esc(z.nom) + '<span class="zc-check" aria-hidden="true">✓</span></button>';
     }).join('');
     return '<div class="fg-kb"><p class="lead">Underground, the most exposed areas range from the neck to the ankles. <strong style="color:#e2e8f0">Rotate the 3D model</strong> and display the structures (muscles, bones, joints, nerves):</p>'
       + '<div class="corps-3d"><model-viewer id="corps3d" src="' + MODEL_SRC + '" loading="eager" reveal="auto" alt="3D anatomical model: rotate it to explore the at-risk areas" camera-controls touch-action="pan-y" interaction-prompt="none" auto-rotate environment-image="neutral" tone-mapping="aces" shadow-intensity="0.85" shadow-softness="0.75" exposure="1.05" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 160deg auto" style="width:100%;max-width:560px;height:min(64vh,560px)">' + hot + '</model-viewer>'
       + '<div class="corps-layers" role="group" aria-label="Body structures to display"><p class="cl-title">Structures</p>' + layers + '</div>'
       + '<p class="corps-3d-note corps-3d-note-lg">Rotate the body, display the structures, then <strong>click an area</strong> to open its card.</p></div>'
-      + '<div class="fg-zone-pick"><p class="fg-zone-pick-t">The most affected body areas — click an area to see the frequent MSDs and the good reflexes:</p><div class="fg-zone-chips">' + chips + '</div></div>'
+      + '<div class="fg-zone-pick"><p class="fg-zone-pick-t">The most affected body areas — click an area to see the frequent MSDs and the good reflexes. <span class="fg-zone-prog" id="fgZoneProg"></span></p><div class="fg-zone-chips">' + chips + '</div></div>'
       + '<div id="zoneFiche" class="zfm-overlay" hidden></div>'
       + '</div>';
   }
@@ -735,8 +748,8 @@
   }
   function reset() {
     if (!window.confirm('Start over from scratch? Your progress and answers will be erased on this device.')) return;
-    state.completed = []; state.answers = {}; state.borgSel = null; state.certVisible = false;
-    saveProg(); saveAns();
+    state.completed = []; state.answers = {}; state.borgSel = null; state.certVisible = false; state.zonesVues = [];
+    saveProg(); saveAns(); saveZones();
     go('sommaire', 0);
   }
   function next() {
@@ -943,6 +956,7 @@
     });
     var zmodal = document.getElementById('zoneFiche');
     if (zmodal) zmodal.addEventListener('click', function (e) { if (e.target === zmodal) closeZoneFiche(); });
+    updateZonesProgress();
   }
   function currentQuizId() { var st = steps(), cur = st[state.idx]; return cur && cur.kind === 'quiz' ? cur.module.id : null; }
 
