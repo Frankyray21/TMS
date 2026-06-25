@@ -69,8 +69,8 @@
     { Muscles: 0, Os: 0.18, Nerfs: 1, Articulations: 0 },
     { Muscles: 0, Os: 0.30, Nerfs: 0, Articulations: 1 }
   ];
-  var SYS_SEG_MS = 2600;  // durée d'une étape en mode auto (sans scroll)
-  var SYS_HOLD = 0.42;    // part de l'étape où le système reste pleinement visible avant le fondu
+  var SYS_SEG_MS = 6000;  // durée d'une étape en mode auto (sans scroll) — transition lente et contemplative
+  var SYS_HOLD = 0.5;     // part de l'étape où le système reste pleinement visible avant le fondu
   var IDLE_MS = 1100;     // délai sans scroll avant que la révélation rejoue toute seule
 
   function orbit(theta, phi, r) { return theta + "deg " + phi + "deg " + r + "m"; }
