@@ -175,7 +175,7 @@
 
     var self = this;
     mv.addEventListener("load", function () {
-      if (self._systems) { self._matCache = {}; self.applyReveal(0); } // état initial : 1er système seul (pas de flash multi-couches)
+      if (self._systems) { self.primeSystems(); self.applyReveal(0); } // BLEND une fois, puis état initial (1er système seul, pas de flash)
       self.classList.add("ahm-ready");
       self.setupVisibility();
     });
@@ -187,10 +187,23 @@
     this.appendChild(mv);
   };
 
-  // Affiche/masque ou rend semi-transparent un système (matériau nommé) du modèle.
-  AnatomyHeroModel.prototype.setMat = function (name, alpha) {
+  // Réinitialise les caches d'opacité / de mode (au chargement).
+  AnatomyHeroModel.prototype.primeSystems = function () {
+    this._matCache = {};
+    this._modeCache = {};
+  };
+
+  // Met à jour l'opacité d'un système.
+  //  - On n'utilise JAMAIS le mode MASK : il active alphaTest, ce qui force une RECOMPILATION
+  //    du shader à chaque masquage/affichage → c'est la source des saccades. Un système masqué
+  //    reste donc en BLEND à alpha 0 (dessiné mais invisible, sans recompilation).
+  //  - OPAQUE au repos (alpha plein) : occlusion correcte (le muscle cache bien l'intérieur).
+  //    OPAQUE↔BLEND ne change qu'un état de rendu (pas de recompilation) → bascule fluide.
+  //  - On n'appelle setAlphaMode que lorsque le mode change réellement (cache de mode).
+  AnatomyHeroModel.prototype.setAlpha = function (name, alpha) {
     var cache = this._matCache || (this._matCache = {});
-    if (cache[name] !== undefined && Math.abs(cache[name] - alpha) < 0.004) return; // évite les re-rendus inutiles
+    var modeC = this._modeCache || (this._modeCache = {});
+    if (cache[name] !== undefined && Math.abs(cache[name] - alpha) < 0.003) return; // saute les variations imperceptibles
     var mdl = this.mv && this.mv.model;
     if (!mdl || !mdl.materials) return;
     for (var i = 0; i < mdl.materials.length; i++) {
@@ -198,11 +211,8 @@
       if (m && m.name === name && m.pbrMetallicRoughness) {
         var f = m.pbrMetallicRoughness.baseColorFactor || [1, 1, 1, 1];
         m.pbrMetallicRoughness.setBaseColorFactor([f[0], f[1], f[2], alpha]);
-        if (m.setAlphaMode) {
-          if (alpha >= 0.999) m.setAlphaMode("OPAQUE");
-          else if (alpha <= 0.01) { m.setAlphaMode("MASK"); if (m.setAlphaCutoff) m.setAlphaCutoff(0.5); } // masqué = non dessiné
-          else m.setAlphaMode("BLEND");
-        }
+        var mode = alpha >= 0.999 ? "OPAQUE" : "BLEND";
+        if (m.setAlphaMode && modeC[name] !== mode) { m.setAlphaMode(mode); modeC[name] = mode; }
         cache[name] = alpha;
         return;
       }
@@ -223,7 +233,7 @@
     for (var k = 0; k < this._systems.length; k++) {
       var name = this._systems[k];
       var a0 = s0[name] || 0, a1 = s1[name] || 0;
-      this.setMat(name, a0 + (a1 - a0) * ef);
+      this.setAlpha(name, a0 + (a1 - a0) * ef);
     }
     // Libellé : nom du système dominant (celui vers lequel on fond).
     if (this._label) {
@@ -247,7 +257,8 @@
     this._scrollP = 0;
     this._lastScrollTs = -1e9; // démarre en mode auto (révélation qui rejoue toute seule dès l'ouverture)
     this._autoAnchor = 0;      // position de reprise de l'auto après un scroll
-    this._autoT0 = nowMs();
+    this._clock = 0;           // horloge interne (ms) — n'avance que pendant la lecture (pause/reprise sans à-coup)
+    this._autoClock = 0;       // valeur de l'horloge au début du cycle auto courant
     var ticking = false;
     function readScroll() {
       ticking = false;
@@ -277,11 +288,19 @@
 
   AnatomyHeroModel.prototype.play = function () {
     if (this._raf || !this.mv) return;
-    var self = this, c = this.cfg, start = null;
+    var self = this, c = this.cfg;
     var N = SYS_SCENES.length;
+    if (this._clock === undefined) this._clock = 0;
+    this._lastNow = null;
     function frame(now) {
-      if (start === null) start = now;
-      var ms = now - start;
+      // Horloge interne accumulée : avance du delta réel entre deux frames, mais reste figée
+      // pendant les pauses (hero hors écran, onglet caché) → reprise sans saut.
+      if (self._lastNow === null) self._lastNow = now;
+      var dt = now - self._lastNow; self._lastNow = now;
+      if (dt > 100) dt = 16;          // après une longue pause, on n'avance pas d'un bloc
+      self._clock += dt;
+      var ms = self._clock;
+
       var theta = c.theta + (ms / c.spin) * 360; // rotation 360° continue
       var t = ms / BOB_PERIOD * Math.PI * 2;
       var phi = c.phi + c.phiAmp * Math.sin(t * 0.6);
@@ -289,8 +308,13 @@
       var e = p * p * (3 - 2 * p);                 // lissage (smoothstep)
       var r = c.rClose + (c.rFull - c.rClose) * e; // zoom piloté par le scroll : gros plan → corps entier
       var ty = c.tyClose + (c.tyFull - c.tyClose) * e;
-      self.mv.cameraTarget = self.targetStr(ty.toFixed(2));
+      var tgt = self.targetStr(ty.toFixed(2));
+      if (tgt !== self._lastTarget) { self.mv.cameraTarget = tgt; self._lastTarget = tgt; } // évite une réécriture inutile
       self.mv.cameraOrbit = orbit(theta.toFixed(2), phi.toFixed(2), r.toFixed(2));
+      // Applique la pose immédiatement : sans ça, model-viewer lisse vers la cible dans SA propre
+      // boucle de rendu, désynchronisée de la nôtre → battement/saccade. Ici notre horloge (delta-time)
+      // est la seule source du mouvement → rotation régulière.
+      if (self.mv.jumpCameraToGoal) self.mv.jumpCameraToGoal();
 
       // Révélation des systèmes : suit le scroll ; rejoue toute seule en boucle dès qu'on s'arrête.
       if (self._systems) {
@@ -298,9 +322,9 @@
         var revPos;
         if (now - self._lastScrollTs < IDLE_MS) {   // scroll récent → scrub
           revPos = scrollPos;
-          self._autoAnchor = scrollPos; self._autoT0 = now; // mémorise le point de reprise auto
+          self._autoAnchor = scrollPos; self._autoClock = self._clock; // mémorise le point de reprise auto
         } else {                                    // au repos → lecture automatique en boucle
-          revPos = self._autoAnchor + (now - self._autoT0) / SYS_SEG_MS;
+          revPos = self._autoAnchor + (self._clock - self._autoClock) / SYS_SEG_MS;
         }
         self.applyReveal(revPos);
       }
