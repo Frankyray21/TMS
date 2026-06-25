@@ -178,30 +178,18 @@
   }
   window.AnatomyHeroModel = AnatomyHeroModel;
 
-  /* Effet scroll du hero d'accueil : l'écorché est mis en avant avec le titre en
-     haut de page, puis recule en arrière-plan (rétrécit + s'estompe) quand on
-     descend. Desktop uniquement ; respecte prefers-reduced-motion. */
-  function setupScrollRecede() {
-    if (RM) return;
-    if (!(window.matchMedia && window.matchMedia("(min-width: 981px)").matches)) return;
-    var fig = document.querySelector(".hero-anatomy");
-    if (!fig) return;
-    fig.style.willChange = "transform, opacity";
-    fig.style.transformOrigin = "center 38%";
-    var ticking = false;
-    function update() {
-      ticking = false;
-      var vh = window.innerHeight || 1;
-      var p = Math.min(Math.max(window.scrollY / (vh * 0.8), 0), 1); // 0 = haut, 1 = hero quitté
-      var e = p * p * (3 - 2 * p);                                   // lissage (smoothstep)
-      fig.style.transform = "translateY(" + (e * 5).toFixed(2) + "%) scale(" + (1.0 - 0.26 * e).toFixed(3) + ")";
-      fig.style.opacity = (1 - 0.6 * e).toFixed(3);
-    }
-    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    update();
+  /* Intro accueil : au 1er affichage on ne voit que le titre + l'écorché ;
+     le reste du contenu (.hero-more) se dévoile dès qu'on commence à descendre.
+     Respecte prefers-reduced-motion et le repli no-JS (contenu visible d'office). */
+  function setupHeroReveal() {
+    var more = document.querySelector(".hero-more");
+    if (!more) return;
+    if (RM || !("IntersectionObserver" in window)) { more.classList.add("in"); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { more.classList.add("in"); io.disconnect(); } });
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    io.observe(more);
   }
-  if (document.readyState !== "loading") setupScrollRecede();
-  else document.addEventListener("DOMContentLoaded", setupScrollRecede);
+  if (document.readyState !== "loading") setupHeroReveal();
+  else document.addEventListener("DOMContentLoaded", setupHeroReveal);
 })();
