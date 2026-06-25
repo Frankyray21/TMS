@@ -72,6 +72,8 @@
   var SYS_SEG_MS = 6000;  // durée d'une étape en mode auto (sans scroll) — transition lente et contemplative
   var SYS_HOLD = 0.5;     // part de l'étape où le système reste pleinement visible avant le fondu
   var IDLE_MS = 1100;     // délai sans scroll avant que la révélation rejoue toute seule
+  var SCROLL_SPAN = 1.6;  // distance de scroll (en hauteurs d'écran) pour dérouler tout le zoom + la révélation
+                          // (plus la valeur est grande, plus la transition au scroll est lente/progressive)
 
   function orbit(theta, phi, r) { return theta + "deg " + phi + "deg " + r + "m"; }
 
@@ -247,7 +249,7 @@
     function readScroll() {
       ticking = false;
       var vh = window.innerHeight || 1;
-      self._scrollP = Math.min(Math.max(window.scrollY / (vh * 0.8), 0), 1);
+      self._scrollP = Math.min(Math.max(window.scrollY / (vh * SCROLL_SPAN), 0), 1);
     }
     this._onScroll = function () {
       self._lastScrollTs = nowMs();
