@@ -582,22 +582,34 @@
   ];
   function zoneByKey(k) { for (var i = 0; i < ZONE_FICHES.length; i++) { if (ZONE_FICHES[i].z === k) return ZONE_FICHES[i]; } return null; }
   function clearZoneActive() { app.querySelectorAll('.fg-zone-chip.active, .hotspot3d.h3-open').forEach(function (o) { o.classList.remove('active'); o.classList.remove('h3-open'); }); }
+  function zoneEscHandler(e) { if (e.key === 'Escape' || e.key === 'Esc') closeZoneFiche(); }
+  function closeZoneFiche() {
+    var box = document.getElementById('zoneFiche');
+    if (box) { box.hidden = true; box.innerHTML = ''; }
+    clearZoneActive();
+    document.removeEventListener('keydown', zoneEscHandler);
+    try { document.documentElement.style.overflow = ''; } catch (e) {}
+  }
   function openZoneFiche(k) {
     var z = zoneByKey(k), box = document.getElementById('zoneFiche');
     if (!z || !box) return;
-    box.innerHTML = '<button type="button" class="zf-close" aria-label="Close the card">✕</button>'
+    box.innerHTML = '<div class="zfm-dialog" role="dialog" aria-modal="true" aria-label="' + esc(z.nom) + '">'
+      + '<button type="button" class="zf-close" aria-label="Close the card">✕</button>'
       + (z.img ? '<img src="' + z.img + '" alt="' + esc(z.nom) + '" class="zf-img" loading="lazy" decoding="async">' : '')
       + '<div class="zf-body"><h4 class="zf-title">' + z.icone + ' ' + esc(z.nom) + '</h4>'
       + '<div class="zf-tms">' + z.tms.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('') + '</div>'
       + '<p class="zf-desc">' + esc(z.desc) + '</p>'
-      + '<p class="zf-h">Good reflexes</p><ul class="zf-list">' + z.conseils.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>';
+      + '<p class="zf-h">Good reflexes</p><ul class="zf-list">' + z.conseils.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div></div>';
     box.hidden = false;
     clearZoneActive();
     app.querySelectorAll('.fg-zone-chip[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('active'); });
     app.querySelectorAll('.hotspot3d[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('h3-open'); });
     var cl = box.querySelector('.zf-close');
-    if (cl) cl.addEventListener('click', function () { box.hidden = true; box.innerHTML = ''; clearZoneActive(); });
-    try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+    if (cl) cl.addEventListener('click', closeZoneFiche);
+    document.removeEventListener('keydown', zoneEscHandler);
+    document.addEventListener('keydown', zoneEscHandler);
+    try { document.documentElement.style.overflow = 'hidden'; } catch (e) {}
+    if (cl) { try { cl.focus(); } catch (e) {} }
   }
 
   function renderZones() {
@@ -626,7 +638,7 @@
       + '<div class="corps-layers" role="group" aria-label="Body structures to display"><p class="cl-title">Structures</p>' + layers + '</div>'
       + '<p class="corps-3d-note corps-3d-note-lg">Rotate the body, display the structures, then <strong>click an area</strong> to open its card.</p></div>'
       + '<div class="fg-zone-pick"><p class="fg-zone-pick-t">The most affected body areas — click an area to see the frequent MSDs and the good reflexes:</p><div class="fg-zone-chips">' + chips + '</div></div>'
-      + '<div id="zoneFiche" class="fg-zone-fiche" hidden></div>'
+      + '<div id="zoneFiche" class="zfm-overlay" hidden></div>'
       + '</div>';
   }
 
@@ -925,10 +937,12 @@
     app.querySelectorAll('[data-layer-op]').forEach(function (el) {
       el.addEventListener('input', function () { setLayerOp(el.getAttribute('data-layer-op'), el.value); });
     });
-    // Body areas: a 3D marker OR an area button -> opens the detailed card (like the knowledge base).
+    // Body areas: a 3D marker OR an area button -> opens the detailed card as an overlay (like the knowledge base).
     app.querySelectorAll('.hotspot3d[data-zone], .fg-zone-chip[data-zone]').forEach(function (el) {
       el.addEventListener('click', function (e) { e.preventDefault(); openZoneFiche(el.getAttribute('data-zone')); });
     });
+    var zmodal = document.getElementById('zoneFiche');
+    if (zmodal) zmodal.addEventListener('click', function (e) { if (e.target === zmodal) closeZoneFiche(); });
   }
   function currentQuizId() { var st = steps(), cur = st[state.idx]; return cur && cur.kind === 'quiz' ? cur.module.id : null; }
 

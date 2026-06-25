@@ -1786,26 +1786,26 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .fg-zone-chip:hover { border-color: #ef5a5c; color: #fff; }
   .fg-zone-chip.active { background: linear-gradient(135deg, #e23a3c, #a81a1c); border-color: transparent; color: #fff; box-shadow: 0 6px 18px rgba(210,35,37,.3); }
   .fg-zone-chip .zc-ico { font-size: 1.12rem; line-height: 1; }
-  .fg-zone-fiche { position: relative; margin-top: 18px; display: grid; grid-template-columns: 1fr;
-    background: linear-gradient(120deg, rgba(210,35,37,.09), rgba(13,19,32,.6)); border: 1px solid rgba(210,35,37,.42);
-    border-radius: 18px; overflow: hidden; box-shadow: 0 12px 34px rgba(0,0,0,.4); }
-  .fg-zone-fiche[hidden] { display: none; }
-  .fg-zone-fiche .zf-img { width: 100%; height: 210px; object-fit: cover; display: block; }
-  .fg-zone-fiche .zf-body { padding: 20px 22px 22px; }
-  .fg-zone-fiche .zf-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; font-size: 1.55rem; color: #fff; margin: 0 0 13px; }
-  .fg-zone-fiche .zf-tms { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 15px; }
-  .fg-zone-fiche .zf-tms span { font-size: .82rem; font-weight: 700; color: #fecaca; background: rgba(239,68,68,.13); border: 1px solid rgba(239,68,68,.4); border-radius: 999px; padding: 4px 12px; }
-  .fg-zone-fiche .zf-desc { color: #cbd5e1; font-size: 1.02rem; line-height: 1.6; margin: 0 0 17px; }
-  .fg-zone-fiche .zf-h { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: .86rem; color: #34d399; margin: 0 0 8px; }
-  .fg-zone-fiche .zf-list { margin: 0; padding-left: 1.15rem; color: #dbe3ee; font-size: .97rem; line-height: 1.7; }
-  .fg-zone-fiche .zf-list li { margin-bottom: 4px; }
-  .fg-zone-fiche .zf-close { position: absolute; top: 10px; right: 12px; z-index: 2; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
-    background: rgba(10,14,23,.72); border: 1px solid #334155; color: #cbd5e1; font-size: 1rem; line-height: 1; display: flex; align-items: center; justify-content: center; }
-  .fg-zone-fiche .zf-close:hover { border-color: #ef5a5c; color: #fff; }
-  @media (min-width: 720px) {
-    .fg-zone-fiche { grid-template-columns: 250px 1fr; }
-    .fg-zone-fiche .zf-img { height: 100%; min-height: 230px; }
-  }
+  /* Fiche de zone en surimpression (modale) — ouvre par-dessus sans quitter la page */
+  .zfm-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 18px;
+    background: rgba(4,7,13,.74); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+  .zfm-overlay[hidden] { display: none; }
+  .zfm-dialog { position: relative; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: linear-gradient(150deg, rgba(210,35,37,.13), #0d1320 55%); border: 1px solid rgba(210,35,37,.42);
+    border-radius: 18px; box-shadow: 0 24px 60px rgba(0,0,0,.6); animation: zfmIn .22s ease; }
+  @keyframes zfmIn { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+  .zfm-dialog .zf-img { width: 100%; height: 200px; object-fit: cover; display: block; }
+  .zfm-dialog .zf-body { padding: 20px 22px 24px; }
+  .zfm-dialog .zf-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; font-size: 1.55rem; color: #fff; margin: 0 0 13px; padding-right: 36px; }
+  .zfm-dialog .zf-tms { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 15px; }
+  .zfm-dialog .zf-tms span { font-size: .82rem; font-weight: 700; color: #fecaca; background: rgba(239,68,68,.13); border: 1px solid rgba(239,68,68,.4); border-radius: 999px; padding: 4px 12px; }
+  .zfm-dialog .zf-desc { color: #cbd5e1; font-size: 1.02rem; line-height: 1.6; margin: 0 0 17px; }
+  .zfm-dialog .zf-h { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: .86rem; color: #34d399; margin: 0 0 8px; }
+  .zfm-dialog .zf-list { margin: 0; padding-left: 1.15rem; color: #dbe3ee; font-size: .97rem; line-height: 1.7; }
+  .zfm-dialog .zf-list li { margin-bottom: 4px; }
+  .zfm-dialog .zf-close { position: absolute; top: 10px; right: 12px; z-index: 2; width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+    background: rgba(10,14,23,.85); border: 1px solid #334155; color: #cbd5e1; font-size: 1.05rem; line-height: 1; display: flex; align-items: center; justify-content: center; }
+  .zfm-dialog .zf-close:hover { border-color: #ef5a5c; color: #fff; }
   /* Pastille rouge lumineuse pulsante */
   .hotspot3d { --d: 15px; width: var(--d); height: var(--d); border-radius: 50%; border: 2px solid #fff; padding: 0; cursor: pointer;
     background: radial-gradient(circle at 50% 40%, #ff8a8c, #d4282a 60%);
