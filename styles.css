@@ -2272,3 +2272,35 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 .part-nav .pn-k{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
 .part-nav .pn-t{font-family:var(--font-display);font-weight:700;font-size:1.05rem}
 @media(max-width:700px){.part-nav{flex-direction:column;padding:0 1.2rem}.part-nav .pn-next{margin-left:0;align-items:flex-start;text-align:left}}
+
+/* ============================================================
+   HERO — visuel anatomique 3D (composant AnatomyHeroModel)
+   Texte à gauche, écorché à droite (desktop) ; texte d'abord,
+   image fixe ensuite (mobile). Halo discret + zones TMS mises
+   en valeur (épaules / colonne / lombaires) par des lueurs sobres.
+   ============================================================ */
+.hero-figure{position:relative;width:100%;max-width:300px;aspect-ratio:.79;margin:1.3rem auto 0;pointer-events:none}
+anatomy-hero-model{position:absolute;inset:0;display:block}
+.ahm-poster,.ahm-mv{position:absolute;inset:0;width:100%;height:100%}
+.ahm-poster{object-fit:contain;object-position:center bottom;z-index:1;transition:opacity .6s ease;filter:drop-shadow(0 18px 40px rgba(0,0,0,.5))}
+.ahm-mv{z-index:2;background:transparent;--poster-color:transparent;--progress-bar-color:transparent;opacity:0;transition:opacity .8s ease}
+.ahm-ready .ahm-mv{opacity:1}
+.ahm-ready .ahm-poster{opacity:0}
+/* halo très discret derrière le modèle pour le détacher du fond noir +
+   mise en valeur sobre des zones à risque (épaules/haut du dos, puis lombaires) */
+.hero-figure::before{content:"";position:absolute;z-index:0;left:51%;top:36%;width:84%;height:48%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(224,74,52,.20),rgba(150,40,36,.06) 50%,transparent 72%);filter:blur(4px);pointer-events:none}
+.hero-figure::after{content:"";position:absolute;z-index:0;left:50%;top:64%;width:56%;height:30%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(216,70,50,.13),transparent 70%);filter:blur(6px);pointer-events:none}
+
+@media (min-width:981px){
+  .hero-wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);align-items:center;gap:2.2rem;max-width:1180px}
+  .hero-copy{min-width:0}
+  .hero-wrap .hero-copy h1{font-size:clamp(2.6rem,5vw,4.4rem)}
+  .hero-figure{margin:0 auto;max-width:460px;max-height:84vh;
+    background:radial-gradient(58% 60% at 50% 44%,rgba(7,9,15,.66),transparent 72%)}
+}
+/* mobile : visuel allégé (image fixe), placé après le texte */
+@media (max-width:980px){
+  .hero-figure{max-width:248px;margin-top:1rem}
+}
+@media print{ .hero-figure{display:none!important} }
+.foot-credit a{font-size:inherit}

@@ -60,6 +60,7 @@ const CORE = [
   "images/zone_genoux.jpeg",
   "images/zone_poignets.jpeg",
   "images/zones_corps.jpg",
+  "images/hero-anatomy.webp",
   "videos/preserver-son-corps-affiche.jpg"
 ];
 /* pages + manifeste : doivent rester frais a chaque deploiement */
@@ -71,7 +72,7 @@ const PAGES = ["./", "index.html", "index.en.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "formation-guidee.html", "formation-guidee.en.html",
   "interactif.html", "manifest.webmanifest",
-  "styles.css", "formation.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "gsap.min.js", "hero-anim.js"];
+  "styles.css", "formation.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "gsap.min.js", "hero-anim.js", "anatomy-hero-model.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
