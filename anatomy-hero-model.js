@@ -69,8 +69,9 @@
     { Muscles: 0, Os: 0.18, Nerfs: 1, Articulations: 0 },
     { Muscles: 0, Os: 0.30, Nerfs: 0, Articulations: 1 }
   ];
-  var SYS_SEG_MS = 6000;  // durée d'une étape en mode auto (sans scroll) — transition lente et contemplative
-  var SYS_HOLD = 0.5;     // part de l'étape où le système reste pleinement visible avant le fondu
+  var SYS_SEG_MS = 7000;  // durée d'une étape en mode auto (sans scroll) — transition lente et contemplative
+  var SYS_HOLD = 0.28;    // part de l'étape où le système reste pleinement visible AVANT le fondu
+                          // (le reste — 72 % — est un fondu LINÉAIRE lent : on voit la progression couche par couche)
   var IDLE_MS = 1100;     // délai sans scroll avant que la révélation rejoue toute seule
   var SCROLL_SPAN = 1.6;  // distance de scroll (en hauteurs d'écran) pour dérouler tout le zoom + la révélation
                           // (plus la valeur est grande, plus la transition au scroll est lente/progressive)
@@ -213,7 +214,9 @@
     var N = SYS_SCENES.length;
     var base = Math.floor(pos);
     var frac = pos - base;
-    var ef = frac <= SYS_HOLD ? 0 : (function (t) { return t * t * (3 - 2 * t); })((frac - SYS_HOLD) / (1 - SYS_HOLD));
+    // Fondu LINÉAIRE (et non smoothstep) : le morphing avance à vitesse constante,
+    // donc lentement et de façon bien visible, sans « claquer » au milieu de la transition.
+    var ef = frac <= SYS_HOLD ? 0 : (frac - SYS_HOLD) / (1 - SYS_HOLD);
     var i0 = ((base % N) + N) % N;
     var i1 = (i0 + 1) % N;
     var s0 = SYS_SCENES[i0], s1 = SYS_SCENES[i1];
