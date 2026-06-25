@@ -136,9 +136,10 @@ html.tms-loading{overflow:hidden!important}
             <circle cx="260" cy="330" r="5" fill="rgba(239,90,92,.85)" stroke="none"><animate attributeName="opacity" values="1;.25;1" dur="3.2s" repeatCount="indefinite"/></circle>
           </g>
         </svg>
-        <!-- Écorché 3D en arrière-plan plein cadre (composant AnatomyHeroModel, décoratif) -->
+        <!-- Modèle 3D multi-systèmes en arrière-plan plein cadre (composant AnatomyHeroModel, décoratif).
+             Révélation des couches au scroll (et en lecture auto au repos) : Muscles → Os → Nerfs → Articulations. -->
         <div class="hero-anatomy" aria-hidden="true">
-          <anatomy-hero-model data-src="models/male-full-body-ecorche-hero.glb" data-poster="images/hero-anatomy.webp"></anatomy-hero-model>
+          <anatomy-hero-model data-src="models/corps-anatomie-web.glb" data-poster="images/hero-systems.webp" data-systems="Muscles,Os,Nerfs,Articulations" data-labels="Muscles|Squelette|Système nerveux|Articulations"></anatomy-hero-model>
         </div>
         <div class="hero-scrim"></div>
       </div>
@@ -589,8 +590,8 @@ html.tms-loading{overflow:hidden!important}
         <div class="foot-bar">
           <span>Mise à jour : juin 2026</span>
           <span>Document de sensibilisation. Ne remplace pas un avis médical.</span>
-          <span class="foot-credit">Modèle anatomique : Diego Luján García, via Sketchfab, licence <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY</a>.</span>
-          <span class="foot-ver" id="footVer" title="Version du site">v1.70</span>
+          <span class="foot-credit">Modèle anatomique : <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a>, licence <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA</a>.</span>
+          <span class="foot-ver" id="footVer" title="Version du site">v1.71</span>
         </div>
       </div>
     </footer>

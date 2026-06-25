@@ -1,19 +1,25 @@
-/* AnatomyHeroModel — visuel 3D du hero (écorché anatomique).
+/* AnatomyHeroModel — visuel 3D du hero.
    Composant réutilisable : custom element <anatomy-hero-model>, basé sur <model-viewer>
    (le moteur 3D déjà embarqué dans le projet : vendor/model-viewer.min.js).
 
-   Modèle anatomique : Diego Luján García, via Sketchfab, licence CC BY 4.0.
-   (Crédit visible obligatoire : voir le pied de page du site.)
+   Deux modes :
+   1) Écorché (par défaut) — modèle musculaire seul (Diego Luján García, Sketchfab, CC BY 4.0).
+   2) Systèmes (attribut data-systems) — modèle multi-systèmes (Z-Anatomy, CC BY-SA) :
+      révélation des couches du corps (Muscles → Os → Nerfs → Articulations).
+      La révélation est pilotée au scroll (on « épluche » les couches en descendant) ET
+      rejoue toute seule en boucle quand on ne scrolle pas.
 
-   Principes : chargement différé, repli image fixe (petits écrans / appareils lents /
-   économiseur de données / erreur / hors-ligne), rotation lente ±10° en boucle douce,
-   respect de prefers-reduced-motion (pose fixe), et arrêt de l'animation quand le hero
-   n'est plus visible. Élément purement décoratif (aria-hidden, ne capte pas les clics). */
+   Principes communs : chargement différé, repli image fixe (petits écrans / appareils lents /
+   économiseur de données / erreur / hors-ligne), rotation lente en boucle, respect de
+   prefers-reduced-motion (pose fixe), arrêt de l'animation quand le hero n'est plus visible.
+   Élément purement décoratif (aria-hidden, ne capte pas les clics). */
 (function () {
   "use strict";
 
   var MV_SRC = "vendor/model-viewer.min.js";
   var mvLoading = null;
+
+  function nowMs() { return (window.performance && performance.now) ? performance.now() : Date.now(); }
 
   // Charge le moteur <model-viewer> une seule fois (réutilise celui de la carte du corps s'il est déjà demandé).
   function loadModelViewer() {
@@ -38,20 +44,36 @@
 
   var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Rotation 360° continue ; le ZOOM est piloté par le scroll : gros plan en haut
-  // de page → corps entier après avoir scrollé (le visuel reste épinglé pendant ce temps).
-  var BASE_THETA = 26;          // deg — angle de départ
-  var SPIN_PERIOD = 14000;      // ms — durée d'un tour complet (rotation 360°)
-  var PERIOD = 9000;            // ms — rythme du léger basculement vertical
-  var BASE_PHI = 86;            // deg — hauteur de la caméra
-  var PHI_AMP = 2.5;            // deg — léger basculement vertical
-  var R_CLOSE = 86;             // gros plan (haut de page)
-  var R_FULL = 178;             // corps entier (après le scroll)
-  var TY_CLOSE = 6;             // visée gros plan (haut du corps)
-  var TY_FULL = -9;             // visée corps entier (centre du corps)
-  var FOV = "30deg";
+  // ── Profils de cadrage caméra (le ZOOM est piloté par le scroll : gros plan en haut
+  //    de page → corps entier après avoir scrollé ; le visuel reste épinglé pendant ce temps). ──
+  // Écorché : modèle à grande échelle (rayon en dizaines de mètres).
+  var ECORCHE = {
+    theta: 26, phi: 86, phiAmp: 2.5, fov: "30deg",
+    rClose: 86, rFull: 178, tyClose: 6, tyFull: -9, tx: -0.09, tz: -0.49,
+    minR: "40m", maxR: "240m", spin: 14000, exposure: "0.92"
+  };
+  // Multi-systèmes (Z-Anatomy) : modèle à échelle humaine (~1,7 m de haut, centre y≈0,86).
+  var CORPS = {
+    theta: 18, phi: 84, phiAmp: 2, fov: "30deg",
+    rClose: 1.95, rFull: 3.5, tyClose: 1.25, tyFull: 0.86, tx: 0, tz: 0,
+    minR: "1.2m", maxR: "5m", spin: 16000, exposure: "1.0"
+  };
+
+  var BOB_PERIOD = 9000; // ms — rythme du léger basculement vertical de la caméra
+
+  // Révélation des systèmes : scènes successives (matériau → opacité).
+  // On garde un squelette discret en fond pour les nerfs et les articulations (sinon ils « flottent »).
+  var SYS_SCENES = [
+    { Muscles: 1, Os: 0, Nerfs: 0, Articulations: 0 },
+    { Muscles: 0, Os: 1, Nerfs: 0, Articulations: 0 },
+    { Muscles: 0, Os: 0.18, Nerfs: 1, Articulations: 0 },
+    { Muscles: 0, Os: 0.30, Nerfs: 0, Articulations: 1 }
+  ];
+  var SYS_SEG_MS = 2600;  // durée d'une étape en mode auto (sans scroll)
+  var SYS_HOLD = 0.42;    // part de l'étape où le système reste pleinement visible avant le fondu
+  var IDLE_MS = 1100;     // délai sans scroll avant que la révélation rejoue toute seule
+
   function orbit(theta, phi, r) { return theta + "deg " + phi + "deg " + r + "m"; }
-  function targetStr(ty) { return "-0.09m " + ty + "m -0.49m"; }
 
   // Repli image fixe : petits écrans, appareils peu dotés ou économiseur de données.
   function prefersStatic() {
@@ -66,12 +88,25 @@
   AnatomyHeroModel.prototype = Object.create(HTMLElement.prototype);
   AnatomyHeroModel.prototype.constructor = AnatomyHeroModel;
 
+  AnatomyHeroModel.prototype.targetStr = function (ty) {
+    var c = this.cfg;
+    return c.tx + "m " + ty + "m " + c.tz + "m";
+  };
+
   AnatomyHeroModel.prototype.connectedCallback = function () {
     if (this._init) return;
     this._init = true;
     this.setAttribute("aria-hidden", "true");
 
     this._src = this.getAttribute("data-src") || "models/male-full-body-ecorche-hero.glb";
+
+    // Mode systèmes : data-systems="Muscles,Os,Nerfs,Articulations" (ordre de révélation).
+    var sysAttr = this.getAttribute("data-systems");
+    this._systems = sysAttr ? sysAttr.split(",").map(function (s) { return s.trim(); }).filter(Boolean) : null;
+    this.cfg = this._systems ? CORPS : ECORCHE;
+    // Libellés affichés (localisés) : data-labels="Muscles|Squelette|Système nerveux|Articulations".
+    var lbl = this.getAttribute("data-labels");
+    this._labels = lbl ? lbl.split("|") : (this._systems || []);
 
     // Image fixe : repli immédiat + placeholder pendant le chargement de la 3D.
     var poster = this.getAttribute("data-poster");
@@ -103,29 +138,44 @@
   };
 
   AnatomyHeroModel.prototype.build = function () {
+    var c = this.cfg;
     var mv = document.createElement("model-viewer");
     this.mv = mv;
     mv.className = "ahm-mv";
     mv.setAttribute("alt", "");
     mv.setAttribute("src", this._src);
-    mv.setAttribute("camera-orbit", orbit(BASE_THETA, BASE_PHI, R_CLOSE)); // départ : gros plan
-    mv.setAttribute("camera-target", targetStr(TY_CLOSE));
-    mv.setAttribute("field-of-view", FOV);
+    mv.setAttribute("camera-orbit", orbit(c.theta, c.phi, c.rClose)); // départ : gros plan
+    mv.setAttribute("camera-target", this.targetStr(c.tyClose));
+    mv.setAttribute("field-of-view", c.fov);
     // autorise le zoom au scroll (sinon model-viewer borne le rayon au cadrage auto)
-    mv.setAttribute("min-camera-orbit", "auto auto 40m");
-    mv.setAttribute("max-camera-orbit", "auto auto 240m");
+    mv.setAttribute("min-camera-orbit", "auto auto " + c.minR);
+    mv.setAttribute("max-camera-orbit", "auto auto " + c.maxR);
     mv.setAttribute("interaction-prompt", "none");
     // éclairage doux et neutre, sans ombre coûteuse ni post-traitement lourd
     mv.setAttribute("environment-image", "neutral");
     mv.setAttribute("tone-mapping", "neutral");
     mv.setAttribute("shadow-intensity", "0");
-    mv.setAttribute("exposure", "0.92");
+    mv.setAttribute("exposure", c.exposure);
     mv.setAttribute("loading", "eager");
     mv.setAttribute("reveal", "auto");
     // décoratif : pas de camera-controls (aucune interaction), ne capte pas les clics (pointer-events: none via CSS)
 
+    // Libellé du système en cours (mode systèmes) — petit cartouche discret, décoratif.
+    if (this._systems) {
+      var label = document.createElement("span");
+      label.className = "ahm-sys-label";
+      label.setAttribute("aria-hidden", "true");
+      this.appendChild(label);
+      this._label = label;
+      this._labelIdx = -1;
+    }
+
     var self = this;
-    mv.addEventListener("load", function () { self.classList.add("ahm-ready"); self.setupVisibility(); });
+    mv.addEventListener("load", function () {
+      if (self._systems) { self._matCache = {}; self.applyReveal(0); } // état initial : 1er système seul (pas de flash multi-couches)
+      self.classList.add("ahm-ready");
+      self.setupVisibility();
+    });
     mv.addEventListener("error", function () {
       if (mv.parentNode) mv.parentNode.removeChild(mv); // échec décodage/réseau → on garde l'image fixe
       self.classList.remove("ahm-ready");
@@ -134,22 +184,75 @@
     this.appendChild(mv);
   };
 
+  // Affiche/masque ou rend semi-transparent un système (matériau nommé) du modèle.
+  AnatomyHeroModel.prototype.setMat = function (name, alpha) {
+    var cache = this._matCache || (this._matCache = {});
+    if (cache[name] !== undefined && Math.abs(cache[name] - alpha) < 0.004) return; // évite les re-rendus inutiles
+    var mdl = this.mv && this.mv.model;
+    if (!mdl || !mdl.materials) return;
+    for (var i = 0; i < mdl.materials.length; i++) {
+      var m = mdl.materials[i];
+      if (m && m.name === name && m.pbrMetallicRoughness) {
+        var f = m.pbrMetallicRoughness.baseColorFactor || [1, 1, 1, 1];
+        m.pbrMetallicRoughness.setBaseColorFactor([f[0], f[1], f[2], alpha]);
+        if (m.setAlphaMode) {
+          if (alpha >= 0.999) m.setAlphaMode("OPAQUE");
+          else if (alpha <= 0.01) { m.setAlphaMode("MASK"); if (m.setAlphaCutoff) m.setAlphaCutoff(0.5); } // masqué = non dessiné
+          else m.setAlphaMode("BLEND");
+        }
+        cache[name] = alpha;
+        return;
+      }
+    }
+  };
+
+  // Applique la révélation à une position continue (anneau de scènes ; pos réel quelconque).
+  AnatomyHeroModel.prototype.applyReveal = function (pos) {
+    var N = SYS_SCENES.length;
+    var base = Math.floor(pos);
+    var frac = pos - base;
+    var ef = frac <= SYS_HOLD ? 0 : (function (t) { return t * t * (3 - 2 * t); })((frac - SYS_HOLD) / (1 - SYS_HOLD));
+    var i0 = ((base % N) + N) % N;
+    var i1 = (i0 + 1) % N;
+    var s0 = SYS_SCENES[i0], s1 = SYS_SCENES[i1];
+    for (var k = 0; k < this._systems.length; k++) {
+      var name = this._systems[k];
+      var a0 = s0[name] || 0, a1 = s1[name] || 0;
+      this.setMat(name, a0 + (a1 - a0) * ef);
+    }
+    // Libellé : nom du système dominant (celui vers lequel on fond).
+    if (this._label) {
+      var dom = ef < 0.5 ? i0 : i1;
+      if (dom !== this._labelIdx) {
+        this._labelIdx = dom;
+        this._label.textContent = this._labels[dom] || this._systems[dom] || "";
+        this._label.classList.remove("in"); void this._label.offsetWidth; this._label.classList.add("in");
+      }
+    }
+  };
+
   AnatomyHeroModel.prototype.setupVisibility = function () {
-    var self = this;
-    if (RM) { // pose fixe : gros plan, sans mouvement
-      if (this.mv) { this.mv.cameraOrbit = orbit(BASE_THETA, BASE_PHI, R_CLOSE); this.mv.cameraTarget = targetStr(TY_CLOSE); }
+    var self = this, c = this.cfg;
+    if (RM) { // pose fixe : gros plan, sans mouvement (et 1er système en mode systèmes)
+      if (this.mv) { this.mv.cameraOrbit = orbit(c.theta, c.phi, c.rClose); this.mv.cameraTarget = this.targetStr(c.tyClose); }
       return;
     }
 
-    // Zoom piloté par le scroll : gros plan (haut) → corps entier (après ~0,8 écran).
+    // Zoom (et scrub de la révélation) pilotés par le scroll : gros plan (haut) → corps entier (après ~0,8 écran).
     this._scrollP = 0;
+    this._lastScrollTs = -1e9; // démarre en mode auto (révélation qui rejoue toute seule dès l'ouverture)
+    this._autoAnchor = 0;      // position de reprise de l'auto après un scroll
+    this._autoT0 = nowMs();
     var ticking = false;
     function readScroll() {
       ticking = false;
       var vh = window.innerHeight || 1;
       self._scrollP = Math.min(Math.max(window.scrollY / (vh * 0.8), 0), 1);
     }
-    this._onScroll = function () { if (!ticking) { ticking = true; requestAnimationFrame(readScroll); } };
+    this._onScroll = function () {
+      self._lastScrollTs = nowMs();
+      if (!ticking) { ticking = true; requestAnimationFrame(readScroll); }
+    };
     window.addEventListener("scroll", this._onScroll, { passive: true });
     window.addEventListener("resize", this._onScroll, { passive: true });
     readScroll();
@@ -169,19 +272,33 @@
 
   AnatomyHeroModel.prototype.play = function () {
     if (this._raf || !this.mv) return;
-    var self = this, start = null;
+    var self = this, c = this.cfg, start = null;
+    var N = SYS_SCENES.length;
     function frame(now) {
       if (start === null) start = now;
       var ms = now - start;
-      var theta = BASE_THETA + (ms / SPIN_PERIOD) * 360; // rotation 360° continue
-      var t = ms / PERIOD * Math.PI * 2;
-      var phi = BASE_PHI + PHI_AMP * Math.sin(t * 0.6);
+      var theta = c.theta + (ms / c.spin) * 360; // rotation 360° continue
+      var t = ms / BOB_PERIOD * Math.PI * 2;
+      var phi = c.phi + c.phiAmp * Math.sin(t * 0.6);
       var p = self._scrollP || 0;
-      var e = p * p * (3 - 2 * p);               // lissage (smoothstep)
-      var r = R_CLOSE + (R_FULL - R_CLOSE) * e;  // zoom piloté par le scroll : gros plan → corps entier
-      var ty = TY_CLOSE + (TY_FULL - TY_CLOSE) * e;
-      self.mv.cameraTarget = targetStr(ty.toFixed(2));
+      var e = p * p * (3 - 2 * p);                 // lissage (smoothstep)
+      var r = c.rClose + (c.rFull - c.rClose) * e; // zoom piloté par le scroll : gros plan → corps entier
+      var ty = c.tyClose + (c.tyFull - c.tyClose) * e;
+      self.mv.cameraTarget = self.targetStr(ty.toFixed(2));
       self.mv.cameraOrbit = orbit(theta.toFixed(2), phi.toFixed(2), r.toFixed(2));
+
+      // Révélation des systèmes : suit le scroll ; rejoue toute seule en boucle dès qu'on s'arrête.
+      if (self._systems) {
+        var scrollPos = p * (N - 1);
+        var revPos;
+        if (now - self._lastScrollTs < IDLE_MS) {   // scroll récent → scrub
+          revPos = scrollPos;
+          self._autoAnchor = scrollPos; self._autoT0 = now; // mémorise le point de reprise auto
+        } else {                                    // au repos → lecture automatique en boucle
+          revPos = self._autoAnchor + (now - self._autoT0) / SYS_SEG_MS;
+        }
+        self.applyReveal(revPos);
+      }
       self._raf = requestAnimationFrame(frame);
     }
     this._raf = requestAnimationFrame(frame);
@@ -203,7 +320,7 @@
   }
   window.AnatomyHeroModel = AnatomyHeroModel;
 
-  /* Intro accueil : au 1er affichage on ne voit que le titre + l'écorché ;
+  /* Intro accueil : au 1er affichage on ne voit que le titre + le corps 3D ;
      le reste du contenu (.hero-more) se dévoile dès qu'on commence à descendre.
      Respecte prefers-reduced-motion et le repli no-JS (contenu visible d'office). */
   function setupHeroReveal() {

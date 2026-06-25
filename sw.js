@@ -61,6 +61,7 @@ const CORE = [
   "images/zone_poignets.jpeg",
   "images/zones_corps.jpg",
   "images/hero-anatomy.webp",
+  "images/hero-systems.webp",
   "videos/preserver-son-corps-affiche.jpg"
 ];
 /* pages + manifeste : doivent rester frais a chaque deploiement */
