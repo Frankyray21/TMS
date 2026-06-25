@@ -20,7 +20,16 @@
    • GET  /            → page d'état { ok:true, service:"attestations-tms" }
    • POST /            → enregistre une attestation. Corps JSON :
        { "name":"...", "lang":"FR"|"EN", "date":"AAAA-MM-JJ",
-         "score":"8/10", "mine":"(opt)", "employeeId":"rec...(opt)" }
+         "score":"5/5 modules", "mine":"(opt)", "employeeId":"rec...(opt)",
+         "image":"data:image/png;base64,… (attestation DÉTAILLÉE)",
+         "timeTotal":"24 min 30 s", "timeDetail":"temps par section…" }
+
+   DEUX VERSIONS DE L'ATTESTATION : le travailleur imprime/enregistre une
+   version propre (côté site) ; la version téléversée ICI (champ « Attestation »)
+   est la version DÉTAILLÉE qui montre le temps passé par section. Le temps est
+   aussi écrit dans deux colonnes : « Temps total » et « Détail du temps ».
+   → Créer ces 2 champs (texte) dans la table si absents. S'ils manquent, le
+     Worker réessaie sans eux : l'attestation est enregistrée quand même.
    ───────────────────────────────────────────────────────────────────────── */
 
 const AIRTABLE_BASE  = "appmq82YjvEUglYZU";   // base « Formations »
@@ -79,6 +88,8 @@ export default {
     const mine  = clean(body.mine, 80);     // optionnel
     const date  = isoDate(body.date);       // « AAAA-MM-JJ »
     let empId = validRecId(body.employeeId);   // lien vers la liste d'employés
+    const timeTotal  = clean(body.timeTotal, 40);     // ex. « 24 min 30 s »
+    const timeDetail = clean(body.timeDetail, 4000);  // temps par section (texte)
 
     if (!env.AIRTABLE_TOKEN) {
       return json(
@@ -106,24 +117,20 @@ export default {
     if (mine)  fields["Mine"] = mine;
     if (empId) fields["Employé"] = [empId];
 
-    let at;
-    try {
-      at = await fetch(
-        `https://api.airtable.com/v0/${AIRTABLE_BASE}/${AIRTABLE_TABLE}`,
-        {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${env.AIRTABLE_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-          // typecast: laisse Airtable convertir la date et retrouver les options.
-          body: JSON.stringify({ fields, typecast: true }),
-        }
-      );
-    } catch (e) {
+    // Champs « suivi du temps ». On les envoie d'abord ; si Airtable les refuse
+    // (colonne pas encore créée), on réessaie SANS eux pour ne jamais bloquer
+    // l'enregistrement de l'attestation.
+    const timeFields = {};
+    if (timeTotal)  timeFields["Temps total"] = timeTotal;
+    if (timeDetail) timeFields["Détail du temps"] = timeDetail;
+
+    let at = await postRecord({ ...fields, ...timeFields }, env);
+    if (at && !at.ok && Object.keys(timeFields).length) {
+      at = await postRecord(fields, env);   // repli sans les colonnes de temps
+    }
+    if (!at) {
       return json({ ok: false, error: "Airtable injoignable." }, 502, cors);
     }
-
     if (!at.ok) {
       const detail = await at.text();
       return json(
@@ -142,6 +149,27 @@ export default {
     return json({ ok: true, id: rec.id, linked: !!empId, image: imaged }, 200, cors);
   },
 };
+
+/* POST d'un enregistrement dans la table « Attestations TMS (web) ».
+   Renvoie la Response Airtable, ou null en cas de panne réseau. */
+async function postRecord(fields, env) {
+  try {
+    return await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE}/${AIRTABLE_TABLE}`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${env.AIRTABLE_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        // typecast: laisse Airtable convertir la date et retrouver les options.
+        body: JSON.stringify({ fields, typecast: true }),
+      }
+    );
+  } catch (e) {
+    return null;
+  }
+}
 
 /* ── recherche d'employés (autocomplétion, insensible casse + accents) ────── */
 async function searchEmployees(q, env, cors) {
