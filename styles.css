@@ -2331,6 +2331,6 @@ html.no-js .hero-more{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.hero-more{opacity:1!important;transform:none!important}}
 @media (max-width:980px){
   .hero-intro{min-height:auto}
-  .hero-intro .hero-media{height:90vh}
-  .hero-headline{min-height:80vh}
+  .hero-intro .hero-media{height:82vh}
+  .hero-headline{min-height:58vh}
 }

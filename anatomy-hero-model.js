@@ -44,8 +44,8 @@
   var PERIOD = 9000;            // ms — rythme du dolly et du léger basculement
   var BASE_PHI = 86;            // deg — hauteur de la caméra
   var PHI_AMP = 2.5;            // deg — léger basculement vertical, pour donner de la vie
-  var BASE_RADIUS = 165;        // distance caméra de repos (corps entier ; le dolly oscille autour)
-  var TARGET = "-0.09m -9.05m -0.49m"; // centre du corps complet (tête → pieds)
+  var BASE_RADIUS = 132;        // distance caméra de repos (corps grand ; les jambes se fondent dans la page)
+  var TARGET = "-0.09m -4m -0.49m";    // visée légèrement haute : tête dégagée, bas du corps fondu
   var FOV = "30deg";
   function orbit(theta, phi, r) { return theta + "deg " + phi + "deg " + r + "m"; }
 
@@ -156,7 +156,7 @@
       var theta = BASE_THETA + (ms / SPIN_PERIOD) * 360; // rotation 360° continue
       var t = ms / PERIOD * Math.PI * 2;
       var phi = BASE_PHI + PHI_AMP * Math.sin(t * 0.6);
-      var r = BASE_RADIUS * (1 + 0.12 * Math.sin(t * 0.66)); // dolly caméra : corps entier, plus près ↔ plus loin
+      var r = BASE_RADIUS * (1 + 0.14 * (0.5 - 0.5 * Math.cos(t * 0.66))); // dolly : part du gros plan (base) puis dézoome et revient
       self.mv.cameraOrbit = orbit(theta.toFixed(2), phi.toFixed(2), r.toFixed(2));
       self._raf = requestAnimationFrame(frame);
     }
