@@ -7,7 +7,7 @@
 
   var ATTEST_ENDPOINT = 'https://attestations-tms.frankyray-21.workers.dev';
   var MODEL_SRC = 'models/corps-anatomie-mobile.glb';
-  var K_PROG = 'tms_form_progress', K_ANS = 'tms_form_answers', K_NAME = 'tms_form_name', K_ZONES = 'tms_form_zones';
+  var K_PROG = 'tms_form_progress', K_ANS = 'tms_form_answers', K_NAME = 'tms_form_name', K_ZONES = 'tms_form_zones', K_TIMES = 'tms_form_times';
 
   /* ---------------- DONNÉES ---------------- */
   var MODULES = [
@@ -214,7 +214,7 @@
   };
 
   /* ---------------- ÉTAT ---------------- */
-  var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', borgSel: null, zonesVues: [],
+  var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', borgSel: null, zonesVues: [], times: {},
     layers: { Muscles: { on: true, op: 100 }, Os: { on: false, op: 0 }, Articulations: { on: false, op: 0 }, Nerfs: { on: false, op: 0 } } };
   var app, mvInterval = null;
 
@@ -223,10 +223,40 @@
     try { var a = JSON.parse(localStorage.getItem(K_ANS) || '{}'); if (a && typeof a === 'object') state.answers = a; } catch (e) {}
     try { state.certName = localStorage.getItem(K_NAME) || ''; } catch (e) {}
     try { var zv = JSON.parse(localStorage.getItem(K_ZONES) || '[]'); if (Array.isArray(zv)) state.zonesVues = zv; } catch (e) {}
+    try { var tt = JSON.parse(localStorage.getItem(K_TIMES) || '{}'); if (tt && typeof tt === 'object') state.times = tt; } catch (e) {}
   }
   function saveProg() { try { localStorage.setItem(K_PROG, JSON.stringify(state.completed)); } catch (e) {} }
   function saveAns() { try { localStorage.setItem(K_ANS, JSON.stringify(state.answers)); } catch (e) {} }
   function saveZones() { try { localStorage.setItem(K_ZONES, JSON.stringify(state.zonesVues)); } catch (e) {} }
+  function saveTimes() { try { localStorage.setItem(K_TIMES, JSON.stringify(state.times)); } catch (e) {} }
+
+  /* ---------- suivi du temps par section ----------
+     Mesure le temps réellement passé sur chaque étape (notion ou quiz). Le
+     chrono se met en pause quand l'onglet est masqué et reprend au retour ; il
+     est vidé (« flush ») à chaque changement d'étape, de vue, ou fermeture de
+     page. Borne de sécurité de 6 h par étape (onglet « oublié »). */
+  var _tKey = null, _tT0 = 0;
+  function _tNow() { return Date.now(); }
+  function _tFlush() {
+    if (_tKey && _tT0) {
+      var dt = _tNow() - _tT0;
+      if (dt > 0 && dt < 21600000) { state.times[_tKey] = (state.times[_tKey] || 0) + dt; saveTimes(); }
+    }
+  }
+  function timeEnter(key) { _tFlush(); _tKey = key || null; _tT0 = _tKey ? _tNow() : 0; }
+  function timeLeave() { _tFlush(); _tKey = null; _tT0 = 0; }
+  function timePause() { _tFlush(); _tT0 = 0; }
+  function timeResume() { if (_tKey) _tT0 = _tNow(); }
+  function stepKey(s) { return (s && s.module) ? (s.module.id + '/' + (s.kind === 'quiz' ? 'quiz' : (s.notion ? s.notion.id : 'n'))) : null; }
+  function moduleTimeMs(m) { var t = 0, p = m.id + '/'; for (var k in state.times) { if (state.times.hasOwnProperty(k) && k.indexOf(p) === 0) t += state.times[k] || 0; } return t; }
+  function totalTimeMs() { var t = 0; for (var k in state.times) { if (state.times.hasOwnProperty(k)) t += state.times[k] || 0; } return t; }
+  function fmtDur(ms) {
+    var s = Math.round((ms || 0) / 1000);
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+    if (h > 0) return h + ' h ' + (m < 10 ? '0' : '') + m + ' min';
+    if (m > 0) return m + ' min ' + (ss < 10 ? '0' : '') + ss + ' s';
+    return ss + ' s';
+  }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function svg(p, sw, w) { sw = sw || 2; w = w || 22; return '<svg width="' + w + '" height="' + w + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + sw + '" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
@@ -733,8 +763,9 @@
     bind();
     if (state.view === 'viewer') {
       var st = steps(), cur = st[state.idx];
+      timeEnter(stepKey(cur));
       if (cur && cur.kind === 'notion' && cur.notion.custom === 'cZones') initModel();
-    }
+    } else { timeLeave(); }
     if (state.view === 'sommaire' && state.certVisible) initCert();
     if (keepScroll) { try { window.scrollTo(0, prevY); } catch (e) {} }
     else { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
@@ -750,8 +781,9 @@
   }
   function reset() {
     if (!window.confirm('Start over from scratch? Your progress and answers will be erased on this device.')) return;
-    state.completed = []; state.answers = {}; state.borgSel = null; state.certVisible = false; state.zonesVues = [];
-    saveProg(); saveAns(); saveZones();
+    state.completed = []; state.answers = {}; state.borgSel = null; state.certVisible = false; state.zonesVues = []; state.times = {};
+    _tKey = null; _tT0 = 0;
+    saveProg(); saveAns(); saveZones(); saveTimes();
     go('sommaire', 0);
   }
   function next() {
@@ -858,23 +890,76 @@
     var empId = input ? (input.dataset.empId || '') : '';
     var sig = nm + '|' + new Date().toISOString().slice(0, 10);
     try { if (localStorage.getItem('tms_form_sent') === sig) return; } catch (e) {}
-    var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '' };
+    var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '', timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText() };
     try {
       fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         .then(function (r) { if (r && r.ok) { try { localStorage.setItem('tms_form_sent', sig); } catch (e) {} } })
         .catch(function () {});
     } catch (e) {}
   }
+  /* Détail du temps en texte (envoyé à Airtable, lisible dans la grille). */
+  function timeDetailText() {
+    var lines = MODULES.map(function (m) {
+      var sc = moduleScore(m);
+      return '• ' + m.num + ' · ' + m.title + ' — ' + fmtDur(moduleTimeMs(m)) + ' (quiz ' + sc.score + '/' + sc.total + ')';
+    });
+    return 'Total time: ' + fmtDur(totalTimeMs()) + '\n' + lines.join('\n');
+  }
+  /* Attestation DÉTAILLÉE (version Airtable) : mêmes en-têtes que la version du
+     travailleur + un tableau « temps par section » et le total. Générée hors
+     écran : jamais affichée ni imprimée (le @media print ne montre que #certDoc). */
+  function certDetailDoc() {
+    var d = new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+    var th = 'padding:8px 12px;border-bottom:2px solid #d22325;font-family:\'Barlow Condensed\',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:.74rem;color:#666';
+    var td = 'padding:9px 12px;border-bottom:1px solid #e5e7eb;color:#111;font-size:.86rem';
+    var totS = 0, totQ = 0;
+    var rows = MODULES.map(function (m) {
+      var sc = moduleScore(m); totS += sc.score; totQ += sc.total;
+      return '<tr><td style="' + td + ';text-align:left">' + esc(m.num + ' · ' + m.title) + '</td>'
+        + '<td style="' + td + ';text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums">' + fmtDur(moduleTimeMs(m)) + '</td>'
+        + '<td style="' + td + ';text-align:right;white-space:nowrap">' + sc.score + ' / ' + sc.total + '</td></tr>';
+    }).join('');
+    return '<div id="certDocDetail" style="background:#fff;color:#111;border-radius:14px;padding:30px 28px;box-shadow:0 10px 30px rgba(0,0,0,.4);width:600px;box-sizing:border-box;font-family:\'Barlow\',sans-serif">'
+      + '<div style="text-align:center">'
+      + '<img src="images/logo_roger.png" alt="Machines Roger International" style="height:46px;background:#000;border-radius:8px;padding:4px 6px;margin-bottom:12px">'
+      + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;letter-spacing:.06em;font-size:1.35rem;color:#d22325">TRAINING CERTIFICATE</div>'
+      + '<div style="color:#555;font-size:.9rem;margin:4px 0 6px">Prevention of musculoskeletal disorders · Underground mine</div>'
+      + '<div style="display:inline-block;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:#0e7d57;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.45);border-radius:999px;padding:3px 11px;margin-bottom:14px">Detailed time tracking</div>'
+      + '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#888">Awarded to</div>'
+      + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.5rem;color:#111;border-bottom:2px solid #d22325;display:inline-block;margin:6px auto 8px;padding:2px 18px 4px">' + (esc(state.certName) || '—') + '</div>'
+      + '<div style="color:#333;font-size:.86rem;margin-bottom:16px">On ' + d + '</div></div>'
+      + '<table style="width:100%;border-collapse:collapse;margin:0">'
+      + '<thead><tr><th style="' + th + ';text-align:left">Section</th><th style="' + th + ';text-align:right">Time spent</th><th style="' + th + ';text-align:right">Quiz</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody>'
+      + '<tfoot><tr>'
+      + '<td style="padding:11px 12px;text-align:left;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:.9rem;color:#111">Total</td>'
+      + '<td style="padding:11px 12px;text-align:right;font-weight:800;font-size:.95rem;color:#d22325;white-space:nowrap;font-variant-numeric:tabular-nums">' + fmtDur(totalTimeMs()) + '</td>'
+      + '<td style="padding:11px 12px;text-align:right;font-weight:800;font-size:.95rem;color:#111;white-space:nowrap">' + totS + ' / ' + totQ + '</td>'
+      + '</tr></tfoot></table>'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px">'
+      + '<div style="font-weight:700;color:#111;font-size:.82rem">Machines Roger International</div>'
+      + '<div style="color:#888;font-size:.72rem">Automatically recorded · Web guided training</div></div></div>';
+  }
+  function buildCertDetailNode() {
+    var wrap = document.createElement('div');
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.style.cssText = 'position:fixed;left:-10000px;top:0;width:600px;pointer-events:none;z-index:-1';
+    wrap.innerHTML = certDetailDoc();
+    document.body.appendChild(wrap);
+    return wrap;
+  }
+  /* Envoi à Airtable : on téléverse la version DÉTAILLÉE (temps par section).
+     Le travailleur, lui, imprime/enregistre la version propre (#certDoc). */
   function sendAttestation() {
     if (!(state.certName || '').trim()) return;
-    var cert = document.getElementById('certDoc');
-    if (!cert || !ATTEST_ENDPOINT) { postAttest(''); return; }
+    if (!ATTEST_ENDPOINT) return;
     loadShot(function () {
       var ms = window.modernScreenshot;
-      if (!ms || !ms.domToPng) { postAttest(''); return; }
-      ms.domToPng(cert, { scale: 2, backgroundColor: '#ffffff' })
-        .then(function (u) { postAttest(u || ''); })
-        .catch(function () { postAttest(''); });
+      var node = buildCertDetailNode();
+      if (!ms || !ms.domToPng || !node) { if (node) node.remove(); postAttest(''); return; }
+      ms.domToPng(node, { scale: 2, backgroundColor: '#ffffff' })
+        .then(function (u) { node.remove(); postAttest(u || ''); })
+        .catch(function () { node.remove(); postAttest(''); });
     });
   }
   function initCert() {
@@ -969,6 +1054,10 @@
     load();
     // recalcule les modules réussis à partir des réponses enregistrées
     MODULES.forEach(syncModulePass);
+    // suivi du temps : pause quand l'onglet est masqué, flush à la fermeture
+    document.addEventListener('visibilitychange', function () { if (document.hidden) timePause(); else timeResume(); });
+    window.addEventListener('pagehide', _tFlush);
+    window.addEventListener('beforeunload', _tFlush);
     render();
   }
   if (document.readyState !== 'loading') init();
