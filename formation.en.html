@@ -22,27 +22,32 @@ html.tms-loading{overflow:hidden!important}
     if(map[f])location.replace(map[f]+location.hash);
   }
 }catch(e){}})();</script>
-<title>MSD Prevention in Underground Mining | Knowledge Base · Machines Roger International</title>
-<link rel="alternate" hreflang="fr-CA" href="formation.html">
-<link rel="alternate" hreflang="en-CA" href="formation.en.html">
-<meta name="description" content="Knowledge base on preventing musculoskeletal disorders (MSDs) in underground mining: at-risk body areas, risk factors, sleep, healthy habits and good reflexes on the job. Machines Roger International.">
+<title>MSD training — MSD prevention | Machines Roger International</title>
+<link rel="alternate" hreflang="fr" href="https://preventiontmsmri.netlify.app/formation.html">
+<link rel="alternate" hreflang="en" href="https://preventiontmsmri.netlify.app/formation.en.html">
+<link rel="alternate" hreflang="x-default" href="https://preventiontmsmri.netlify.app/formation.html">
+<meta name="description" content="MSD training for underground mine workers: understand musculoskeletal disorders, explore an interactive 3D body map and spot the risk factors.">
 <meta name="theme-color" content="#0a0e17">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_CA">
 <meta property="og:title" content="MSD Prevention · Knowledge Base | Machines Roger International">
 <meta property="og:description" content="Your body is your first tool on the job. Everything you need to know about preventing MSDs in underground mining.">
 <meta property="og:image" content="https://preventiontmsmri.netlify.app/images/og.jpg">
-<link rel="canonical" href="https://preventiontmsmri.netlify.app/">
+<meta property="og:url" content="https://preventiontmsmri.netlify.app/formation.en.html">
+<link rel="canonical" href="https://preventiontmsmri.netlify.app/formation.en.html">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e17'/%3E%3Cpath d='M16 38a16 16 0 0 1 32 0z' fill='%23d22325'/%3E%3Crect x='28' y='16' width='8' height='12' rx='3' fill='%23d22325'/%3E%3Crect x='10' y='38' width='44' height='7' rx='3.5' fill='%23ef5a5c'/%3E%3C/svg%3E">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.en.webmanifest">
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="MSD Prevention">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -192,7 +197,31 @@ html.tms-loading{overflow:hidden!important}
 
         <h3 class="sub-h reveal">Where it hits the most <span style="font-weight:400;font-size:.85rem;color:var(--dim)"> : click an area</span></h3>
         <div class="corps-insitu reveal" id="corps">
-          <p class="corps-aide">Click a glowing dot or a label on the chart to see the affected area, the common MSDs, the factors behind them and the good habits.</p>
+          <p class="corps-aide">Rotate the body in 3D, display the structures (muscles, bones, joints, nerves) and click an area to see the common MSDs, the factors behind them and the good habits.</p>
+          <div class="corps-vue" role="group" aria-label="Body display choice" hidden>
+            <button type="button" class="cv-btn actif" data-vue="2d" aria-pressed="true">2D view</button>
+            <button type="button" class="cv-btn" data-vue="3d" aria-pressed="false">3D view</button>
+          </div>
+          <div class="corps-3d" id="corps3d-wrap" hidden>
+            <model-viewer id="corps3d" alt="3D anatomical model of the muscles: rotate it and click a body area" camera-controls touch-action="pan-y" interaction-prompt="none" environment-image="neutral" tone-mapping="aces" shadow-intensity="0.85" shadow-softness="0.75" exposure="1.05" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 160deg auto">
+              <button class="hotspot3d h3-t" slot="hotspot-cou" data-zone="cou" data-position="0 1.45 0.08" data-normal="0 0 1"><span class="h3-card"><b>Neck</b><i>Neck pain · Neck tension</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-ep" data-zone="epaules" data-position="-0.18 1.37 0.05" data-normal="0 0 1"><span class="h3-card"><b>Shoulders</b><i>Rotator cuff tendinitis · Bursitis</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-hd" data-zone="haut-dos" data-position="0 1.20 -0.10" data-normal="0 0 -1"><span class="h3-card"><b>Upper back</b><i>Mid-back pain · Tension between the shoulder blades</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-bd" data-zone="bas-dos" data-position="0 0.97 -0.12" data-normal="0 0 -1"><span class="h3-card"><b>Lower back</b><i>Low-back pain · Herniated disc</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-co" data-zone="coudes" data-position="-0.21 1.02 0" data-normal="0 0 1"><span class="h3-card"><b>Elbows</b><i>Lateral epicondylitis · Medial epicondylitis</i></span></button>
+              <button class="hotspot3d h3-l" slot="hotspot-po" data-zone="poignets-mains" data-position="-0.22 0.80 0.02" data-normal="0 0 1"><span class="h3-card"><b>Wrists / hands</b><i>Carpal tunnel syndrome · De Quervain</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ge" data-zone="genoux" data-position="0.10 0.46 0.10" data-normal="0 0 1"><span class="h3-card"><b>Knees</b><i>Knee bursitis · Meniscus</i></span></button>
+              <button class="hotspot3d h3-r" slot="hotspot-ch" data-zone="chevilles-pieds" data-position="0.10 0.08 0.08" data-normal="0 0 1"><span class="h3-card"><b>Ankles / feet</b><i>Achilles tendinitis · Plantar fasciitis</i></span></button>
+            </model-viewer>
+            <div class="corps-layers" id="corps3dLayers" hidden role="group" aria-label="Body structures to display">
+              <p class="cl-title">Structures</p>
+              <div class="cl-row on" data-mat="Muscles"><button class="cl-tog" type="button" aria-pressed="true" aria-label="Show/hide Muscles"></button><span class="cl-name">Muscles</span><input class="cl-op" type="range" min="0" max="100" value="100" aria-label="Muscles opacity"></div>
+              <div class="cl-row" data-mat="Os"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Show/hide Bones"></button><span class="cl-name">Bones</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Bones opacity"></div>
+              <div class="cl-row" data-mat="Articulations"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Show/hide Joints"></button><span class="cl-name">Joints</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Joints opacity"></div>
+              <div class="cl-row" data-mat="Nerfs"><button class="cl-tog" type="button" aria-pressed="false" aria-label="Show/hide Nerves"></button><span class="cl-name">Nerves</span><input class="cl-op" type="range" min="0" max="100" value="0" aria-label="Nerves opacity"></div>
+            </div>
+            <p class="corps-3d-note">Anatomical model · display the structures (muscles, bones, joints, nerves), rotate the body and click a marker to open its details. <span>Model: <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a> (CC BY-SA).</span></p>
+          </div>
 <div class="corps-photo" id="corpsPhoto" hidden>
   <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Eight areas to watch on the human body, front and back views: click a dot to explore the area" id="corpsPhotoImg" decoding="async">
   <button type="button" class="cp-spot" style="left:35.1%;top:26%" data-zone="cou" aria-label="Neck area"></button>
@@ -547,7 +576,7 @@ html.tms-loading{overflow:hidden!important}
         <div class="foot-bar">
           <span>Updated: June 2026</span>
           <span>Awareness document. Does not replace medical advice.</span>
-          <span class="foot-ver" id="footVer" title="Site version">v1.70</span>
+          <span class="foot-ver" id="footVer" title="Site version">v1.76</span>
         </div>
       </div>
     </footer>
@@ -801,6 +830,8 @@ html.tms-loading{overflow:hidden!important}
 <div id="infobulle" role="tooltip"></div>
 <div id="toasts" aria-live="polite"></div>
 <canvas id="confettis"></canvas>
+<script src="gsap.min.js" defer></script>
+<script src="hero-anim.js" defer></script>
 <script src="app.en.js" defer></script>
 <script src="formation.js" defer></script>
 </body>

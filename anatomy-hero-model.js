@@ -280,9 +280,10 @@
       }, { threshold: 0 });
       this._vio.observe(this);
     }
-    document.addEventListener("visibilitychange", function () {
+    this._onVis = function () {
       if (document.hidden) self.stop(); else if (visible) self.play();
-    });
+    };
+    document.addEventListener("visibilitychange", this._onVis);
     this.play();
   };
 
@@ -342,6 +343,9 @@
     if (this._io) this._io.disconnect();
     if (this._vio) this._vio.disconnect();
     if (this._onScroll) { window.removeEventListener("scroll", this._onScroll); window.removeEventListener("resize", this._onScroll); }
+    // sans ce retrait, chaque re-création de l'élément (innerHTML) laissait un listener
+    // capable de ressusciter la boucle d'animation d'un élément détaché (fuite CPU/mémoire)
+    if (this._onVis) { document.removeEventListener("visibilitychange", this._onVis); this._onVis = null; }
   };
 
   if (window.customElements && !customElements.get("anatomy-hero-model")) {

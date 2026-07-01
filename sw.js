@@ -15,25 +15,15 @@ const CORE = [
   "formation-guidee.en.js",
   "interactif.html",
   "manifest.webmanifest",
+  "manifest.en.webmanifest",
+  "vendor/model-viewer.min.js",
+  "vendor/modern-screenshot.umd.js",
   "images/assis_basdudos.jpg",
   "images/icon-180.png",
   "images/icon-192.png",
   "images/icon-512.png",
   "images/icon-maskable-512.png",
-  "images/info_angles.jpeg",
-  "images/info_assis_disque.jpeg",
-  "images/info_assis_muscles.jpeg",
-  "images/info_dynamique.jpeg",
-  "images/info_facteurs.jpeg",
-  "images/info_facteurs_v2.png",
-  "images/info_fatigue.jpeg",
-  "images/info_fatigue2.jpeg",
   "images/info_micro_ab.jpg",
-  "images/info_microlesions.jpeg",
-  "images/info_perception.jpeg",
-  "images/info_postures_eviter.jpeg",
-  "images/info_regles.jpeg",
-  "images/info_statique.jpeg",
   "images/logo_roger.png",
   "images/moyens_controle.webp",
   "images/og.jpg",
@@ -60,6 +50,7 @@ const CORE = [
   "images/zone_genoux.jpeg",
   "images/zone_poignets.jpeg",
   "images/zones_corps.webp",
+  "images/zones_corps_en.webp",
   "images/hero-anatomy.webp",
   "images/hero-systems.webp",
   "videos/preserver-son-corps-affiche.jpg"
@@ -72,8 +63,8 @@ const PAGES = ["./", "index.html", "index.en.html",
   "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "formation-guidee.html", "formation-guidee.en.html",
-  "interactif.html", "manifest.webmanifest",
-  "styles.css", "formation.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "gsap.min.js", "hero-anim.js", "anatomy-hero-model.js"];
+  "interactif.html", "manifest.webmanifest", "manifest.en.webmanifest",
+  "styles.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "gsap.min.js", "hero-anim.js", "anatomy-hero-model.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
@@ -106,8 +97,10 @@ self.addEventListener("fetch", (e) => {
     e.respondWith((async () => {
       try {
         const net = await fetch(req);
-        const cache = await caches.open(VERSION);
-        cache.put(req, net.clone());
+        if (net && net.ok) { /* ne pas écraser une copie saine du cache par une page d'erreur */
+          const cache = await caches.open(VERSION);
+          cache.put(req, net.clone());
+        }
         return net;
       } catch (_) {
         const cached = await caches.match(req, { ignoreSearch: true });
@@ -148,7 +141,7 @@ self.addEventListener("fetch", (e) => {
         }
         return net;
       } catch (_) {
-        return cached;
+        return Response.error(); /* cached est forcément absent ici (déjà testé plus haut) */
       }
     })());
   }

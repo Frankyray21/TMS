@@ -31,6 +31,18 @@ jobs:
           echo "Cache du service worker versionné : $VER"
           grep -n 'const VERSION' sw.js
 
+      - name: Préparer le dossier de publication (exclut les fichiers de développement)
+        run: |
+          rsync -a --delete \
+            --exclude='.git' --exclude='.github' --exclude='.claude' \
+            --exclude='worker' \
+            --exclude='PLANNING_7_niveaux.md' \
+            --exclude='formation-guidee-design.html' --exclude='support.js' \
+            --exclude='corps-3d.html' --exclude='models/mannequin.glb' \
+            --exclude='netlify.toml' --exclude='vercel.json' \
+            ./ _site/
+          echo "Contenu publié :" && du -sh _site
+
       - name: Configurer GitHub Pages
         uses: actions/configure-pages@v5
         with:
@@ -39,7 +51,7 @@ jobs:
       - name: Téléverser le site statique
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Déployer
         id: deployment

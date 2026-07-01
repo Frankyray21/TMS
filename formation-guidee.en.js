@@ -8,6 +8,9 @@
   var ATTEST_ENDPOINT = 'https://attestations-tms.frankyray-21.workers.dev';
   var MODEL_SRC = 'models/corps-anatomie-mobile.glb';
   var K_PROG = 'tms_form_progress', K_ANS = 'tms_form_answers', K_NAME = 'tms_form_name', K_ZONES = 'tms_form_zones', K_TIMES = 'tms_form_times';
+  // clés propres à la formation GUIDÉE : ne partagent plus 'tms_form_sent' avec formation.js
+  // (sinon l'attestation guidée n'était jamais envoyée si la formation classique l'avait été le même jour)
+  var K_SENT = 'tms_fg_sent', K_PEND = 'tms_fg_pending';
 
   /* ---------------- DONNÉES ---------------- */
   var MODULES = [
@@ -105,6 +108,7 @@
         { id: 'contraignantes', title: 'Awkward positions', extra: 'gallery', images: [ { src: 'images/posture_positions.jpg', alt: 'Awkward positions of the shoulders, wrists and hands: comfort zones (0-20°), to watch (20-45°) and awkward (beyond 45°)' } ], intro: "The further a position moves from neutral, the more strain on the shoulder, wrist and hand. Spot the angles to watch." },
         { id: 'principes', title: "The 4 principles of good posture", extra: 'gallery', images: [ { src: 'images/posture_intro.jpg', alt: "The 4 principles of good posture: reduce the strain on your back and prevent MSDs" } ], intro: "Four simple habits to adopt so you lift and work while protecting your back. We'll go through them one by one." },
         { id: 'principe1', title: '1. Load close to the body', extra: 'gallery', images: [ { src: 'images/posture_p1.webp', alt: '1. Load close to the body: the closer the load is to the body, the less the back has to work' } ], intro: "Keeping the load close to the body reduces the strain on your lower back." },
+        { id: 'principe2', title: '2. Back in its natural position', extra: 'gallery', images: [ { src: 'images/posture_p2.webp', alt: "2. Back in its natural position: keep the back's natural curves during effort — a rounded back puts more pressure on the discs and ligaments" } ], intro: "Keeping your back in its natural position during effort helps spread the pressure across the discs and ligaments." },
         { id: 'principe3', title: '3. Pivot with your feet', extra: 'gallery', images: [ { src: 'images/posture_p3.webp', alt: '3. Pivot with your feet: turn with your feet, not with your trunk' } ], intro: "When you change direction, turn with your feet, not with your trunk." },
         { id: 'principe4', title: '4. Suitable working height', extra: 'gallery', images: [ { src: 'images/posture_p4.webp', alt: '4. Suitable working height: keep the load between hip and shoulder height' } ], intro: "Working between hip and shoulder height limits the strain on your back, neck and shoulders." }
       ],
@@ -241,6 +245,7 @@
     if (_tKey && _tT0) {
       var dt = _tNow() - _tT0;
       if (dt > 0 && dt < 21600000) { state.times[_tKey] = (state.times[_tKey] || 0) + dt; saveTimes(); }
+      _tT0 = _tNow(); // ré-ancre : pagehide + beforeunload déclenchent chacun un flush, sans ça le même intervalle serait compté deux fois
     }
   }
   function timeEnter(key) { _tFlush(); _tKey = key || null; _tT0 = _tKey ? _tNow() : 0; }
@@ -623,15 +628,31 @@
     el.textContent = all ? ('✓ All areas viewed (' + n + '/' + ZONE_FICHES.length + ')') : (n + ' / ' + ZONE_FICHES.length + ' areas viewed');
     el.className = 'fg-zone-prog' + (all ? ' done' : '');
   }
-  function zoneEscHandler(e) { if (e.key === 'Escape' || e.key === 'Esc') closeZoneFiche(); }
+  var _zfLast = null; // élément qui avait le focus avant l'ouverture de la fiche (restitué à la fermeture)
+  function zoneEscHandler(e) {
+    if (e.key === 'Escape' || e.key === 'Esc') { closeZoneFiche(); return; }
+    if (e.key !== 'Tab') return;
+    // piège le focus dans la fiche (sinon Tab s'échappe vers la page restée derrière)
+    var box = document.getElementById('zoneFiche');
+    if (!box || box.hidden) return;
+    var f = box.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
   function closeZoneFiche() {
     var box = document.getElementById('zoneFiche');
     if (box) { box.hidden = true; box.innerHTML = ''; }
     clearZoneActive();
     document.removeEventListener('keydown', zoneEscHandler);
     try { document.documentElement.style.overflow = ''; } catch (e) {}
+    if (_zfLast && document.contains(_zfLast)) { try { _zfLast.focus(); } catch (e) {} }
+    _zfLast = null;
   }
   function openZoneFiche(k) {
+    _zfLast = document.activeElement;
     var z = zoneByKey(k), box = document.getElementById('zoneFiche');
     if (!z || !box) return;
     box.innerHTML = '<div class="zfm-dialog" role="dialog" aria-modal="true" aria-label="' + esc(z.nom) + '">'
@@ -723,7 +744,7 @@
       var selArr = isMulti ? ((a && a.sel) || []) : (typeof a === 'number' ? [a] : []);
       var opts = q.options.map(function (label, oi) {
         var selected = selArr.indexOf(oi) >= 0, isAns = corrSet.indexOf(oi) >= 0;
-        var bg = '#111827', border = '#283449', color = '#cbd5e1', dot = '#475569', mark = '', cursor = 'pointer';
+        var bg = '#111827', border = '#283449', color = '#cbd5e1', dot = '#8694ad', mark = '', cursor = 'pointer';
         if (answered) { cursor = 'default';
           if (isAns) { bg = 'rgba(16,185,129,.14)'; border = 'rgba(16,185,129,.55)'; color = '#d1fae5'; dot = '#34d399'; mark = '✓'; }
           else if (selected) { bg = 'rgba(239,68,68,.13)'; border = 'rgba(239,68,68,.55)'; color = '#fecaca'; dot = '#f87171'; mark = '✗'; }
@@ -744,15 +765,19 @@
       return '<div style="background:rgba(13,19,32,.5);border:1px solid ' + cardBorder + ';border-radius:14px;padding:18px 18px 16px"><p style="font-weight:600;color:#f1f5f9;font-size:1.05rem;margin:0 0 12px;display:flex;gap:9px;align-items:baseline"><span style="flex:0 0 auto;color:#ef5a5c;font-family:\'Barlow Condensed\',sans-serif;font-weight:800">Q' + (qi + 1) + '</span><span>' + esc(q.q) + '</span></p>' + multiHint + '<div style="display:flex;flex-direction:column;gap:8px">' + opts + '</div>' + validate + fb + '</div>';
     }).join('');
 
-    var resultText, resultColor;
+    var resultText, resultColor, retryBtn = '';
     if (sc.passed) { resultText = '✓ Module passed (' + sc.score + ' / ' + sc.total + ') — you can unlock the next module.'; resultColor = '#34d399'; }
-    else if (sc.answered === sc.total) { resultText = sc.score + ' / ' + sc.total + ' — you need at least ' + sc.need + ' correct answers (80 %). Fix the answers shown in red.'; resultColor = '#f87171'; }
+    else if (sc.answered === sc.total) {
+      resultText = sc.score + ' / ' + sc.total + ' — you need at least ' + sc.need + ' correct answers (80 %).'; resultColor = '#f87171';
+      // sans ce bouton, toutes les options restent désactivées après un échec : le module serait bloqué à jamais
+      retryBtn = '<button class="fg-nav" data-retry="' + m.id + '" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:.86rem;color:#e2e8f0;background:rgba(17,24,39,.6);border:1px solid #3b4a63;border-radius:999px;padding:9px 20px;cursor:pointer">↺ Retake this quiz</button>';
+    }
     else { resultText = 'Answer all the questions (' + sc.answered + ' / ' + sc.total + ').'; resultColor = '#8694ad'; }
 
     return '<p class="lead">Answer the ' + sc.total + ' questions in the <b style="color:#fff">' + esc(m.title) + '</b> module. <span style="color:#9aa7bd">The correction and explanation appear as soon as you choose an answer</span>; score at least 80 % correct to unlock the next module.</p>'
       + '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 22px"><div style="flex:1 1 200px;max-width:340px;height:9px;border-radius:999px;background:#1a2332;overflow:hidden"><div style="height:100%;width:' + barPct + '%;border-radius:999px;background:' + barColor + ';transition:width .4s"></div></div><span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:.92rem;color:' + statColor + '">' + statText + '</span></div>'
       + '<div style="display:flex;flex-direction:column;gap:22px">' + qs + '</div>'
-      + '<div style="margin-top:22px"><span style="font-weight:700;font-size:1rem;color:' + resultColor + '">' + resultText + '</span></div>';
+      + '<div style="margin-top:22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap"><span style="font-weight:700;font-size:1rem;color:' + resultColor + '">' + resultText + '</span>' + retryBtn + '</div>';
   }
 
   /* ---------------- ACTIONS ---------------- */
@@ -808,6 +833,11 @@
     a[qi] = { sel: sel, done: false };
     saveAns(); render(true);
   }
+  function retryQuiz(qid) {
+    var m = MODULES.find(function (x) { return x.id === qid; }); if (!m) return;
+    delete state.answers[qid];
+    saveAns(); syncModulePass(m); render(true);
+  }
   function validateMulti(qid, qi) {
     var a = state.answers[qid] = state.answers[qid] || {};
     var cell = a[qi]; if (!cell || !cell.sel || !cell.sel.length) return;
@@ -843,11 +873,26 @@
       } catch (e) {}
     });
   }
+  // Charge le moteur <model-viewer> à la demande (le <script> en dur du <head> a été retiré :
+  // ~1 Mo économisé quand on ne visite ni le hero 3D ni la carte des zones).
+  function ensureModelViewer() {
+    if (window.customElements && customElements.get('model-viewer')) return;
+    if (!document.querySelector('script[data-mv]')) {
+      var s = document.createElement('script');
+      s.type = 'module'; s.src = 'vendor/model-viewer.min.js'; s.setAttribute('data-mv', '');
+      document.head.appendChild(s);
+    }
+  }
   function initModel() {
+    ensureModelViewer();
     if (mvInterval) clearInterval(mvInterval);
+    var tries = 0;
+    // attend que le modèle soit chargé, applique les calques UNE fois, puis s'arrête
+    // (avant : ré-application de tous les matériaux toutes les 700 ms, indéfiniment)
     mvInterval = setInterval(function () {
       var mv = document.getElementById('corps3d');
-      if (mv && mv.model) applyLayers();
+      if (mv && mv.model) { applyLayers(); clearInterval(mvInterval); mvInterval = null; }
+      else if (++tries > 90) { clearInterval(mvInterval); mvInterval = null; } // ~1 min : modèle jamais chargé, on abandonne
     }, 700);
   }
   function toggleLayer(mat) {
@@ -874,6 +919,12 @@
     var cn = document.getElementById('certName'); if (cn) cn.textContent = v || '—';
   }
   function printCert() {
+    if (!(state.certName || '').trim()) {
+      // pas de nom = attestation anonyme imprimée et jamais envoyée : on ramène au champ nom
+      var f = document.getElementById('attName');
+      if (f) { try { f.focus(); f.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }
+      return;
+    }
     sendAttestation();
     setTimeout(function () { try { window.print(); } catch (e) {} }, 120);
   }
@@ -883,19 +934,23 @@
     s.onload = function () { cb(); }; s.onerror = function () { cb(); };
     document.head.appendChild(s);
   }
+  var _attBusy = false; // verrou : deux clics rapprochés sur « Imprimer » ne doivent pas créer deux enregistrements Airtable
   function postAttest(image) {
     if (!ATTEST_ENDPOINT) return;
     var nm = (state.certName || '').trim(); if (!nm) return;
+    if (_attBusy) return;
     var input = document.getElementById('attName');
     var empId = input ? (input.dataset.empId || '') : '';
-    var sig = nm + '|' + new Date().toISOString().slice(0, 10);
-    try { if (localStorage.getItem('tms_form_sent') === sig) return; } catch (e) {}
+    var sig = 'fg|EN|' + nm + '|' + new Date().toISOString().slice(0, 10);
+    try { if (localStorage.getItem(K_SENT) === sig) return; } catch (e) {}
+    _attBusy = true;
+    try { localStorage.setItem(K_PEND, sig); } catch (e) {} // marqueur « envoi en cours » : re-tenté au prochain chargement s'il se perd (onglet fermé, hors ligne)
     var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '', timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText() };
     try {
       fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-        .then(function (r) { if (r && r.ok) { try { localStorage.setItem('tms_form_sent', sig); } catch (e) {} } })
-        .catch(function () {});
-    } catch (e) {}
+        .then(function (r) { _attBusy = false; if (r && r.ok) { try { localStorage.setItem(K_SENT, sig); localStorage.removeItem(K_PEND); } catch (e) {} } })
+        .catch(function () { _attBusy = false; });
+    } catch (e) { _attBusy = false; }
   }
   /* Détail du temps en texte (envoyé à Airtable, lisible dans la grille). */
   function timeDetailText() {
@@ -1031,6 +1086,9 @@
     app.querySelectorAll('[data-validate]').forEach(function (el) {
       el.addEventListener('click', function () { var qid = currentQuizId(); if (qid) validateMulti(qid, +el.getAttribute('data-validate')); });
     });
+    app.querySelectorAll('[data-retry]').forEach(function (el) {
+      el.addEventListener('click', function () { retryQuiz(el.getAttribute('data-retry')); });
+    });
     app.querySelectorAll('[data-layer-toggle]').forEach(function (el) {
       el.addEventListener('click', function () { toggleLayer(el.getAttribute('data-layer-toggle')); });
     });
@@ -1059,6 +1117,13 @@
     window.addEventListener('pagehide', _tFlush);
     window.addEventListener('beforeunload', _tFlush);
     render();
+    // envoi d'attestation perdu (page fermée avant la réponse, hors ligne…) : on re-tente une fois ici
+    try {
+      var pend = localStorage.getItem(K_PEND);
+      if (pend && localStorage.getItem(K_SENT) !== pend && MODULES.every(function (m) { return passed(m.id); }) && (state.certName || '').trim()) {
+        setTimeout(sendAttestation, 1500);
+      }
+    } catch (e) {}
   }
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
