@@ -104,9 +104,9 @@
       notions: [
         { id: 'contraignantes', title: 'Positions contraignantes', extra: 'gallery', images: [ { src: 'images/posture_positions.jpg', alt: 'Positions contraignantes des épaules, poignets et mains : zones de confort (0-20°), à surveiller (20-45°) et contraignante (au-delà de 45°)' } ], intro: "Plus une position s'éloigne du neutre, plus la contrainte sur l'épaule, le poignet et la main augmente. Repère les angles à surveiller." },
         { id: 'principes', title: "Les 4 principes d'une bonne posture", extra: 'gallery', images: [ { src: 'images/posture_intro.jpg', alt: "Les 4 principes d'une bonne posture : réduire les contraintes sur le dos et prévenir les TMS" } ], intro: "Quatre gestes simples à adopter pour soulever et travailler en protégeant ton dos. On les voit un par un." },
-        { id: 'principe1', title: '1. Charge près du corps', extra: 'gallery', images: [ { src: 'images/posture_p1.jpg', alt: '1. Charge près du corps : plus la charge est près du corps, moins le dos force' } ], intro: "Garder la charge près du corps réduit la tension sur le bas du dos." },
-        { id: 'principe3', title: '3. Pivoter avec les pieds', extra: 'gallery', images: [ { src: 'images/posture_p3.jpg', alt: '3. Pivoter avec les pieds : tourner avec les pieds, pas avec le tronc' } ], intro: "Quand tu changes de direction, tourne avec les pieds, pas avec le tronc." },
-        { id: 'principe4', title: '4. Hauteur de travail adaptée', extra: 'gallery', images: [ { src: 'images/posture_p4.jpg', alt: '4. Hauteur de travail adaptée : garder la charge entre la hauteur des hanches et des épaules' } ], intro: "Travailler entre la hauteur des hanches et des épaules limite les contraintes sur le dos, le cou et les épaules." }
+        { id: 'principe1', title: '1. Charge près du corps', extra: 'gallery', images: [ { src: 'images/posture_p1.webp', alt: '1. Charge près du corps : plus la charge est près du corps, moins le dos force' } ], intro: "Garder la charge près du corps réduit la tension sur le bas du dos." },
+        { id: 'principe3', title: '3. Pivoter avec les pieds', extra: 'gallery', images: [ { src: 'images/posture_p3.webp', alt: '3. Pivoter avec les pieds : tourner avec les pieds, pas avec le tronc' } ], intro: "Quand tu changes de direction, tourne avec les pieds, pas avec le tronc." },
+        { id: 'principe4', title: '4. Hauteur de travail adaptée', extra: 'gallery', images: [ { src: 'images/posture_p4.webp', alt: '4. Hauteur de travail adaptée : garder la charge entre la hauteur des hanches et des épaules' } ], intro: "Travailler entre la hauteur des hanches et des épaules limite les contraintes sur le dos, le cou et les épaules." }
       ],
       quiz: [
         { q: "Pour soulever une charge au sol, il faut…", options: ["Plier le dos, jambes tendues", "Plier les genoux et garder le dos droit", "Tourner le tronc en soulevant"], answer: 1,
@@ -470,7 +470,7 @@
 
   function controleWidget(n) {
     // Maquette Claude Design : « moyens de contrôle » = image seule (pas de cartes).
-    return imgBlock('images/moyens_controle.jpg', 'Moyens de contrôle : micro-pauses, rotation des tâches, étirements, alterner les postures');
+    return imgBlock('images/moyens_controle.webp', 'Moyens de contrôle : micro-pauses, rotation des tâches, étirements, alterner les postures');
   }
 
   function borgWidget() {

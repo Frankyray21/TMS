@@ -104,9 +104,9 @@
       notions: [
         { id: 'contraignantes', title: 'Awkward positions', extra: 'gallery', images: [ { src: 'images/posture_positions.jpg', alt: 'Awkward positions of the shoulders, wrists and hands: comfort zones (0-20°), to watch (20-45°) and awkward (beyond 45°)' } ], intro: "The further a position moves from neutral, the more strain on the shoulder, wrist and hand. Spot the angles to watch." },
         { id: 'principes', title: "The 4 principles of good posture", extra: 'gallery', images: [ { src: 'images/posture_intro.jpg', alt: "The 4 principles of good posture: reduce the strain on your back and prevent MSDs" } ], intro: "Four simple habits to adopt so you lift and work while protecting your back. We'll go through them one by one." },
-        { id: 'principe1', title: '1. Load close to the body', extra: 'gallery', images: [ { src: 'images/posture_p1.jpg', alt: '1. Load close to the body: the closer the load is to the body, the less the back has to work' } ], intro: "Keeping the load close to the body reduces the strain on your lower back." },
-        { id: 'principe3', title: '3. Pivot with your feet', extra: 'gallery', images: [ { src: 'images/posture_p3.jpg', alt: '3. Pivot with your feet: turn with your feet, not with your trunk' } ], intro: "When you change direction, turn with your feet, not with your trunk." },
-        { id: 'principe4', title: '4. Suitable working height', extra: 'gallery', images: [ { src: 'images/posture_p4.jpg', alt: '4. Suitable working height: keep the load between hip and shoulder height' } ], intro: "Working between hip and shoulder height limits the strain on your back, neck and shoulders." }
+        { id: 'principe1', title: '1. Load close to the body', extra: 'gallery', images: [ { src: 'images/posture_p1.webp', alt: '1. Load close to the body: the closer the load is to the body, the less the back has to work' } ], intro: "Keeping the load close to the body reduces the strain on your lower back." },
+        { id: 'principe3', title: '3. Pivot with your feet', extra: 'gallery', images: [ { src: 'images/posture_p3.webp', alt: '3. Pivot with your feet: turn with your feet, not with your trunk' } ], intro: "When you change direction, turn with your feet, not with your trunk." },
+        { id: 'principe4', title: '4. Suitable working height', extra: 'gallery', images: [ { src: 'images/posture_p4.webp', alt: '4. Suitable working height: keep the load between hip and shoulder height' } ], intro: "Working between hip and shoulder height limits the strain on your back, neck and shoulders." }
       ],
       quiz: [
         { q: "To lift a load off the ground, you should…", options: ["Bend your back, legs straight", "Bend your knees and keep your back straight", "Twist your trunk as you lift"], answer: 1,
@@ -470,7 +470,7 @@
 
   function controleWidget(n) {
     // Claude Design mockup: "control measures" = image only (no cards).
-    return imgBlock('images/moyens_controle.jpg', 'Control measures: micro-breaks, task rotation, stretching, alternating postures');
+    return imgBlock('images/moyens_controle.webp', 'Control measures: micro-breaks, task rotation, stretching, alternating postures');
   }
 
   function borgWidget() {
