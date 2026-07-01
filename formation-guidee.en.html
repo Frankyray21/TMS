@@ -5,11 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guided training — MSD prevention | Machines Roger International</title>
 <meta name="description" content="Guided training on preventing musculoskeletal disorders (MSDs): short topics, a quiz per module and a certificate.">
+<link rel="canonical" href="https://preventiontmsmri.netlify.app/formation-guidee.en.html">
+<link rel="alternate" hreflang="fr" href="https://preventiontmsmri.netlify.app/formation-guidee.html">
+<link rel="alternate" hreflang="en" href="https://preventiontmsmri.netlify.app/formation-guidee.en.html">
+<link rel="alternate" hreflang="x-default" href="https://preventiontmsmri.netlify.app/formation-guidee.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Guided training — MSD prevention">
+<meta property="og:description" content="Short topics, a quiz per module and a certificate: guided training on MSD prevention in underground mining.">
+<meta property="og:url" content="https://preventiontmsmri.netlify.app/formation-guidee.en.html">
+<meta property="og:image" content="https://preventiontmsmri.netlify.app/images/og.jpg">
+<meta property="og:locale" content="en_CA">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<script type="module" src="vendor/model-viewer.min.js"></script>
+<!-- moteur 3D chargé à la demande par le JS (hero + carte des zones), plus de téléchargement d'office de ~1 Mo -->
 <style>
   body { background: #0a0e17; }
   .fg-page { font-family: 'Barlow', sans-serif; }
@@ -46,6 +57,7 @@
 </style>
 </head>
 <body class="fg-page">
+<a class="skip" href="#app">Skip to content</a>
 <header style="position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px;background:rgba(10,14,23,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b">
   <a href="index.en.html" style="display:flex;align-items:center;gap:12px;text-decoration:none">
     <img src="images/logo_roger.png" alt="Machines Roger International" style="height:34px;width:auto;background:#000;border-radius:6px;padding:3px 5px;display:block">
@@ -65,8 +77,9 @@
 
 <div id="app"></div>
 
-<span class="foot-ver" id="footVer" title="Version du site" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#475569;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v1.70</span>
+<span class="foot-ver" id="footVer" title="Site version" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#8694ad;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v1.76</span>
 
+<script src="anatomy-hero-model.js" defer></script>
 <script src="formation-guidee.en.js" defer></script>
 </body>
 </html>

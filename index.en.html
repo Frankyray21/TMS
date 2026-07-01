@@ -23,30 +23,33 @@ html.tms-loading{overflow:hidden!important}
     var map=pref==='en'?{'index.html':'index.en.html','formation.html':'formation.en.html','':'index.en.html'}:{'index.en.html':'index.html','formation.en.html':'formation.html'};
     if(map[f]){location.replace(map[f]+location.hash);return;}
   }
-  /* guided training = only entry point on open; knowledge base reachable from the training */
-  if(sessionStorage.getItem('tms_kb')!=='1')location.replace('formation-guidee.en.html');
 }catch(e){}})();</script>
 <title>MSD Prevention in Underground Mining | Knowledge Base · Machines Roger International</title>
-<link rel="alternate" hreflang="fr-CA" href="index.html">
-<link rel="alternate" hreflang="en-CA" href="index.en.html">
+<link rel="alternate" hreflang="fr" href="https://preventiontmsmri.netlify.app/">
+<link rel="alternate" hreflang="en" href="https://preventiontmsmri.netlify.app/index.en.html">
+<link rel="alternate" hreflang="x-default" href="https://preventiontmsmri.netlify.app/">
 <meta name="description" content="Knowledge base on preventing musculoskeletal disorders (MSDs) in underground mining: at-risk body areas, risk factors, sleep, healthy habits and good reflexes on the job. Machines Roger International.">
 <meta name="theme-color" content="#0a0e17">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_CA">
 <meta property="og:title" content="MSD Prevention · Knowledge Base | Machines Roger International">
 <meta property="og:description" content="Your body is your first tool on the job. Everything you need to know about preventing MSDs in underground mining.">
+<meta property="og:url" content="https://preventiontmsmri.netlify.app/index.en.html">
 <meta property="og:image" content="https://preventiontmsmri.netlify.app/images/og.jpg">
-<link rel="canonical" href="https://preventiontmsmri.netlify.app/">
+<link rel="canonical" href="https://preventiontmsmri.netlify.app/index.en.html">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0e17'/%3E%3Cpath d='M16 38a16 16 0 0 1 32 0z' fill='%23d22325'/%3E%3Crect x='28' y='16' width='8' height='12' rx='3' fill='%23d22325'/%3E%3Crect x='10' y='38' width='44' height='7' rx='3.5' fill='%23ef5a5c'/%3E%3C/svg%3E">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.en.webmanifest">
 <link rel="apple-touch-icon" href="images/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="MSD Prevention">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -120,7 +123,8 @@ html.tms-loading{overflow:hidden!important}
   <main class="main">
 
     <!-- HERO -->
-    <section id="accueil" class="hero" tabindex="-1">
+    <section id="accueil" class="hero hero-intro" tabindex="-1">
+      <div class="hero-pin">
       <div class="hero-media">
         <div class="hero-bg"></div>
         <canvas class="hero-gl" aria-hidden="true"></canvas>
@@ -137,11 +141,24 @@ html.tms-loading{overflow:hidden!important}
             <circle cx="260" cy="330" r="5" fill="rgba(239,90,92,.85)" stroke="none"><animate attributeName="opacity" values="1;.25;1" dur="3.2s" repeatCount="indefinite"/></circle>
           </g>
         </svg>
+        <!-- Full-bleed 3D multi-system background (AnatomyHeroModel component, decorative).
+             Layers revealed on scroll (and auto-played at rest): Muscles → Bones → Nerves → Joints. -->
+        <div class="hero-anatomy" aria-hidden="true">
+          <anatomy-hero-model data-src="models/corps-anatomie-mobile.glb" data-poster="images/hero-systems.webp" data-systems="Muscles,Os,Nerfs,Articulations" data-labels="Muscles|Skeleton|Nervous system|Joints"></anatomy-hero-model>
+        </div>
         <div class="hero-scrim"></div>
       </div>
+      </div>
+      <div class="hero-content">
       <div class="wrap">
-        <div class="eyebrow reveal">Knowledge base &middot; MSD prevention &middot; Underground mine</div>
+        <div class="hero-headline">
         <h1 class="reveal d1">Your body is your <span class="hl">number one tool</span> at work.</h1>
+        <a class="scroll-cue" href="#ampleur" aria-label="Go to the next section">Scroll<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+        </div>
+        </div>
+        <div class="wrap">
+        <div class="hero-more">
+        <div class="eyebrow reveal">Knowledge base &middot; MSD prevention &middot; Underground mine</div>
         <p class="reveal d2">A broken tool gets replaced. Your back, shoulders and knees have to last. Two clearly separate sections, depending on what you need:</p>
         <div class="paths reveal d3">
           <a class="path-card here" id="ctaFormation" href="formation-guidee.en.html">
@@ -159,8 +176,9 @@ html.tms-loading{overflow:hidden!important}
           </a>
         </div>
         <script>try{var _p=JSON.parse(localStorage.getItem('tms_form_progress')||'[]'),_a=JSON.parse(localStorage.getItem('tms_form_answers')||'{}');if((Array.isArray(_p)&&_p.length)||(_a&&Object.keys(_a).length)){var _t=document.getElementById('ctaFormationTitre'),_b=document.getElementById('ctaFormationBadge');if(_t)_t.textContent='Resume my training';if(_b)_b.textContent='In progress';}}catch(e){}</script>
+        </div>
       </div>
-      <a class="scroll-cue" href="#ampleur" aria-label="Go to the next section">Scroll<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+      </div>
     </section>
 
     <!-- AMPLEUR -->
@@ -198,7 +216,7 @@ html.tms-loading{overflow:hidden!important}
 
         <h3 class="sub-h reveal">Where it hits the most <span style="font-weight:400;font-size:.85rem;color:var(--dim)"> : click an area</span></h3>
         <div class="corps-insitu reveal" id="corps">
-          <p class="corps-aide">Click a glowing dot or a label on the chart to see the affected area, the common MSDs, the factors behind them and the good habits.</p>
+          <p class="corps-aide">Rotate the body in 3D, display the structures (muscles, bones, joints, nerves) and click an area to see the common MSDs, the factors behind them and the good habits.</p>
           <div class="corps-vue" role="group" aria-label="Body display choice" hidden>
             <button type="button" class="cv-btn actif" data-vue="2d" aria-pressed="true">2D view</button>
             <button type="button" class="cv-btn" data-vue="3d" aria-pressed="false">3D view</button>
@@ -577,7 +595,8 @@ html.tms-loading{overflow:hidden!important}
         <div class="foot-bar">
           <span>Updated: June 2026</span>
           <span>Awareness document. Does not replace medical advice.</span>
-          <span class="foot-ver" id="footVer" title="Site version">v1.70</span>
+          <span class="foot-credit">Anatomy model: <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA</a> licence.</span>
+          <span class="foot-ver" id="footVer" title="Site version">v1.76</span>
         </div>
       </div>
     </footer>
@@ -831,6 +850,9 @@ html.tms-loading{overflow:hidden!important}
 <div id="infobulle" role="tooltip"></div>
 <div id="toasts" aria-live="polite"></div>
 <canvas id="confettis"></canvas>
+<script src="anatomy-hero-model.js" defer></script>
+<script src="gsap.min.js" defer></script>
+<script src="hero-anim.js" defer></script>
 <script src="app.en.js" defer></script>
 </body>
 </html>

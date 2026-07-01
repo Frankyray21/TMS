@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#0a0e17;--bg-2:#0d1320;--card:#111827;--card-2:#1a2332;
@@ -195,7 +194,7 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .hero.gl-on .hero-mine{opacity:.5}
 /* galerie de mine stylisée (arches concentriques) */
 .hero-mine{position:absolute;right:-6%;bottom:0;height:108%;width:auto;z-index:1;opacity:.85;pointer-events:none;will-change:transform;transition:opacity 1.4s ease}
-.hero-scrim{position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(7,9,15,.92),rgba(7,9,15,.6) 45%,transparent 100%),linear-gradient(0deg,rgba(7,9,15,.85),transparent 45%)}
+.hero-scrim{position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,rgba(7,9,15,.97) 0,rgba(7,9,15,.88) 40%,rgba(7,9,15,.46) 66%,transparent 92%),linear-gradient(0deg,rgba(7,9,15,.58),transparent 42%)}
 /* bande hachurée sécurité */
 .hero::after{content:'';position:absolute;left:0;right:0;bottom:0;height:6px;z-index:3;background:repeating-linear-gradient(135deg,rgba(210,35,37,.6) 0 14px,transparent 14px 28px)}
 /* cartes de parcours */
@@ -917,7 +916,7 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .wrap{padding:0 1.3rem}
   section{padding:1.4rem 0;scroll-margin-top:72px}
   .hero{min-height:auto;padding:1.5rem 0 1.8rem}
-  .hero-scrim{background:linear-gradient(0deg,rgba(7,9,15,.94),rgba(7,9,15,.45) 55%,rgba(7,9,15,.2))}
+  .hero-scrim{background:linear-gradient(0deg,rgba(7,9,15,.95),rgba(7,9,15,.64) 50%,rgba(7,9,15,.42))}
   .hero h1{font-size:clamp(2rem,8.5vw,2.9rem);margin-bottom:.7rem}
   .hero p{font-size:1rem;margin-bottom:1.1rem}
   /* mobile : on garde la carte primaire (formation guidee) en compact -> CTA visible ; la base de connaissances reste joignable par le menu */
@@ -2272,3 +2271,79 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 .part-nav .pn-k{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
 .part-nav .pn-t{font-family:var(--font-display);font-weight:700;font-size:1.05rem}
 @media(max-width:700px){.part-nav{flex-direction:column;padding:0 1.2rem}.part-nav .pn-next{margin-left:0;align-items:flex-start;text-align:left}}
+
+/* ============================================================
+   HERO — visuel anatomique 3D (composant AnatomyHeroModel)
+   Texte à gauche, écorché à droite (desktop) ; texte d'abord,
+   image fixe ensuite (mobile). Halo discret + zones TMS mises
+   en valeur (épaules / colonne / lombaires) par des lueurs sobres.
+   ============================================================ */
+/* Composant 3D réutilisable (partagé accueil + formation guidée) */
+anatomy-hero-model{position:absolute;inset:0;display:block}
+.ahm-poster,.ahm-mv{position:absolute;inset:0;width:100%;height:100%}
+.ahm-poster{object-fit:contain;object-position:center bottom;z-index:1;transition:opacity .6s ease}
+.ahm-mv{z-index:2;background:transparent;--poster-color:transparent;--progress-bar-color:transparent;opacity:0;transition:opacity .8s ease}
+.ahm-ready .ahm-mv{opacity:1}
+.ahm-ready .ahm-poster{opacity:0}
+
+/* Cartouche « système en cours » (mode révélation des systèmes) — discret, décoratif */
+.ahm-sys-label{position:absolute;z-index:3;top:15%;right:7%;display:inline-flex;align-items:center;gap:.55em;
+  padding:.46em .95em;border-radius:999px;font-weight:700;font-size:.72rem;line-height:1;letter-spacing:.14em;text-transform:uppercase;
+  color:#f4ece6;background:rgba(10,12,18,.46);border:1px solid rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 6px 22px rgba(0,0,0,.35);
+  pointer-events:none;opacity:0;transform:translateY(-6px);transition:opacity .5s ease,transform .5s ease;white-space:nowrap}
+.ahm-sys-label::before{content:"";width:.5em;height:.5em;border-radius:50%;background:var(--brand,#e04a34);box-shadow:0 0 10px rgba(224,74,52,.85)}
+.ahm-ready .ahm-sys-label.in{opacity:1;transform:none}
+@media (max-width:980px){.ahm-sys-label{top:auto;bottom:22%;right:50%;transform:translateX(50%)}}
+
+/* Écorché en arrière-plan plein cadre du hero (derrière le texte, sous le voile sombre) */
+.hero-anatomy{position:absolute;z-index:1;top:0;bottom:0;right:0;width:60%;max-width:760px;pointer-events:none}
+.hero-anatomy::before{content:"";position:absolute;z-index:-1;left:52%;top:40%;width:80%;height:62%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(224,74,52,.18),rgba(150,40,36,.05) 50%,transparent 72%);filter:blur(8px)}
+/* lisibilité du texte par-dessus le modèle en arrière-plan */
+.hero-copy h1,.hero-copy>p,.hero-copy .eyebrow{text-shadow:0 2px 22px rgba(5,7,12,.8),0 1px 3px rgba(5,7,12,.7)}
+/* mobile : écorché en fond bas, atténué, sous un voile renforcé pour la lisibilité */
+@media (max-width:980px){
+  .hero-anatomy{top:0;bottom:0;right:-8%;left:auto;width:92%;max-width:none;opacity:.62}
+}
+@media print{ .hero-anatomy{display:none!important} }
+.foot-credit a{font-size:inherit}
+
+/* ============================================================
+   FORMATION GUIDÉE — écorché 3D dans le hero (réutilise AnatomyHeroModel)
+   Le modèle sert de visuel à droite ; la carte de progression reste
+   lisible par-dessus (verre dépoli). Texte et CTA inchangés.
+   ============================================================ */
+.fg-hero-visual{position:relative;flex:0 0 auto;width:330px;align-self:stretch;min-height:460px;display:flex;align-items:flex-end;justify-content:center}
+.fg-hero-anatomy{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:360px;height:100%;pointer-events:none}
+.fg-hero-anatomy::before{content:"";position:absolute;left:51%;top:28%;width:92%;height:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(224,74,52,.20),rgba(150,40,36,.06) 50%,transparent 72%);filter:blur(4px);pointer-events:none}
+@media (max-width:640px){
+  .fg-hero-visual{width:100%;min-height:0;flex-direction:column-reverse;align-items:center;gap:16px}
+  .fg-hero-anatomy{position:relative;left:auto;bottom:auto;transform:none;width:200px;height:252px;margin:0 auto}
+}
+
+/* ============================================================
+   ACCUEIL — intro immersive : 1er écran = titre + écorché animé,
+   le corps se fond dans la page (masque dégradé, pas de coupure),
+   le reste du contenu apparaît au scroll.
+   ============================================================ */
+.hero-intro{display:block;min-height:auto;position:relative}
+/* écorché épinglé en arrière-plan : reste fixe pendant que le contenu défile
+   par-dessus et que le scroll pilote le zoom (gros plan → corps entier).
+   La marge négative tire le contenu par-dessus l'écran épinglé. */
+.hero-pin{position:sticky;top:0;height:100vh;margin-bottom:-100vh;overflow:hidden;z-index:0}
+.hero-pin .hero-media{position:absolute;inset:0;
+  -webkit-mask-image:linear-gradient(180deg,#000 82%,rgba(0,0,0,.55) 92%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 82%,rgba(0,0,0,.55) 92%,transparent 100%)}
+.hero-content{position:relative;z-index:3}        /* titre + contenu défilent par-dessus l'écorché */
+.hero-intro::after{display:none}                  /* supprime la bande hachurée (la « coupure ») */
+.hero-headline{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+.hero-more{opacity:0;transform:translateY(38px);transition:opacity .8s ease,transform .8s cubic-bezier(.22,.61,.36,1);padding:2rem 0 3.5rem}
+.hero-more.in{opacity:1;transform:none}
+html.no-js .hero-more{opacity:1;transform:none}
+.hero-headline h1,.hero-more>p,.hero-more .eyebrow{text-shadow:0 2px 22px rgba(5,7,12,.82),0 1px 3px rgba(5,7,12,.7)}
+.hero-more .eyebrow{margin-bottom:1.1rem}
+@media(prefers-reduced-motion:reduce){.hero-more{opacity:1!important;transform:none!important}}
+@media (max-width:980px){
+  .hero-pin{position:relative;height:82vh;margin-bottom:-82vh}  /* pas d'épinglage sur mobile, mais corps en fond */
+  .hero-headline{min-height:78vh}
+}

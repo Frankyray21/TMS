@@ -23,18 +23,18 @@ html.tms-loading{overflow:hidden!important}
     var map=pref==='en'?{'index.html':'index.en.html','formation.html':'formation.en.html','':'index.en.html'}:{'index.en.html':'index.html','formation.en.html':'formation.html'};
     if(map[f]){location.replace(map[f]+location.hash);return;}
   }
-  /* formation guidée = seule porte d'entrée à l'ouverture ; base de connaissances accessible depuis la formation */
-  if(sessionStorage.getItem('tms_kb')!=='1')location.replace('formation-guidee.html');
 }catch(e){}})();</script>
 <title>Prévention des TMS en mine souterraine | Base de connaissances · Machines Roger International</title>
-<link rel="alternate" hreflang="fr-CA" href="index.html">
-<link rel="alternate" hreflang="en-CA" href="index.en.html">
+<link rel="alternate" hreflang="fr" href="https://preventiontmsmri.netlify.app/">
+<link rel="alternate" hreflang="en" href="https://preventiontmsmri.netlify.app/index.en.html">
+<link rel="alternate" hreflang="x-default" href="https://preventiontmsmri.netlify.app/">
 <meta name="description" content="Base de connaissances sur la prévention des troubles musculosquelettiques (TMS) en mine souterraine : zones à risque, facteurs, sommeil, hygiène de vie et bons réflexes au poste de travail. Machines Roger International.">
 <meta name="theme-color" content="#0a0e17">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_CA">
 <meta property="og:title" content="Prévention des TMS · Base de connaissances | Machines Roger International">
 <meta property="og:description" content="Ton corps, c'est ton premier outil de travail. Tout savoir sur la prévention des TMS en mine souterraine.">
+<meta property="og:url" content="https://preventiontmsmri.netlify.app/">
 <meta property="og:image" content="https://preventiontmsmri.netlify.app/images/og.jpg">
 <link rel="canonical" href="https://preventiontmsmri.netlify.app/">
 <meta property="og:image:width" content="1200">
@@ -47,6 +47,9 @@ html.tms-loading{overflow:hidden!important}
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Prévention TMS">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -120,7 +123,8 @@ html.tms-loading{overflow:hidden!important}
   <main class="main">
 
     <!-- HERO -->
-    <section id="accueil" class="hero" tabindex="-1">
+    <section id="accueil" class="hero hero-intro" tabindex="-1">
+      <div class="hero-pin">
       <div class="hero-media">
         <div class="hero-bg"></div>
         <canvas class="hero-gl" aria-hidden="true"></canvas>
@@ -137,11 +141,24 @@ html.tms-loading{overflow:hidden!important}
             <circle cx="260" cy="330" r="5" fill="rgba(239,90,92,.85)" stroke="none"><animate attributeName="opacity" values="1;.25;1" dur="3.2s" repeatCount="indefinite"/></circle>
           </g>
         </svg>
+        <!-- Modèle 3D multi-systèmes en arrière-plan plein cadre (composant AnatomyHeroModel, décoratif).
+             Révélation des couches au scroll (et en lecture auto au repos) : Muscles → Os → Nerfs → Articulations. -->
+        <div class="hero-anatomy" aria-hidden="true">
+          <anatomy-hero-model data-src="models/corps-anatomie-mobile.glb" data-poster="images/hero-systems.webp" data-systems="Muscles,Os,Nerfs,Articulations" data-labels="Muscles|Squelette|Système nerveux|Articulations"></anatomy-hero-model>
+        </div>
         <div class="hero-scrim"></div>
       </div>
+      </div>
+      <div class="hero-content">
       <div class="wrap">
-        <div class="eyebrow reveal">Base de connaissances &middot; Prévention des TMS &middot; Mine souterraine</div>
+        <div class="hero-headline">
         <h1 class="reveal d1">Ton corps, c'est ton <span class="hl">premier outil</span> de travail.</h1>
+        <a class="scroll-cue" href="#ampleur" aria-label="Aller à la suite">Défile<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+        </div>
+        </div>
+        <div class="wrap">
+        <div class="hero-more">
+        <div class="eyebrow reveal">Base de connaissances &middot; Prévention des TMS &middot; Mine souterraine</div>
         <p class="reveal d2">Un outil brisé se remplace. Ton dos, tes épaules et tes genoux doivent durer. Deux sections bien distinctes, selon ton besoin :</p>
         <div class="paths reveal d3">
           <a class="path-card here" id="ctaFormation" href="formation-guidee.html">
@@ -159,8 +176,9 @@ html.tms-loading{overflow:hidden!important}
           </a>
         </div>
         <script>try{var _p=JSON.parse(localStorage.getItem('tms_form_progress')||'[]'),_a=JSON.parse(localStorage.getItem('tms_form_answers')||'{}');if((Array.isArray(_p)&&_p.length)||(_a&&Object.keys(_a).length)){var _t=document.getElementById('ctaFormationTitre'),_b=document.getElementById('ctaFormationBadge');if(_t)_t.textContent='Reprendre ma formation';if(_b)_b.textContent='En cours';}}catch(e){}</script>
+        </div>
       </div>
-      <a class="scroll-cue" href="#ampleur" aria-label="Aller à la suite">Défile<br><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+      </div>
     </section>
 
     <!-- AMPLEUR -->
@@ -577,7 +595,8 @@ html.tms-loading{overflow:hidden!important}
         <div class="foot-bar">
           <span>Mise à jour : juin 2026</span>
           <span>Document de sensibilisation. Ne remplace pas un avis médical.</span>
-          <span class="foot-ver" id="footVer" title="Version du site">v1.70</span>
+          <span class="foot-credit">Modèle anatomique : <a href="https://www.z-anatomy.com/" target="_blank" rel="noopener">Z-Anatomy</a>, licence <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA</a>.</span>
+          <span class="foot-ver" id="footVer" title="Version du site">v1.76</span>
         </div>
       </div>
     </footer>
@@ -833,6 +852,7 @@ html.tms-loading{overflow:hidden!important}
 <canvas id="confettis"></canvas>
 <script src="gsap.min.js" defer></script>
 <script src="hero-anim.js" defer></script>
+<script src="anatomy-hero-model.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

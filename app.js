@@ -1470,7 +1470,7 @@ if (champ) {
 /* ================================================================
    CARTE DU CORPS
    ================================================================ */
-/* Planche photo : affichée si images/zones_corps.jpg existe, sinon silhouette SVG */
+/* Planche photo : affichée si images/zones_corps.webp existe, sinon silhouette SVG */
 (function(){
   const bloc = $("#corpsPhoto");
   if (!bloc) return;
@@ -1481,7 +1481,7 @@ if (champ) {
     const flex = document.querySelector("#corps .corps-flex .corps-svg-bloc");
     if (flex) flex.style.display = "none";
   };
-  test.src = "images/zones_corps.jpg";
+  test.src = "images/zones_corps.webp";
   function litZone(z, on) {
     bloc.querySelectorAll(".cp-spot[data-zone='" + z + "'], .cp-box[data-zone='" + z + "'], .cp-line[data-zone='" + z + "']")
       .forEach(el => el.classList.toggle("lit", on));

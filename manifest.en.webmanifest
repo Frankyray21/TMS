@@ -1,0 +1,17 @@
+{
+  "name": "MSD Prevention · Machines Roger International",
+  "short_name": "MSD Prevention",
+  "description": "Knowledge base on preventing musculoskeletal disorders in underground mining: at-risk body areas, risk factors, fatigue, sleep and good habits on the job.",
+  "lang": "en-CA",
+  "start_url": "./index.en.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e17",
+  "theme_color": "#0a0e17",
+  "icons": [
+    { "src": "images/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "images/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
