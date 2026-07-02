@@ -375,9 +375,9 @@ html.tms-loading{overflow:hidden!important}
           <button class="bandeau-centre" data-cle="combinaison" data-resume="The key message of the diagram: click to understand why combining factors increases the risk.">RISK FACTORS</button>
 
           <!-- Les trois grandes familles -->
-          <div class="cercle bio" role="button" tabindex="0" aria-label="Biomechanical factors, open the details" data-cle="biomecanique" data-famille="biomecanique"
+          <div class="cercle bio" data-cle="biomecanique" data-famille="biomecanique"
                   data-resume="The physical demands of the task: effort, pace, posture, material handling, compression. Click for the details, or right on a word.">
-            <span class="nom">Biomechanical<br>factors</span>
+            <span class="nom" role="button" tabindex="0" data-cle="biomecanique" aria-label="Biomechanical factors, open the details">Biomechanical<br>factors</span>
             <ul>
               <li><button class="sous-item" data-cle="efforts"><span class="si">💪</span>Effort</button></li>
               <li><button class="sous-item" data-cle="mouvements-repetes"><span class="si">⏱️</span>Pace</button></li>
@@ -387,9 +387,9 @@ html.tms-loading{overflow:hidden!important}
             </ul>
           </div>
 
-          <div class="cercle ind" role="button" tabindex="0" aria-label="Individual factors, open the details" data-cle="individuel" data-famille="individuel"
+          <div class="cercle ind" data-cle="individuel" data-famille="individuel"
                   data-resume="What belongs to the person: recovery, physical capacity, current pain, history, experience.">
-            <span class="nom">Individual<br>factors</span>
+            <span class="nom" role="button" tabindex="0" data-cle="individuel" aria-label="Individual factors, open the details">Individual<br>factors</span>
             <ul>
               <li><button class="sous-item" data-cle="recuperation"><span class="si">🛌</span>Recovery</button></li>
               <li><button class="sous-item" data-cle="condition-physique"><span class="si">🏃</span>Physical capacity</button></li>
@@ -399,9 +399,9 @@ html.tms-loading{overflow:hidden!important}
             </ul>
           </div>
 
-          <div class="cercle env" role="button" tabindex="0" aria-label="Environmental factors, open the details" data-cle="environnement" data-famille="environnement"
+          <div class="cercle env" data-cle="environnement" data-famille="environnement"
                   data-resume="The physical setting: temperature, vibrations, space, support surface, work height.">
-            <span class="nom">Environmental<br>factors</span>
+            <span class="nom" role="button" tabindex="0" data-cle="environnement" aria-label="Environmental factors, open the details">Environmental<br>factors</span>
             <ul>
               <li><button class="sous-item" data-cle="temperature"><span class="si">🌡️</span>Temperature</button></li>
               <li><button class="sous-item" data-cle="outils-vibrants"><span class="si">📳</span>Vibrations</button></li>
@@ -847,7 +847,7 @@ html.tms-loading{overflow:hidden!important}
   </div>
 </div>
 
-<div id="infobulle" role="tooltip"></div>
+<div id="infobulle" aria-hidden="true"></div>
 <div id="toasts" aria-live="polite"></div>
 <canvas id="confettis"></canvas>
 <script src="anatomy-hero-model.js" defer></script>

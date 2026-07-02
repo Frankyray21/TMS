@@ -2347,3 +2347,11 @@ html.no-js .hero-more{opacity:1;transform:none}
   .hero-pin{position:relative;height:82vh;margin-bottom:-82vh}  /* pas d'épinglage sur mobile, mais corps en fond */
   .hero-headline{min-height:78vh}
 }
+
+/* Accessibilité (audit axe) : le déclencheur clavier des cercles est le titre (vrai bouton,
+   plus d'imbrication de contrôles) ; halo conservé quand le titre a le focus. */
+.cercle:has(.nom:focus-visible){box-shadow:0 0 0 3px rgba(239,90,92,.65),0 0 26px rgba(210,35,37,.35)}
+.cercle .nom:focus-visible{outline:2px solid #ef5a5c;outline-offset:5px;border-radius:8px}
+.cercle .nom{cursor:pointer}
+/* Liens dans un bloc de texte : distinguables sans se fier à la couleur */
+.foot-credit a,.corps-3d-note a{text-decoration:underline;text-underline-offset:2px}

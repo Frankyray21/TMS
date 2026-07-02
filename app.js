@@ -1318,7 +1318,7 @@ document.addEventListener("click", e => {
 /* Clavier pour les cercles (div role="button") */
 document.addEventListener("keydown", e => {
   if (e.key !== "Enter" && e.key !== " ") return;
-  const cible = e.target.closest("div[role='button'][data-cle]");
+  const cible = e.target.closest("[role='button'][data-cle]");
   if (!cible) return;
   e.preventDefault();
   if (DETAILS[cible.dataset.cle]) ouvrirDetails(cible.dataset.cle, cible);

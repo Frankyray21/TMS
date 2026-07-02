@@ -375,9 +375,9 @@ html.tms-loading{overflow:hidden!important}
           <button class="bandeau-centre" data-cle="combinaison" data-resume="Le message clé du schéma : cliquez pour comprendre pourquoi la combinaison des facteurs augmente le risque.">LES FACTEURS DE RISQUE</button>
 
           <!-- Les trois grandes familles -->
-          <div class="cercle bio" role="button" tabindex="0" aria-label="Facteurs biomécaniques, ouvrir la fiche" data-cle="biomecanique" data-famille="biomecanique"
+          <div class="cercle bio" data-cle="biomecanique" data-famille="biomecanique"
                   data-resume="Les contraintes physiques de la tâche : effort, cadence, posture, manutention, compression. Cliquez pour la fiche, ou directement sur un mot.">
-            <span class="nom">Facteurs<br>biomécaniques</span>
+            <span class="nom" role="button" tabindex="0" data-cle="biomecanique" aria-label="Facteurs biomécaniques, ouvrir la fiche">Facteurs<br>biomécaniques</span>
             <ul>
               <li><button class="sous-item" data-cle="efforts"><span class="si">💪</span>Effort</button></li>
               <li><button class="sous-item" data-cle="mouvements-repetes"><span class="si">⏱️</span>Cadence</button></li>
@@ -387,9 +387,9 @@ html.tms-loading{overflow:hidden!important}
             </ul>
           </div>
 
-          <div class="cercle ind" role="button" tabindex="0" aria-label="Facteurs individuels, ouvrir la fiche" data-cle="individuel" data-famille="individuel"
+          <div class="cercle ind" data-cle="individuel" data-famille="individuel"
                   data-resume="Ce qui appartient à la personne : récupération, capacité physique, douleur présente, antécédents, expérience.">
-            <span class="nom">Facteurs<br>individuels</span>
+            <span class="nom" role="button" tabindex="0" data-cle="individuel" aria-label="Facteurs individuels, ouvrir la fiche">Facteurs<br>individuels</span>
             <ul>
               <li><button class="sous-item" data-cle="recuperation"><span class="si">🛌</span>Récupération</button></li>
               <li><button class="sous-item" data-cle="condition-physique"><span class="si">🏃</span>Capacité physique</button></li>
@@ -399,9 +399,9 @@ html.tms-loading{overflow:hidden!important}
             </ul>
           </div>
 
-          <div class="cercle env" role="button" tabindex="0" aria-label="Facteurs environnementaux, ouvrir la fiche" data-cle="environnement" data-famille="environnement"
+          <div class="cercle env" data-cle="environnement" data-famille="environnement"
                   data-resume="Le contexte matériel : température, vibrations, espace, surface d'appui, niveau de travail.">
-            <span class="nom">Facteurs<br>environnementaux</span>
+            <span class="nom" role="button" tabindex="0" data-cle="environnement" aria-label="Facteurs environnementaux, ouvrir la fiche">Facteurs<br>environnementaux</span>
             <ul>
               <li><button class="sous-item" data-cle="temperature"><span class="si">🌡️</span>Température</button></li>
               <li><button class="sous-item" data-cle="outils-vibrants"><span class="si">📳</span>Vibrations</button></li>
@@ -847,7 +847,7 @@ html.tms-loading{overflow:hidden!important}
   </div>
 </div>
 
-<div id="infobulle" role="tooltip"></div>
+<div id="infobulle" aria-hidden="true"></div>
 <div id="toasts" aria-live="polite"></div>
 <canvas id="confettis"></canvas>
 <script src="gsap.min.js" defer></script>
