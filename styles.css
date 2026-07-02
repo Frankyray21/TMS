@@ -2355,3 +2355,34 @@ html.no-js .hero-more{opacity:1;transform:none}
 .cercle .nom{cursor:pointer}
 /* Liens dans un bloc de texte : distinguables sans se fier à la couleur */
 .foot-credit a,.corps-3d-note a{text-decoration:underline;text-underline-offset:2px}
+
+/* ============================================================
+   IDENTITÉ MACHINES ROGER — mouvement « précision mécanique »
+   (héritée du logo : capitales condensées, points de forage,
+   barre rouge sous le mot-symbole)
+   ============================================================ */
+:root{--ease-mech:cubic-bezier(.22,.61,.36,1)} /* décélération franche, sans rebond — courbe maison unifiée */
+
+/* Échelonnement des révélations : les classes d1/d2/d3 étaient posées
+   dans le HTML (titre → texte → contenu) mais sans CSS — on les active. */
+.reveal.d1{transition-delay:.12s}
+.reveal.d2{transition-delay:.26s}
+.reveal.d3{transition-delay:.42s}
+@media(prefers-reduced-motion:reduce){.reveal.d1,.reveal.d2,.reveal.d3{transition-delay:0s!important}}
+
+/* Signature du hero : sous le mot-clé, une plaque rouge percée de trois
+   trous de forage — l'écho du mot-symbole ROGER (points percés + barre).
+   Un seul moment de marque, sur le hero uniquement. */
+.hero h1 .hl{position:relative;display:inline-block}
+.hero h1 .hl::after{content:'';display:block;height:.085em;margin-top:.09em;border-radius:.06em;
+  background:
+    radial-gradient(circle .045em at 22% 50%,var(--bg) 96%,transparent 100%),
+    radial-gradient(circle .045em at 50% 50%,var(--bg) 96%,transparent 100%),
+    radial-gradient(circle .045em at 78% 50%,var(--bg) 96%,transparent 100%),
+    var(--g-red);
+  box-shadow:0 0 18px rgba(210,35,37,.5);
+  transform:scaleX(0);transform-origin:0 50%}
+.hero h1.reveal.in .hl::after{animation:tmsWipe .8s var(--ease-mech) .65s both}
+html.no-js .hero h1 .hl::after{transform:none}
+@media(prefers-reduced-motion:reduce){.hero h1 .hl::after{animation:none!important;transform:none}}
+@media print{.hero h1 .hl::after{display:none}}

@@ -1,0 +1,7 @@
+{
+  "files": ["*.html"],
+  "exclude": ["formation-guidee-design.html", "corps-3d.html"],
+  "insertBefore": "</body>",
+  "commentSyntax": "html",
+  "cspChecked": true
+}
