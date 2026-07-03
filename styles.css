@@ -2414,3 +2414,22 @@ html.no-js .hero h1 .hl::after{transform:none}
 .fg-hero-actions{animation:tmsFadeUp .55s var(--ease-mech) .26s both}
 .fg-hero-card{animation:tmsFadeUp .6s var(--ease-mech) .38s both}
 @media(prefers-reduced-motion:reduce){.fg-h1,.fg-hero-sub,.fg-hero-actions,.fg-hero-card{animation:none!important;opacity:1}}
+
+/* ============================================================
+   MODE « PETITES PAGES » (body.snap : accueil + parties 2-5)
+   Chaque section — et chaque sous-bloc titré — devient un écran
+   sur lequel le défilement s'aimante. Aimant NATIF en proximité :
+   jamais de prise en main du scroll (trackpad, clavier et lecteurs
+   d'écran gardent leur comportement normal).
+   ============================================================ */
+html:has(body.snap){scroll-snap-type:y proximity}
+body.snap section{scroll-snap-align:start}
+/* découpe des sections hautes : chaque sous-titre est un arrêt d'aimant */
+body.snap h3.sub-h{scroll-snap-align:start;scroll-margin-top:1.4rem}
+body.snap .foot{scroll-snap-align:end}
+/* ordinateur : chaque section occupe (au moins) l'écran, contenu centré
+   verticalement quand il est plus court — la sensation « une idée = une page » */
+@media(min-width:981px){
+  body.snap section:not(.hero){min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-top:3.5rem;padding-bottom:3.5rem}
+}
+/* mobile : hauteurs naturelles (pas d'écrans étirés) — l'aimant doux suffit */
