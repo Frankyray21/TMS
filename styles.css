@@ -2438,3 +2438,42 @@ body.snap .foot{scroll-snap-align:end}
   body.snap section:not(.hero){min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-top:3.5rem;padding-bottom:3.5rem}
 }
 /* mobile : hauteurs naturelles (pas d'écrans étirés) — l'aimant doux suffit */
+
+/* ── Écrans vivants (mode petites pages, ordinateur) ─────────────
+   L'écran SE PRÉSENTE : pendant son entrée dans le viewport il glisse
+   vers sa place, s'éclaircit et se pose — progression liée à la position
+   de défilement (réversible à la molette), pas à un minuteur. Sous lui,
+   un halo de profondeur traverse l'écran plus lentement que le contenu
+   (parallaxe compositor, zéro jank). Navigateur sans scroll-timeline :
+   contenu simplement visible. */
+@media (min-width:981px){
+  @supports (animation-timeline: view()){
+    body.snap section:not(.hero){
+      position:relative;
+      animation:tmsEcranIn linear both;
+      animation-timeline:view();
+      animation-range:entry 0% entry 88%;
+    }
+    /* halo de profondeur : plus lent que le contenu → sensation de relief */
+    body.snap section:not(.hero)::before{
+      content:'';position:absolute;z-index:-1;left:6%;top:12%;width:58%;height:66%;border-radius:50%;
+      background:radial-gradient(closest-side,rgba(210,35,37,.08),rgba(150,40,36,.03) 55%,transparent 76%);
+      filter:blur(14px);pointer-events:none;
+      animation:tmsHaloDrift linear both;
+      animation-timeline:view();
+      animation-range:cover 0% cover 100%;
+    }
+    body.snap section:not(.hero):nth-of-type(even)::before{left:auto;right:6%;top:20%;
+      background:radial-gradient(closest-side,rgba(210,35,37,.055),rgba(150,40,36,.02) 55%,transparent 76%)}
+    /* un seul mouvement à la fois : l'entrée d'écran remplace l'animation
+       de titre liée au défilement (sinon double translation brouillonne) */
+    body.snap section:not(.hero) :is(h1,h2).title.reveal{
+      animation:none!important;
+      transition:opacity .5s var(--ease-mech),transform .5s var(--ease-mech)}
+  }
+}
+@keyframes tmsEcranIn{from{opacity:.55;transform:translateY(44px) scale(.986)}to{opacity:1;transform:none}}
+@keyframes tmsHaloDrift{from{transform:translateY(10%)}to{transform:translateY(-10%)}}
+@media(prefers-reduced-motion:reduce){
+  body.snap section:not(.hero),body.snap section:not(.hero)::before{animation:none!important}
+}
