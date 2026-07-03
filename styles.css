@@ -2370,11 +2370,14 @@ html.no-js .hero-more{opacity:1;transform:none}
 .reveal.d3{transition-delay:.42s}
 @media(prefers-reduced-motion:reduce){.reveal.d1,.reveal.d2,.reveal.d3{transition-delay:0s!important}}
 
-/* Signature du hero : sous le mot-clé, une plaque rouge percée de trois
-   trous de forage — l'écho du mot-symbole ROGER (points percés + barre).
-   Un seul moment de marque, sur le hero uniquement. */
-.hero h1 .hl{position:relative;display:inline-block}
-.hero h1 .hl::after{content:'';display:block;height:.085em;margin-top:.09em;border-radius:.06em;
+/* Signature de marque : sous le mot-clé d'un titre de hero, une plaque
+   rouge percée de trois trous de forage — l'écho du mot-symbole ROGER
+   (points percés + barre). Un moment de marque par hero, pas une grammaire
+   répétée. Deux porteurs : le hero d'accueil (.hero h1 .hl, déclenché par
+   .reveal.in) et la classe réutilisable .mr-plate (auto-déclenchée à
+   l'insertion — heros rendus en JS comme la formation guidée). */
+.hero h1 .hl,.mr-plate{position:relative;display:inline-block}
+.hero h1 .hl::after,.mr-plate::after{content:'';display:block;height:.085em;margin-top:.09em;border-radius:.06em;
   background:
     radial-gradient(circle .045em at 22% 50%,var(--bg) 96%,transparent 100%),
     radial-gradient(circle .045em at 50% 50%,var(--bg) 96%,transparent 100%),
@@ -2383,6 +2386,16 @@ html.no-js .hero-more{opacity:1;transform:none}
   box-shadow:0 0 18px rgba(210,35,37,.5);
   transform:scaleX(0);transform-origin:0 50%}
 .hero h1.reveal.in .hl::after{animation:tmsWipe .8s var(--ease-mech) .65s both}
+.mr-plate::after{animation:tmsWipe .8s var(--ease-mech) .55s both}
 html.no-js .hero h1 .hl::after{transform:none}
-@media(prefers-reduced-motion:reduce){.hero h1 .hl::after{animation:none!important;transform:none}}
-@media print{.hero h1 .hl::after{display:none}}
+@media(prefers-reduced-motion:reduce){.hero h1 .hl::after,.mr-plate::after{animation:none!important;transform:none}}
+@media print{.hero h1 .hl::after,.mr-plate::after{display:none}}
+
+/* Entrée du hero de la formation guidée (rendu en JS : les animations se
+   jouent à l'insertion) : cadence titre → texte → actions → carte, même
+   langage que les révélations d1/d2/d3 de l'accueil. */
+.fg-h1{animation:tmsFadeUp .55s var(--ease-mech) both}
+.fg-hero-sub{animation:tmsFadeUp .55s var(--ease-mech) .12s both}
+.fg-hero-actions{animation:tmsFadeUp .55s var(--ease-mech) .26s both}
+.fg-hero-card{animation:tmsFadeUp .6s var(--ease-mech) .38s both}
+@media(prefers-reduced-motion:reduce){.fg-h1,.fg-hero-sub,.fg-hero-actions,.fg-hero-card{animation:none!important;opacity:1}}
