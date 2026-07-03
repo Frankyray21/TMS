@@ -61,13 +61,24 @@
 
   var BOB_PERIOD = 9000; // ms — rythme du léger basculement vertical de la caméra
 
-  // Révélation des systèmes : scènes successives (matériau → opacité).
+  // Révélation des systèmes : scènes successives (matériau → opacité) CHORÉGRAPHIÉES —
+  // chaque système apparaît sur sa meilleure vue (theta = angle d'ancrage, en degrés,
+  // croissant pour que le corps tourne toujours dans le même sens) :
+  // muscles de face, squelette en 3/4, nerfs de dos (plexus et moelle), articulations
+  // de profil arrière, puis FINALE « zones à risque » : retour de face (+360°, tour
+  // complet bouclé) sur les muscles, où les 8 pastilles rouges s'allument une à une.
   // On garde un squelette discret en fond pour les nerfs et les articulations (sinon ils « flottent »).
   var SYS_SCENES = [
-    { Muscles: 1, Os: 0, Nerfs: 0, Articulations: 0 },
-    { Muscles: 0, Os: 1, Nerfs: 0, Articulations: 0 },
-    { Muscles: 0, Os: 0.18, Nerfs: 1, Articulations: 0 },
-    { Muscles: 0, Os: 0.30, Nerfs: 0, Articulations: 1 }
+    { theta: 18,  zones: false, alphas: { Muscles: 1, Os: 0, Nerfs: 0, Articulations: 0 } },
+    { theta: 100, zones: false, alphas: { Muscles: 0, Os: 1, Nerfs: 0, Articulations: 0 } },
+    { theta: 205, zones: false, alphas: { Muscles: 0, Os: 0.18, Nerfs: 1, Articulations: 0 } },
+    { theta: 288, zones: false, alphas: { Muscles: 0, Os: 0.30, Nerfs: 0, Articulations: 1 } },
+    { theta: 378, zones: true,  alphas: { Muscles: 1, Os: 0, Nerfs: 0, Articulations: 0 } }
+  ];
+  // Finale : les 8 zones TMS (positions calibrées sur ce modèle — mêmes repères que la carte du corps).
+  var ZONE_DOTS = [
+    "0 1.45 0.08", "-0.18 1.37 0.05", "0 1.20 -0.10", "0 0.97 -0.12",
+    "-0.21 1.02 0", "-0.22 0.80 0.02", "0.10 0.46 0.10", "0.10 0.08 0.08"
   ];
   var SYS_SEG_MS = 7000;  // durée d'une étape en mode auto (sans scroll) — transition lente et contemplative
   var SYS_HOLD = 0.28;    // part de l'étape où le système reste pleinement visible AVANT le fondu
@@ -171,6 +182,27 @@
       this.appendChild(label);
       this._label = label;
       this._labelIdx = -1;
+
+      // Ligne de scan : fine ligne lumineuse qui balaie le corps pendant chaque fondu (décorative).
+      var scan = document.createElement("div");
+      scan.className = "ahm-scan";
+      scan.setAttribute("aria-hidden", "true");
+      this.appendChild(scan);
+      this._scan = scan;
+
+      // Pastilles des 8 zones TMS (finale) : ancrées au modèle via les « hotspots » de model-viewer
+      // (elles suivent la rotation ; celles derrière le corps sont atténuées par l'occlusion).
+      this._dots = [];
+      for (var z = 0; z < ZONE_DOTS.length; z++) {
+        var dot = document.createElement("span");
+        dot.className = "ahm-zone";
+        dot.setAttribute("slot", "hotspot-z" + z);
+        dot.setAttribute("data-position", ZONE_DOTS[z]);
+        dot.setAttribute("data-normal", "0 0 1");
+        dot.setAttribute("aria-hidden", "true");
+        mv.appendChild(dot);
+        this._dots.push(dot);
+      }
     }
 
     var self = this;
@@ -220,6 +252,9 @@
   };
 
   // Applique la révélation à une position continue (anneau de scènes ; pos réel quelconque).
+  // Retourne l'angle de caméra chorégraphié : chaque scène a son angle d'ancrage, la caméra
+  // glisse de l'un à l'autre PENDANT le fondu (rotation et révélation restent synchrones,
+  // au scroll comme en lecture auto). Pilote aussi la ligne de scan et les pastilles de zones.
   AnatomyHeroModel.prototype.applyReveal = function (pos) {
     var N = SYS_SCENES.length;
     var base = Math.floor(pos);
@@ -232,8 +267,29 @@
     var s0 = SYS_SCENES[i0], s1 = SYS_SCENES[i1];
     for (var k = 0; k < this._systems.length; k++) {
       var name = this._systems[k];
-      var a0 = s0[name] || 0, a1 = s1[name] || 0;
+      var a0 = s0.alphas[name] || 0, a1 = s1.alphas[name] || 0;
       this.setAlpha(name, a0 + (a1 - a0) * ef);
+    }
+    // Angle chorégraphié : ancrages croissants (+360° par tour complet, donc rotation
+    // toujours dans le même sens ; finale et scène 0 partagent la vue de face → boucle invisible).
+    var loop = Math.floor(pos / N);
+    var th0 = s0.theta + 360 * loop;
+    var th1 = (i1 === 0 ? SYS_SCENES[0].theta + 360 * (loop + 1) : s1.theta + 360 * loop);
+    var theta = th0 + (th1 - th0) * ef;
+    // Ligne de scan : visible seulement pendant le fondu, balaie le corps de haut en bas.
+    if (this._scan) {
+      if (ef > 0 && ef < 1) {
+        this._scan.style.opacity = Math.min(1, 4 * Math.min(ef, 1 - ef)).toFixed(2);
+        this._scan.style.transform = "translateY(" + (ef * (this._h || 600)).toFixed(1) + "px)";
+      } else if (this._scan.style.opacity !== "0") { this._scan.style.opacity = "0"; }
+    }
+    // Finale « zones à risque » : pendant le maintien de la scène finale, les 8 pastilles
+    // s'allument une à une (extinction en douceur au début du fondu de sortie).
+    if (this._dots) {
+      for (var d = 0; d < this._dots.length; d++) {
+        var jalon = SYS_HOLD * (d + 1) / (this._dots.length + 1);
+        this._dots[d].classList.toggle("on", !!s0.zones && frac >= jalon && ef < 0.55);
+      }
     }
     // Libellé : nom du système dominant (celui vers lequel on fond).
     if (this._label) {
@@ -244,6 +300,7 @@
         this._label.classList.remove("in"); void this._label.offsetWidth; this._label.classList.add("in");
       }
     }
+    return theta;
   };
 
   AnatomyHeroModel.prototype.setupVisibility = function () {
@@ -264,6 +321,7 @@
       ticking = false;
       var vh = window.innerHeight || 1;
       self._scrollP = Math.min(Math.max(window.scrollY / (vh * SCROLL_SPAN), 0), 1);
+      self._h = self.clientHeight || 600; // hauteur mise en cache pour la ligne de scan (pas de lecture de layout par frame)
     }
     this._onScroll = function () {
       self._lastScrollTs = nowMs();
@@ -290,36 +348,32 @@
   AnatomyHeroModel.prototype.play = function () {
     if (this._raf || !this.mv) return;
     var self = this, c = this.cfg;
-    var N = SYS_SCENES.length;
     if (this._clock === undefined) this._clock = 0;
+    if (this._entry === undefined) this._entry = 0;
     this._lastNow = null;
     function frame(now) {
       // Horloge interne accumulée : avance du delta réel entre deux frames, mais reste figée
       // pendant les pauses (hero hors écran, onglet caché) → reprise sans saut.
       if (self._lastNow === null) self._lastNow = now;
       var dt = now - self._lastNow; self._lastNow = now;
-      if (dt > 100) dt = 16;          // après une longue pause, on n'avance pas d'un bloc
+      if (dt > 100) dt = 100;         // après une pause/frame lente, on plafonne le pas : le temps
+                                      // reste ~réel sur appareil lent (on saute des images, on ne ralentit pas)
       self._clock += dt;
       var ms = self._clock;
 
-      var theta = c.theta + (ms / c.spin) * 360; // rotation 360° continue
       var t = ms / BOB_PERIOD * Math.PI * 2;
       var phi = c.phi + c.phiAmp * Math.sin(t * 0.6);
       var p = self._scrollP || 0;
       var e = p * p * (3 - 2 * p);                 // lissage (smoothstep)
       var r = c.rClose + (c.rFull - c.rClose) * e; // zoom piloté par le scroll : gros plan → corps entier
       var ty = c.tyClose + (c.tyFull - c.tyClose) * e;
-      var tgt = self.targetStr(ty.toFixed(2));
-      if (tgt !== self._lastTarget) { self.mv.cameraTarget = tgt; self._lastTarget = tgt; } // évite une réécriture inutile
-      self.mv.cameraOrbit = orbit(theta.toFixed(2), phi.toFixed(2), r.toFixed(2));
-      // Applique la pose immédiatement : sans ça, model-viewer lisse vers la cible dans SA propre
-      // boucle de rendu, désynchronisée de la nôtre → battement/saccade. Ici notre horloge (delta-time)
-      // est la seule source du mouvement → rotation régulière.
-      if (self.mv.jumpCameraToGoal) self.mv.jumpCameraToGoal();
 
-      // Révélation des systèmes : suit le scroll ; rejoue toute seule en boucle dès qu'on s'arrête.
+      var theta;
       if (self._systems) {
-        var scrollPos = p * (N - 1);
+        // Révélation des systèmes : suit le scroll ; rejoue toute seule en boucle dès qu'on s'arrête.
+        // La rotation est CHORÉGRAPHIÉE par la révélation (chaque système sur sa meilleure vue),
+        // avec un léger balancement pour garder le corps vivant pendant les maintiens.
+        var scrollPos = p * (SYS_SCENES.length - 1);
         var revPos;
         if (now - self._lastScrollTs < IDLE_MS) {   // scroll récent → scrub
           revPos = scrollPos;
@@ -327,8 +381,27 @@
         } else {                                    // au repos → lecture automatique en boucle
           revPos = self._autoAnchor + (self._clock - self._autoClock) / SYS_SEG_MS;
         }
-        self.applyReveal(revPos);
+        theta = self.applyReveal(revPos) + 3 * Math.sin(ms / 5200 * Math.PI * 2);
+      } else {
+        theta = c.theta + (ms / c.spin) * 360;      // écorché : rotation 360° continue
       }
+
+      // Entrée théâtrale (≈0,95 s au chargement) : le corps « s'allume » (exposition 0,35 → 1)
+      // pendant que la caméra finit d'approcher — synchronisée avec l'arrivée du titre.
+      if (self._entry < 1) {
+        self._entry = Math.min(1, ms / 950);
+        var ee = 1 - Math.pow(1 - self._entry, 3);
+        r *= 1.06 - 0.06 * ee;
+        self.mv.exposure = (0.35 + 0.65 * ee) * parseFloat(c.exposure);
+      }
+
+      var tgt = self.targetStr(ty.toFixed(2));
+      if (tgt !== self._lastTarget) { self.mv.cameraTarget = tgt; self._lastTarget = tgt; } // évite une réécriture inutile
+      self.mv.cameraOrbit = orbit(theta.toFixed(2), phi.toFixed(2), r.toFixed(2));
+      // Applique la pose immédiatement : sans ça, model-viewer lisse vers la cible dans SA propre
+      // boucle de rendu, désynchronisée de la nôtre → battement/saccade. Ici notre horloge (delta-time)
+      // est la seule source du mouvement → rotation régulière.
+      if (self.mv.jumpCameraToGoal) self.mv.jumpCameraToGoal();
       self._raf = requestAnimationFrame(frame);
     }
     this._raf = requestAnimationFrame(frame);

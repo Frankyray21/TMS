@@ -2286,6 +2286,21 @@ anatomy-hero-model{position:absolute;inset:0;display:block}
 .ahm-ready .ahm-mv{opacity:1}
 .ahm-ready .ahm-poster{opacity:0}
 
+/* Ligne de scan (mode systèmes) : balaie le corps pendant chaque fondu entre couches */
+.ahm-scan{position:absolute;left:6%;right:6%;top:0;height:2px;z-index:3;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(239,90,92,.85) 18%,#fff 50%,rgba(239,90,92,.85) 82%,transparent);
+  box-shadow:0 0 14px rgba(210,35,37,.8),0 0 36px rgba(210,35,37,.4);will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){.ahm-scan{display:none}}
+
+/* Pastilles des 8 zones TMS (finale de la révélation) — points de forage ancrés au modèle 3D ;
+   celles derrière le corps restent visibles en fantôme (occlusion model-viewer) */
+.ahm-mv{--min-hotspot-opacity:.32}
+.ahm-zone{display:block;width:17px;height:17px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,#fff 0 13%,#ef5347 40%,rgba(210,35,37,.4) 66%,transparent 78%);
+  box-shadow:0 0 12px rgba(224,74,52,1),0 0 32px rgba(210,35,37,.6);
+  opacity:0;transform:scale(.25);transition:opacity .55s var(--ease-mech),transform .55s var(--ease-mech)}
+.ahm-zone.on{opacity:1;transform:none;animation:tmsDotPulse 2.6s ease-out infinite}
+
 /* Cartouche « système en cours » (mode révélation des systèmes) — discret, décoratif */
 .ahm-sys-label{position:absolute;z-index:3;top:15%;right:7%;display:inline-flex;align-items:center;gap:.55em;
   padding:.46em .95em;border-radius:999px;font-weight:700;font-size:.72rem;line-height:1;letter-spacing:.14em;text-transform:uppercase;
