@@ -2423,6 +2423,11 @@ html.no-js .hero h1 .hl::after{transform:none}
    d'écran gardent leur comportement normal).
    ============================================================ */
 html:has(body.snap){scroll-snap-type:y proximity}
+/* NB : l'aimant natif reste en « proximity » (doux). Le « mandatory » piégeait la
+   molette lente (impossible de quitter un écran) et « proximity » seul est
+   imperceptible : c'est l'ASSISTANT D'AIMANT de app.js qui complète le geste —
+   260 ms après l'arrêt du défilement, il glisse vers l'écran le plus proche
+   (jamais pendant le geste → jamais de lutte, clavier/ancres intacts). */
 body.snap section{scroll-snap-align:start}
 /* découpe des sections hautes : chaque sous-titre est un arrêt d'aimant */
 body.snap h3.sub-h{scroll-snap-align:start;scroll-margin-top:1.4rem}
