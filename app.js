@@ -2054,6 +2054,14 @@ if ("serviceWorker" in navigator) {
   function load() {
     if (loaded) return;
     loaded = true;
+    // Décodeur Draco servi en local (vendor/draco/) : le modèle 3D (compressé Draco)
+    // fonctionne hors ligne et sans dépendre du CDN Google (gstatic).
+    try {
+      window.customElements.whenDefined("model-viewer").then(function () {
+        var MV = window.customElements.get("model-viewer");
+        if (MV) { try { MV.dracoDecoderLocation = new URL("vendor/draco/", document.baseURI).href; } catch (e) {} }
+      });
+    } catch (e) {}
     // Charge le moteur + le modèle seulement maintenant (zéro coût au chargement de la page).
     // Modèle anatomique Z-Anatomy : version légère sur mobile, version détaillée ailleurs.
     var small = Math.min(screen.width, screen.height) <= 768 ||

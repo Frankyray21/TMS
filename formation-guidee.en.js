@@ -338,7 +338,7 @@
     var attBg = allDone ? 'linear-gradient(120deg,rgba(16,185,129,.12),rgba(13,19,32,.6))' : '#0d1320';
     var attKick = allDone ? '#34d399' : '#8694ad';
     var attTitle = allDone ? 'You have unlocked your certificate' : 'Finish all 5 modules to unlock';
-    var attDesc = allDone ? "Enter your name: your personalized certificate is ready to print or save as a PDF." : "Go through the topics and pass the quiz in each module to generate your certificate.";
+    var attDesc = allDone ? "Two steps: pick your name from the list, then save your training. Your completion will be sent to Machines Roger International." : "Go through the topics and pass the quiz in each module to generate your certificate.";
     var attBtnBg = allDone ? 'linear-gradient(135deg,#10b981,#0e9f6e)' : '#1a2332';
     var attBtnColor = allDone ? '#fff' : '#64748b';
     var att = '<div id="attestation" style="margin-top:18px;border-radius:18px;border:1px solid ' + attBorder + ';background:' + attBg + ';padding:28px">'
@@ -393,12 +393,18 @@
       + '<div id="certName" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.6rem;color:#111;border-bottom:2px solid #d22325;display:inline-block;margin:8px auto 18px;padding:2px 18px 4px">' + (esc(state.certName) || '—') + '</div>'
       + '<div style="display:flex;gap:26px;justify-content:center;flex-wrap:wrap;color:#333;font-size:.9rem;margin-bottom:14px"><span>5 modules passed · <b>100&nbsp;%</b></span><span>' + d + '</span></div>'
       + '<div style="font-weight:700;color:#111;font-size:.86rem">Machines Roger International</div></div>'
-      + '<div class="att-emp" style="position:relative;margin:18px 0 0"><label style="display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:#8694ad;margin-bottom:6px">Your full name</label>'
+      + '<div class="att-save" style="margin-top:22px;background:#0d1320;border:1px solid #1e293b;border-radius:14px;padding:20px 22px">'
+      + '<div style="display:inline-flex;align-items:center;gap:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:1.05rem;color:#fff;margin-bottom:4px">📋 Save your training</div>'
+      + '<p style="color:#8694ad;font-size:.88rem;margin:0 0 18px">Your completion must be <strong style="color:#cbd5e1">saved</strong> to be sent to Machines Roger International.</p>'
+      + '<div class="att-emp" style="position:relative;margin:0 0 18px">'
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">1</span> Pick your name from the list</label>'
       + '<input id="attName" type="text" autocomplete="off" placeholder="First and last name" value="' + esc(state.certName) + '" style="width:100%;background:#0d1320;border:1px solid #1e293b;border-radius:10px;padding:.7rem .9rem;color:#f1f5f9;font:inherit;font-size:1rem">'
       + '<div id="empSugg" class="emp-sugg" hidden></div>'
       + '<p id="empHint" style="color:#8694ad;font-size:.82rem;margin:.5rem 0 0">Start typing your name, then pick it from the list.</p></div>'
-      + '<div id="attActions" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:16px">'
-      + '<button class="fg-cta" data-act="print" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:.95rem;color:#fff;background:linear-gradient(135deg,#10b981,#0e9f6e);border:none;border-radius:999px;padding:12px 24px;cursor:pointer;box-shadow:0 6px 18px rgba(16,185,129,.35)">Print / save (PDF)</button></div></div>';
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">2</span> Save your training</label>'
+      + '<button class="fg-cta" data-act="save" id="attSave" disabled style="width:100%;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1.05rem;color:#fff;background:linear-gradient(135deg,#10b981,#0e9f6e);border:none;border-radius:12px;padding:15px 24px;cursor:pointer;box-shadow:0 6px 18px rgba(16,185,129,.35);opacity:.5;transition:opacity .2s">✔ Save my training</button>'
+      + '<div id="saveMsg" role="status" aria-live="polite" hidden style="margin-top:14px;border-radius:10px;padding:12px 14px;font-size:.92rem;font-weight:600;line-height:1.5"></div>'
+      + '</div></div>';
   }
 
   /* ---------------- RENDU : LECTEUR ---------------- */
@@ -871,9 +877,48 @@
     try { localStorage.setItem(K_NAME, v); } catch (e) {}
     var cn = document.getElementById('certName'); if (cn) cn.textContent = v || '—';
   }
-  function printCert() {
-    sendAttestation();
-    setTimeout(function () { try { window.print(); } catch (e) {} }, 120);
+  /* Save confirmation message (states: pending / success / error). */
+  function showSaveMsg(kind, text) {
+    var msg = document.getElementById('saveMsg');
+    if (!msg) return;
+    var palette = {
+      pending: ['#111c2e', '#cbd5e1', '#1e293b'],
+      ok:      ['rgba(16,185,129,.14)', '#34d399', 'rgba(16,185,129,.45)'],
+      err:     ['rgba(239,68,68,.13)', '#f87171', 'rgba(239,68,68,.4)'],
+      warn:    ['rgba(234,179,8,.13)', '#facc15', 'rgba(234,179,8,.4)']
+    };
+    var p = palette[kind] || palette.pending;
+    msg.hidden = false;
+    msg.style.background = p[0];
+    msg.style.color = p[1];
+    msg.style.border = '1px solid ' + p[2];
+    msg.textContent = text;
+  }
+  /* Enable/disable the "Save" button depending on whether a name is entered. */
+  function syncSaveBtn() {
+    var btn = document.getElementById('attSave');
+    if (!btn) return;
+    var ready = !!(state.certName || '').trim() && !btn.dataset.done;
+    btn.disabled = !ready;
+    btn.style.opacity = ready ? '1' : '.5';
+    btn.style.cursor = ready ? 'pointer' : 'not-allowed';
+  }
+  /* Save the training (send to Airtable), no printing, with confirmation. */
+  function saveCert() {
+    var btn = document.getElementById('attSave');
+    var nm = (state.certName || '').trim();
+    if (!nm) { showSaveMsg('warn', 'Enter your name (pick it from the list) before saving.'); return; }
+    if (btn) { btn.disabled = true; btn.style.opacity = '.7'; btn.style.cursor = 'wait'; btn.textContent = 'Saving…'; }
+    showSaveMsg('pending', '⏳ Saving…');
+    sendAttestation(function (ok) {
+      if (ok) {
+        showSaveMsg('ok', '✓ Your training is saved. Your completion has been sent to Machines Roger International.');
+        if (btn) { btn.dataset.done = '1'; btn.disabled = true; btn.style.opacity = '1'; btn.style.cursor = 'default'; btn.style.background = 'linear-gradient(135deg,#0e9f6e,#0b8457)'; btn.textContent = '✓ Training saved'; }
+      } else {
+        showSaveMsg('err', '⚠ Saving failed. Check your Internet connection and try again.');
+        if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = '↻ Retry saving'; }
+      }
+    });
   }
   function loadShot(cb) {
     if (window.modernScreenshot && window.modernScreenshot.domToPng) { cb(); return; }
@@ -881,19 +926,20 @@
     s.onload = function () { cb(); }; s.onerror = function () { cb(); };
     document.head.appendChild(s);
   }
-  function postAttest(image) {
-    if (!ATTEST_ENDPOINT) return;
-    var nm = (state.certName || '').trim(); if (!nm) return;
+  function postAttest(image, cb) {
+    cb = cb || function () {};
+    if (!ATTEST_ENDPOINT) { cb(false); return; }
+    var nm = (state.certName || '').trim(); if (!nm) { cb(false); return; }
     var input = document.getElementById('attName');
     var empId = input ? (input.dataset.empId || '') : '';
     var sig = nm + '|' + new Date().toISOString().slice(0, 10);
-    try { if (localStorage.getItem('tms_form_sent') === sig) return; } catch (e) {}
+    try { if (localStorage.getItem('tms_form_sent') === sig) { cb(true); return; } } catch (e) {} // already saved = success
     var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '', timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText() };
     try {
       fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-        .then(function (r) { if (r && r.ok) { try { localStorage.setItem('tms_form_sent', sig); } catch (e) {} } })
-        .catch(function () {});
-    } catch (e) {}
+        .then(function (r) { if (r && r.ok) { try { localStorage.setItem('tms_form_sent', sig); } catch (e) {} cb(true); } else { cb(false); } })
+        .catch(function () { cb(false); });
+    } catch (e) { cb(false); }
   }
   /* Détail du temps en texte (envoyé à Airtable, lisible dans la grille). */
   function timeDetailText() {
@@ -948,16 +994,22 @@
   }
   /* Envoi à Airtable : on téléverse la version DÉTAILLÉE (temps par section).
      Le travailleur, lui, imprime/enregistre la version propre (#certDoc). */
-  function sendAttestation() {
-    if (!(state.certName || '').trim()) return;
-    if (!ATTEST_ENDPOINT) return;
+  function sendAttestation(cb) {
+    cb = cb || function () {};
+    if (!(state.certName || '').trim()) { cb(false); return; }
+    if (!ATTEST_ENDPOINT) { cb(false); return; }
+    var done = false, node = null;
+    function finish(image) { if (done) return; done = true; if (node) { try { node.remove(); } catch (e) {} } postAttest(image, cb); }
+    // Safety net: if the image capture stalls (fonts/network/offline), still save
+    // the training without an image rather than staying stuck.
+    setTimeout(function () { finish(''); }, 4000);
     loadShot(function () {
       var ms = window.modernScreenshot;
-      var node = buildCertDetailNode();
-      if (!ms || !ms.domToPng || !node) { if (node) node.remove(); postAttest(''); return; }
+      node = buildCertDetailNode();
+      if (!ms || !ms.domToPng || !node) { finish(''); return; }
       ms.domToPng(node, { scale: 2, backgroundColor: '#ffffff' })
-        .then(function (u) { node.remove(); postAttest(u || ''); })
-        .catch(function () { node.remove(); postAttest(''); });
+        .then(function (u) { finish(u || ''); })
+        .catch(function () { finish(''); });
     });
   }
   function initCert() {
@@ -971,7 +1023,12 @@
     function upd() {
       setCertName((input.value || '').trim());
       if (pickedId && input.value.trim().toLowerCase() !== pickedName.toLowerCase()) { pickedId = ''; input.dataset.empId = ''; setHint('Start typing your name, then pick it from the list.'); }
+      // name changed: re-arm the "Save" button and hide the previous message
+      var btn = document.getElementById('attSave');
+      if (btn && btn.dataset.done) { delete btn.dataset.done; btn.textContent = '✔ Save my training'; btn.style.background = 'linear-gradient(135deg,#10b981,#0e9f6e)'; var msg = document.getElementById('saveMsg'); if (msg) msg.hidden = true; }
+      syncSaveBtn();
     }
+    syncSaveBtn();
     function hl(name, term) { var t = db(name.toLowerCase()), q = db((term || '').toLowerCase()), i = q ? t.indexOf(q) : -1; if (i < 0) return esc(name); return esc(name.slice(0, i)) + '<b>' + esc(name.slice(i, i + q.length)) + '</b>' + esc(name.slice(i + q.length)); }
     function renderSugg(list, term) {
       if (!sugg) return;
@@ -1009,7 +1066,7 @@
         else if (a === 'prev') prev();
         else if (a === 'goSommaire') go('sommaire');
         else if (a === 'getCert') getCert();
-        else if (a === 'print') printCert();
+        else if (a === 'save') saveCert();
       });
     });
     app.querySelectorAll('[data-open]').forEach(function (el) {
@@ -1049,6 +1106,14 @@
   function init() {
     app = document.getElementById('app');
     if (!app) return;
+    // Local Draco decoder (vendor/draco/): the Draco-compressed 3D body works
+    // offline and without depending on Google's CDN (gstatic).
+    try {
+      window.customElements.whenDefined('model-viewer').then(function () {
+        var MV = window.customElements.get('model-viewer');
+        if (MV) { try { MV.dracoDecoderLocation = new URL('vendor/draco/', document.baseURI).href; } catch (e) {} }
+      });
+    } catch (e) {}
     load();
     // recalcule les modules réussis à partir des réponses enregistrées
     MODULES.forEach(syncModulePass);

@@ -2052,6 +2052,14 @@ if ("serviceWorker" in navigator) {
   function load() {
     if (loaded) return;
     loaded = true;
+    // Local Draco decoder (vendor/draco/): the Draco-compressed 3D model works
+    // offline and without depending on Google's CDN (gstatic).
+    try {
+      window.customElements.whenDefined("model-viewer").then(function () {
+        var MV = window.customElements.get("model-viewer");
+        if (MV) { try { MV.dracoDecoderLocation = new URL("vendor/draco/", document.baseURI).href; } catch (e) {} }
+      });
+    } catch (e) {}
     var small = Math.min(screen.width, screen.height) <= 768 ||
                 (window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
     mv.setAttribute("src", small ? "models/corps-anatomie-mobile.glb" : "models/corps-anatomie-web.glb");
