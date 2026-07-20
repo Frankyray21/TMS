@@ -222,7 +222,7 @@
     var name = s && s.name ? s.name : '';
     chip.classList.toggle('is-anon', !name);
     chip.innerHTML = '<span class="sess-chip-dot" aria-hidden="true"></span>' + USER_SVG +
-      '<span class="sess-chip-name">' + esc(name ? firstName(name) : T.chip_signin) + '</span>';
+      '<span class="sess-chip-name">' + esc(name || T.chip_signin) + '</span>';
     chip.setAttribute('aria-label', name ? T.chip_aria_named(name) : T.chip_aria_none);
   }
   /* Insertion adaptée au chrome de la page (deux gabarits distincts sur le site). */

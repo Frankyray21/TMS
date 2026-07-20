@@ -2496,7 +2496,7 @@ body.snap .foot{scroll-snap-align:end}
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 4px 14px rgba(0,0,0,.35);
   transition:transform .2s var(--ease-mech,ease),border-color .2s,box-shadow .2s,color .2s}
 .sess-chip svg{flex:0 0 auto;opacity:.9}
-.sess-chip-name{max-width:9.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+.sess-chip-name{max-width:min(16rem,38vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
 .sess-chip-dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(210,35,37,.22),0 0 10px 1px rgba(210,35,37,.55)}
 .sess-chip.is-anon{color:var(--muted)}
 .sess-chip.is-anon .sess-chip-dot{background:var(--accent-l);animation:sessPulse 2.2s ease-in-out infinite}
@@ -2604,7 +2604,7 @@ body.snap .foot{scroll-snap-align:end}
 
 /* Mobile */
 @media(max-width:640px){
-  .sess-chip-name{max-width:6.5rem}
+  .sess-chip-name{max-width:min(11rem,44vw)}
   .sess-actions .sess-btn{flex:1 1 100%}
   .tour-pop{width:calc(100vw - 20px)}
 }
