@@ -1024,7 +1024,11 @@
   }
 
   /* ---------- ATTESTATION ---------- */
-  function getCert() { state.certVisible = true; render(); }
+  function getCert() {
+    state.certVisible = true;
+    render(true); // garde la position (ne pas renvoyer en haut de page)
+    setTimeout(function () { var el = document.getElementById('certDoc') || document.getElementById('attestation'); if (el) { try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} } }, 60);
+  }
   function setCertName(v) {
     state.certName = v;
     try { localStorage.setItem(K_NAME, v); } catch (e) {}
