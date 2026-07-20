@@ -214,7 +214,7 @@ async function recordFeedback(request, env, cors) {
   const lang = String(body.lang || "FR").toUpperCase() === "EN" ? "EN" : "FR";
   const voteId = clean(body.voteId, 80);   // clé stable : une par question et par appareil
   const fields = {
-    "Question": clean(body.key, 120),                         // repère stable (ex. « fg:m1:0 »)
+    "Question": clean(body.ref, 80) || clean(body.key, 120), // repère lisible (ex. « M02 · Q6 »), repli sur la clé technique
     "Avis": rating === "up" ? "👍 Bonne question" : "👎 À revoir",
     "Commentaire": clean(body.comment, 4000),
     "Quiz": clean(body.quiz, 160),

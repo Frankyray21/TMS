@@ -58,7 +58,7 @@
   function send(entry) {
     var id = identity();
     var payload = {
-      kind: 'quiz-feedback', key: entry.key, quiz: entry.quiz || '', question: entry.q || '',
+      kind: 'quiz-feedback', key: entry.key, ref: entry.ref || '', quiz: entry.quiz || '', question: entry.q || '',
       rating: entry.rating || '', comment: entry.comment || '', lang: LANG.toUpperCase(),
       authorName: id.name, authorId: id.empId, date: (entry.ts || nowISO()).slice(0, 10), voteId: entry.vid || ''
     };
@@ -125,6 +125,7 @@
     if (!e.vid) e.vid = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); /* clé stable du vote (dédoublonnage Airtable) */
     e.quiz = node.getAttribute('data-qfb-quiz') || e.quiz || '';
     e.q = node.getAttribute('data-qfb-q') || e.q || '';
+    e.ref = node.getAttribute('data-qfb-ref') || e.ref || '';
     e.lang = LANG.toUpperCase();
     if (patch.rating !== undefined) e.rating = patch.rating;
     if (patch.comment !== undefined) e.comment = patch.comment;
