@@ -23,7 +23,8 @@
          "score":"5/5 modules", "mine":"(opt)", "employeeId":"rec...(opt)",
          "image":"data:image/png;base64,… (attestation DÉTAILLÉE)",
          "timeTotal":"24 min 30 s", "timeDetail":"temps par section…",
-         "appRating":4, "appComment":"(sondage d'appréciation de l'app, facultatif)" }
+         "appRating":4, "appComment":"(sondage d'appréciation de l'app, facultatif)",
+         "signature":"data:image/png;base64,… (signature tracée, obligatoire côté site)" }
    • POST /feedback    → retour sur une question de quiz (pouce + commentaire),
                          table « Retours quiz TMS (web) ». Corps JSON :
        { "key":"fg:m1:0", "rating":"up"|"down", "comment":"(opt)",
@@ -48,6 +49,7 @@ const EMP_NAME_FIELD = "Name";                // champ principal = nom complet
 
 /* Champ pièce jointe qui reçoit l'image du certificat généré par le site. */
 const ATTACH_FIELD   = "fldBlPonYY4pypKfT";   // champ « Attestation » (image)
+const SIGN_FIELD     = "fldODv89ymncPkB9G";   // champ « Signature » (image PNG tracée)
 
 /* Origines autorisées à appeler le Worker depuis un navigateur (CORS). */
 const ALLOWED_ORIGINS = [
@@ -159,11 +161,15 @@ export default {
     const rec = await at.json();
 
     // Téléverse l'image du certificat (si fournie) dans le champ « Attestation ».
-    let imaged = false;
+    let imaged = false, signed = false;
     if (rec && rec.id && body.image) {
       imaged = await uploadAttestationImage(rec.id, body.image, name, env);
     }
-    return json({ ok: true, id: rec.id, linked: !!empId, image: imaged }, 200, cors);
+    // Signature tracée par le travailleur → pièce jointe dédiée « Signature ».
+    if (rec && rec.id && body.signature) {
+      signed = await uploadAttestationImage(rec.id, body.signature, name + " - signature", env, SIGN_FIELD);
+    }
+    return json({ ok: true, id: rec.id, linked: !!empId, image: imaged, signature: signed }, 200, cors);
   },
 };
 
@@ -305,7 +311,8 @@ async function findEmployeeByName(name, env) {
 
 /* Téléverse l'image (data URL base64) du certificat dans le champ pièce jointe
    « Attestation » du nouvel enregistrement, via l'API content d'Airtable. */
-async function uploadAttestationImage(recordId, dataUrl, name, env) {
+async function uploadAttestationImage(recordId, dataUrl, name, env, fieldId) {
+  fieldId = fieldId || ATTACH_FIELD;
   try {
     let b64 = String(dataUrl || "");
     let ct = "image/png";
@@ -314,7 +321,7 @@ async function uploadAttestationImage(recordId, dataUrl, name, env) {
     if (!b64 || b64.length > 7000000) return false;   // garde-fou (~5 Mo)
     const base = clean(name, 60).replace(/[^A-Za-z0-9 _-]/g, "").trim() || "attestation";
     const r = await fetch(
-      `https://content.airtable.com/v0/${AIRTABLE_BASE}/${recordId}/${ATTACH_FIELD}/uploadAttachment`,
+      `https://content.airtable.com/v0/${AIRTABLE_BASE}/${recordId}/${fieldId}/uploadAttachment`,
       {
         method: "POST",
         headers: {

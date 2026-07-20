@@ -218,7 +218,7 @@
   };
 
   /* ---------------- ÉTAT ---------------- */
-  var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', appRating: 0, appComment: '', borgSel: null, zonesVues: [], times: {},
+  var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', appRating: 0, appComment: '', sigData: '', finished: false, borgSel: null, zonesVues: [], times: {},
     layers: { Muscles: { on: true, op: 100 }, Os: { on: false, op: 0 }, Articulations: { on: false, op: 0 }, Nerfs: { on: false, op: 0 } } };
   var app, mvInterval = null;
 
@@ -411,6 +411,18 @@
     if (!app) return;
     app.querySelectorAll('#appStars .fg-star').forEach(function (b) { var v = +b.getAttribute('data-star'), on = v <= n; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   }
+  /* ---------- required (drawn) signature ---------- */
+  function appSignBlock() {
+    return '<div class="att-sign" style="margin:0 0 20px">'
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">3</span> Sign your certificate</label>'
+      + '<p style="color:#8694ad;font-size:.84rem;margin:0 0 10px">Draw your signature in the box — with your finger, stylus or mouse.</p>'
+      + '<div class="fg-sig-wrap" style="position:relative;background:#fff;border:1px solid #1e293b;border-radius:10px;overflow:hidden">'
+      + '<canvas id="attSig" class="fg-sig" style="display:block;width:100%;height:150px;touch-action:none;cursor:crosshair"></canvas>'
+      + '<span id="attSigPh" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:.95rem;font-style:italic;pointer-events:none">✍ Sign here</span>'
+      + '</div>'
+      + '<div style="display:flex;justify-content:flex-end;margin-top:8px"><button type="button" id="attSigClear" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:.78rem;color:#8694ad;background:transparent;border:1px solid #1e293b;border-radius:999px;padding:7px 16px;cursor:pointer">↺ Clear</button></div>'
+      + '</div>';
+  }
 
   function certBlock() {
     var d = new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -420,7 +432,8 @@
       + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;letter-spacing:.06em;font-size:1.4rem;color:#d22325">TRAINING CERTIFICATE</div>'
       + '<div style="color:#555;font-size:.92rem;margin:4px 0 20px">Prevention of musculoskeletal disorders · Underground mine</div>'
       + '<div style="font-size:.74rem;text-transform:uppercase;letter-spacing:.14em;color:#888">Awarded to</div>'
-      + '<div id="certName" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.6rem;color:#111;border-bottom:2px solid #d22325;display:inline-block;margin:8px auto 18px;padding:2px 18px 4px">' + (esc(state.certName) || '—') + '</div>'
+      + '<div id="certName" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.6rem;color:#111;border-bottom:2px solid #d22325;display:inline-block;margin:8px auto 12px;padding:2px 18px 4px">' + (esc(state.certName) || '—') + '</div>'
+      + '<div id="certSigBox" style="' + (state.sigData ? '' : 'display:none;') + 'margin:0 auto 14px"><img id="certSig" src="' + (state.sigData || '') + '" alt="Signature" style="height:52px;object-fit:contain;display:block;margin:0 auto"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:#999;margin-top:2px">Signature</div></div>'
       + '<div style="display:flex;gap:26px;justify-content:center;flex-wrap:wrap;color:#333;font-size:.9rem;margin-bottom:14px"><span>5 modules passed · <b>100&nbsp;%</b></span><span>' + d + '</span></div>'
       + '<div style="font-weight:700;color:#111;font-size:.86rem">Machines Roger International</div></div>'
       + '<div class="att-save" style="margin-top:22px;background:#0d1320;border:1px solid #1e293b;border-radius:14px;padding:20px 22px">'
@@ -432,7 +445,8 @@
       + '<div id="empSugg" class="emp-sugg" hidden></div>'
       + '<p id="empHint" style="color:#8694ad;font-size:.82rem;margin:.5rem 0 0">Start typing your name, then pick it from the list.</p></div>'
       + appSurveyBlock()
-      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">3</span> Save your training</label>'
+      + appSignBlock()
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">4</span> Save your training</label>'
       + '<button class="fg-cta" data-act="save" id="attSave" disabled style="width:100%;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1.05rem;color:#fff;background:linear-gradient(135deg,#10b981,#0e9f6e);border:none;border-radius:12px;padding:15px 24px;cursor:pointer;box-shadow:0 6px 18px rgba(16,185,129,.35);opacity:.5;transition:opacity .2s">✔ Save my training</button>'
       + '<div id="saveMsg" role="status" aria-live="polite" hidden style="margin-top:14px;border-radius:10px;padding:12px 14px;font-size:.92rem;font-weight:600;line-height:1.5"></div>'
       + '</div></div>';
@@ -875,7 +889,7 @@
       timeEnter(stepKey(cur));
       if (cur && cur.kind === 'notion' && cur.notion.custom === 'cZones') initModel();
     } else { timeLeave(); }
-    if (state.view === 'sommaire' && state.certVisible) initCert();
+    if (state.view === 'sommaire' && state.certVisible) { initCert(); initSig(); }
     if (keepScroll) { try { window.scrollTo(0, prevY); } catch (e) {} }
     else { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
   }
@@ -902,12 +916,23 @@
   }
   function prev() { if (state.idx <= 0) { go('sommaire'); return; } go('viewer', state.idx - 1); }
 
+  function allModulesDone() { return MODULES.every(function (m) { return passed(m.id); }); }
+  /* All modules passed: take the worker straight to the attestation confirmation. */
+  function finishToAttestation() {
+    setTimeout(function () {
+      state.finished = true; state.certVisible = true; state.view = 'sommaire';
+      render();
+      setTimeout(function () { var el = document.getElementById('attestation'); if (el) { try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} } }, 90);
+    }, 1300);
+  }
   function pickSingle(qid, qi, oi) {
     var m = MODULES.find(function (x) { return x.id === qid; });
     if (qAnswered(m.quiz[qi], (state.answers[qid] || {})[qi])) return;
+    var wasDone = allModulesDone();
     state.answers[qid] = state.answers[qid] || {};
     state.answers[qid][qi] = oi;
     saveAns(); syncModulePass(m); render(true);
+    if (!wasDone && allModulesDone()) finishToAttestation();
   }
   function toggleMulti(qid, qi, oi) {
     var a = state.answers[qid] = state.answers[qid] || {};
@@ -925,8 +950,10 @@
   function validateMulti(qid, qi) {
     var a = state.answers[qid] = state.answers[qid] || {};
     var cell = a[qi]; if (!cell || !cell.sel || !cell.sel.length) return;
+    var wasDone = allModulesDone();
     cell.done = true;
     saveAns(); syncModulePass(MODULES.find(function (x) { return x.id === qid; })); render(true);
+    if (!wasDone && allModulesDone()) finishToAttestation();
   }
   function pickBorg(n) {
     state.borgSel = state.borgSel === n ? null : n;
@@ -1023,7 +1050,7 @@
   function syncSaveBtn() {
     var btn = document.getElementById('attSave');
     if (!btn) return;
-    var ready = !!(state.certName || '').trim() && !btn.dataset.done;
+    var ready = !!(state.certName || '').trim() && !!state.sigData && !btn.dataset.done;
     btn.disabled = !ready;
     btn.style.opacity = ready ? '1' : '.5';
     btn.style.cursor = ready ? 'pointer' : 'not-allowed';
@@ -1032,7 +1059,8 @@
   function saveCert() {
     var btn = document.getElementById('attSave');
     var nm = (state.certName || '').trim();
-    if (!nm) { showSaveMsg('warn', 'Enter your name (pick it from the list) before saving.'); return; }
+    if (!nm) { showSaveMsg('warn', 'Choose your name before saving.'); var _n = document.getElementById('attName'); if (_n) { try { _n.scrollIntoView({ behavior: 'smooth', block: 'center' }); _n.focus(); } catch (e1) {} } return; }
+    if (!state.sigData) { showSaveMsg('warn', 'Sign your certificate before saving.'); var _s = document.getElementById('attSig'); if (_s) { try { _s.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e2) {} } return; }
     try { if (window.TMSSession) { var _in = document.getElementById('attName'); window.TMSSession.set({ name: nm, empId: _in ? (_in.dataset.empId || '') : '' }); } } catch (e0) {}
     if (btn) { btn.disabled = true; btn.style.opacity = '.7'; btn.style.cursor = 'wait'; btn.textContent = 'Saving…'; }
     showSaveMsg('pending', '⏳ Saving…');
@@ -1058,7 +1086,7 @@
     try { if (localStorage.getItem(K_SENT) === sig) { cb(true); return; } } catch (e) {}
     _attBusy = true;
     try { localStorage.setItem(K_PEND, sig); } catch (e) {} // marqueur « envoi en cours » : re-tenté au prochain chargement s'il se perd (onglet fermé, hors ligne)
-    var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '', timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText(), appRating: state.appRating || '', appComment: (state.appComment || '').trim() };
+    var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '', timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText(), appRating: state.appRating || '', appComment: (state.appComment || '').trim(), signature: state.sigData || '' };
     try {
       fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         .then(function (r) { _attBusy = false; if (r && r.ok) { try { localStorage.setItem(K_SENT, sig); localStorage.removeItem(K_PEND); } catch (e) {} cb(true); } else { cb(false); } })
@@ -1101,7 +1129,9 @@
       + '<div style="display:inline-block;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:#0e7d57;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.45);border-radius:999px;padding:3px 11px;margin-bottom:14px">Detailed time tracking</div>'
       + '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:#888">Awarded to</div>'
       + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.5rem;color:#111;border-bottom:2px solid #d22325;display:inline-block;margin:6px auto 8px;padding:2px 18px 4px">' + (esc(state.certName) || '—') + '</div>'
-      + '<div style="color:#333;font-size:.86rem;margin-bottom:16px">On ' + d + '</div></div>'
+      + '<div style="color:#333;font-size:.86rem;margin-bottom:10px">On ' + d + '</div>'
+      + (state.sigData ? '<div style="margin:0 auto 12px"><img src="' + state.sigData + '" alt="Signature" style="height:54px;object-fit:contain;display:block;margin:0 auto"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:#999">Worker\'s signature</div></div>' : '')
+      + '</div>'
       + '<table style="width:100%;border-collapse:collapse;margin:0">'
       + '<thead><tr><th style="' + th + ';text-align:left">Section</th><th style="' + th + ';text-align:right">Time spent</th><th style="' + th + ';text-align:right">Quiz</th></tr></thead>'
       + '<tbody>' + rows + '</tbody>'
@@ -1141,6 +1171,31 @@
         .then(function (u) { finish(u || ''); })
         .catch(function () { finish(''); });
     });
+  }
+  function reflectSig() {
+    var cs = document.getElementById('certSig'), box = document.getElementById('certSigBox');
+    if (cs) cs.src = state.sigData || '';
+    if (box) box.style.display = state.sigData ? '' : 'none';
+  }
+  function initSig() {
+    var c = document.getElementById('attSig'); if (!c) return;
+    var ph = document.getElementById('attSigPh'), ctx = c.getContext('2d');
+    var ratio = window.devicePixelRatio || 1, rect = c.getBoundingClientRect();
+    var cssW = Math.max(280, Math.round(rect.width) || 280), cssH = 150;
+    c.width = cssW * ratio; c.height = cssH * ratio; ctx.scale(ratio, ratio);
+    ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111';
+    if (state.sigData) { var im = new Image(); im.onload = function () { try { ctx.drawImage(im, 0, 0, cssW, cssH); } catch (e) {} }; im.src = state.sigData; if (ph) ph.style.display = 'none'; }
+    var drawing = false, last = null;
+    function xy(e) { var r = c.getBoundingClientRect(); var t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e; return { x: t.clientX - r.left, y: t.clientY - r.top }; }
+    function move(e) { if (!drawing) return; if (e.cancelable) e.preventDefault(); var p = xy(e); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; }
+    function up() { if (!drawing) return; drawing = false; document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); try { state.sigData = c.toDataURL('image/png'); } catch (e) {} reflectSig(); syncSaveBtn(); }
+    function down(e) { drawing = true; last = xy(e); if (ph) ph.style.display = 'none'; if (e.cancelable) e.preventDefault(); document.addEventListener('mousemove', move); document.addEventListener('mouseup', up); }
+    c.addEventListener('mousedown', down);
+    c.addEventListener('touchstart', down, { passive: false });
+    c.addEventListener('touchmove', move, { passive: false });
+    c.addEventListener('touchend', up);
+    var clr = document.getElementById('attSigClear');
+    if (clr) clr.addEventListener('click', function () { ctx.clearRect(0, 0, c.width, c.height); state.sigData = ''; if (ph) ph.style.display = 'flex'; reflectSig(); syncSaveBtn(); });
   }
   function initCert() {
     var input = document.getElementById('attName');
