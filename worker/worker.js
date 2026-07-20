@@ -212,6 +212,7 @@ async function recordFeedback(request, env, cors) {
   }
 
   const lang = String(body.lang || "FR").toUpperCase() === "EN" ? "EN" : "FR";
+  const voteId = clean(body.voteId, 80);   // clé stable : une par question et par appareil
   const fields = {
     "Question": clean(body.key, 120),                         // repère stable (ex. « fg:m1:0 »)
     "Avis": rating === "up" ? "👍 Bonne question" : "👎 À revoir",
@@ -225,21 +226,32 @@ async function recordFeedback(request, env, cors) {
     "Source": "site web TMS",
     "Statut": "Nouveau",
   };
+  if (voteId) fields["Réf"] = voteId;
+
+  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE}/${FEEDBACK_TABLE}`;
+  const authH = { "Authorization": `Bearer ${env.AIRTABLE_TOKEN}`, "Content-Type": "application/json" };
+
+  // Collation : UNE seule ligne par vote. Si un enregistrement porte déjà cette
+  // clé « Réf » (le travailleur a changé d'avis ou ajouté un commentaire), on le
+  // MET À JOUR au lieu de créer un doublon ; sinon on crée.
+  let existingId = "";
+  if (voteId) {
+    try {
+      const q = url + "?maxRecords=1&filterByFormula=" + encodeURIComponent(`{Réf}="${voteId.replace(/"/g, "")}"`);
+      const found = await fetch(q, { headers: authH });
+      if (found.ok) {
+        const d = await found.json();
+        if (d.records && d.records[0]) existingId = d.records[0].id;
+      }
+    } catch (e) { /* en cas d'échec de recherche : on crée */ }
+  }
 
   let at;
   try {
     // typecast: laisse Airtable retrouver/créer les options des sélections (Avis, Langue…).
-    at = await fetch(
-      `https://api.airtable.com/v0/${AIRTABLE_BASE}/${FEEDBACK_TABLE}`,
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.AIRTABLE_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fields, typecast: true }),
-      }
-    );
+    at = existingId
+      ? await fetch(url + "/" + existingId, { method: "PATCH", headers: authH, body: JSON.stringify({ fields, typecast: true }) })
+      : await fetch(url, { method: "POST", headers: authH, body: JSON.stringify({ fields, typecast: true }) });
   } catch (e) {
     return json({ ok: false, error: "Airtable injoignable." }, 502, cors);
   }
@@ -248,7 +260,7 @@ async function recordFeedback(request, env, cors) {
     return json({ ok: false, error: "Airtable a refusé le retour.", detail }, 502, cors);
   }
   const rec = await at.json();
-  return json({ ok: true, id: rec.id }, 200, cors);
+  return json({ ok: true, id: rec.id, updated: !!existingId }, 200, cors);
 }
 
 /* ── recherche d'employés (autocomplétion, insensible casse + accents) ────── */

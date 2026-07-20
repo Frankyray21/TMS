@@ -60,7 +60,7 @@
     var payload = {
       kind: 'quiz-feedback', key: entry.key, quiz: entry.quiz || '', question: entry.q || '',
       rating: entry.rating || '', comment: entry.comment || '', lang: LANG.toUpperCase(),
-      authorName: id.name, authorId: id.empId, date: (entry.ts || nowISO()).slice(0, 10)
+      authorName: id.name, authorId: id.empId, date: (entry.ts || nowISO()).slice(0, 10), voteId: entry.vid || ''
     };
     var ctrl = null, to = null;
     try { ctrl = new AbortController(); to = setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, 6000); } catch (e) {}
@@ -122,6 +122,7 @@
     var store = readStore();
     var e = store[key] || { key: key };
     e.key = key;
+    if (!e.vid) e.vid = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); /* clé stable du vote (dédoublonnage Airtable) */
     e.quiz = node.getAttribute('data-qfb-quiz') || e.quiz || '';
     e.q = node.getAttribute('data-qfb-q') || e.q || '';
     e.lang = LANG.toUpperCase();
@@ -141,8 +142,7 @@
     var ta = node.querySelector('.qfb-comment'); if (!ta) return;
     if (cmtTimers[key]) clearTimeout(cmtTimers[key]);
     cmtTimers[key] = setTimeout(function () {
-      saveEntry(node, { comment: ta.value.trim() });
-      setNote(node, T.pending); flush();
+      saveEntry(node, { comment: ta.value.trim() }); /* sauvegarde locale ; l'envoi se fait au blur */
     }, 500);
   }
   function onCommentBlur(node) {
