@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /corps-3d.html
+Disallow: /formation-guidee-design.html
+
+Sitemap: https://preventiontmsmri.netlify.app/sitemap.xml

@@ -315,7 +315,7 @@ document.querySelectorAll('.faccard').forEach(function(c){
   document.querySelectorAll('h3.sub-h').forEach(function(h){ITEMS.push({k:'Topic',label:h.textContent.replace(/\s+/g,' ').replace(/:.*clique.*$/i,'').trim(),sub:'',go:'#'+h.id});});
   Object.keys(MODAL_DATA).forEach(function(key){var d=MODAL_DATA[key];ITEMS.push({k:'Card',label:d.title,sub:d.tag,modal:key,kw:(d.desc+' '+d.risk.join(' ')+' '+d.prev.join(' '))});});
   ITEMS.push({k:'Section',label:'MSD prevention quiz',sub:'#quiz',go:'#quiz',kw:'quiz test questions knowledge evaluation'});
-  ITEMS.push({k:'Page',label:'Guided training: quiz and certificate',sub:'formation.html',go:'formation.html',kw:'quiz certificate attestation guided training score'});
+  ITEMS.push({k:'Page',label:'Guided training: quiz and certificate',sub:'formation.en.html',go:'formation.en.html',kw:'quiz certificate attestation guided training score'});
   var filtered=[],active=0;
   function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
   function render(q){q=norm((q||'').trim());filtered=ITEMS.filter(function(it){return !q||norm(it.label).indexOf(q)>-1||norm(it.kw).indexOf(q)>-1;});active=0;
@@ -1286,13 +1286,13 @@ function arreterLecture() {
   $("#btn-lecture").classList.remove("actif-audio");
 }
 $("#btn-lecture").addEventListener("click", () => {
-  if (!window.speechSynthesis) { toast("La lecture audio n'est pas disponible dans ce navigateur.", "🔇"); return; }
+  if (!window.speechSynthesis) { toast("Audio playback is not available in this browser.", "🔇"); return; }
   if (lectureEnCours) { arreterLecture(); return; }
   const titre = $("#modale-titre").textContent;
   const morceaux = [titre];
   $$("#modale-corps p.description, #modale-corps h3, #modale-corps ul li").forEach(el => morceaux.push(el.textContent));
   const u = new SpeechSynthesisUtterance(morceaux.join(". "));
-  u.lang = "fr-FR";
+  u.lang = "en-CA";
   u.rate = 1.02;
   u.onend = arreterLecture;
   lectureEnCours = true;
@@ -1318,7 +1318,7 @@ document.addEventListener("click", e => {
 /* Clavier pour les cercles (div role="button") */
 document.addEventListener("keydown", e => {
   if (e.key !== "Enter" && e.key !== " ") return;
-  const cible = e.target.closest("div[role='button'][data-cle]");
+  const cible = e.target.closest("[role='button'][data-cle]");
   if (!cible) return;
   e.preventDefault();
   if (DETAILS[cible.dataset.cle]) ouvrirDetails(cible.dataset.cle, cible);
@@ -1470,7 +1470,7 @@ if (champ) {
 /* ================================================================
    CARTE DU CORPS
    ================================================================ */
-/* Planche photo : affichée si images/zones_corps.jpg existe, sinon silhouette SVG */
+/* Planche photo : affichée si images/zones_corps.webp existe, sinon silhouette SVG */
 (function(){
   const bloc = $("#corpsPhoto");
   if (!bloc) return;
@@ -1481,7 +1481,7 @@ if (champ) {
     const flex = document.querySelector("#corps .corps-flex .corps-svg-bloc");
     if (flex) flex.style.display = "none";
   };
-  test.src = "images/zones_corps_en.jpg";
+  test.src = "images/zones_corps_en.webp";
   function litZone(z, on) {
     bloc.querySelectorAll(".cp-spot[data-zone='" + z + "'], .cp-box[data-zone='" + z + "'], .cp-line[data-zone='" + z + "']")
       .forEach(el => el.classList.toggle("lit", on));
@@ -2163,4 +2163,43 @@ if ("serviceWorker" in navigator) {
       if (es[0].isIntersecting) { go(); obs.disconnect(); }
     }, { rootMargin: "500px 0px" }).observe(wrap);
   } else { go(); }
+})();
+/* ================================================================
+   ASSISTANT D'AIMANT (mode « petites pages », body.snap, ordinateur)
+   L'aimant CSS « proximity » est trop discret et « mandatory » piège la
+   molette lente. Ici : 260 ms après la fin du défilement, on complète en
+   douceur vers l'arrêt le plus proche s'il est à moins de 45 % d'écran.
+   Jamais pendant le geste → aucune lutte ; clavier, ancres et lecteurs
+   d'écran inchangés. Inactif sur mobile et hors pages .snap.
+   ================================================================ */
+(function () {
+  if (!document.body.classList.contains("snap")) return;
+  if (!(window.matchMedia && window.matchMedia("(min-width: 981px)").matches)) return;
+  var timer = null, busy = false;
+  function stops() {
+    var els = document.querySelectorAll("body.snap section, body.snap section h3.sub-h");
+    var out = [];
+    for (var i = 0; i < els.length; i++) {
+      var r = els[i].getBoundingClientRect();
+      out.push(r.top + window.scrollY - 34); /* 34px ≈ scroll-padding-top (2rem) */
+    }
+    return out;
+  }
+  window.addEventListener("scroll", function () {
+    if (busy) return;
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      var y = window.scrollY, vh = window.innerHeight || 1;
+      var best = null, bd = Infinity, list = stops();
+      for (var i = 0; i < list.length; i++) {
+        var d = Math.abs(list[i] - y);
+        if (d < bd) { bd = d; best = list[i]; }
+      }
+      if (best === null || bd < 3 || bd > vh * 0.45) return; /* déjà calé, ou en zone de lecture libre */
+      busy = true;
+      var rm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: Math.max(0, best), behavior: rm ? "auto" : "smooth" });
+      setTimeout(function () { busy = false; }, 700);
+    }, 260);
+  }, { passive: true });
 })();

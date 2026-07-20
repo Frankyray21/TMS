@@ -47,6 +47,8 @@
     var el = document.getElementById('formProg'); if (!el) return;
     var n = getDone().length;
     el.querySelector('.fp-frac').textContent = (n >= TOTAL ? T.done : (n + ' / ' + TOTAL));
+    var track = el.querySelector('.fp-track');
+    if (track) track.setAttribute('aria-valuenow', n);
     el.querySelector('.fp-track > i').style.width = Math.round(n / TOTAL * 100) + '%';
     el.classList.toggle('done', n >= TOTAL);
   }
@@ -54,7 +56,7 @@
     var anchor = document.querySelector('.toc .toc-brand');
     if (!anchor || document.getElementById('formProg')) return;
     var w = document.createElement('div'); w.id = 'formProg'; w.className = 'form-prog';
-    w.innerHTML = '<div class="fp-top"><span class="fp-lbl">' + T.lbl + '</span><span class="fp-frac"></span></div><div class="fp-track" role="progressbar"><i></i></div>';
+    w.innerHTML = '<div class="fp-top"><span class="fp-lbl">' + T.lbl + '</span><span class="fp-frac"></span></div><div class="fp-track" role="progressbar" aria-label="' + T.lbl + '" aria-valuemin="0" aria-valuemax="' + TOTAL + '"><i></i></div>';
     anchor.parentNode.insertBefore(w, anchor.nextSibling);
     renderProg();
   }
