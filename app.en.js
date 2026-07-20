@@ -1,5 +1,27 @@
 document.documentElement.classList.remove('no-js');
 var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Load model-viewer once (hero + 3D body map) with local Draco. */
+function ensureModelViewer() {
+  try {
+    if (window.customElements && window.customElements.get("model-viewer")) return;
+    if (!document.querySelector('script[src="vendor/model-viewer.min.js"]')) {
+      var s = document.createElement("script");
+      s.type = "module";
+      s.src = "vendor/model-viewer.min.js";
+      document.head.appendChild(s);
+    }
+  } catch (e) {}
+}
+function configureModelViewerDraco() {
+  try {
+    window.customElements.whenDefined("model-viewer").then(function () {
+      var MV = window.customElements.get("model-viewer");
+      if (MV) { try { MV.dracoDecoderLocation = new URL("vendor/draco/", document.baseURI).href; } catch (e) {} }
+    });
+  } catch (e) {}
+}
+
 var SMALL = window.matchMedia('(max-width:980px)').matches; // mobile : on allege le hero (perf scroll)
 
 // ===== scroll progress (rAF, GPU scaleX) =====
@@ -93,6 +115,15 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
     });
   }
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(setup,200);},{passive:true});
+})();
+
+
+// ===== HERO 3D: anatomical body visible from the home hero =====
+(function () {
+  var heroBody = document.querySelector(".hero-body3d model-viewer");
+  if (!heroBody) return;
+  configureModelViewerDraco();
+  ensureModelViewer();
 })();
 
 // ===== hero parallax =====
@@ -1056,6 +1087,82 @@ function toast(message, icone) {
     setTimeout(() => t.remove(), 350);
   }, 3800);
 }
+
+/* ================================================================
+   USER SESSION + GUIDED TOUR (knowledge base)
+   ================================================================ */
+(function(){
+  var K_USER='tms_session_user', K_FORM_NAME='tms_form_name', K_TOUR='tms_kb_tour_done';
+  function getName(){
+    try { return (localStorage.getItem(K_USER) || localStorage.getItem(K_FORM_NAME) || '').trim(); } catch(e){ return ''; }
+  }
+  function setName(n){
+    n=(n||'').trim();
+    try { if(n){ localStorage.setItem(K_USER,n); localStorage.setItem(K_FORM_NAME,n); } else { localStorage.removeItem(K_USER); } } catch(e){}
+    renderSession();
+    if(n) toast('Session assigned to '+n+'.','👤');
+  }
+  function askName(){
+    var current=getName();
+    var n=window.prompt('Who is this session for?\nEnter the first and last name, or leave blank for a guest session.', current);
+    if(n===null) return;
+    setName(n);
+  }
+  function renderSession(){
+    var box=document.getElementById('sessionBadge');
+    if(!box){
+      box=document.createElement('div');
+      box.id='sessionBadge';
+      box.className='session-badge';
+      document.body.appendChild(box);
+    }
+    var n=getName();
+    box.innerHTML='<div class="sb-k">Session</div><button type="button" class="sb-name" data-session-change aria-label="Change the session user">'+(n?escHtml(n):'Guest')+'</button><button type="button" class="sb-tour" data-tour-start>Guided tour</button>';
+  }
+  function escHtml(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  var steps=[
+    {sel:'#sessionBadge', title:'Your session', text:'This badge shows who owns the session. You can change the user at any time.'},
+    {sel:'#ctaFormation', title:'Start or resume', text:'Guided training is the recommended path for new workers: modules, quizzes and certificate.'},
+    {sel:'#searchOpen', title:'Quick search', text:'Use search or the / key to find a topic such as back, sleep or knees.'},
+    {sel:'#corps', title:'Body map', text:'Explore at-risk areas, rotate the 3D model and open the detailed cards.'},
+    {sel:'[data-pwa-install]', title:'Install the app', text:'You can install the site on the device to return quickly during training.'}
+  ];
+  var idx=0, ov=null;
+  function startTour(force){
+    if(!force){ try{ if(localStorage.getItem(K_TOUR)==='1') return; }catch(e){} }
+    idx=0; showStep();
+  }
+  function showStep(){
+    var st=steps[idx]; if(!st){ endTour(true); return; }
+    var target=document.querySelector(st.sel);
+    if(!target){ idx++; showStep(); return; }
+    document.querySelectorAll('.tour-focus').forEach(function(el){el.classList.remove('tour-focus');});
+    target.classList.add('tour-focus');
+    try{ target.scrollIntoView({behavior:RM?'auto':'smooth',block:'center'}); }catch(e){}
+    if(!ov){
+      ov=document.createElement('div'); ov.className='tour-ov'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); document.body.appendChild(ov);
+    }
+    ov.innerHTML='<div class="tour-card"><div class="tour-step">Step '+(idx+1)+' / '+steps.length+'</div><h2>'+escHtml(st.title)+'</h2><p>'+escHtml(st.text)+'</p><div class="tour-actions"><button type="button" class="tour-skip">Skip</button><button type="button" class="tour-next">'+(idx===steps.length-1?'Finish':'Next')+'</button></div></div>';
+    var next=ov.querySelector('.tour-next'), skip=ov.querySelector('.tour-skip');
+    if(next) next.focus();
+  }
+  function endTour(done){
+    document.querySelectorAll('.tour-focus').forEach(function(el){el.classList.remove('tour-focus');});
+    if(ov){ov.remove(); ov=null;}
+    if(done){ try{localStorage.setItem(K_TOUR,'1');}catch(e){} }
+  }
+  document.addEventListener('click',function(e){
+    var ch=e.target.closest('[data-session-change]'); if(ch){ e.preventDefault(); askName(); return; }
+    var ts=e.target.closest('[data-tour-start]'); if(ts){ e.preventDefault(); startTour(true); return; }
+    if(e.target.closest('.tour-next')){ e.preventDefault(); idx++; showStep(); return; }
+    if(e.target.closest('.tour-skip')){ e.preventDefault(); endTour(true); return; }
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&ov) endTour(false); });
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ renderSession(); setTimeout(function(){startTour(false);},900); });
+  else { renderSession(); setTimeout(function(){startTour(false);},900); }
+})();
+
 
 /* Confettis */
 function lancerConfettis() {
@@ -2052,21 +2159,11 @@ if ("serviceWorker" in navigator) {
   function load() {
     if (loaded) return;
     loaded = true;
-    // Local Draco decoder (vendor/draco/): the Draco-compressed 3D model works
-    // offline and without depending on Google's CDN (gstatic).
-    try {
-      window.customElements.whenDefined("model-viewer").then(function () {
-        var MV = window.customElements.get("model-viewer");
-        if (MV) { try { MV.dracoDecoderLocation = new URL("vendor/draco/", document.baseURI).href; } catch (e) {} }
-      });
-    } catch (e) {}
+    configureModelViewerDraco();
     var small = Math.min(screen.width, screen.height) <= 768 ||
                 (window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
     mv.setAttribute("src", small ? "models/corps-anatomie-mobile.glb" : "models/corps-anatomie-web.glb");
-    var s = document.createElement("script");
-    s.type = "module";
-    s.src = "vendor/model-viewer.min.js";
-    document.head.appendChild(s);
+    ensureModelViewer();
     // Une pastille 3D rejoue le clic sur la zone 2D correspondante -> meme fiche, zero duplication.
     wrap.querySelectorAll(".hotspot3d").forEach(function (h) {
       h.addEventListener("click", function () {

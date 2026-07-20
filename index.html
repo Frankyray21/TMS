@@ -137,6 +137,10 @@ html.tms-loading{overflow:hidden!important}
             <circle cx="260" cy="330" r="5" fill="rgba(239,90,92,.85)" stroke="none"><animate attributeName="opacity" values="1;.25;1" dur="3.2s" repeatCount="indefinite"/></circle>
           </g>
         </svg>
+        <div class="hero-body3d" aria-hidden="true">
+          <model-viewer class="hero-body3d-model" src="models/corps-anatomie-mobile.glb" alt="Corps anatomique 3D en rotation dans le héros — repère les zones à risque des TMS" loading="eager" reveal="auto" auto-rotate camera-orbit="18deg 78deg 2.55m" min-camera-orbit="auto 32deg auto" max-camera-orbit="auto 120deg auto" interaction-prompt="none" environment-image="neutral" tone-mapping="aces" shadow-intensity="0.9" shadow-softness="0.8" exposure="1.08"></model-viewer>
+          <div class="hero-body3d-card"><strong>Corps 3D interactif</strong><span>Tourne-moi plus bas dans la base de connaissances</span></div>
+        </div>
         <div class="hero-scrim"></div>
       </div>
       <div class="wrap">
@@ -577,7 +581,7 @@ html.tms-loading{overflow:hidden!important}
         <div class="foot-bar">
           <span>Mise à jour : juin 2026</span>
           <span>Document de sensibilisation. Ne remplace pas un avis médical.</span>
-          <span class="foot-ver" id="footVer" title="Version du site">v1.71</span>
+          <span class="foot-ver" id="footVer" title="Version du site">v1.73</span>
         </div>
       </div>
     </footer>

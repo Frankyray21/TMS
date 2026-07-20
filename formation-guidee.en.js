@@ -221,7 +221,7 @@
   function load() {
     try { var p = JSON.parse(localStorage.getItem(K_PROG) || '[]'); if (Array.isArray(p)) state.completed = p; } catch (e) {}
     try { var a = JSON.parse(localStorage.getItem(K_ANS) || '{}'); if (a && typeof a === 'object') state.answers = a; } catch (e) {}
-    try { state.certName = localStorage.getItem(K_NAME) || ''; } catch (e) {}
+    try { state.certName = localStorage.getItem(K_NAME) || localStorage.getItem('tms_session_user') || ''; } catch (e) {}
     try { var zv = JSON.parse(localStorage.getItem(K_ZONES) || '[]'); if (Array.isArray(zv)) state.zonesVues = zv; } catch (e) {}
     try { var tt = JSON.parse(localStorage.getItem(K_TIMES) || '{}'); if (tt && typeof tt === 'object') state.times = tt; } catch (e) {}
   }
@@ -874,8 +874,9 @@
   function getCert() { state.certVisible = true; render(); }
   function setCertName(v) {
     state.certName = v;
-    try { localStorage.setItem(K_NAME, v); } catch (e) {}
+    try { localStorage.setItem(K_NAME, v); if (v) localStorage.setItem('tms_session_user', v); else localStorage.removeItem('tms_session_user'); } catch (e) {}
     var cn = document.getElementById('certName'); if (cn) cn.textContent = v || '—';
+    var sb = document.querySelector('#sessionBadge .sb-name'); if (sb) sb.textContent = v || 'Guest';
   }
   /* Save confirmation message (states: pending / success / error). */
   function showSaveMsg(kind, text) {
@@ -1102,6 +1103,41 @@
   }
   function currentQuizId() { var st = steps(), cur = st[state.idx]; return cur && cur.kind === 'quiz' ? cur.module.id : null; }
 
+
+  /* User session + guided tour (guided training). */
+  function setupSessionAndTour() {
+    var K_USER = 'tms_session_user', K_TOUR = 'tms_fg_tour_done';
+    function curName() { return (state.certName || '').trim(); }
+    function esc2(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    function drawBadge() {
+      var box = document.getElementById('sessionBadge');
+      if (!box) { box = document.createElement('div'); box.id = 'sessionBadge'; box.className = 'session-badge'; document.body.appendChild(box); }
+      box.innerHTML = '<div class="sb-k">Session</div><button type="button" class="sb-name" data-session-change aria-label="Change the session user">' + (curName() ? esc2(curName()) : 'Guest') + '</button><button type="button" class="sb-tour" data-tour-start>Guided tour</button>';
+    }
+    function changeUser() {
+      var n = window.prompt('Who is this session for?\nEnter the first and last name, or leave blank for a guest session.', curName());
+      if (n === null) return;
+      n = (n || '').trim();
+      setCertName(n);
+      try { if (n) localStorage.setItem(K_USER, n); else localStorage.removeItem(K_USER); } catch (e) {}
+      drawBadge(); updateSaveBtn();
+    }
+    var steps = [
+      { sel: '#sessionBadge', title: 'Your session', text: 'This badge shows who owns the training on this device. Change it if someone else uses the session.' },
+      { sel: '[data-act="start"]', title: 'Step-by-step path', text: 'Click here to start or resume the training in the right order.' },
+      { sel: '.fg-hero-card', title: 'Progress', text: 'This ring shows completed modules. Each successful quiz unlocks the next part.' },
+      { sel: '#attestation', title: 'Certificate', text: 'When all 5 modules are completed, choose your name and record the training.' }
+    ];
+    var i = 0, ov = null;
+    function end(done){ document.querySelectorAll('.tour-focus').forEach(function(el){el.classList.remove('tour-focus');}); if(ov){ov.remove(); ov=null;} if(done){try{localStorage.setItem(K_TOUR,'1');}catch(e){}} }
+    function show(){ var st=steps[i]; if(!st){end(true);return;} var target=document.querySelector(st.sel); if(!target){i++;show();return;} document.querySelectorAll('.tour-focus').forEach(function(el){el.classList.remove('tour-focus');}); target.classList.add('tour-focus'); try{target.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){} if(!ov){ov=document.createElement('div');ov.className='tour-ov';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');document.body.appendChild(ov);} ov.innerHTML='<div class="tour-card"><div class="tour-step">Step '+(i+1)+' / '+steps.length+'</div><h2>'+esc2(st.title)+'</h2><p>'+esc2(st.text)+'</p><div class="tour-actions"><button type="button" class="tour-skip">Skip</button><button type="button" class="tour-next">'+(i===steps.length-1?'Finish':'Next')+'</button></div></div>'; var n=ov.querySelector('.tour-next'); if(n)n.focus(); }
+    function start(force){ if(!force){try{if(localStorage.getItem(K_TOUR)==='1')return;}catch(e){}} i=0; show(); }
+    drawBadge();
+    document.addEventListener('click', function(e){ if(e.target.closest('[data-session-change]')){e.preventDefault();changeUser();return;} if(e.target.closest('[data-tour-start]')){e.preventDefault();start(true);return;} if(e.target.closest('.tour-next')){e.preventDefault();i++;show();return;} if(e.target.closest('.tour-skip')){e.preventDefault();end(true);return;} });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape'&&ov) end(false); });
+    setTimeout(function(){ start(false); }, 900);
+  }
+
   /* ---------------- INIT ---------------- */
   function init() {
     app = document.getElementById('app');
@@ -1122,6 +1158,7 @@
     window.addEventListener('pagehide', _tFlush);
     window.addEventListener('beforeunload', _tFlush);
     render();
+    setupSessionAndTour();
   }
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);

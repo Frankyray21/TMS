@@ -1,5 +1,27 @@
 document.documentElement.classList.remove('no-js');
 var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Charge model-viewer une seule fois (héros + carte du corps 3D) avec Draco local. */
+function ensureModelViewer() {
+  try {
+    if (window.customElements && window.customElements.get("model-viewer")) return;
+    if (!document.querySelector('script[src="vendor/model-viewer.min.js"]')) {
+      var s = document.createElement("script");
+      s.type = "module";
+      s.src = "vendor/model-viewer.min.js";
+      document.head.appendChild(s);
+    }
+  } catch (e) {}
+}
+function configureModelViewerDraco() {
+  try {
+    window.customElements.whenDefined("model-viewer").then(function () {
+      var MV = window.customElements.get("model-viewer");
+      if (MV) { try { MV.dracoDecoderLocation = new URL("vendor/draco/", document.baseURI).href; } catch (e) {} }
+    });
+  } catch (e) {}
+}
+
 var SMALL = window.matchMedia('(max-width:980px)').matches; // mobile : on allege le hero (perf scroll)
 
 // ===== scroll progress (rAF, GPU scaleX) =====
@@ -93,6 +115,15 @@ setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(func
     });
   }
   var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(setup,200);},{passive:true});
+})();
+
+
+// ===== HERO 3D : corps anatomique visible dès l'accueil =====
+(function () {
+  var heroBody = document.querySelector(".hero-body3d model-viewer");
+  if (!heroBody) return;
+  configureModelViewerDraco();
+  ensureModelViewer();
 })();
 
 // ===== hero parallax =====
@@ -1056,6 +1087,82 @@ function toast(message, icone) {
     setTimeout(() => t.remove(), 350);
   }, 3800);
 }
+
+/* ================================================================
+   SESSION UTILISATEUR + TOUR GUIDÉ (base de connaissances)
+   ================================================================ */
+(function(){
+  var K_USER='tms_session_user', K_FORM_NAME='tms_form_name', K_TOUR='tms_kb_tour_done';
+  function getName(){
+    try { return (localStorage.getItem(K_USER) || localStorage.getItem(K_FORM_NAME) || '').trim(); } catch(e){ return ''; }
+  }
+  function setName(n){
+    n=(n||'').trim();
+    try { if(n){ localStorage.setItem(K_USER,n); localStorage.setItem(K_FORM_NAME,n); } else { localStorage.removeItem(K_USER); } } catch(e){}
+    renderSession();
+    if(n) toast('Session associée à '+n+'.','👤');
+  }
+  function askName(){
+    var current=getName();
+    var n=window.prompt('À quel utilisateur appartient cette session ?\nEntre le prénom et le nom, ou laisse vide pour une session invité.', current);
+    if(n===null) return;
+    setName(n);
+  }
+  function renderSession(){
+    var box=document.getElementById('sessionBadge');
+    if(!box){
+      box=document.createElement('div');
+      box.id='sessionBadge';
+      box.className='session-badge';
+      document.body.appendChild(box);
+    }
+    var n=getName();
+    box.innerHTML='<div class="sb-k">Session</div><button type="button" class="sb-name" data-session-change aria-label="Changer l’utilisateur de la session">'+(n?escHtml(n):'Invité')+'</button><button type="button" class="sb-tour" data-tour-start>Tour guidé</button>';
+  }
+  function escHtml(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  var steps=[
+    {sel:'#sessionBadge', title:'Ta session', text:'Ce badge indique à qui appartient la session. Tu peux changer l’utilisateur à tout moment.'},
+    {sel:'#ctaFormation', title:'Commencer ou reprendre', text:'La formation guidée est le chemin recommandé pour les nouveaux travailleurs : modules, quiz et attestation.'},
+    {sel:'#searchOpen', title:'Recherche rapide', text:'Utilise la recherche ou la touche / pour retrouver un sujet comme dos, sommeil ou genoux.'},
+    {sel:'#corps', title:'Carte du corps', text:'Explore les zones à risque, tourne le modèle 3D et ouvre les fiches détaillées.'},
+    {sel:'[data-pwa-install]', title:'Installer l’app', text:'Tu peux installer le site sur l’appareil pour y revenir rapidement pendant la formation.'}
+  ];
+  var idx=0, ov=null;
+  function startTour(force){
+    if(!force){ try{ if(localStorage.getItem(K_TOUR)==='1') return; }catch(e){} }
+    idx=0; showStep();
+  }
+  function showStep(){
+    var st=steps[idx]; if(!st){ endTour(true); return; }
+    var target=document.querySelector(st.sel);
+    if(!target){ idx++; showStep(); return; }
+    document.querySelectorAll('.tour-focus').forEach(function(el){el.classList.remove('tour-focus');});
+    target.classList.add('tour-focus');
+    try{ target.scrollIntoView({behavior:RM?'auto':'smooth',block:'center'}); }catch(e){}
+    if(!ov){
+      ov=document.createElement('div'); ov.className='tour-ov'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); document.body.appendChild(ov);
+    }
+    ov.innerHTML='<div class="tour-card"><div class="tour-step">Étape '+(idx+1)+' / '+steps.length+'</div><h2>'+escHtml(st.title)+'</h2><p>'+escHtml(st.text)+'</p><div class="tour-actions"><button type="button" class="tour-skip">Passer</button><button type="button" class="tour-next">'+(idx===steps.length-1?'Terminer':'Suivant')+'</button></div></div>';
+    var next=ov.querySelector('.tour-next'), skip=ov.querySelector('.tour-skip');
+    if(next) next.focus();
+  }
+  function endTour(done){
+    document.querySelectorAll('.tour-focus').forEach(function(el){el.classList.remove('tour-focus');});
+    if(ov){ov.remove(); ov=null;}
+    if(done){ try{localStorage.setItem(K_TOUR,'1');}catch(e){} }
+  }
+  document.addEventListener('click',function(e){
+    var ch=e.target.closest('[data-session-change]'); if(ch){ e.preventDefault(); askName(); return; }
+    var ts=e.target.closest('[data-tour-start]'); if(ts){ e.preventDefault(); startTour(true); return; }
+    if(e.target.closest('.tour-next')){ e.preventDefault(); idx++; showStep(); return; }
+    if(e.target.closest('.tour-skip')){ e.preventDefault(); endTour(true); return; }
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&ov) endTour(false); });
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ renderSession(); setTimeout(function(){startTour(false);},900); });
+  else { renderSession(); setTimeout(function(){startTour(false);},900); }
+})();
+
 
 /* Confettis */
 function lancerConfettis() {
@@ -2054,23 +2161,13 @@ if ("serviceWorker" in navigator) {
   function load() {
     if (loaded) return;
     loaded = true;
-    // Décodeur Draco servi en local (vendor/draco/) : le modèle 3D (compressé Draco)
-    // fonctionne hors ligne et sans dépendre du CDN Google (gstatic).
-    try {
-      window.customElements.whenDefined("model-viewer").then(function () {
-        var MV = window.customElements.get("model-viewer");
-        if (MV) { try { MV.dracoDecoderLocation = new URL("vendor/draco/", document.baseURI).href; } catch (e) {} }
-      });
-    } catch (e) {}
+    configureModelViewerDraco();
     // Charge le moteur + le modèle seulement maintenant (zéro coût au chargement de la page).
     // Modèle anatomique Z-Anatomy : version légère sur mobile, version détaillée ailleurs.
     var small = Math.min(screen.width, screen.height) <= 768 ||
                 (window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
     mv.setAttribute("src", small ? "models/corps-anatomie-mobile.glb" : "models/corps-anatomie-web.glb");
-    var s = document.createElement("script");
-    s.type = "module";
-    s.src = "vendor/model-viewer.min.js";
-    document.head.appendChild(s);
+    ensureModelViewer();
     // Une pastille 3D rejoue le clic sur la zone 2D correspondante → même fiche, zéro duplication.
     wrap.querySelectorAll(".hotspot3d").forEach(function (h) {
       h.addEventListener("click", function () {
