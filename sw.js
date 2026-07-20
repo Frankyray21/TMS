@@ -13,6 +13,7 @@ const CORE = [
   "formation-guidee.en.html",
   "formation-guidee.js",
   "formation-guidee.en.js",
+  "session.js",
   "interactif.html",
   "manifest.webmanifest",
   "manifest.en.webmanifest",
@@ -64,7 +65,7 @@ const PAGES = ["./", "index.html", "index.en.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "formation-guidee.html", "formation-guidee.en.html",
   "interactif.html", "manifest.webmanifest", "manifest.en.webmanifest",
-  "styles.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "gsap.min.js", "hero-anim.js", "anatomy-hero-model.js"];
+  "styles.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "session.js", "gsap.min.js", "hero-anim.js", "anatomy-hero-model.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {

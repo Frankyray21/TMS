@@ -954,6 +954,7 @@
     var btn = document.getElementById('attSave');
     var nm = (state.certName || '').trim();
     if (!nm) { showSaveMsg('warn', 'Entre ton nom (choisis-le dans la liste) avant d\'enregistrer.'); return; }
+    try { if (window.TMSSession) { var _in = document.getElementById('attName'); window.TMSSession.set({ name: nm, empId: _in ? (_in.dataset.empId || '') : '' }); } } catch (e0) {}
     if (btn) { btn.disabled = true; btn.style.opacity = '.7'; btn.style.cursor = 'wait'; btn.textContent = 'Enregistrement…'; }
     showSaveMsg('pending', '⏳ Enregistrement en cours…');
     sendAttestation(function (ok) {
@@ -1086,7 +1087,7 @@
       sugg.innerHTML = '';
       list.forEach(function (it) {
         var b = document.createElement('button'); b.type = 'button'; b.className = 'emp-item'; b.innerHTML = hl(it.name, term);
-        b.addEventListener('mousedown', function (e) { e.preventDefault(); pickedId = it.id; pickedName = it.name; input.value = it.name; input.dataset.empId = it.id; upd(); setHint('Relié à ton dossier employé ✓'); hideSugg(); });
+        b.addEventListener('mousedown', function (e) { e.preventDefault(); pickedId = it.id; pickedName = it.name; input.value = it.name; input.dataset.empId = it.id; upd(); setHint('Relié à ton dossier employé ✓'); hideSugg(); try { if (window.TMSSession) window.TMSSession.set({ name: it.name, empId: it.id }); } catch (e2) {} });
         sugg.appendChild(b);
       });
       sugg.hidden = false;
