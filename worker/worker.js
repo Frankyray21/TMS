@@ -22,7 +22,8 @@
        { "name":"...", "lang":"FR"|"EN", "date":"AAAA-MM-JJ",
          "score":"5/5 modules", "mine":"(opt)", "employeeId":"rec...(opt)",
          "image":"data:image/png;base64,… (attestation DÉTAILLÉE)",
-         "timeTotal":"24 min 30 s", "timeDetail":"temps par section…" }
+         "timeTotal":"24 min 30 s", "timeDetail":"temps par section…",
+         "appRating":4, "appComment":"(sondage d'appréciation de l'app, facultatif)" }
    • POST /feedback    → retour sur une question de quiz (pouce + commentaire),
                          table « Retours quiz TMS (web) ». Corps JSON :
        { "key":"fg:m1:0", "rating":"up"|"down", "comment":"(opt)",
@@ -102,6 +103,8 @@ export default {
     let empId = validRecId(body.employeeId);   // lien vers la liste d'employés
     const timeTotal  = clean(body.timeTotal, 40);     // ex. « 24 min 30 s »
     const timeDetail = clean(body.timeDetail, 4000);  // temps par section (texte)
+    const appRating  = Math.max(0, Math.min(5, parseInt(body.appRating, 10) || 0)); // sondage app : 1-5 (0 = non répondu)
+    const appComment = clean(body.appComment, 2000);  // commentaire libre sur l'app
 
     if (!env.AIRTABLE_TOKEN) {
       return json(
@@ -135,6 +138,8 @@ export default {
     const timeFields = {};
     if (timeTotal)  timeFields["Temps total"] = timeTotal;
     if (timeDetail) timeFields["Détail du temps"] = timeDetail;
+    if (appRating)  timeFields["Appréciation app"] = appRating;
+    if (appComment) timeFields["Commentaire app"] = appComment;
 
     let at = await postRecord({ ...fields, ...timeFields }, env);
     if (at && !at.ok && Object.keys(timeFields).length) {

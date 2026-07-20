@@ -7,7 +7,7 @@
 
   var ATTEST_ENDPOINT = 'https://attestations-tms.frankyray-21.workers.dev';
   var MODEL_SRC = 'models/corps-anatomie-mobile.glb';
-  var K_PROG = 'tms_form_progress', K_ANS = 'tms_form_answers', K_NAME = 'tms_form_name', K_ZONES = 'tms_form_zones', K_TIMES = 'tms_form_times';
+  var K_PROG = 'tms_form_progress', K_ANS = 'tms_form_answers', K_NAME = 'tms_form_name', K_ZONES = 'tms_form_zones', K_TIMES = 'tms_form_times', K_APPR = 'tms_fg_apprec';
   // clés propres à la formation GUIDÉE : ne partagent plus 'tms_form_sent' avec formation.js
   // (sinon l'attestation guidée n'était jamais envoyée si la formation classique l'avait été le même jour)
   var K_SENT = 'tms_fg_sent', K_PEND = 'tms_fg_pending';
@@ -218,7 +218,7 @@
   };
 
   /* ---------------- ÉTAT ---------------- */
-  var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', borgSel: null, zonesVues: [], times: {},
+  var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', appRating: 0, appComment: '', borgSel: null, zonesVues: [], times: {},
     layers: { Muscles: { on: true, op: 100 }, Os: { on: false, op: 0 }, Articulations: { on: false, op: 0 }, Nerfs: { on: false, op: 0 } } };
   var app, mvInterval = null;
 
@@ -228,11 +228,13 @@
     try { state.certName = localStorage.getItem(K_NAME) || ''; } catch (e) {}
     try { var zv = JSON.parse(localStorage.getItem(K_ZONES) || '[]'); if (Array.isArray(zv)) state.zonesVues = zv; } catch (e) {}
     try { var tt = JSON.parse(localStorage.getItem(K_TIMES) || '{}'); if (tt && typeof tt === 'object') state.times = tt; } catch (e) {}
+    try { var ap = JSON.parse(localStorage.getItem(K_APPR) || '{}'); if (ap && typeof ap === 'object') { state.appRating = ap.rating || 0; state.appComment = ap.comment || ''; } } catch (e) {}
   }
   function saveProg() { try { localStorage.setItem(K_PROG, JSON.stringify(state.completed)); } catch (e) {} }
   function saveAns() { try { localStorage.setItem(K_ANS, JSON.stringify(state.answers)); } catch (e) {} }
   function saveZones() { try { localStorage.setItem(K_ZONES, JSON.stringify(state.zonesVues)); } catch (e) {} }
   function saveTimes() { try { localStorage.setItem(K_TIMES, JSON.stringify(state.times)); } catch (e) {} }
+  function saveAppr() { try { localStorage.setItem(K_APPR, JSON.stringify({ rating: state.appRating, comment: state.appComment })); } catch (e) {} }
 
   /* ---------- suivi du temps par section ----------
      Mesure le temps réellement passé sur chaque étape (notion ou quiz). Le
@@ -389,6 +391,27 @@
       + '<span style="flex:0 0 auto;color:#8694ad">→</span></button>';
   }
 
+  /* ---------- app appreciation survey (before saving) ---------- */
+  var STAR_SVG = '<svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+  function starRow() {
+    var r = state.appRating || 0, s = '';
+    for (var i = 1; i <= 5; i++) { var on = i <= r; s += '<button type="button" class="fg-star' + (on ? ' on' : '') + '" data-star="' + i + '" aria-label="' + i + ' out of 5" aria-pressed="' + on + '">' + STAR_SVG + '</button>'; }
+    return s;
+  }
+  function appSurveyBlock() {
+    return '<div class="att-survey" style="margin:0 0 20px">'
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">2</span> Your opinion on the app</label>'
+      + '<p style="color:#8694ad;font-size:.84rem;margin:0 0 12px">How do you find the app? <span style="opacity:.8">(optional)</span></p>'
+      + '<div class="fg-stars" id="appStars" role="radiogroup" aria-label="App rating">' + starRow() + '</div>'
+      + '<textarea id="appComment" rows="2" placeholder="Any remark about the app? (optional)" style="width:100%;background:#0d1320;border:1px solid #1e293b;border-radius:10px;padding:.6rem .8rem;color:#f1f5f9;font:inherit;font-size:.95rem;resize:vertical;min-height:40px;margin-top:12px">' + esc(state.appComment || '') + '</textarea>'
+      + '</div>';
+  }
+  function setAppRating(n) {
+    state.appRating = n; saveAppr();
+    if (!app) return;
+    app.querySelectorAll('#appStars .fg-star').forEach(function (b) { var v = +b.getAttribute('data-star'), on = v <= n; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  }
+
   function certBlock() {
     var d = new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
     return '<div style="margin-top:24px;position:relative;max-width:560px">'
@@ -408,7 +431,8 @@
       + '<input id="attName" type="text" autocomplete="off" placeholder="First and last name" value="' + esc(state.certName) + '" style="width:100%;background:#0d1320;border:1px solid #1e293b;border-radius:10px;padding:.7rem .9rem;color:#f1f5f9;font:inherit;font-size:1rem">'
       + '<div id="empSugg" class="emp-sugg" hidden></div>'
       + '<p id="empHint" style="color:#8694ad;font-size:.82rem;margin:.5rem 0 0">Start typing your name, then pick it from the list.</p></div>'
-      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">2</span> Save your training</label>'
+      + appSurveyBlock()
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">3</span> Save your training</label>'
       + '<button class="fg-cta" data-act="save" id="attSave" disabled style="width:100%;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1.05rem;color:#fff;background:linear-gradient(135deg,#10b981,#0e9f6e);border:none;border-radius:12px;padding:15px 24px;cursor:pointer;box-shadow:0 6px 18px rgba(16,185,129,.35);opacity:.5;transition:opacity .2s">✔ Save my training</button>'
       + '<div id="saveMsg" role="status" aria-live="polite" hidden style="margin-top:14px;border-radius:10px;padding:12px 14px;font-size:.92rem;font-weight:600;line-height:1.5"></div>'
       + '</div></div>';
@@ -581,10 +605,10 @@
   function renderCustom(n) {
     if (n.custom === 'cIntro') return '<div class="fg-kb"><p class="lead">A musculoskeletal disorder (MSD) is an injury to the <strong>muscles</strong>, <strong>tendons</strong>, <strong>nerves</strong>, <strong>ligaments</strong> or <strong>joints</strong>, caused or made worse by work. It is rarely the result of a single accident: it <strong style="color:var(--accent-l)">sets in gradually</strong>, when repeated movements, efforts and postures exceed the <strong>body\'s ability to recover</strong>. It starts with simple <strong style="color:var(--accent-l)">discomfort</strong> and can end in <strong style="color:var(--accent-l)">lasting injury</strong>.</p><div class="alert"><div class="i">' + svg('<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>', 2, 22) + '</div><div>An MSD has no single cause: effort, posture, repetition, fatigue and environment add up. Acting at the very first discomfort keeps the problem from setting in.</div></div></div>';
     if (n.custom === 'cTypes') return '<div class="fg-kb"><p class="lead">The most common forms of MSD in workers. <strong style="color:var(--accent-l)">The lower back is by far the most affected area.</strong></p><div class="icards tms-c">'
-      + '<article class="imgcard" style="border:2px solid #d22325;box-shadow:0 0 0 4px rgba(210,35,37,.16),0 14px 38px rgba(0,0,0,.45)"><div style="position:absolute;top:.65rem;left:.65rem;z-index:3;background:linear-gradient(135deg,#e23a3c,#a81a1c);color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem;padding:.28rem .6rem;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.4)">★ Most common</div><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_lombalgie.jpeg" alt="Low-back pain" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4 style="color:#ef5a5c">Low-back pain</h4><p>Pain in the lower back — <strong style="color:#e2e8f0">the most affected area</strong> in workers.</p></div></article>'
-      + '<article class="imgcard"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_tendinite.jpeg" alt="Tendinitis" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Tendinitis</h4><p>Inflammation of a tendon: shoulder, elbow, wrist.</p></div></article>'
-      + '<article class="imgcard"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_bursite.jpeg" alt="Bursitis" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Bursitis</h4><p>Inflammation of the bursae: knees, shoulders.</p></div></article>'
-      + '<article class="imgcard"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_carpien.jpeg" alt="Carpal tunnel syndrome" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Carpal tunnel syndrome</h4><p>Compression of the median nerve at the wrist.</p></div></article></div></div>';
+      + '<article class="imgcard fg-typecard" data-type="lombalgie" role="button" tabindex="0" aria-label="View details: Low-back pain" style="cursor:pointer;border:2px solid #d22325;box-shadow:0 0 0 4px rgba(210,35,37,.16),0 14px 38px rgba(0,0,0,.45)"><div style="position:absolute;top:.65rem;left:.65rem;z-index:3;background:linear-gradient(135deg,#e23a3c,#a81a1c);color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.68rem;padding:.28rem .6rem;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.4)">★ Most common</div><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_lombalgie.jpeg" alt="Low-back pain" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4 style="color:#ef5a5c">Low-back pain</h4><p>Pain in the lower back — <strong style="color:#e2e8f0">the most affected area</strong> in workers.</p></div></article>'
+      + '<article class="imgcard fg-typecard" data-type="tendinite" role="button" tabindex="0" aria-label="View details: Tendinitis" style="cursor:pointer"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_tendinite.jpeg" alt="Tendinitis" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Tendinitis</h4><p>Inflammation of a tendon: shoulder, elbow, wrist.</p></div></article>'
+      + '<article class="imgcard fg-typecard" data-type="bursite" role="button" tabindex="0" aria-label="View details: Bursitis" style="cursor:pointer"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_bursite.jpeg" alt="Bursitis" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Bursitis</h4><p>Inflammation of the bursae: knees, shoulders.</p></div></article>'
+      + '<article class="imgcard fg-typecard" data-type="carpien" role="button" tabindex="0" aria-label="View details: Carpal tunnel" style="cursor:pointer"><div class="media" style="height:220px;background:#0a0e17"><img src="images/tms_carpien.jpeg" alt="Carpal tunnel syndrome" loading="lazy" decoding="async" style="object-fit:contain;display:block"></div><div class="body"><h4>Carpal tunnel syndrome</h4><p>Compression of the median nerve at the wrist.</p></div></article></div></div>';
     if (n.custom === 'cZones') return renderZones();
     if (n.custom === 'cFacteurs') return renderFacteurs();
     if (n.custom === 'cEvolution') return renderEvolution();
@@ -679,6 +703,59 @@
     if (cl) cl.addEventListener('click', closeZoneFiche);
     document.removeEventListener('keydown', zoneEscHandler);
     document.addEventListener('keydown', zoneEscHandler);
+    try { document.documentElement.style.overflow = 'hidden'; } catch (e) {}
+    if (cl) { try { cl.focus(); } catch (e) {} }
+  }
+
+  /* MSD TYPE cards — same details as the knowledge base, reuse the zone modal (#zoneFiche) so they are clickable here too. */
+  var TYPE_FICHES = {
+    lombalgie: { title: 'Low-back pain', img: 'images/tms_lombalgie.jpeg', desc: "A lower-back problem affecting the lumbar vertebrae, the discs and the muscles. It's the most common musculoskeletal disorder in the workplace.", risk: ['Handling heavy loads', 'Repeated bending and twisting of the trunk', 'Prolonged leaning or sitting postures', 'Whole-body vibration'], prev: ['Bend your knees, keep your back straight', 'Keep the load close to your body', "Don't twist your trunk while lifting", 'Use a mechanical aid or ask for help'] },
+    tendinite: { title: 'Tendinitis', img: 'images/tms_tendinite.jpeg', desc: "Inflammation of a tendon, most often in the shoulder, elbow or wrist. It shows up when the tendon is overworked without enough recovery.", risk: ['Repetitive movements', 'Intense or prolonged effort', 'Frequent gripping and clamping', 'Tool vibration'], prev: ['Alternate your tasks and movements', 'Take micro-breaks', 'Warm up before effort', 'Adjust the tool and the working height'] },
+    bursite: { title: 'Bursitis', img: 'images/tms_bursite.jpeg', desc: "Inflammation of the bursae, the small cushions that absorb shock in the joints. Common in the knees and shoulders.", risk: ['Prolonged kneeling', 'Repeated pressure and rubbing', 'Direct impacts or pressure', 'Working with arms raised'], prev: ['Wear knee pads', 'Vary your postures regularly', 'Avoid prolonged pressure', 'Set up a support under your knees'] },
+    carpien: { title: 'Carpal tunnel', img: 'images/tms_carpien.jpeg', desc: "Compression of the median nerve in the wrist. Causes numbness, tingling and loss of strength in the hand.", risk: ['Repetitive wrist movements', 'High gripping force', 'Wrist bent for a long time', 'Tool vibration'], prev: ['Keep your wrist in a neutral position', 'Use ergonomic tools', 'Reduce your gripping force', 'Take breaks and stretches'] }
+  };
+  /* The type fiche has its OWN persistent container: type cards live in the
+     "types" notion, where the zone modal isn't rendered. */
+  var _tfLast = null;
+  function typeEscHandler(e) {
+    if (e.key === 'Escape' || e.key === 'Esc') { closeTypeFiche(); return; }
+    if (e.key !== 'Tab') return;
+    var box = document.getElementById('tmsTypeFiche');
+    if (!box || box.hidden) return;
+    var f = box.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  function closeTypeFiche() {
+    var box = document.getElementById('tmsTypeFiche');
+    if (box) { box.hidden = true; box.innerHTML = ''; }
+    document.removeEventListener('keydown', typeEscHandler);
+    try { document.documentElement.style.overflow = ''; } catch (e) {}
+    if (_tfLast && document.contains(_tfLast)) { try { _tfLast.focus(); } catch (e) {} }
+    _tfLast = null;
+  }
+  function openTypeFiche(k) {
+    var t = TYPE_FICHES[k]; if (!t) return;
+    var box = document.getElementById('tmsTypeFiche');
+    if (!box) { box = document.createElement('div'); box.id = 'tmsTypeFiche'; box.className = 'zfm-overlay'; box.hidden = true; box.addEventListener('click', function (e) { if (e.target === box) closeTypeFiche(); }); document.body.appendChild(box); }
+    _tfLast = document.activeElement;
+    box.innerHTML = '<div class="zfm-dialog" role="dialog" aria-modal="true" aria-label="' + esc(t.title) + '">'
+      + '<button type="button" class="zf-close" aria-label="Close">✕</button>'
+      + '<img src="' + t.img + '" alt="' + esc(t.title) + '" class="zf-img" loading="lazy" decoding="async">'
+      + '<div class="zf-body"><h4 class="zf-title">' + esc(t.title) + '</h4>'
+      + '<div class="zf-tms"><span>Type of MSD</span></div>'
+      + '<p class="zf-desc">' + esc(t.desc) + '</p>'
+      + '<p class="zf-h">Risk factors</p><ul class="zf-list">' + t.risk.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'
+      + '<p class="zf-h">Prevention</p><ul class="zf-list">' + t.prev.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'
+      + '</div></div>';
+    box.hidden = false;
+    var cl = box.querySelector('.zf-close');
+    if (cl) cl.addEventListener('click', closeTypeFiche);
+    document.removeEventListener('keydown', typeEscHandler);
+    document.addEventListener('keydown', typeEscHandler);
     try { document.documentElement.style.overflow = 'hidden'; } catch (e) {}
     if (cl) { try { cl.focus(); } catch (e) {} }
   }
@@ -981,7 +1058,7 @@
     try { if (localStorage.getItem(K_SENT) === sig) { cb(true); return; } } catch (e) {}
     _attBusy = true;
     try { localStorage.setItem(K_PEND, sig); } catch (e) {} // marqueur « envoi en cours » : re-tenté au prochain chargement s'il se perd (onglet fermé, hors ligne)
-    var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '', timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText() };
+    var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '', timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText(), appRating: state.appRating || '', appComment: (state.appComment || '').trim() };
     try {
       fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         .then(function (r) { _attBusy = false; if (r && r.ok) { try { localStorage.setItem(K_SENT, sig); localStorage.removeItem(K_PEND); } catch (e) {} cb(true); } else { cb(false); } })
@@ -1152,6 +1229,17 @@
     app.querySelectorAll('.hotspot3d[data-zone], .fg-zone-chip[data-zone]').forEach(function (el) {
       el.addEventListener('click', function (e) { e.preventDefault(); openZoneFiche(el.getAttribute('data-zone')); });
     });
+    // MSD type cards: clickable (detailed fiche), like the knowledge base
+    app.querySelectorAll('.fg-typecard[data-type]').forEach(function (el) {
+      el.addEventListener('click', function () { openTypeFiche(el.getAttribute('data-type')); });
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTypeFiche(el.getAttribute('data-type')); } });
+    });
+    // app appreciation survey (stars + comment) in the attestation
+    app.querySelectorAll('.fg-star[data-star]').forEach(function (el) {
+      el.addEventListener('click', function () { setAppRating(+el.getAttribute('data-star')); });
+    });
+    var _ac = document.getElementById('appComment');
+    if (_ac) _ac.addEventListener('input', function () { state.appComment = _ac.value; saveAppr(); });
     var zmodal = document.getElementById('zoneFiche');
     if (zmodal) zmodal.addEventListener('click', function (e) { if (e.target === zmodal) closeZoneFiche(); });
     updateZonesProgress();
