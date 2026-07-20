@@ -23,6 +23,11 @@
          "score":"5/5 modules", "mine":"(opt)", "employeeId":"rec...(opt)",
          "image":"data:image/png;base64,… (attestation DÉTAILLÉE)",
          "timeTotal":"24 min 30 s", "timeDetail":"temps par section…" }
+   • POST /feedback    → retour sur une question de quiz (pouce + commentaire),
+                         table « Retours quiz TMS (web) ». Corps JSON :
+       { "key":"fg:m1:0", "rating":"up"|"down", "comment":"(opt)",
+         "quiz":"Formation guidée · Module 1", "question":"énoncé…",
+         "lang":"FR"|"EN", "authorName":"(opt)", "authorId":"(opt)", "date":"AAAA-MM-JJ" }
 
    DEUX VERSIONS DE L'ATTESTATION : le travailleur imprime/enregistre une
    version propre (côté site) ; la version téléversée ICI (champ « Attestation »)
@@ -34,6 +39,7 @@
 
 const AIRTABLE_BASE  = "appmq82YjvEUglYZU";   // base « Formations »
 const AIRTABLE_TABLE = "tblSNMDt0yj7nBxXm";   // table « Attestations TMS (web) »
+const FEEDBACK_TABLE = "tblHTxU78BWS513fF";   // table « Retours quiz TMS (web) » — POST /feedback
 
 /* Liste des employés, pour relier l'attestation au bon dossier. */
 const EMP_TABLE      = "tbllKuNePDWZMr1cz";   // « Liste employé (registre formation) »
@@ -68,6 +74,12 @@ export default {
 
     if (request.method !== "POST") {
       return json({ ok: false, error: "Méthode non autorisée." }, 405, cors);
+    }
+
+    // POST /feedback : retour sur la qualité d'une question de quiz.
+    // Table dédiée « Retours quiz TMS (web) » — n'a rien à voir avec les attestations.
+    if (new URL(request.url).pathname.replace(/\/+$/, "") === "/feedback") {
+      return recordFeedback(request, env, cors);
     }
 
     // Lecture du corps JSON envoyé par le site.
@@ -169,6 +181,63 @@ async function postRecord(fields, env) {
   } catch (e) {
     return null;
   }
+}
+
+/* ── retour sur une question de quiz → « Retours quiz TMS (web) » ─────────── */
+async function recordFeedback(request, env, cors) {
+  let body;
+  try {
+    body = await request.json();
+  } catch (_) {
+    return json({ ok: false, error: "Corps JSON invalide." }, 400, cors);
+  }
+
+  const rating = String(body.rating || "").toLowerCase();
+  if (rating !== "up" && rating !== "down") {
+    return json({ ok: false, error: "Avis manquant (up/down)." }, 400, cors);
+  }
+  if (!env.AIRTABLE_TOKEN) {
+    return json({ ok: false, error: "AIRTABLE_TOKEN non configuré sur le Worker." }, 500, cors);
+  }
+
+  const lang = String(body.lang || "FR").toUpperCase() === "EN" ? "EN" : "FR";
+  const fields = {
+    "Question": clean(body.key, 120),                         // repère stable (ex. « fg:m1:0 »)
+    "Avis": rating === "up" ? "👍 Bonne question" : "👎 À revoir",
+    "Commentaire": clean(body.comment, 4000),
+    "Quiz": clean(body.quiz, 160),
+    "Énoncé": clean(body.question, 2000),
+    "Nom": clean(body.authorName, 120),
+    "Employé (id)": clean(body.authorId, 60),
+    "Langue": lang,
+    "Date": isoDate(body.date),
+    "Source": "site web TMS",
+    "Statut": "Nouveau",
+  };
+
+  let at;
+  try {
+    // typecast: laisse Airtable retrouver/créer les options des sélections (Avis, Langue…).
+    at = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE}/${FEEDBACK_TABLE}`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${env.AIRTABLE_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fields, typecast: true }),
+      }
+    );
+  } catch (e) {
+    return json({ ok: false, error: "Airtable injoignable." }, 502, cors);
+  }
+  if (!at.ok) {
+    const detail = await at.text();
+    return json({ ok: false, error: "Airtable a refusé le retour.", detail }, 502, cors);
+  }
+  const rec = await at.json();
+  return json({ ok: true, id: rec.id }, 200, cors);
 }
 
 /* ── recherche d'employés (autocomplétion, insensible casse + accents) ────── */

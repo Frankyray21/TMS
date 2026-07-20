@@ -1898,6 +1898,7 @@ document.addEventListener("keydown", e => {
 (function(){
   var stage=document.getElementById("qStage");
   if(!stage)return;
+  function qesc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return c==="&"?"&amp;":c==="<"?"&lt;":c===">"?"&gt;":"&quot;";});}
   var QUESTIONS=[
     {q:"Qu'est-ce qu'un trouble musculosquelettique (TMS) ?",
      o:["Une blessure soudaine et unique, comme une fracture","Une atteinte des muscles, tendons, nerfs ou articulations qui s'installe surtout par usure","Une maladie contagieuse propre aux mines","Un trouble uniquement psychologique lié au stress"],
@@ -1962,6 +1963,7 @@ document.addEventListener("keydown", e => {
     var fb=document.getElementById("qFb");
     fb.className="quiz-fb "+(bon?"ok":"bad");fb.hidden=false;
     fb.innerHTML="<div class='qf-k'>"+(bon?"✓ Bonne réponse":"✕ Pas tout à fait")+"</div>"+Q.f+
+      "<div class=\"qfb\" data-qfb-key=\"kb:"+idx+"\" data-qfb-quiz=\"Base de connaissances\" data-qfb-q=\""+qesc(Q.q)+"\"></div>"+
       "<div><button type='button' class='quiz-next' id='qNext'>"+(idx<QUESTIONS.length-1?"Question suivante &rarr;":"Voir mon résultat &rarr;")+"</button></div>";
     document.getElementById("qNext").addEventListener("click",suivant);
     fb.scrollIntoView({behavior:"smooth",block:"nearest"});
