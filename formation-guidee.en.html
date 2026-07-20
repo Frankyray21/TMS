@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Local Draco decoder (vendor/draco/): model-viewer reads this global setting when the engine loads → the 3D body works offline / without Google's CDN (gstatic). -->
+<script>window.ModelViewerElement=window.ModelViewerElement||{};try{window.ModelViewerElement.dracoDecoderLocation=new URL("vendor/draco/",document.baseURI).href;}catch(e){window.ModelViewerElement.dracoDecoderLocation="vendor/draco/";}</script>
 <title>Guided training — MSD prevention | Machines Roger International</title>
 <meta name="description" content="Guided training on preventing musculoskeletal disorders (MSDs): short topics, a quiz per module and a certificate.">
 <link rel="canonical" href="https://preventiontmsmri.netlify.app/formation-guidee.en.html">
@@ -77,7 +79,7 @@
 
 <div id="app"></div>
 
-<span class="foot-ver" id="footVer" title="Site version" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#8694ad;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v1.93</span>
+<span class="foot-ver" id="footVer" title="Site version" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#8694ad;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v1.94</span>
 
 <script src="anatomy-hero-model.js" defer></script>
 <script src="formation-guidee.en.js" defer></script>
