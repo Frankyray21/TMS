@@ -656,7 +656,8 @@ h3.sub-h::before{content:'';width:5px;height:1.3rem;background:var(--brand);bord
 .alert .i{display:flex;color:var(--accent-l);flex-shrink:0;margin-top:.15rem}
 .xpand summary .lev{color:var(--accent);flex-shrink:0}
 .alert p{font-size:1rem}.alert strong{color:var(--accent-l)}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1.3rem}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.3rem}
+@media (max-width:520px){.stats{grid-template-columns:1fr}}
 .stat{position:relative;overflow:hidden;background:var(--card-2);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.2rem;text-align:center;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;justify-content:center;gap:.45rem}
 .stat::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:140%;height:140%;background:radial-gradient(closest-side,rgba(210,35,37,.10),transparent 70%);pointer-events:none}
 .stat:hover{transform:translateY(-3px);box-shadow:var(--shadow-card)}
