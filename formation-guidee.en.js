@@ -220,7 +220,7 @@
   /* ---------------- ÉTAT ---------------- */
   var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', appRating: 0, appComment: '', sigData: '', finished: false, borgSel: null, zonesVues: [], times: {},
     layers: { Muscles: { on: true, op: 100 }, Os: { on: false, op: 0 }, Articulations: { on: false, op: 0 }, Nerfs: { on: false, op: 0 } } };
-  var app, mvInterval = null;
+  var app, mvInterval = null, timerInterval = null;
 
   function load() {
     try { var p = JSON.parse(localStorage.getItem(K_PROG) || '[]'); if (Array.isArray(p)) state.completed = p; } catch (e) {}
@@ -257,6 +257,16 @@
   function stepKey(s) { return (s && s.module) ? (s.module.id + '/' + (s.kind === 'quiz' ? 'quiz' : (s.notion ? s.notion.id : 'n'))) : null; }
   function moduleTimeMs(m) { var t = 0, p = m.id + '/'; for (var k in state.times) { if (state.times.hasOwnProperty(k) && k.indexOf(p) === 0) t += state.times[k] || 0; } return t; }
   function totalTimeMs() { var t = 0; for (var k in state.times) { if (state.times.hasOwnProperty(k)) t += state.times[k] || 0; } return t; }
+  /* Live total: recorded time + the in-progress segment (not yet flushed).
+     Freezes while the tab is hidden, because timePause() resets _tT0 to 0. */
+  function liveTotalMs() { var t = totalTimeMs(); if (_tKey && _tT0) { var dt = _tNow() - _tT0; if (dt > 0 && dt < 21600000) t += dt; } return t; }
+  /* Clock format for the on-screen timer: MM:SS, or H:MM:SS beyond one hour. */
+  function fmtClock(ms) {
+    var s = Math.max(0, Math.floor((ms || 0) / 1000));
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+    var p2 = function (n) { return (n < 10 ? '0' : '') + n; };
+    return h > 0 ? (h + ':' + p2(m) + ':' + p2(ss)) : (m + ':' + p2(ss));
+  }
   function fmtDur(ms) {
     var s = Math.round((ms || 0) / 1000);
     var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
@@ -481,7 +491,9 @@
       + '<div style="max-width:880px;margin:0 auto;padding:11px 28px;display:flex;align-items:center;gap:16px;justify-content:space-between">'
       + '<button class="fg-nav" data-act="goSommaire" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:.8rem;color:#8694ad;background:none;border:1px solid #1e293b;border-radius:999px;padding:7px 15px;cursor:pointer">☰ Contents</button>'
       + '<div style="flex:1 1 auto;text-align:center;min-width:0"><div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.74rem;color:#ef5a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Module ' + m.num + ' · ' + esc(m.title) + '</div></div>'
-      + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:.82rem;color:#8694ad;white-space:nowrap">' + counter + '</div></div>'
+      + '<div style="flex:0 0 auto;display:flex;align-items:center;gap:12px">'
+      + '<div id="fg-timer" title="Time spent in the training" style="display:inline-flex;align-items:center;gap:6px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:.82rem;color:#8694ad;white-space:nowrap;font-variant-numeric:tabular-nums"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.7"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5V12l3 1.8"></path></svg><span data-timer>' + fmtClock(liveTotalMs()) + '</span></div>'
+      + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:.82rem;color:#8694ad;white-space:nowrap">' + counter + '</div></div></div>'
       + '<div style="height:4px;background:#0a0e17"><div style="height:100%;width:' + barPct + '%;background:linear-gradient(90deg,#e23a3c,#ef5a5c);transition:width .4s"></div></div></div>'
       + '<main style="max-width:880px;margin:0 auto;padding:30px 28px 40px;min-height:50vh">'
       + '<div style="display:inline-flex;align-items:center;gap:9px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:.84rem;color:#ef5a5c;margin-bottom:10px"><span style="width:7px;height:7px;border-radius:50%;background:#d22325;box-shadow:0 0 8px rgba(210,35,37,.9)"></span>' + kicker + '</div>'
@@ -879,14 +891,27 @@
   }
 
   /* ---------------- ACTIONS ---------------- */
+  /* Visible timer: refreshes the total-time display every second.
+     The underlying counter (liveTotalMs) freezes on its own when the tab is hidden. */
+  function startTimerTick() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    timerInterval = setInterval(function () {
+      var el = document.querySelector('#fg-timer [data-timer]');
+      if (!el) { clearInterval(timerInterval); timerInterval = null; return; }
+      el.textContent = fmtClock(liveTotalMs());
+    }, 1000);
+  }
+
   function render(keepScroll) {
     var prevY = keepScroll ? (window.pageYOffset || document.documentElement.scrollTop || 0) : 0;
     if (mvInterval) { clearInterval(mvInterval); mvInterval = null; }
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
     app.innerHTML = state.view === 'viewer' ? renderViewer() : renderSommaire();
     bind();
     if (state.view === 'viewer') {
       var st = steps(), cur = st[state.idx];
       timeEnter(stepKey(cur));
+      startTimerTick();
       if (cur && cur.kind === 'notion' && cur.notion.custom === 'cZones') initModel();
     } else { timeLeave(); }
     if (state.view === 'sommaire' && state.certVisible) { initCert(); initSig(); }
