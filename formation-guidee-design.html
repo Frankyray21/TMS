@@ -158,7 +158,7 @@
   <sc-if value="{{ isViewer }}" hint-placeholder-val="{{ false }}">
   <div>
     <!-- viewer subbar -->
-    <div style="position:sticky;top:59px;z-index:30;background:rgba(13,19,32,.94);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b">
+    <div style="position:sticky;top:var(--fg-header-h,91px);z-index:30;background:rgba(13,19,32,.94);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b">
       <div style="max-width:880px;margin:0 auto;padding:11px 28px;display:flex;align-items:center;gap:16px;justify-content:space-between">
         <button class="fg-nav" onClick="{{ goSommaire }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:.8rem;color:#8694ad;background:none;border:1px solid #1e293b;border-radius:999px;padding:7px 15px;cursor:pointer">☰ Sommaire</button>
         <div style="flex:1 1 auto;text-align:center;min-width:0">

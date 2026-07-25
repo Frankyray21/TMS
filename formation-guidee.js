@@ -371,7 +371,10 @@
       + '<svg viewBox="0 0 520 600" aria-hidden="true" style="position:absolute;right:-40px;top:50%;transform:translateY(-50%);height:150%;opacity:.5;pointer-events:none"><g fill="none" stroke-linecap="round"><path d="M40 600 V330 A220 220 0 0 1 480 330 V600" stroke="rgba(255,255,255,.06)" stroke-width="2"></path><path d="M130 600 V350 A130 130 0 0 1 390 350 V600" stroke="rgba(210,35,37,.34)" stroke-width="3"></path><path d="M175 600 V360 A85 85 0 0 1 345 360 V600" stroke="rgba(255,255,255,.09)" stroke-width="2"></path><circle cx="260" cy="330" r="5" fill="rgba(239,90,92,.85)" stroke="none" style="animation:fgPulse 3.2s ease-in-out infinite"></circle></g></svg>'
       + '<div class="fg-hero-inner" style="position:relative;max-width:1120px;margin:0 auto;padding:52px 28px 44px;display:flex;flex-wrap:wrap;gap:44px;align-items:center;justify-content:space-between">'
       + '<div style="flex:1 1 520px;min-width:300px">'
-      + '<div style="display:inline-flex;align-items:center;gap:10px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:1rem;color:#ef5a5c;margin-bottom:14px"><span style="width:7px;height:7px;border-radius:50%;background:#d22325;box-shadow:0 0 8px rgba(210,35,37,.9)"></span>Formation guidée · Nouveaux travailleurs</div>'
+      + '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:14px">'
+      + '<div style="display:inline-flex;align-items:center;gap:10px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:1rem;color:#ef5a5c"><span style="width:7px;height:7px;border-radius:50%;background:#d22325;box-shadow:0 0 8px rgba(210,35,37,.9)"></span>Formation guidée · Nouveaux travailleurs</div>'
+      + '<div id="fg-total-time" title="Temps déjà passé dans la formation" style="display:inline-flex;align-items:center;gap:7px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:.92rem;color:#e2e8f0;white-space:nowrap;font-variant-numeric:tabular-nums;background:rgba(30,41,59,.75);border:1px solid #2b3a52;border-radius:999px;padding:8px 14px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef5a5c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5V12l3 1.8"></path></svg><span style="color:#8694ad;text-transform:uppercase;letter-spacing:.08em;font-size:.76rem">Temps passé</span>' + fmtDur(liveTotalMs()) + '</div>'
+      + '</div>'
       + '<h1 class="fg-h1" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.01em;line-height:1.02;font-size:clamp(2.3rem,5vw,3.5rem);margin:0 0 16px">La prévention des TMS,<br><span class="mr-plate" style="color:#ef5a5c">pas à pas.</span></h1>'
       + '<p class="fg-hero-sub" style="max-width:540px;color:#cbd5e1;font-size:1.1rem;margin:0 0 24px">Une formation découpée en <strong style="color:#fff">notions courtes</strong> : une page par notion, dans l\'ordre. À la fin de chaque module, un mini-quiz. Ton attestation t\'attend au bout.</p>'
       + '<div class="fg-hero-actions" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">'
@@ -383,11 +386,7 @@
       + '<div class="fg-ring" style="position:relative;width:148px;height:148px;margin:0 auto 16px"><svg viewBox="0 0 120 120" style="width:148px;height:148px;transform:rotate(-90deg)"><circle cx="60" cy="60" r="52" fill="none" stroke="#1e293b" stroke-width="11"></circle><circle cx="60" cy="60" r="52" fill="none" stroke="#d22325" stroke-width="11" stroke-linecap="round" stroke-dasharray="' + ringDash + '" style="transition:stroke-dasharray .6s"></circle></svg>'
       + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span class="fg-pct" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:2.6rem;line-height:1;color:#fff">' + pct + '%</span><span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:#8694ad;font-weight:700">complété</span></div></div>'
       + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;color:#fff">' + doneCount + ' / ' + total + ' modules</div>'
-      + '<div style="color:#8694ad;font-size:.86rem;margin-top:2px">' + progressHint + '</div>'
-      + '<div style="margin-top:14px;padding-top:13px;border-top:1px solid #1e293b">'
-      + '<div style="display:flex;align-items:center;justify-content:center;gap:7px;color:#8694ad;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5V12l3 1.8"></path></svg>Temps passé</div>'
-      + '<div id="fg-total-time" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.35rem;color:#fff;margin-top:3px;font-variant-numeric:tabular-nums">' + fmtDur(liveTotalMs()) + '</div>'
-      + '</div></div></div></div></section>'
+      + '<div style="color:#8694ad;font-size:.86rem;margin-top:2px">' + progressHint + '</div></div></div></div></section>'
       + '<section style="max-width:1120px;margin:0 auto;padding:34px 28px 64px">'
       + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1.5rem;display:flex;align-items:center;gap:10px;margin-bottom:22px"><span style="width:5px;height:1.25rem;background:#d22325;border-radius:3px"></span>Le parcours · ' + totalNotions + ' notions</div>'
       + '<div style="display:flex;flex-direction:column;gap:14px">' + cards + '</div>'
@@ -491,7 +490,7 @@
     } else { nextLabel = 'Suivant →'; nextBg = 'linear-gradient(135deg,#e23a3c,#a81a1c)'; }
     var prevDis = state.idx <= 0;
 
-    return '<div><div style="position:sticky;top:59px;z-index:30;background:rgba(13,19,32,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b">'
+    return '<div><div style="position:sticky;top:var(--fg-header-h,91px);z-index:30;background:rgba(13,19,32,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b">'
       + '<div style="max-width:880px;margin:0 auto;padding:11px 28px;display:flex;align-items:center;gap:16px;justify-content:space-between">'
       + '<button class="fg-nav" data-act="goSommaire" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:.8rem;color:#8694ad;background:none;border:1px solid #1e293b;border-radius:999px;padding:7px 15px;cursor:pointer">☰ Sommaire</button>'
       + '<div style="flex:1 1 auto;text-align:center;min-width:0"><div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.74rem;color:#ef5a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Module ' + m.num + ' · ' + esc(m.title) + '</div></div>'
@@ -895,6 +894,27 @@
   }
 
   /* ---------------- ACTIONS ---------------- */
+  /* Hauteur réelle de l'en-tête du site -> --fg-header-h, utilisée par la barre
+     sticky du lecteur. En dur (59px) elle passait SOUS l'en-tête sur mobile, où
+     celui-ci fait ~91px : le chrono et le titre du module y étaient rognés.
+     La hauteur bouge sans « resize » (session.js insère la puce d'identification
+     puis le nom après connexion, et le rendu des polices la modifie) -> ResizeObserver. */
+  function syncHeaderH() {
+    var h = document.querySelector('header');
+    if (!h) return;
+    var px = Math.round(h.getBoundingClientRect().height);
+    if (px > 0) document.documentElement.style.setProperty('--fg-header-h', px + 'px');
+  }
+  function watchHeaderH() {
+    syncHeaderH();
+    window.addEventListener('resize', syncHeaderH);
+    try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncHeaderH); } catch (e) {}
+    try {
+      var h = document.querySelector('header');
+      if (h && window.ResizeObserver) new ResizeObserver(syncHeaderH).observe(h);
+    } catch (e) {}
+  }
+
   /* Timer visible : rafraîchit chaque seconde l'affichage du temps total.
      Le compteur sous-jacent (liveTotalMs) se fige seul quand l'onglet est masqué. */
   function startTimerTick() {
@@ -1350,6 +1370,7 @@
       });
     } catch (e) {}
     load();
+    watchHeaderH();
     // recalcule les modules réussis à partir des réponses enregistrées
     MODULES.forEach(syncModulePass);
     // suivi du temps : pause quand l'onglet est masqué, flush à la fermeture
