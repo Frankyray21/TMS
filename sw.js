@@ -84,7 +84,10 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
   e.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k)));
+    /* Ne purger QUE nos propres caches (préfixe « tms- ») : l'origine
+       frankyray21.github.io est partagée avec les autres sites (Wiki SST,
+       Procédures MRI, RodBot…) — leurs caches hors-ligne ne doivent jamais être touchés. */
+    await Promise.all(keys.filter((k) => k.indexOf("tms-") === 0 && k !== VERSION).map((k) => caches.delete(k)));
     await self.clients.claim();
   })());
 });
