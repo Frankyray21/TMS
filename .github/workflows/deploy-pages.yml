@@ -36,6 +36,7 @@ jobs:
           rsync -a --delete \
             --exclude='.git' --exclude='.github' --exclude='.claude' \
             --exclude='worker' \
+            --exclude='cotation-video' \
             --exclude='PLANNING_7_niveaux.md' \
             --exclude='formation-guidee-design.html' --exclude='support.js' \
             --exclude='corps-3d.html' --exclude='models/mannequin.glb' \

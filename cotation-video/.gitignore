@@ -1,0 +1,4 @@
+# Moteur et modèle de pose : régénérés par outils/telecharger-modeles.sh.
+# ~18 Mo de binaires qui n'ont rien à faire dans l'historique git.
+vendor/
+node_modules/

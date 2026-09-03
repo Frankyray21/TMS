@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cotation ergonomique vidéo — REBA</title>
+<meta name="description" content="Cotation REBA automatique à partir d'une vidéo de poste de travail. Tout le traitement reste dans le navigateur.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header class="tete">
+  <div class="tete-titre">
+    <h1>Cotation ergonomique vidéo</h1>
+    <p>REBA · Hignett &amp; McAtamney (2000)</p>
+  </div>
+  <div class="tete-actions">
+    <span class="puce" id="badgeConfidentialite" title="Aucun fichier n'est téléversé : tout le traitement se fait dans ce navigateur.">
+      Traitement local
+    </span>
+    <span class="puce discret" id="badgeMoteur">Moteur : non chargé</span>
+    <label class="bouton principal">
+      Choisir une vidéo ou une photo
+      <input type="file" id="fichier" accept="video/*,image/*" hidden>
+    </label>
+  </div>
+</header>
+
+<main class="grille">
+
+  <!-- ---------- Visionneuse ---------- -->
+  <section class="visionneuse">
+    <div class="scene" id="scene">
+      <video id="video" playsinline muted hidden></video>
+      <img id="photo" alt="" hidden>
+      <canvas id="calque"></canvas>
+      <div class="vide" id="etatVide">
+        <strong>Démonstration en cours</strong>
+        <span>Les postures ci-dessous sont <em>simulées</em>, pas mesurées : un cycle de
+        levage fabriqué pour montrer ce que produit l'outil. Chargez une vidéo pour
+        analyser un vrai poste.</span>
+      </div>
+      <div class="progres" id="progres" hidden>
+        <div class="progres-barre"><i id="progresJauge"></i></div>
+        <span id="progresTexte">Analyse…</span>
+        <button class="bouton mince" id="annuler">Arrêter</button>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button class="bouton mince" id="lecture" disabled>Lecture</button>
+      <button class="bouton mince" id="allerPire">Aller au pire instant</button>
+      <span class="temps"><span id="tCourant">0,0</span> s</span>
+    </div>
+
+    <div class="chrono-bloc">
+      <div class="chrono-tete">
+        <span class="etiquette">Cote REBA dans le temps</span>
+        <span class="chrono-legende" id="chronoLegende"></span>
+      </div>
+      <canvas id="chrono" class="chrono"></canvas>
+      <p class="note-chrono" id="noteChrono"></p>
+    </div>
+  </section>
+
+  <!-- ---------- Panneau ---------- -->
+  <aside class="panneau">
+
+    <div class="jauge-bloc">
+      <svg class="jauge" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="42" class="jauge-fond"></circle>
+        <circle cx="50" cy="50" r="42" class="jauge-arc"></circle>
+        <text x="50" y="50" class="jauge-valeur" text-anchor="middle" dominant-baseline="central">—</text>
+      </svg>
+      <div class="jauge-texte">
+        <span class="etiquette">Cote à l'instant affiché</span>
+        <strong id="niveauLibelle">—</strong>
+        <span id="niveauAction" class="discret"></span>
+      </div>
+    </div>
+
+    <div class="carte" id="carteSegments">
+      <h2>Décomposition</h2>
+      <table class="segments">
+        <thead><tr><th>Segment</th><th>Angle</th><th>Cote</th><th>État</th></tr></thead>
+        <tbody id="corpsSegments"></tbody>
+      </table>
+      <p class="calcul" id="calcul"></p>
+    </div>
+
+    <div class="carte accent">
+      <h2>Ce que la vidéo ne montre pas</h2>
+      <p class="intro">REBA exige quatre informations qu'aucune image ne contient. Elles
+      sont à vous, et elles pèsent lourd : elles peuvent à elles seules faire passer
+      la cote de faible à très élevée.</p>
+
+      <label class="champ">
+        <span>Charge manipulée</span>
+        <span class="ligne">
+          <input type="range" id="charge" min="0" max="30" step="1" value="0">
+          <output id="chargeVal">0 kg</output>
+        </span>
+      </label>
+
+      <label class="champ">
+        <span>Qualité de la prise</span>
+        <select id="prise">
+          <option value="0">Bonne — poignée adaptée</option>
+          <option value="1">Correcte — prise acceptable</option>
+          <option value="2">Mauvaise — possible mais non adaptée</option>
+          <option value="3">Inacceptable — pas de prise sûre</option>
+        </select>
+      </label>
+
+      <fieldset class="champ">
+        <legend>Nature de l'activité</legend>
+        <label class="case"><input type="checkbox" id="statique"> Posture tenue plus d'une minute</label>
+        <label class="case"><input type="checkbox" id="repete"> Geste répété plus de 4 fois par minute</label>
+        <label class="case"><input type="checkbox" id="instable"> Amplitude brusque ou appui instable</label>
+        <label class="case"><input type="checkbox" id="brusque"> Mise en charge brutale</label>
+      </fieldset>
+
+      <label class="champ">
+        <span>Côté coté</span>
+        <select id="cote">
+          <option value="auto">Automatique — le bras le plus sollicité</option>
+          <option value="D">Droit</option>
+          <option value="G">Gauche</option>
+        </select>
+      </label>
+    </div>
+
+    <details class="carte">
+      <summary><h2>Réglages d'analyse</h2></summary>
+      <label class="champ">
+        <span>Précision du modèle</span>
+        <select id="precision">
+          <option value="full">Standard — plus juste</option>
+          <option value="lite">Rapide — moins juste</option>
+        </select>
+      </label>
+      <label class="champ">
+        <span>Images analysées par seconde</span>
+        <span class="ligne">
+          <input type="range" id="fps" min="2" max="15" step="1" value="6">
+          <output id="fpsVal">6</output>
+        </span>
+      </label>
+      <label class="champ">
+        <span>Lissage (médiane glissante)</span>
+        <span class="ligne">
+          <input type="range" id="lissage" min="0" max="9" step="1" value="3">
+          <output id="lissageVal">3</output>
+        </span>
+      </label>
+    </details>
+  </aside>
+
+  <!-- ---------- Synthèse ---------- -->
+  <section class="synthese" id="synthese">
+    <h2>Synthèse de la séquence</h2>
+    <div class="stats" id="stats"></div>
+    <div class="repartition">
+      <span class="etiquette">Temps passé par niveau de risque</span>
+      <div class="barres" id="barres"></div>
+    </div>
+    <div class="synthese-pied">
+      <p id="conclusion" class="conclusion"></p>
+      <div class="exports">
+        <button class="bouton mince" id="exportJson">Exporter les données (JSON)</button>
+        <button class="bouton mince" id="imprimer">Imprimer le rapport</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="limites">
+    <h2>Ce que cette cote vaut, et ce qu'elle ne vaut pas</h2>
+    <div class="limites-grille">
+      <div>
+        <h3>Mesuré depuis l'image</h3>
+        <ul>
+          <li>Angles du tronc, du cou, des genoux</li>
+          <li>Élévation et abduction du bras, flexion du coude</li>
+          <li>Torsion et inclinaison, par seuil</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Saisi par l'opérateur</h3>
+        <ul>
+          <li>Charge et brutalité de la mise en charge</li>
+          <li>Qualité de la prise</li>
+          <li>Caractère statique, répété ou instable</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Hors de portée de la méthode</h3>
+        <ul>
+          <li>Vibrations, froid, état du sol</li>
+          <li>Fatigue, sommeil, douleur déjà présente</li>
+          <li>Expérience au poste, organisation du travail</li>
+        </ul>
+      </div>
+    </div>
+    <p class="avertissement">
+      La cote du poignet est la moins fiable de toutes : trois repères de main ne
+      suffisent pas à mesurer une flexion au degré près. Traitez-la comme une
+      indication, et corrigez-la à l'œil quand elle compte.
+      Une cotation REBA reste un jugement professionnel : cet outil l'accélère et
+      la rend reproductible, il ne la remplace pas.
+    </p>
+  </section>
+</main>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
