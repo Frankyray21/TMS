@@ -124,6 +124,18 @@
       </fieldset>
 
       <label class="champ">
+        <span>Position des jambes <span id="jambesEtat" class="discret"></span></span>
+        <select id="jambesManuel">
+          <option value="debout">Debout, appui sur les deux pieds</option>
+          <option value="unilateral">Appui sur un pied, ou instable</option>
+          <option value="flechi">Genoux fléchis (30–60°)</option>
+          <option value="accroupi">Accroupi ou à genoux</option>
+          <option value="assis">Assis</option>
+          <option value="mesure">Mesurer depuis l'image malgré tout</option>
+        </select>
+      </label>
+
+      <label class="champ">
         <span>Côté coté</span>
         <select id="cote">
           <option value="auto">Automatique — le bras le plus sollicité</option>

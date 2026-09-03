@@ -97,14 +97,58 @@ elles peuvent à elles seules faire passer une cote de 7 à 13.
 sommeil, douleur déjà présente, expérience au poste, organisation du travail.
 Une cotation posturale ne remplace pas une analyse de poste.
 
+### Mesuré sur cinq photos réelles
+
+Le raccordement à MediaPipe a été exercé sur cinq images de postes réels
+(cadrages serrés, issus d'une vidéo publicitaire). Résultats, à paramètres
+neutres — sans charge, bonne prise, activité non majorée :
+
+| Scène | REBA | Ce que ça apprend |
+|---|---|---|
+| Traction d'un transpalette | **aucune détection** | Sujet coupé au bord du cadre : rien n'est détecté du tout |
+| Saisie d'une caisse sur palette | 7 | Le cas le plus contraignant des quatre détectés |
+| Port de la caisse contre le corps | 3 | Correctement identifié comme le plus faible |
+| Vissage à l'établi | 5 | |
+| Chargement d'un coffre à bagages | 5 | Surcoté : le tronc est lu en extension 30°, le poignet à −50° |
+
+Le classement se tient — le port contre le corps ressort le plus bas, la saisie
+le plus haut — mais deux choses ont dû être corrigées pour y arriver, et une
+troisième reste ouverte (voir ci-dessous).
+
+**Le cadrage décide de tout.** Sur quatre des cinq images, la visibilité des
+jambes tombait sous 0,3 : le détecteur extrapolait des genoux fléchis à 74–87°
+pour des gens debout, ce qui gonflait chaque cote d'un ou deux points sans que
+rien ne le signale. C'est corrigé — les jambes hors cadre ne sont plus cotées
+mais laissées à l'opérateur — et ça reste la première cause d'erreur.
+
 ### Limites connues
 
 - **Le poignet est la cote la moins fiable.** Trois repères de main ne suffisent
-  pas à mesurer une flexion au degré près. À corriger à l'œil quand elle compte.
+  pas à mesurer une flexion au degré près : sur les images d'essai il a produit
+  −50° et −30° là où la main était à peu près droite, et coté 3 dans trois cas
+  sur quatre. À corriger à l'œil quand elle compte.
+- **Le tronc peut être lu en extension à tort** quand le visage est de trois
+  quarts ou partiellement masqué : le sens « avant » est déduit du nez et des
+  oreilles, et devient fragile si la tête est tournée.
+- **Jambes hors cadre.** Elles ne sont plus cotées depuis des repères
+  extrapolés : l'interface bascule sur la position déclarée par l'opérateur et
+  l'indique. Filmer le corps entier reste préférable de loin.
 - **Un seul sujet à la fois.** S'il y a deux personnes dans le cadre, seule la
   plus proéminente est suivie.
 - **Une seule caméra.** Les angles hors du plan de la caméra sont les moins
   précis. Filmer de trois quarts plutôt que de face ou de dos.
+
+### Protocole de tournage
+
+C'est la variable qui pèse le plus sur la justesse, avant tout réglage :
+
+1. **Le corps entier dans le cadre**, pieds compris, pendant tout le geste.
+2. **De trois quarts**, ni de face ni de profil strict : une flexion du tronc
+   est invisible de face, une abduction l'est de profil.
+3. **Une seule personne** dans le champ, ou la plus proche nettement détachée.
+4. **Caméra fixe**, à hauteur de hanche, à 3–5 m.
+5. **Le cycle complet**, du départ au retour : c'est le pic qui compte, et il
+   dure souvent moins d'une seconde.
 - **L'épaule haussée et le bras soutenu** ne sont pas détectés : ce sont des
   majorations REBA laissées au jugement de l'opérateur.
 - Les images où les repères sont masqués sont **écartées et comptées**, jamais

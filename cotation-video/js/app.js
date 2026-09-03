@@ -46,6 +46,7 @@ function lireParams() {
     instable: $("#instable").checked,
     effortBrusque: $("#brusque").checked,
     cote: $("#cote").value,
+    jambesManuel: $("#jambesManuel").value,
     precision: $("#precision").value,
     echantillonnage: +$("#fps").value,
     lissage: +$("#lissage").value
@@ -133,6 +134,17 @@ function majPanneau(image) {
     `Table B ${r.tableB} + prise ${a.prise.cote} = <b>B ${r.scoreB}</b> · ` +
     `Table C <b>${r.scoreC}</b> + activité ${r.activite.cote} = <b>REBA ${r.reba}</b>` +
     (image.fiable ? "" : ` · <span style="color:${COULEURS[2]}">repères peu visibles</span>`);
+
+  const jambesSupposees = image.avertissements?.includes("jambes");
+  $("#jambesEtat").textContent = jambesSupposees ? "— hors cadre, supposée" : "— mesurée";
+  $("#jambesEtat").style.color = jambesSupposees ? COULEURS[1] : "";
+  /* Quand les jambes sont dans le cadre, la mesure prime : le champ n'a plus
+     d'effet, autant qu'il le montre au lieu de laisser croire à un réglage. */
+  $("#jambesManuel").disabled = !jambesSupposees;
+  if (jambesSupposees) {
+    el.calcul.innerHTML += `<br><span style="color:${COULEURS[1]}">Jambes hors du cadre :`
+      + ` cotées d'après la position choisie, pas mesurées.</span>`;
+  }
 }
 
 function majSynthese() {
@@ -207,8 +219,16 @@ async function chargerFichier(f) {
     }
     el.badgeMoteur.textContent = `Moteur : ${sourceActive() || "chargé"}`;
     if (!etat.analyse?.images.length) {
-      el.progresTexte.textContent = "Aucune personne détectée dans ce fichier.";
-      setTimeout(() => el.progres.hidden = true, 3200);
+      /* Sans cette remise à zéro, la cote de la démonstration resterait
+         affichée par-dessus le fichier de l'utilisateur : un résultat simulé
+         passerait pour une mesure. */
+      etat.analyse = null;
+      const c = dimensionnerCalque();
+      c.ctx.clearRect(0, 0, c.largeur, c.hauteur);
+      viderPanneau();
+      el.progresTexte.textContent =
+        "Aucune personne détectée. Cadrage trop serré, sujet coupé ou trop petit dans l'image ?";
+      el.annuler.textContent = "Fermer";
       return;
     }
     el.progres.hidden = true;
@@ -217,9 +237,30 @@ async function chargerFichier(f) {
     dessinerInstant(0);
   } catch (e) {
     console.error(e);
+    /* On efface tout : laisser le squelette et la cote de la démonstration
+       par-dessus la photo de l'utilisateur ferait passer un résultat simulé
+       pour une mesure. */
+    etat.analyse = null;
+    const { ctx, largeur, hauteur } = dimensionnerCalque();
+    ctx.clearRect(0, 0, largeur, hauteur);
+    viderPanneau();
     el.progresTexte.textContent = `Échec : ${e.message}`;
     el.annuler.textContent = "Fermer";
   }
+}
+
+/** Remet le panneau à zéro : aucune valeur affichée ne doit survivre à un échec. */
+function viderPanneau() {
+  el.jauge.querySelector(".jauge-valeur").textContent = "—";
+  el.jauge.querySelector(".jauge-valeur").style.fill = "";
+  el.jauge.querySelector(".jauge-arc").style.strokeDasharray = "0 999";
+  el.niveauLibelle.textContent = "—";
+  el.niveauLibelle.style.color = "";
+  el.niveauAction.textContent = "";
+  el.corpsSegments.innerHTML = "";
+  el.calcul.textContent = "";
+  el.lecture.disabled = true;
+  majSynthese();
 }
 
 /* ---------- Démonstration ---------- */
@@ -289,7 +330,7 @@ el.video.addEventListener("loadedmetadata", () => dimensionnerCalque());
 
 /* Recotation immédiate quand un paramètre non observable change : c'est la
    réponse à « et si la caisse pesait 15 kg ? », sans relancer la détection. */
-for (const id of ["charge", "prise", "statique", "repete", "instable", "brusque", "cote", "lissage"]) {
+for (const id of ["charge", "prise", "statique", "repete", "instable", "brusque", "cote", "jambesManuel", "lissage"]) {
   $("#" + id).addEventListener("input", () => {
     majSorties();
     if (!etat.analyse) return;

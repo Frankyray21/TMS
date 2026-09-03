@@ -17,6 +17,15 @@ import { extraireAngles } from "./angles.js";
 import { calculerREBA, synthetiser } from "./reba.js";
 import { DEFAUTS } from "./config.js";
 
+/* Hypothèses de repli quand les jambes ne sont pas dans le cadre. */
+const POSTURES_JAMBES = {
+  debout:     { appuiBilateral: true,  flexionGenou: 0,  assis: false },
+  unilateral: { appuiBilateral: false, flexionGenou: 0,  assis: false },
+  flechi:     { appuiBilateral: true,  flexionGenou: 45, assis: false },
+  accroupi:   { appuiBilateral: true,  flexionGenou: 75, assis: false },
+  assis:      { appuiBilateral: true,  flexionGenou: 90, assis: true  }
+};
+
 /* Les angles soumis au lissage. */
 const CANAUX = [
   ["tronc", "flexion"], ["tronc", "inclinaisonDeg"], ["tronc", "torsionDeg"],
@@ -156,9 +165,14 @@ export function coter(releves, params = {}) {
       cou:   { flexion: a.cou.flexion,
                torsion: a.cou.torsionDeg > opts.seuilTorsion,
                inclinaison: a.cou.inclinaisonDeg > opts.seuilInclinaison },
-      jambes:{ appuiBilateral: a.jambes.appuiBilateral,
-               flexionGenou: a.jambes.flexionGenou,
-               assis: a.jambes.assis },
+      /* Jambes hors cadre : on ne cote pas sur des repères extrapolés. On
+         retient l'hypothèse de l'opérateur (debout, appui bilatéral par
+         défaut) et l'interface signale que ce segment n'est pas mesuré. */
+      jambes: (a.jambesObservables || params.jambesManuel === "mesure")
+        ? { appuiBilateral: a.jambes.appuiBilateral,
+            flexionGenou: a.jambes.flexionGenou,
+            assis: a.jambes.assis }
+        : POSTURES_JAMBES[params.jambesManuel] || POSTURES_JAMBES.debout,
       bras:  { flexion: a.bras.flexionBras,
                abduction: a.bras.abductionDeg > 45,
                epauleHaussee: !!params.epauleHaussee,
@@ -171,9 +185,12 @@ export function coter(releves, params = {}) {
       prise:    { prise: params.prise || 0 },
       activite: { statique: !!params.statique, repete: !!params.repete, instable: !!params.instable }
     };
+    const jambesEstimees = !a.jambesObservables && params.jambesManuel !== "mesure";
     return {
       t: b.releve.t,
       ecran: b.releve.ecran,
+      /* Ce qui a été supposé plutôt que mesuré, pour l'afficher. */
+      avertissements: jambesEstimees ? ["jambes"] : [],
       /* Conservés pour pouvoir recoter (charge, prise, activité) sans
          repasser par la détection, qui est la partie coûteuse. */
       monde: b.releve.monde,

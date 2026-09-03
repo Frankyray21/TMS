@@ -12,13 +12,20 @@
 const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1";
 const MODELES_GOOGLE = "https://storage.googleapis.com/mediapipe-models/pose_landmarker";
 
+/* Les chemins locaux sont résolus en URL absolues depuis l'emplacement de ce
+   module. C'est indispensable : un chemin « ./vendor/… » serait résolu
+   relativement au module pour un import dynamique, mais relativement au
+   document pour un fetch — deux cibles différentes, dont une fausse. */
+const RACINE = new URL("../", import.meta.url);
+const local = chemin => new URL(chemin, RACINE).href;
+
 export const SOURCES = {
   local: {
     nom: "local (hors ligne)",
-    bundle: "./vendor/vision_bundle.mjs",
-    wasm:   "./vendor/wasm",
-    modele: { lite: "./vendor/pose_landmarker_lite.task",
-              full: "./vendor/pose_landmarker_full.task" }
+    bundle: local("vendor/vision_bundle.mjs"),
+    wasm:   local("vendor/wasm"),
+    modele: { lite: local("vendor/pose_landmarker_lite.task"),
+              full: local("vendor/pose_landmarker_full.task") }
   },
   distant: {
     nom: "CDN public",

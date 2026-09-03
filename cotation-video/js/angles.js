@@ -234,15 +234,25 @@ export function extraireAngles(pts, opts = {}) {
   const brasG = anglesBras(pts, R, "G");
   const brasD = anglesBras(pts, R, "D");
 
-  /* Côté retenu : celui demandé, ou le plus sollicité (bras le plus élevé). */
+  /* Côté retenu. En automatique, la visibilité prime sur l'amplitude : coter le
+     bras le plus levé n'a aucun sens s'il est hors champ, ses angles ne sont
+     alors que du bruit d'extrapolation. */
   let choisi = opts.cote;
   if (!choisi || choisi === "auto") {
-    choisi = Math.abs(brasD.flexionBras) >= Math.abs(brasG.flexionBras) ? "D" : "G";
+    const vG = fiabilite.visibilite.brasG, vD = fiabilite.visibilite.brasD;
+    if (Math.abs(vG - vD) > 0.25) choisi = vD > vG ? "D" : "G";
+    else choisi = Math.abs(brasD.flexionBras) >= Math.abs(brasG.flexionBras) ? "D" : "G";
   }
   const bras = choisi === "G" ? brasG : brasD;
 
+  /* Les jambes sont le segment le plus souvent hors cadre : un plan taille
+     coupe genoux et chevilles, et le détecteur les extrapole quand même. Un
+     angle de genou inventé fait monter la cote REBA sans que rien ne l'indique,
+     donc on marque le cas plutôt que de le laisser passer. */
+  const jambesObservables = fiabilite.jambesFiables;
+
   return {
-    repere: R, fiabilite, cote: choisi,
+    repere: R, fiabilite, cote: choisi, jambesObservables,
     tronc, cou, jambes, bras, brasG, brasD,
     /* Traduit en entrées REBA. Les paramètres non observables (charge, prise,
        activité) sont laissés à l'appelant : ils viennent de l'opérateur. */
