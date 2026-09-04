@@ -30,7 +30,8 @@ const el = {
   corpsSegments: $("#corpsSegments"), calcul: $("#calcul"),
   stats: $("#stats"), barres: $("#barres"), conclusion: $("#conclusion"),
   badgeMoteur: $("#badgeMoteur"),
-  exportJson: $("#exportJson"), imprimer: $("#imprimer"), synthese: $("#synthese")
+  exportJson: $("#exportJson"), imprimer: $("#imprimer"), synthese: $("#synthese"),
+  pleinEcran: $("#pleinEcran")
 };
 
 /* Les deux méthodes, et ce qui change de l'une à l'autre. */
@@ -390,6 +391,15 @@ function majSorties() {
 
 /* ---------- Rendu ---------- */
 
+/** La scène prend le format du média : une vidéo en portrait dans un cadre
+    16/9 n'était plus qu'une bande au milieu de l'écran d'un téléphone. Sans
+    média — la démonstration — on revient au 16/9 de la feuille de style. */
+function ajusterScene(src) {
+  const l = src?.videoWidth || src?.naturalWidth, h = src?.videoHeight || src?.naturalHeight;
+  if (l > 0 && h > 0) el.scene.style.setProperty("--ratio", (l / h).toFixed(4));
+  else el.scene.style.removeProperty("--ratio");
+}
+
 function dimensionnerCalque() {
   const src = etat.mode === "image" ? el.photo : el.video;
   /* clientWidth/Height, pas getBoundingClientRect : le calque est positionné
@@ -399,7 +409,15 @@ function dimensionnerCalque() {
   let l = boite.width, h = boite.height;
   if (etat.mode !== "demo" && src) {
     const r = src.getBoundingClientRect();
-    if (r.width > 2 && r.height > 2) { l = r.width; h = r.height; }
+    const nl = src.videoWidth || src.naturalWidth, nh = src.videoHeight || src.naturalHeight;
+    if (r.width > 2 && r.height > 2 && nl > 0 && nh > 0) {
+      /* object-fit: contain — le contenu est la plus grande boîte au format du
+         média qui tient dans l'élément. Hors plein écran, c'est l'élément
+         entier ; en plein écran, il reste des marges, et c'est ici qu'on les
+         retranche, sinon le squelette glisse à côté du corps. */
+      const k = Math.min(r.width / nl, r.height / nh);
+      l = nl * k; h = nh * k;
+    } else if (r.width > 2 && r.height > 2) { l = r.width; h = r.height; }
   }
   const dpr = window.devicePixelRatio || 1;
   el.calque.width = l * dpr; el.calque.height = h * dpr;
@@ -617,6 +635,7 @@ function viderPanneau() {
 
 function chargerDemo() {
   etat.mode = "demo";
+  ajusterScene(null);
   etat.analyse = coter(sequenceDemo(), PARAMS_DEMO);
   appliquerParamsAuFormulaire(PARAMS_DEMO);
   synchroniserPoids("postural");
@@ -930,7 +949,23 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") fermerDetail
 el.video.addEventListener("timeupdate", () => {
   if (etat.mode === "video" && etat.analyse) { etat.t = el.video.currentTime; dessinerInstant(etat.t); }
 });
-el.video.addEventListener("loadedmetadata", () => dimensionnerCalque());
+el.video.addEventListener("loadedmetadata", () => { ajusterScene(el.video); dimensionnerCalque(); });
+el.photo.addEventListener("load", () => { ajusterScene(el.photo); dimensionnerCalque(); });
+
+/* Plein écran sur la scène — vidéo et calque ensemble, le squelette reste
+   cliquable. Pas de bouton là où l'API manque (Safari iOS). */
+if (document.fullscreenEnabled && el.scene.requestFullscreen) {
+  el.pleinEcran.hidden = false;
+  el.pleinEcran.addEventListener("click", () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else el.scene.requestFullscreen().catch(() => {});
+  });
+  document.addEventListener("fullscreenchange", () => {
+    el.pleinEcran.textContent = document.fullscreenElement ? "Quitter le plein écran" : "Plein écran";
+    /* La scène vient de changer de taille : le calque doit suivre. */
+    if (etat.analyse) dessinerInstant(etat.t); else effacerCalque();
+  });
+}
 
 /* Recotation immédiate quand un paramètre non observable change : c'est la
    réponse à « et si la caisse pesait 15 kg ? », sans relancer la détection. */
