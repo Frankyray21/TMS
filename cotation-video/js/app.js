@@ -200,31 +200,65 @@ const BANDES = {
    base    : direction du 0°, en degrés SVG (0 = vers la droite, −90 = vers le haut)
    signe   : sens des angles positifs
    corps   : la silhouette, dessinée au repos */
+/* ---- Silhouettes ----
+   Des bâtons ne se lisent pas comme un corps : on ne sait pas d'où part
+   l'angle. Ces tracés sont des profils humains simplifiés — tête avec nez et
+   menton, torse galbé, membres fuselés — orientés vers la droite, comme les
+   planches d'ergonomie. */
+
+const PEAU = 'fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.6" stroke-linejoin="round"';
+
+/** Tête de profil tournée vers la droite, centrée sur (x,y). */
+const tete = (x, y, t = 1) => `<g transform="translate(${x},${y}) scale(${t})">
+  <path d="M0,-21 C12,-21 19,-13 19,-3 C19,1 18,3 20.5,5.5 C22.5,7.5 22,10 18.5,10.5
+           C17,14 15.5,16.5 12.5,18.5 C9.5,20.5 5,21.5 0,21.5
+           C-11.5,21.5 -19,13 -19,0 C-19,-13 -11.5,-21 0,-21 Z" ${PEAU}/>
+  <path d="M-4,-11 a10,10 0 0 1 15,3" fill="none" stroke="var(--sourd)" stroke-width="1.1" opacity=".55"/>
+</g>`;
+
+/** Cou reliant deux hauteurs. */
+const cou = (x, y1, y2) => `<path d="M${x - 8},${y1} L${x - 9},${y2} L${x + 9},${y2} L${x + 8},${y1} Z" ${PEAU}/>`;
+
+/** Torse de profil, épaules en (x,y), hauteur h. */
+const torse = (x, y, h, t = 1) => `<path transform="translate(${x},${y}) scale(${t})"
+  d="M-14,0 C-21,7 -24,22 -23,38 C-22,54 -20,${h - 8} -18,${h}
+     L18,${h} C20,${h - 12} 22,50 22,34 C22,19 18,7 13,0 Z" ${PEAU}/>`;
+
+/** Membre fuselé de (x1,y1) à (x2,y2), d'épaisseur w1 à w2. */
+function membre(x1, y1, x2, y2, w1, w2) {
+  const dx = x2 - x1, dy = y2 - y1, l = Math.hypot(dx, dy) || 1;
+  const nx = -dy / l, ny = dx / l;
+  const f = n => n.toFixed(1);
+  return `<path d="M${f(x1 + nx * w1)},${f(y1 + ny * w1)} L${f(x2 + nx * w2)},${f(y2 + ny * w2)}
+    L${f(x2 - nx * w2)},${f(y2 - ny * w2)} L${f(x1 - nx * w1)},${f(y1 - ny * w1)} Z" ${PEAU}/>`;
+}
+
+/** Articulation : le point d'où part l'angle, il doit se voir. */
+const pivotVu = (x, y) => `<circle cx="${x}" cy="${y}" r="4.5" fill="var(--texte)" opacity=".85"/>`;
+
 const PICTO = {
-  cou: { pivot: [112, 142], r1: 78, r2: 100, base: -90, signe: 1, vue: "de profil, tourné vers la droite",
-    corps: `<path d="M74 142 q38 -16 76 0 v22 h-76 z" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
-            <line x1="112" y1="142" x2="112" y2="106" stroke="var(--sourd)" stroke-width="7" stroke-linecap="round"/>
-            <circle cx="112" cy="88" r="18" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
-            <path d="M130 88 l10 5 -10 6" fill="none" stroke="var(--sourd)" stroke-width="1.5" stroke-linecap="round"/>` },
-  tronc: { pivot: [112, 158], r1: 74, r2: 96, base: -90, signe: 1, vue: "de profil, tourné vers la droite",
-    corps: `<ellipse cx="112" cy="158" rx="18" ry="11" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
-            <line x1="112" y1="158" x2="112" y2="96" stroke="var(--sourd)" stroke-width="10" stroke-linecap="round"/>
-            <circle cx="112" cy="80" r="14" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
-            <path d="M126 80 l9 4 -9 5" fill="none" stroke="var(--sourd)" stroke-width="1.4" stroke-linecap="round"/>` },
-  bras: { pivot: [112, 66], r1: 62, r2: 84, base: 90, signe: -1, vue: "de profil, tourné vers la droite",
-    corps: `<path d="M92 64 q20 -11 40 0 v60 q-20 9 -40 0 z" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
-            <circle cx="112" cy="46" r="13" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
-            <path d="M125 46 l9 4 -9 5" fill="none" stroke="var(--sourd)" stroke-width="1.4" stroke-linecap="round"/>
-            <circle cx="112" cy="66" r="4.5" fill="var(--sourd)"/>` },
-  avantBras: { pivot: [112, 116], r1: 58, r2: 80, base: 90, signe: -1, vue: "angle du coude",
-    corps: `<line x1="112" y1="44" x2="112" y2="116" stroke="var(--sourd)" stroke-width="8" stroke-linecap="round"/>
-            <circle cx="112" cy="116" r="5" fill="var(--sourd)"/>` },
-  poignet: { pivot: [130, 104], r1: 48, r2: 70, base: 0, signe: 1, vue: "main par rapport à l'avant-bras",
-    corps: `<line x1="46" y1="104" x2="130" y2="104" stroke="var(--sourd)" stroke-width="8" stroke-linecap="round"/>
-            <circle cx="130" cy="104" r="5" fill="var(--sourd)"/>` },
-  jambes: { pivot: [112, 82], r1: 58, r2: 80, base: 90, signe: 1, vue: "flexion du genou",
-    corps: `<line x1="112" y1="20" x2="112" y2="82" stroke="var(--sourd)" stroke-width="8" stroke-linecap="round"/>
-            <circle cx="112" cy="82" r="5" fill="var(--sourd)"/>` }
+  cou: { pivot: [112, 148], r1: 76, r2: 98, base: -90, signe: 1, vue: "de profil, tourné vers la droite",
+    corps: torse(112, 148, 40, .95) + cou(112, 148, 124) + tete(112, 104, .92) + pivotVu(112, 148) },
+
+  tronc: { pivot: [112, 168], r1: 92, r2: 114, base: -90, signe: 1, vue: "de profil, tourné vers la droite",
+    /* De profil, une seule jambe est visible : deux donnent une jupe. */
+    corps: membre(112, 168, 108, 204, 11, 8)
+         + torse(112, 112, 56, .74) + cou(112, 112, 102) + tete(112, 88, .6) + pivotVu(112, 168) },
+
+  bras: { pivot: [112, 78], r1: 64, r2: 86, base: 90, signe: -1, vue: "de profil, tourné vers la droite",
+    corps: torse(112, 78, 62, .8) + cou(112, 78, 62) + tete(112, 44, .62)
+         + membre(112, 78, 108, 134, 9, 7) + pivotVu(112, 78) },
+
+  avantBras: { pivot: [112, 122], r1: 58, r2: 80, base: 90, signe: -1, vue: "angle du coude",
+    corps: membre(112, 48, 112, 122, 11, 9) + membre(112, 122, 112, 176, 9, 7) + pivotVu(112, 122) },
+
+  poignet: { pivot: [136, 106], r1: 50, r2: 72, base: 0, signe: 1, vue: "main par rapport à l'avant-bras",
+    corps: membre(52, 106, 136, 106, 11, 8)
+         + `<path d="M136,98 l26,-2 q7,0 7,8 q0,8 -7,8 l-26,-2 z" ${PEAU}/>`
+         + pivotVu(136, 106) },
+
+  jambes: { pivot: [112, 96], r1: 58, r2: 80, base: 90, signe: 1, vue: "flexion du genou",
+    corps: membre(112, 24, 112, 96, 14, 10) + membre(112, 96, 112, 160, 10, 7) + pivotVu(112, 96) }
 };
 
 const pointSur = (cx, cy, r, a) =>
@@ -286,9 +320,9 @@ function pictogramme(cle, methode, valeur, maxCote) {
   const [z1, z2] = pointSur(cx, cy, g.r2 + 6, g.base);
   const aM = svgA(valeur);
   const [mx, my] = pointSur(cx, cy, g.r2 + 2, aM);
-  const [ex, ey] = pointSur(cx, cy, g.r2 + 30, aM);
+  const [ex, ey] = pointSur(cx, cy, g.r2 + 32, aM);
 
-  return `<svg class="picto" viewBox="0 0 264 210" role="img"
+  return `<svg class="picto" viewBox="0 0 280 224" role="img"
             aria-label="Zones d'angle du segment ; mesure : ${Math.round(valeur)} degrés">
     ${zones}${cotes}
     <line x1="${cx}" y1="${cy}" x2="${z1.toFixed(1)}" y2="${z2.toFixed(1)}"
@@ -299,6 +333,8 @@ function pictogramme(cle, methode, valeur, maxCote) {
     <line x1="${cx}" y1="${cy}" x2="${mx.toFixed(1)}" y2="${my.toFixed(1)}"
           stroke="var(--texte)" stroke-width="3.2" stroke-linecap="round"/>
     <circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="4" fill="var(--texte)"/>
+    <rect x="${(ex - 20).toFixed(1)}" y="${(ey - 11).toFixed(1)}" width="40" height="22" rx="4"
+          fill="var(--carte)" stroke="var(--texte)" stroke-width="1.4"/>
     <text x="${ex.toFixed(1)}" y="${ey.toFixed(1)}" text-anchor="middle" dominant-baseline="central"
           font-size="14" font-weight="700" fill="var(--texte)">${Math.round(valeur)}°</text>
   </svg>
