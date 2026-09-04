@@ -53,6 +53,26 @@ p{margin:0}
 .tete-titre p{font-size:.82rem;color:var(--sourd)}
 .tete-actions{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap}
 
+/* Sélecteur de méthode : un choix de premier plan, pas un réglage enfoui. */
+.methodes{display:flex;border:1px solid var(--bord-fort);border-radius:3px;overflow:hidden}
+.methode{
+  font-family:var(--disp);font-weight:700;font-size:.95rem;letter-spacing:.05em;
+  padding:.36rem .8rem;background:var(--carte);color:var(--sourd);
+  border:0;border-right:1px solid var(--bord-fort);cursor:pointer;
+  display:flex;flex-direction:column;line-height:1.15;text-align:left;
+}
+.methode:last-child{border-right:0}
+.methode span{font-family:var(--corps);font-weight:400;font-size:.7rem;letter-spacing:0}
+.methode:hover{background:var(--carte-2);color:var(--texte-2)}
+.methode.actif{background:var(--accent);color:#180708}
+.methode.actif span{color:rgba(24,7,8,.75)}
+
+.avis{
+  margin-top:.7rem;padding:.55rem .7rem;border-radius:3px;
+  background:rgba(234,179,8,.12);border-left:3px solid var(--n-jaune);
+  font-size:.85rem;color:var(--texte-2);
+}
+
 .puce{
   font-family:var(--disp);font-weight:600;font-size:.73rem;letter-spacing:.1em;
   text-transform:uppercase;padding:.3rem .6rem;border-radius:3px;

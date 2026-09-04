@@ -7,7 +7,7 @@
    chaque élément coloré porte aussi son chiffre ou son nom.
    ============================================================================ */
 
-import { severiteSegment, ETIQUETTES_SEVERITE, NIVEAUX } from "./reba.js";
+import { severite, ETIQUETTES_SEVERITE, NIVEAUX } from "./reba.js";
 import { P } from "./angles.js";
 
 /* Les quatre teintes de sévérité, et les cinq du niveau REBA. */
@@ -30,17 +30,19 @@ const OS = [
 function severiteDesOs(image) {
   const s = image.resultat.segments;
   const cote = image.angles.cote;                 // côté effectivement coté
-  const sev = (nom, c) => severiteSegment(nom, c);
-  const brasSev = sev("bras", s.bras.cote);
-  const avantSev = sev("avantBras", s.avantBras.cote);
-  const poignetSev = sev("poignet", s.poignet.cote);
+  /* Chaque segment porte son propre maximum : les échelles diffèrent d'un
+     segment à l'autre, et d'une méthode à l'autre. */
+  const sev = nom => s[nom] ? severite(s[nom].cote, s[nom].max) : null;
+  const brasSev = sev("bras");
+  const avantSev = sev("avantBras");
+  const poignetSev = sev("poignet");
   /* Le côté non coté est dessiné en gris : REBA ne le note pas, l'afficher
      coloré laisserait croire à une mesure qui n'a pas été faite. */
   const autre = null;
   return {
-    tronc: sev("tronc", s.tronc.cote),
-    jambes: sev("jambes", s.jambes.cote),
-    cou: sev("cou", s.cou.cote),
+    tronc: sev("tronc"),
+    jambes: sev("jambes"),
+    cou: sev("cou"),
     brasG: cote === "G" ? brasSev : autre, brasD: cote === "D" ? brasSev : autre,
     avantBrasG: cote === "G" ? avantSev : autre, avantBrasD: cote === "D" ? avantSev : autre,
     poignetG: cote === "G" ? poignetSev : autre, poignetD: cote === "D" ? poignetSev : autre
@@ -101,14 +103,15 @@ function trait(ctx, x1, y1, x2, y2, severite, ep) {
 /* ---------- Jauge ---------- */
 
 /** Arc de progression + chiffre. Le chiffre est l'information ; l'arc l'illustre. */
-export function dessinerJauge(svg, reba, risque) {
-  const pct = Math.max(0, Math.min(1, (reba - 1) / 14));
+export function dessinerJauge(svg, valeur, risque, echelle = { min: 1, max: 15 }) {
+  const etendue = Math.max(1, echelle.max - echelle.min);
+  const pct = Math.max(0, Math.min(1, (valeur - echelle.min) / etendue));
   const arc = svg.querySelector(".jauge-arc");
   const val = svg.querySelector(".jauge-valeur");
   const circonference = 2 * Math.PI * 42;
   arc.style.strokeDasharray = `${pct * circonference} ${circonference}`;
   arc.style.stroke = COULEURS_NIVEAU[risque.couleur];
-  val.textContent = reba;
+  val.textContent = valeur;
   val.style.fill = COULEURS_NIVEAU[risque.couleur];
 }
 
@@ -118,7 +121,7 @@ export function dessinerJauge(svg, reba, risque) {
    posture reste en zone rouge, et où se situe le pire instant du cycle.
 ---------------------------------------------------------------------------- */
 
-export function dessinerChronologie(canvas, analyse, { curseur = null } = {}) {
+export function dessinerChronologie(canvas, analyse, { curseur = null, niveaux = NIVEAUX } = {}) {
   const ctx = canvas.getContext("2d");
   const r = window.devicePixelRatio || 1;
   const L = canvas.clientWidth, H = canvas.clientHeight;
@@ -129,27 +132,29 @@ export function dessinerChronologie(canvas, analyse, { curseur = null } = {}) {
   const images = analyse.images;
   if (!images.length) return;
   const tMax = Math.max(...images.map(i => i.t)) || 1;
+  const ech = images[0].resultat.echelle || { min: 1, max: 15 };
+  const etendue = Math.max(1, ech.max - ech.min);
   const x = t => (t / tMax) * (L - 2) + 1;
-  const y = v => H - ((v - 1) / 14) * (H - 10) - 5;
+  const y = v => H - ((v - ech.min) / etendue) * (H - 10) - 5;
 
   /* Bandes de niveau en fond, très discrètes. */
-  for (const n of NIVEAUX) {
+  for (const n of niveaux) {
     ctx.fillStyle = COULEURS_NIVEAU[n.couleur] + "1f";
-    const y1 = y(n.max + (n.max === 15 ? 0 : 0.5)), y2 = y(n.min - 0.5);
+    const y1 = y(Math.min(ech.max, n.max + 0.5)), y2 = y(Math.max(ech.min, n.min - 0.5));
     ctx.fillRect(0, y1, L, Math.max(1, y2 - y1));
   }
 
   /* Aire sous la courbe, puis la courbe. */
   ctx.beginPath();
   ctx.moveTo(x(images[0].t), H);
-  images.forEach(i => ctx.lineTo(x(i.t), y(i.resultat.reba)));
+  images.forEach(i => ctx.lineTo(x(i.t), y(i.resultat.score)));
   ctx.lineTo(x(images[images.length - 1].t), H);
   ctx.closePath();
   ctx.fillStyle = "rgba(148,163,184,.18)";
   ctx.fill();
 
   ctx.beginPath();
-  images.forEach((i, k) => k ? ctx.lineTo(x(i.t), y(i.resultat.reba)) : ctx.moveTo(x(i.t), y(i.resultat.reba)));
+  images.forEach((i, k) => k ? ctx.lineTo(x(i.t), y(i.resultat.score)) : ctx.moveTo(x(i.t), y(i.resultat.score)));
   ctx.strokeStyle = "#64748b";
   ctx.lineWidth = 2;
   ctx.stroke();
@@ -161,8 +166,9 @@ export function dessinerChronologie(canvas, analyse, { curseur = null } = {}) {
   /* Le pire instant. */
   const pire = analyse.synthese?.pire;
   if (pire) {
-    const px = x(pire.t), py = y(pire.reba);
-    ctx.strokeStyle = COULEURS_NIVEAU[NIVEAUX.find(n => pire.reba >= n.min && pire.reba <= n.max).couleur];
+    const px = x(pire.t), py = y(pire.score);
+    const n = niveaux.find(n => pire.score >= n.min && pire.score <= n.max) || niveaux[niveaux.length - 1];
+    ctx.strokeStyle = COULEURS_NIVEAU[n.couleur];
     ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, H); ctx.stroke();
     ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2);

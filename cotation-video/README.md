@@ -1,11 +1,20 @@
 # Cotation ergonomique vidéo
 
-Coter une posture de travail en REBA à partir d'une vidéo, automatiquement,
-sans que la vidéo quitte le poste.
+Coter une posture de travail en **REBA** ou en **RULA** à partir d'une vidéo,
+automatiquement, sans que la vidéo quitte le poste.
 
-Une vidéo entre, une cote REBA par image en sort, plus la synthèse de la
-séquence : posture habituelle, pire instant, temps passé dans chaque niveau de
-risque, segment qui pèse le plus lourd.
+Une vidéo entre, une cote par image en sort, plus la synthèse de la séquence :
+posture habituelle, pire instant, temps passé dans chaque niveau de risque,
+segment qui pèse le plus lourd.
+
+| Méthode | Portée | Échelle | Pour quoi |
+|---|---|---|---|
+| **REBA** | corps entier | 1–15, 5 niveaux | Manutention, efforts, postures debout |
+| **RULA** | membre supérieur | 1–7, 4 niveaux | Postes assis, travail de précision, gestes répétés |
+
+Les deux sont calculées à chaque image : basculer de l'une à l'autre ne relance
+rien. RULA plafonne sa cote de force à 10 kg — un avis le signale quand la
+charge déclarée dépasse ce seuil.
 
 **Projet distinct du site de formation TMS.** Il vit dans ce dépôt pour ne pas
 être perdu, mais il est exclu du déploiement (voir `.github/workflows/deploy-pages.yml`)
@@ -49,7 +58,8 @@ vidéo → estimation de pose → angles articulaires → cotation REBA → synt
 
 | Fichier | Rôle |
 |---|---|
-| `js/reba.js` | **Le modèle.** Tables A, B, C de la méthode publiée, cotation par segment, niveaux de risque, synthèse de séquence. Aucune dépendance, aucun DOM. |
+| `js/reba.js` | **Le modèle REBA.** Tables A, B, C de la méthode publiée, cotation par segment, niveaux de risque, synthèse de séquence. Aucune dépendance, aucun DOM. |
+| `js/rula.js` | **Le modèle RULA.** Même contrat, tables et majorations propres à la méthode. |
 | `js/angles.js` | Géométrie : des 33 repères 3D aux angles du tronc, du cou, des genoux, du bras, du coude et du poignet. |
 | `js/pose.js` | La seule dépendance à MediaPipe. Changer de détecteur ne toucherait que ce fichier. |
 | `js/analyse.js` | Parcours de la vidéo, lissage, cotation, recotation. |
@@ -70,12 +80,15 @@ inclinaison) sont réévalués ensuite.
 
 ```bash
 node tests/reba.test.mjs      # 69 vérifications
+node tests/rula.test.mjs      # 68 vérifications
 node tests/angles.test.mjs    # 39 vérifications
 ```
 
-`reba.test.mjs` vérifie chaque cotation élémentaire, deux cas complets cotés à
-la main, et la **monotonie des trois tables** — c'est ce qui attrape une
-coquille de recopie qu'un cas isolé laisserait passer.
+`reba.test.mjs` et `rula.test.mjs` vérifient chaque cotation élémentaire, des cas
+complets cotés à la main (pour RULA : un poste assis prolongé, un travail au-dessus
+de la tête, une manutention), et la **monotonie de toutes les tables** — c'est ce
+dernier contrôle qui attrape une coquille de recopie qu'aucun cas isolé ne
+révélerait.
 
 `angles.test.mjs` fabrique des squelettes dont les angles sont connus d'avance
 et vérifie que le calcul les retrouve, y compris que **tourner le sujet devant
@@ -88,9 +101,10 @@ la caméra ne change pas ses angles**.
 **Mesuré depuis l'image** — angles du tronc, du cou, des genoux ; élévation et
 abduction du bras, flexion du coude ; torsion et inclinaison, par seuil.
 
-**Saisi par l'opérateur** — la charge, la qualité de la prise, le caractère
-statique / répété / instable de l'activité. REBA en a besoin, aucune image ne
-les contient. L'interface les demande explicitement plutôt que de les supposer :
+**Saisi par l'opérateur** — la charge, la qualité de la prise (REBA), la
+pronosupination de l'avant-bras (RULA), le caractère statique / répété /
+instable de l'activité. Les méthodes en ont besoin, aucune image ne les
+contient. L'interface les demande explicitement plutôt que de les supposer :
 elles peuvent à elles seules faire passer une cote de 7 à 13.
 
 **Hors de portée de la méthode** — vibrations, froid, état du sol, fatigue,
@@ -180,5 +194,9 @@ consentement, finalité et durée de conservation se règlent en amont de l'outi
 
 Hignett, S. et McAtamney, L. (2000). *Rapid Entire Body Assessment (REBA)*.
 Applied Ergonomics, 31(2), 201–205.
+
+McAtamney, L. et Corlett, E. N. (1993). *RULA: a survey method for the
+investigation of work-related upper limb disorders*. Applied Ergonomics,
+24(2), 91–99.
 
 Estimation de pose : MediaPipe Pose Landmarker (Google), 33 repères 3D.

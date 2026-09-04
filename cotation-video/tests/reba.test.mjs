@@ -173,7 +173,7 @@ eq("bras 3 → orange",      severiteSegment("bras", 3), 2);
 
 /* ---------- Synthèse de séquence ---------- */
 console.log("Synthèse d'une séquence");
-const faux = reba => ({ reba, risque: { min: 1 }, dominant: { nom: "tronc", ecart: reba } });
+const faux = reba => ({ reba, score: reba, risque: { min: 1 }, dominant: { nom: "tronc", ecart: reba } });
 const seq = [
   { t: 0, fiable: true,  resultat: faux(2) },
   { t: 1, fiable: true,  resultat: faux(9) },

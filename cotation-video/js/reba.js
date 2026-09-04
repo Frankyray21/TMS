@@ -99,14 +99,14 @@ export function coteTronc({ flexion = 0, torsion = false, inclinaison = false } 
   else if (f >= -20) base = 2;   // extension jusqu'à 20°
   else base = 3;                 // extension marquée
   const ajust = (torsion || inclinaison) ? 1 : 0;
-  return { base, ajust, cote: borne(base + ajust, 1, 5) };
+  return { base, ajust, cote: borne(base + ajust, 1, 5), max: 5 };
 }
 
 /** Cou. `flexion` positif = flexion avant, négatif = extension. */
 export function coteCou({ flexion = 0, torsion = false, inclinaison = false } = {}) {
   const base = (flexion > 20 || flexion < 0) ? 2 : 1;
   const ajust = (torsion || inclinaison) ? 1 : 0;
-  return { base, ajust, cote: borne(base + ajust, 1, 3) };
+  return { base, ajust, cote: borne(base + ajust, 1, 3), max: 3 };
 }
 
 /**
@@ -120,7 +120,7 @@ export function coteJambes({ appuiBilateral = true, flexionGenou = 0, assis = fa
     if (flexionGenou > 60) ajust = 2;
     else if (flexionGenou > 30) ajust = 1;
   }
-  return { base, ajust, cote: borne(base + ajust, 1, 4) };
+  return { base, ajust, cote: borne(base + ajust, 1, 4), max: 4 };
 }
 
 /** Charge et force. `chargeKg` en kilogrammes. */
@@ -130,7 +130,7 @@ export function coteCharge({ chargeKg = 0, effortBrusque = false } = {}) {
   else if (chargeKg >= 5) base = 1;
   else base = 0;
   const ajust = effortBrusque ? 1 : 0;
-  return { base, ajust, cote: base + ajust };
+  return { base, ajust, cote: base + ajust, max: 3 };
 }
 
 /* ---------- Groupe B : bras, avant-bras, poignet --------------------------- */
@@ -148,25 +148,25 @@ export function coteBras({ flexion = 0, epauleHaussee = false, abduction = false
   if (epauleHaussee) ajust += 1;
   if (abduction) ajust += 1;
   if (brasSoutenu) ajust -= 1;
-  return { base, ajust, cote: borne(base + ajust, 1, 6) };
+  return { base, ajust, cote: borne(base + ajust, 1, 6), max: 6 };
 }
 
 /** Avant-bras (coude). `flexion` = angle de flexion du coude, 0° = bras tendu. */
 export function coteAvantBras({ flexion = 90 } = {}) {
   const base = (flexion >= 60 && flexion <= 100) ? 1 : 2;
-  return { base, ajust: 0, cote: base };
+  return { base, ajust: 0, cote: base, max: 2 };
 }
 
 /** Poignet. `flexion` positif = flexion, négatif = extension. */
 export function cotePoignet({ flexion = 0, deviation = false, torsion = false } = {}) {
   const base = Math.abs(flexion) > 15 ? 2 : 1;
   const ajust = (deviation || torsion) ? 1 : 0;
-  return { base, ajust, cote: borne(base + ajust, 1, 3) };
+  return { base, ajust, cote: borne(base + ajust, 1, 3), max: 3 };
 }
 
 /** Qualité de la prise : 0 bonne, 1 correcte, 2 mauvaise, 3 inacceptable. */
 export function cotePrise({ prise = 0 } = {}) {
-  return { base: borne(prise, 0, 3), ajust: 0, cote: borne(prise, 0, 3) };
+  return { base: borne(prise, 0, 3), ajust: 0, cote: borne(prise, 0, 3), max: 3 };
 }
 
 /**
@@ -212,7 +212,8 @@ export function calculerREBA(e = {}) {
   const reba    = borne(scoreC + activite.cote, 1, 15);
 
   return {
-    reba,
+    methode: "REBA",
+    reba, score: reba, echelle: { min: 1, max: 15 },
     risque: niveauDeRisque(reba),
     scoreA, scoreB, scoreC, tableA, tableB,
     segments: { tronc, cou, jambes, charge, bras, avantBras, poignet, prise },
@@ -244,8 +245,13 @@ function segmentDominant(seg) {
 const MAXIMA = { tronc: 5, cou: 3, jambes: 4, bras: 6, avantBras: 2, poignet: 3 };
 
 export function severiteSegment(nom, cote) {
-  const max = MAXIMA[nom];
-  if (!max) return 0;
+  return severite(cote, MAXIMA[nom]);
+}
+
+/** Sévérité générique : chaque segment est normalisé sur sa propre échelle,
+    puisqu'un tronc à 4/5 et un poignet à 3/3 ne se comparent pas autrement. */
+export function severite(cote, max) {
+  if (!max || max < 2) return 0;
   const r = (cote - 1) / (max - 1);        // 0 = neutre, 1 = pire cas
   if (r <= 0.001) return 0;                // vert
   if (r <= 0.34) return 1;                 // jaune
@@ -265,22 +271,22 @@ export const ETIQUETTES_SEVERITE = ["Confort", "À surveiller", "Élevé", "Cont
  * @param {Array<{t:number, resultat:object, fiable:boolean}>} images
  * @returns {object} synthèse de la séquence
  */
-export function synthetiser(images) {
+export function synthetiser(images, niveaux = NIVEAUX) {
   const valides = images.filter(i => i.resultat && i.fiable !== false);
   if (!valides.length) return null;
 
-  const scores = valides.map(i => i.resultat.reba);
+  const scores = valides.map(i => i.resultat.score);
   const trie = [...scores].sort((a, b) => a - b);
   const percentile = p => trie[Math.min(trie.length - 1, Math.floor(p * trie.length))];
 
   let pire = valides[0];
-  for (const i of valides) if (i.resultat.reba > pire.resultat.reba) pire = i;
+  for (const i of valides) if (i.resultat.score > pire.resultat.score) pire = i;
 
   /* Temps passé dans chaque niveau, pondéré par la durée réelle de chaque image. */
   const duree = dureeParImage(valides);
-  const parNiveau = NIVEAUX.map(n => ({ ...n, secondes: 0 }));
+  const parNiveau = niveaux.map(n => ({ ...n, secondes: 0 }));
   valides.forEach((img, k) => {
-    const n = parNiveau.find(x => img.resultat.reba >= x.min && img.resultat.reba <= x.max);
+    const n = parNiveau.find(x => img.resultat.score >= x.min && img.resultat.score <= x.max);
     if (n) n.secondes += duree[k];
   });
   const total = parNiveau.reduce((s, n) => s + n.secondes, 0) || 1;
@@ -302,7 +308,7 @@ export function synthetiser(images) {
     p90: percentile(0.9),
     max: Math.max(...scores),
     moyenne: scores.reduce((s, v) => s + v, 0) / scores.length,
-    pire: { t: pire.t, reba: pire.resultat.reba, resultat: pire.resultat },
+    pire: { t: pire.t, score: pire.resultat.score, reba: pire.resultat.score, resultat: pire.resultat },
     parNiveau,
     dominantFrequent: dominantFrequent
       ? { nom: dominantFrequent[0], part: dominantFrequent[1] / valides.length }

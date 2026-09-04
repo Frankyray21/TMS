@@ -14,7 +14,8 @@
 
 import { chargerDetecteur, detecterImage, detecterVideo } from "./pose.js";
 import { extraireAngles } from "./angles.js";
-import { calculerREBA, synthetiser } from "./reba.js";
+import { calculerREBA, synthetiser, NIVEAUX as NIVEAUX_REBA } from "./reba.js";
+import { calculerRULA, NIVEAUX as NIVEAUX_RULA } from "./rula.js";
 import { DEFAUTS } from "./config.js";
 
 /* Hypothèses de repli quand les jambes ne sont pas dans le cadre. */
@@ -152,6 +153,7 @@ export function coter(releves, params = {}) {
     seuilVisibilite: params.seuilVisibilite ?? DEFAUTS.seuilVisibilite
   };
 
+  const methode = params.methode === "rula" ? "rula" : "reba";
   const bruts = releves.map(r => ({ releve: r, angles: extraireAngles(r.monde, opts) }));
   const lisses = lisser(bruts.map(b => b.angles), params.lissage ?? DEFAUTS.lissage);
 
@@ -186,6 +188,28 @@ export function coter(releves, params = {}) {
       activite: { statique: !!params.statique, repete: !!params.repete, instable: !!params.instable }
     };
     const jambesEstimees = !a.jambesObservables && params.jambesManuel !== "mesure";
+    /* Les deux méthodes sont calculées à chaque image : ce ne sont que des
+       lectures de tables, et ça permet de basculer de l'une à l'autre sans
+       relancer quoi que ce soit. */
+    const versRULA = {
+      bras:      { ...versREBA.bras },
+      avantBras: { flexion: a.bras.flexionCoude, horsAxe: !!a.bras.horsAxe },
+      poignet:   { flexion: a.bras.flexionPoignet,
+                   deviation: a.bras.deviationDeg > opts.seuilDeviation },
+      pronosupination: { finDeCourse: !!params.pronosupination },
+      cou:       { ...versREBA.cou },
+      tronc:     { ...versREBA.tronc, assisSoutenu: versREBA.jambes.assis },
+      /* RULA ne demande qu'une chose des jambes : appuyées et équilibrées, ou
+         non. Assis avec appui compte comme équilibré ; debout, il faut les deux
+         pieds au sol et pas d'accroupissement marqué. */
+      jambes:    { appuiEquilibre: versREBA.jambes.assis
+                     ? true
+                     : (versREBA.jambes.appuiBilateral && versREBA.jambes.flexionGenou < 60) },
+      charge:    { ...versREBA.charge },
+      activite:  { ...versREBA.activite }
+    };
+    const resultats = { reba: calculerREBA(versREBA), rula: calculerRULA(versRULA) };
+
     return {
       t: b.releve.t,
       ecran: b.releve.ecran,
@@ -197,11 +221,16 @@ export function coter(releves, params = {}) {
       angles: a,
       fiable: a.fiabilite.fiable,
       confiance: a.fiabilite.global,
-      resultat: calculerREBA(versREBA)
+      resultats,
+      resultat: resultats[methode]
     };
   });
 
-  return { images, synthese: synthetiser(images), params: { ...params } };
+  return {
+    images, methode,
+    synthese: synthetiser(images, methode === "rula" ? NIVEAUX_RULA : NIVEAUX_REBA),
+    params: { ...params }
+  };
 }
 
 /** Chaîne complète, du fichier au résultat. */

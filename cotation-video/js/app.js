@@ -8,7 +8,8 @@
 
 import { analyserVideo, analyserImage, coter, recoter } from "./analyse.js";
 import { sequenceDemo, PARAMS_DEMO } from "./demo.js";
-import { NIVEAUX, ETIQUETTES_SEVERITE, severiteSegment } from "./reba.js";
+import { NIVEAUX as NIVEAUX_REBA, ETIQUETTES_SEVERITE, severite } from "./reba.js";
+import { NIVEAUX as NIVEAUX_RULA } from "./rula.js";
 import { dessinerSquelette, dessinerJauge, dessinerChronologie,
          imageALInstant, COULEURS, COULEURS_NIVEAU } from "./rendu.js";
 import { sourceActive } from "./pose.js";
@@ -27,8 +28,49 @@ const el = {
   exportJson: $("#exportJson"), imprimer: $("#imprimer")
 };
 
+/* Les deux méthodes, et ce qui change de l'une à l'autre. */
+const METHODES = {
+  reba: {
+    nom: "REBA", niveaux: NIVEAUX_REBA,
+    ref: "REBA · Hignett &amp; McAtamney (2000)",
+    lignes: [
+      { cle: "tronc",     nom: "Tronc",       angle: a => a.tronc.flexion,       unite: "° flexion" },
+      { cle: "cou",       nom: "Cou",         angle: a => a.cou.flexion,         unite: "° flexion" },
+      { cle: "jambes",    nom: "Jambes",      angle: a => a.jambes.flexionGenou, unite: "° genou" },
+      { cle: "bras",      nom: "Bras",        angle: a => a.bras.flexionBras,    unite: "° élévation" },
+      { cle: "avantBras", nom: "Avant-bras",  angle: a => a.bras.flexionCoude,   unite: "° coude" },
+      { cle: "poignet",   nom: "Poignet",     angle: a => a.bras.flexionPoignet, unite: "° flexion" }
+    ],
+    intro: "REBA croise la posture avec la charge, la qualité de la prise et la nature "
+         + "de l'activité. Aucune image ne contient ces trois-là.",
+    calcul: r => `Table A ${r.tableA} + charge ${r.segments.charge.cote} = <b>A ${r.scoreA}</b> · `
+               + `Table B ${r.tableB} + prise ${r.segments.prise.cote} = <b>B ${r.scoreB}</b> · `
+               + `Table C <b>${r.scoreC}</b> + activité ${r.activite.cote} = <b>REBA ${r.reba}</b>`
+  },
+  rula: {
+    nom: "RULA", niveaux: NIVEAUX_RULA,
+    ref: "RULA · McAtamney &amp; Corlett (1993)",
+    lignes: [
+      { cle: "bras",            nom: "Bras",        angle: a => a.bras.flexionBras,    unite: "° élévation" },
+      { cle: "avantBras",       nom: "Avant-bras",  angle: a => a.bras.flexionCoude,   unite: "° coude" },
+      { cle: "poignet",         nom: "Poignet",     angle: a => a.bras.flexionPoignet, unite: "° flexion" },
+      { cle: "pronosupination", nom: "Pronosupination", angle: () => null, unite: "" },
+      { cle: "cou",             nom: "Cou",         angle: a => a.cou.flexion,         unite: "° flexion" },
+      { cle: "tronc",           nom: "Tronc",       angle: a => a.tronc.flexion,       unite: "° flexion" },
+      { cle: "jambes",          nom: "Jambes",      angle: a => a.jambes.flexionGenou, unite: "° genou" }
+    ],
+    intro: "RULA croise la posture avec la force et le caractère statique ou répété "
+         + "du geste. Sa cote de force plafonne à 10 kg : c'est une méthode de poste, "
+         + "pas de manutention.",
+    calcul: r => `Posture A ${r.postureA} + muscle ${r.muscle.cote} + force ${r.force.cote} = <b>C ${r.scoreC}</b> · `
+               + `Posture B ${r.postureB} + muscle ${r.muscle.cote} + force ${r.force.cote} = <b>D ${r.scoreD}</b> · `
+               + `Table C = <b>RULA ${r.rula}</b>`
+  }
+};
+
 const etat = {
   analyse: null,
+  methode: "reba",
   mode: "demo",            // 'demo' | 'video' | 'image'
   t: 0,
   lecture: false,
@@ -47,6 +89,8 @@ function lireParams() {
     effortBrusque: $("#brusque").checked,
     cote: $("#cote").value,
     jambesManuel: $("#jambesManuel").value,
+    pronosupination: $("#pronosupination").checked,
+    methode: etat.methode,
     precision: $("#precision").value,
     echantillonnage: +$("#fps").value,
     lissage: +$("#lissage").value
@@ -97,43 +141,32 @@ function dessinerInstant(t) {
   dessinerSquelette(ctx, image, { largeur, hauteur });
   majPanneau(image);
   el.tCourant.textContent = t.toFixed(1).replace(".", ",");
-  dessinerChronologie(el.chrono, etat.analyse, { curseur: t });
+  dessinerChronologie(el.chrono, etat.analyse, { curseur: t, niveaux: METHODES[etat.methode].niveaux });
 }
-
-const LIGNES = [
-  { cle: "tronc",     nom: "Tronc",       angle: a => a.tronc.flexion,        unite: "° flexion" },
-  { cle: "cou",       nom: "Cou",         angle: a => a.cou.flexion,          unite: "° flexion" },
-  { cle: "jambes",    nom: "Jambes",      angle: a => a.jambes.flexionGenou,  unite: "° genou" },
-  { cle: "bras",      nom: "Bras",        angle: a => a.bras.flexionBras,     unite: "° élévation" },
-  { cle: "avantBras", nom: "Avant-bras",  angle: a => a.bras.flexionCoude,    unite: "° coude" },
-  { cle: "poignet",   nom: "Poignet",     angle: a => a.bras.flexionPoignet,  unite: "° flexion" }
-];
 
 function majPanneau(image) {
   const r = image.resultat;
-  dessinerJauge(el.jauge, r.reba, r.risque);
+  const M = METHODES[etat.methode];
+  dessinerJauge(el.jauge, r.score, r.risque, r.echelle);
   el.niveauLibelle.textContent = `${r.risque.libelle} — niveau ${r.risque.niveau}`;
   el.niveauLibelle.style.color = COULEURS_NIVEAU[r.risque.couleur];
   el.niveauAction.textContent = r.risque.action;
 
-  el.corpsSegments.innerHTML = LIGNES.map(l => {
-    const cote = r.segments[l.cle].cote;
-    const sev = severiteSegment(l.cle, cote);
+  el.corpsSegments.innerHTML = M.lignes.map(l => {
+    const seg = r.segments[l.cle];
+    const cote = seg.cote;
+    const sev = severite(cote, seg.max);
     const val = l.angle(image.angles);
     return `<tr>
       <td>${l.nom}</td>
-      <td class="num">${Number.isFinite(val) ? Math.round(val) : "—"}${l.unite ? `<span class="discret"> ${l.unite.replace("° ", "° ")}</span>` : ""}</td>
+      <td class="num">${Number.isFinite(val) ? Math.round(val) : "<span class='discret'>déclaré</span>"}${Number.isFinite(val) && l.unite ? `<span class="discret"> ${l.unite}</span>` : ""}</td>
       <td class="cote">${cote}</td>
       <td><span class="etat"><i style="background:${COULEURS[sev]}"></i>${ETIQUETTES_SEVERITE[sev]}</span></td>
     </tr>`;
   }).join("");
 
-  const a = r.segments;
-  el.calcul.innerHTML =
-    `Table A ${r.tableA} + charge ${a.charge.cote} = <b>A ${r.scoreA}</b> · ` +
-    `Table B ${r.tableB} + prise ${a.prise.cote} = <b>B ${r.scoreB}</b> · ` +
-    `Table C <b>${r.scoreC}</b> + activité ${r.activite.cote} = <b>REBA ${r.reba}</b>` +
-    (image.fiable ? "" : ` · <span style="color:${COULEURS[2]}">repères peu visibles</span>`);
+  el.calcul.innerHTML = M.calcul(r)
+    + (image.fiable ? "" : ` · <span style="color:${COULEURS[2]}">repères peu visibles</span>`);
 
   const jambesSupposees = image.avertissements?.includes("jambes");
   $("#jambesEtat").textContent = jambesSupposees ? "— hors cadre, supposée" : "— mesurée";
@@ -148,6 +181,8 @@ function majPanneau(image) {
 }
 
 function majSynthese() {
+  const M = METHODES[etat.methode];
+  const NIVEAUX = M.niveaux;
   const s = etat.analyse?.synthese;
   if (!s) { el.stats.innerHTML = ""; el.barres.innerHTML = ""; el.conclusion.textContent = ""; return; }
 
@@ -233,6 +268,7 @@ async function chargerFichier(f) {
     }
     el.progres.hidden = true;
     etat.t = 0;
+    majAvis();
     majSynthese();
     dessinerInstant(0);
   } catch (e) {
@@ -269,6 +305,7 @@ function chargerDemo() {
   etat.mode = "demo";
   etat.analyse = coter(sequenceDemo(), PARAMS_DEMO);
   appliquerParamsAuFormulaire(PARAMS_DEMO);
+  majAvis();                 // les paramètres viennent de changer
   majSynthese();
   etat.t = etat.analyse.synthese.pire.t;   // on ouvre sur l'instant le plus parlant
   dessinerInstant(etat.t);
@@ -298,6 +335,55 @@ function basculerLecture() {
     cancelAnimationFrame(etat.horlogeDemo);
   }
 }
+
+/* ---------- Choix de la méthode ----------
+   RULA et REBA sont calculées à chaque image : basculer ne relance rien, ça ne
+   fait que réafficher. Un avis prévient quand la méthode choisie n'est pas la
+   bonne pour la tâche — RULA sature au-delà de 10 kg, elle n'est pas faite pour
+   la manutention de charge. */
+function choisirMethode(m) {
+  if (!METHODES[m]) return;
+  etat.methode = m;
+  document.querySelectorAll(".methode").forEach(b => {
+    const actif = b.dataset.methode === m;
+    b.classList.toggle("actif", actif);
+    b.setAttribute("aria-checked", String(actif));
+  });
+  $("#methodeRef").innerHTML = METHODES[m].ref;
+  $("#chronoTitre").textContent = `Cote ${METHODES[m].nom} dans le temps`;
+  $("#introParams").textContent = METHODES[m].intro;
+  $("#casePronosupination").hidden = m !== "rula";
+  if (etat.analyse) {
+    etat.analyse = recoter(etat.analyse, lireParams());
+    majSynthese();
+    dessinerInstant(etat.t);
+  }
+  majAvis();
+}
+
+function majAvis() {
+  const charge = +$("#charge").value;
+  let texte = "";
+  if (etat.methode === "rula" && charge > 10) {
+    texte = `RULA plafonne sa cote de force au-delà de 10 kg : à ${charge} kg elle sature `
+          + `et cesse de discriminer. Pour de la manutention de charge, REBA est l'instrument approprié.`;
+  } else if (etat.methode === "reba" && charge === 0) {
+    texte = "Sans charge déclarée, REBA ne cote que la posture. Pour un poste de "
+          + "précision ou assis, RULA est plus sensible au membre supérieur.";
+  }
+  let bloc = document.getElementById("avisMethode");
+  if (!texte) { bloc?.remove(); return; }
+  if (!bloc) {
+    bloc = document.createElement("p");
+    bloc.id = "avisMethode";
+    bloc.className = "avis";
+    el.calcul.parentElement.appendChild(bloc);
+  }
+  bloc.textContent = texte;
+}
+
+document.querySelectorAll(".methode").forEach(b =>
+  b.addEventListener("click", () => choisirMethode(b.dataset.methode)));
 
 /* ---------- Branchements ---------- */
 
@@ -330,9 +416,11 @@ el.video.addEventListener("loadedmetadata", () => dimensionnerCalque());
 
 /* Recotation immédiate quand un paramètre non observable change : c'est la
    réponse à « et si la caisse pesait 15 kg ? », sans relancer la détection. */
-for (const id of ["charge", "prise", "statique", "repete", "instable", "brusque", "cote", "jambesManuel", "lissage"]) {
+for (const id of ["charge", "prise", "statique", "repete", "instable", "brusque",
+                  "cote", "jambesManuel", "pronosupination", "lissage"]) {
   $("#" + id).addEventListener("input", () => {
     majSorties();
+    majAvis();
     if (!etat.analyse) return;
     etat.analyse = recoter(etat.analyse, lireParams());
     majSynthese();
@@ -345,7 +433,9 @@ el.exportJson.addEventListener("click", () => {
   if (!etat.analyse) return;
   const s = etat.analyse.synthese;
   const donnees = {
-    methode: "REBA — Hignett & McAtamney, Applied Ergonomics 31 (2000)",
+    methode: etat.methode === "rula"
+      ? "RULA — McAtamney & Corlett, Applied Ergonomics 24 (1993)"
+      : "REBA — Hignett & McAtamney, Applied Ergonomics 31 (2000)",
     genere: new Date().toISOString(),
     source: etat.mode === "demo" ? "séquence de démonstration (postures simulées)" : etat.mode,
     parametres: etat.analyse.params,
@@ -356,8 +446,11 @@ el.exportJson.addEventListener("click", () => {
       segment_dominant: s.dominantFrequent
     },
     images: etat.analyse.images.map(i => ({
-      t: +i.t.toFixed(3), reba: i.resultat.reba, niveau: i.resultat.risque.niveau,
-      A: i.resultat.scoreA, B: i.resultat.scoreB, C: i.resultat.scoreC,
+      t: +i.t.toFixed(3),
+      score: i.resultat.score, niveau: i.resultat.risque.niveau,
+      /* Les deux cotes sont exportées : le fichier reste exploitable même si
+         l'on change d'avis sur la méthode après coup. */
+      reba: i.resultats.reba.reba, rula: i.resultats.rula.rula,
       fiable: i.fiable,
       cotes: Object.fromEntries(Object.entries(i.resultat.segments).map(([k, v]) => [k, v.cote])),
       angles: {
@@ -373,7 +466,7 @@ el.exportJson.addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `cotation-reba-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `cotation-${etat.methode}-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
 });
@@ -382,4 +475,5 @@ el.imprimer.addEventListener("click", () => window.print());
 window.addEventListener("resize", () => etat.analyse && dessinerInstant(etat.t));
 
 majSorties();
+choisirMethode("reba");
 chargerDemo();

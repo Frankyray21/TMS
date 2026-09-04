@@ -181,10 +181,20 @@ export function anglesBras(pts, R, cote /* 'G' | 'D' */) {
   const flexionPoignet = angleSigne(main, F, unite(cross(normalePaume, F)));
   const deviationDeg = Math.abs(angleSigne(main, F, unite(normalePaume)));
 
+  /* RULA majore l'avant-bras qui travaille en travers du corps ou nettement
+     à l'écart. On compare la position latérale du poignet à celle de l'épaule,
+     dans le repère du corps : signe opposé = la main a croisé l'axe médian. */
+  const latPoignet = dot(sub(poignet, R.midEpaules), R.droite);
+  const latEpaule  = dot(sub(epaule,  R.midEpaules), R.droite);
+  const croiseAxe  = latEpaule !== 0 && Math.sign(latPoignet) !== Math.sign(latEpaule)
+                     && Math.abs(latPoignet) > Math.abs(latEpaule) * 0.3;
+  const ecarte     = Math.abs(latPoignet) > Math.abs(latEpaule) * 1.6;
+  const horsAxe    = croiseAxe || ecarte;
+
   return {
     cote,
     flexionBras, abductionDeg,
-    flexionCoude,
+    flexionCoude, horsAxe,
     flexionPoignet, deviationDeg
   };
 }

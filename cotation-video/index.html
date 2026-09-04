@@ -15,7 +15,15 @@
 <header class="tete">
   <div class="tete-titre">
     <h1>Cotation ergonomique vidéo</h1>
-    <p>REBA · Hignett &amp; McAtamney (2000)</p>
+    <p id="methodeRef">REBA · Hignett &amp; McAtamney (2000)</p>
+  </div>
+  <div class="methodes" role="radiogroup" aria-label="Méthode de cotation">
+    <button type="button" class="methode actif" data-methode="reba" role="radio" aria-checked="true">
+      REBA <span>corps entier</span>
+    </button>
+    <button type="button" class="methode" data-methode="rula" role="radio" aria-checked="false">
+      RULA <span>membre supérieur</span>
+    </button>
   </div>
   <div class="tete-actions">
     <span class="puce" id="badgeConfidentialite" title="Aucun fichier n'est téléversé : tout le traitement se fait dans ce navigateur.">
@@ -58,7 +66,7 @@
 
     <div class="chrono-bloc">
       <div class="chrono-tete">
-        <span class="etiquette">Cote REBA dans le temps</span>
+        <span class="etiquette" id="chronoTitre">Cote REBA dans le temps</span>
         <span class="chrono-legende" id="chronoLegende"></span>
       </div>
       <canvas id="chrono" class="chrono"></canvas>
@@ -93,9 +101,9 @@
 
     <div class="carte accent">
       <h2>Ce que la vidéo ne montre pas</h2>
-      <p class="intro">REBA exige quatre informations qu'aucune image ne contient. Elles
-      sont à vous, et elles pèsent lourd : elles peuvent à elles seules faire passer
-      la cote de faible à très élevée.</p>
+      <p class="intro" id="introParams">Ces informations, la méthode les exige et aucune
+      image ne les contient. Elles sont à vous, et elles pèsent lourd : elles peuvent à
+      elles seules faire passer la cote de faible à très élevée.</p>
 
       <label class="champ">
         <span>Charge manipulée</span>
@@ -121,6 +129,9 @@
         <label class="case"><input type="checkbox" id="repete"> Geste répété plus de 4 fois par minute</label>
         <label class="case"><input type="checkbox" id="instable"> Amplitude brusque ou appui instable</label>
         <label class="case"><input type="checkbox" id="brusque"> Mise en charge brutale</label>
+        <label class="case" id="casePronosupination" hidden>
+          <input type="checkbox" id="pronosupination"> Avant-bras en fin de course de pronosupination
+        </label>
       </fieldset>
 
       <label class="champ">
