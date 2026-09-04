@@ -17,3 +17,6 @@ _*.png
 # Artefacts locaux (non versionnes)
 prevention-tms-site.zip
 scroll.html
+
+# Candidats de refonte du pictogramme, le temps de la comparaison.
+cotation-video/js/essai-picto-*.js
