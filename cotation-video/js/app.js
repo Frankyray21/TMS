@@ -232,7 +232,7 @@ function afficherDetail(os, x, y) {
        <div class="detail-etat" style="color:${COULEURS[sev]}">${ETIQUETTES_SEVERITE[sev]}</div>
        ${mes && Number.isFinite(mes.v)
           ? `<div class="detail-mesure">${Math.round(mes.v)}° <small>${mes.u}</small></div>` : ""}
-       ${mes ? pictogramme(cle, methode, mes.v, seg.max) : ""}
+       ${mes ? pictogramme(cle, methode, mes.v, seg.max, { base: seg.base, cote: seg.cote }) : ""}
        <div class="detail-calc">
          Score <b>${seg.cote}</b> sur ${seg.max}
          ${seg.base != null ? `<br>base ${seg.base}` : ""}

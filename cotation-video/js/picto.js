@@ -90,11 +90,12 @@ const TORSE = `M-0.08,2.72 C-0.28,2.64 -0.42,2.44 -0.46,2.10
   C0.34,0.42 0.29,0.72 0.31,0.98 C0.35,1.40 0.46,1.78 0.49,2.14
   C0.50,2.40 0.42,2.60 0.26,2.68 C0.16,2.72 0.04,2.74 -0.08,2.72 Z`;
 
-/* Le même torse, coupé franc au-dessus de la hanche : le bassin de la planche
-   du genou. Recadrer vaut mieux que comprimer la figure entière. */
-const TORSE_BAS = `M-0.28,0.80 C-0.34,0.62 -0.42,0.45 -0.50,0.26
-  C-0.55,0.00 -0.34,-0.28 -0.06,-0.28 C0.16,-0.28 0.34,-0.14 0.36,0.10
-  C0.36,0.35 0.32,0.60 0.30,0.80 Z`;
+/* Le même torse, coupé à la taille — là où il est le plus étroit : le bassin
+   de la planche du genou. Coupé plus bas, à toit plat, il se lisait comme un
+   flacon. Recadrer vaut mieux que comprimer la figure entière. */
+const TORSE_BAS = `M-0.30,1.18 C-0.27,0.86 -0.38,0.56 -0.46,0.24
+  C-0.50,0.00 -0.32,-0.26 -0.06,-0.26 C0.14,-0.26 0.31,-0.14 0.33,0.10
+  C0.34,0.42 0.29,0.72 0.31,0.98 L0.31,1.18 Z`;
 
 /* Crâne de profil 0,77 × 1,00 : front, nez, échancrure sous-nasale, menton,
    angle de mâchoire net, occiput. Ce sont ces accidents — pas un nez de 2 px —
@@ -107,13 +108,13 @@ const TETE = `M0.02,1.00 C0.24,0.99 0.37,0.85 0.38,0.66
 const TETE_DETAIL = `M-0.09,0.40 C-0.17,0.42 -0.18,0.56 -0.09,0.57`;
 
 /* Main en coin avec bosse du pouce du côté palmaire. */
-const MAIN = `M-0.15,0.05 C-0.175,0.22 -0.18,0.42 -0.17,0.54
-  C-0.16,0.64 -0.08,0.70 0.01,0.69 C0.10,0.68 0.16,0.62 0.17,0.52
-  C0.175,0.44 0.18,0.38 0.20,0.34 C0.27,0.32 0.34,0.26 0.34,0.17
-  C0.34,0.09 0.27,0.05 0.21,0.09 C0.14,0.13 0.10,0.15 0.06,0.13
-  C0.00,0.10 -0.08,0.07 -0.15,0.05 Z`;
-const MAIN_DETAIL = `M-0.11,0.56 C-0.04,0.545 0.05,0.545 0.12,0.56
-  M0.19,0.34 C0.13,0.28 0.10,0.22 0.09,0.16`;
+const MAIN = `M-0.120,0.05 C-0.140,0.22 -0.144,0.42 -0.136,0.54
+  C-0.128,0.64 -0.064,0.70 0.008,0.69 C0.080,0.68 0.128,0.62 0.136,0.52
+  C0.140,0.44 0.144,0.38 0.160,0.34 C0.216,0.32 0.272,0.26 0.272,0.17
+  C0.272,0.09 0.216,0.05 0.168,0.09 C0.112,0.13 0.080,0.15 0.048,0.13
+  C0.000,0.10 -0.064,0.07 -0.120,0.05 Z`;
+const MAIN_DETAIL = `M-0.088,0.56 C-0.032,0.545 0.040,0.545 0.096,0.56
+  M0.152,0.34 C0.104,0.28 0.080,0.22 0.072,0.16`;
 
 /* Pied : talon en arrière, pointe en avant — c'est lui qui dit de quel côté
    le sujet regarde, et il survit à 296 px. */
@@ -142,7 +143,9 @@ const PIECE = {
   cuisse:    p_os("cuisse", "hanche", "genou", 0.56),
   cuisseC:   p_os("cuisse", "hanche", "genou", 0.56, { f: 0.42, coupe: true }),
   jambe:     p_os("jambe", "genou", "cheville", 0.34),
-  pied:      p_forme("pied", "cheville", "genou", PIED, 1),
+  /* Le pied a sa couche : peint après la teinte de la jambe, sinon le tibia
+     coté traverse la semelle et la colore. */
+  pied:      p_forme("pied", "cheville", "genou", PIED, 1, { couche: 2 }),
   torse:     p_forme("torse", "hanche", "epaule", TORSE, 1),
   bassin:    p_forme("bassin", "hanche", "epaule", TORSE_BAS, 1),
   cou:       p_os("cou", "c7", "teteBas", 0.42),
@@ -153,8 +156,12 @@ const PIECE = {
   brasBas:   p_os("bras", "coude", "epaule", 0.34, { f: 0.55, coupe: true, couche: 1 }),
   avantBras: p_os("avantBras", "coude", "poignet", 0.24, { couche: 1 }),
   main:      p_forme("main", "poignet", "mainBout", MAIN, -1, { couche: 1, detail: MAIN_DETAIL }),
+  /* La même main, paume vers le bas : celle de la planche du poignet. Pouce en
+     haut, une bascule dans le plan de la vue serait une déviation, pas une
+     flexion — et REBA comme RULA les cotent séparément. */
+  mainP:     p_forme("main", "poignet", "mainBout", MAIN, 1, { couche: 1, detail: MAIN_DETAIL }),
   epauleB:   p_bosse("epauleB", "epaule", 0.25),
-  coudeB:    p_bosse("coudeB", "coude", 0.17, { couche: 1 }),
+  coudeB:    p_bosse("coudeB", "coude", 0.12, { couche: 1 }),
   genouB:    p_bosse("genouB", "genou", 0.25)
 };
 const PC = PIECE;
@@ -174,6 +181,9 @@ const PC = PIECE;
               mesure n'entraîne pas (le bras qui pend, la nuque qui se relève)
    ra       : rayon de l'arc de mesure, quand la pièce mobile est trop trapue
    derriere : le membre passe derrière le corps quand l'angle est négatif
+   brasDerriere : le bras non coté passe derrière le tronc coté en extension
+   ecart0   : écart latéral de l'étiquette 0°, quand le dos ou la nuque est
+              plus loin du fantôme que la valeur par défaut
    sol      : ligne d'appui sous le pied
    --------------------------------------------------------------------------- */
 
@@ -186,13 +196,13 @@ const PLANCHES = {
      comme un opérateur qui regarde devant lui. Ni l'un ni l'autre ne touche à
      l'angle mesuré, qui se lit entre la hanche et l'épaule. */
   tronc: {
-    pivot: "hanche", sens: 1, ref: "epaule", sol: true,
+    pivot: "hanche", sens: 1, ref: "epaule", sol: true, brasDerriere: true, ecart0: 0.95,
     pose: [["epaule", -14], ["coude", -30]],
     contre: [["epaule", 1], ["c7", 0.35, 22]],
     fixe: [PC.cuisse, PC.genouB, PC.jambe, PC.pied],
     mobile: [PC.torse, PC.cou, PC.tete, PC.epauleB, PC.bras, PC.coudeB, PC.avantBras, PC.main],
     avant: ["torse"],
-    vue: "tronc de profil — pivot à la hanche, pointillé : le 0°"
+    vue: "tronc de profil · pointillé : 0° · en avant = +"
   },
 
   /* Le cou bascule sur C7 ; le tronc reste la référence — c'est bien ce que
@@ -204,18 +214,18 @@ const PLANCHES = {
     fixe: [PC.cuisseC, PC.torse, PC.epauleB, PC.bras, PC.coudeB, PC.avantBras, PC.main],
     mobile: [PC.cou, PC.tete],
     avant: ["cou", "tete"],
-    vue: "cou de profil — pivot à la base du cou, pointillé : le 0°"
+    vue: "cou de profil · pointillé : 0° · tête baissée = +"
   },
 
   /* Le bras s'élève sur l'épaule, coude tendu : c'est la vignette des feuilles
      RULA. Le 0° est le bras pendant le long du tronc, donc l'élévation vers
      l'avant est une rotation SVG négative. */
   bras: {
-    pivot: "epaule", sens: -1, ref: "coude", derriere: true,
+    pivot: "epaule", sens: -1, ref: "coude", derriere: true, ecart0: 1.05,
     fixe: [PC.cuisseC, PC.torse, PC.cou, PC.tete, PC.epauleB],
     mobile: [PC.bras, PC.coudeB, PC.avantBras, PC.main],
     avant: ["bras"],
-    vue: "bras de profil — pivot à l'épaule, pointillé : le 0°"
+    vue: "bras de profil · pointillé : 0° · levé devant = +"
   },
 
   /* Le coude ferme l'avant-bras ; l'humérus, porté un peu en avant pour qu'il
@@ -227,18 +237,19 @@ const PLANCHES = {
     fixe: [PC.cuisseC, PC.torse, PC.cou, PC.tete, PC.epauleB, PC.bras, PC.coudeB],
     mobile: [PC.avantBras, PC.main],
     avant: ["avantBras"],
-    vue: "coude de profil — pivot au coude, pointillé : le 0°"
+    vue: "coude de profil · pointillé : 0°, bras tendu"
   },
 
-  /* Le poignet se juge coude fléchi à 90°, avant-bras vers l'avant : c'est la
-     posture de travail, et le pouce se retrouve vers le haut, ce qui fixe le
-     plan sagittal. Flexion palmaire = la main descend = rotation positive. */
+  /* Le poignet se juge coude fléchi à 90°, avant-bras vers l'avant, paume vers
+     le bas (pronation) : c'est la posture de travail, et c'est la convention
+     des feuilles. Flexion palmaire = la main descend vers la paume = rotation
+     positive ; l'extension monte. */
   poignet: {
     pivot: "poignet", sens: 1, ref: "mainBout", pose: [["coude", -90]], ra: 0.88,
     fixe: [PC.brasBas, PC.coudeB, PC.avantBras],
-    mobile: [PC.main],
+    mobile: [PC.mainP],
     avant: ["main"],
-    vue: "poignet, coude à 90° — pivot au poignet, pointillé : le 0°"
+    vue: "paume en bas · pointillé : 0° · main baissée = +"
   },
 
   /* Le genou plie ; la cuisse reste l'axe de référence, car l'angle du genou
@@ -251,7 +262,7 @@ const PLANCHES = {
     fixe: [PC.bassin, PC.cuisse, PC.genouB],
     mobile: [PC.jambe, PC.pied],
     avant: ["jambe"],
-    vue: "genou de profil — pivot au genou, pointillé : le 0°"
+    vue: "genou de profil · pointillé : 0°, jambe tendue"
   }
 };
 
@@ -403,14 +414,19 @@ function cadre(cle, methode) {
   avaler([fin[0] - 0.22, fin[1] - 0.22, fin[0] + 0.22, fin[1] + 0.22]);
   /* L'étiquette du 0° se pose au bout du fantôme, du côté OPPOSÉ au balayage :
      là, aucune posture ne viendra jamais la recouvrir. */
-  const tg = [-u[1], u[0]], loin = pl.sens > 0 ? -1 : 1;   // à l'opposé du balayage
-  const e0 = [fin[0] + tg[0] * 0.55 * loin + u[0] * 0.08,
-              fin[1] + tg[1] * 0.55 * loin + u[1] * 0.08];
-  avaler([e0[0] - 0.30, e0[1] - 0.26, e0[0] + 0.30, e0[1] + 0.26]);
+  /* Deux positions, une par signe : un angle négatif balaie précisément du
+     côté « opposé au balayage » d'un angle positif, et l'étiquette s'y
+     retrouvait sur le visage. On choisit dans scene(), selon la mesure. */
+  const tg = [-u[1], u[0]], loin = pl.sens > 0 ? -1 : 1;
+  const ecart = pl.ecart0 ?? 0.55;
+  const e0 = sg => [fin[0] + tg[0] * ecart * loin * sg + u[0] * 0.08,
+                    fin[1] + tg[1] * ecart * loin * sg + u[1] * 0.08];
+  const e0p = e0(1), e0m = e0(-1);
+  for (const e of [e0p, e0m]) avaler([e[0] - 0.30, e[1] - 0.26, e[0] + 0.30, e[1] + 0.26]);
   avaler([pv[0] - ra, pv[1] - ra, pv[0] + ra, pv[1] + ra]);
 
   const k = Math.min(SW / (x2 - x1), SH / (y2 - y1), KMAX);
-  const c = { k, lref, u, pv, e0, ra, lf, boite: [x1, y1, x2, y2],
+  const c = { k, lref, u, pv, e0: e0p, e0m, ra, lf, boite: [x1, y1, x2, y2],
               tx: SX + (SW - (x2 - x1) * k) / 2 - x1 * k,
               ty: SY + (SH - (y2 - y1) * k) / 2 - y1 * k };
   cacheCadre.set(clef, c);
@@ -435,9 +451,13 @@ const TEINTE = 0.42;
     contour extérieur est alors unique et continu, les coutures internes
     disparaissent, et l'articulation est correcte à n'importe quel angle
     puisqu'un os n'est qu'un trait à bouts ronds. */
-function couche(pts, pieces, avant, coul) {
+function couche(pts, pieces, avant, coul, k = KMAX) {
   let contour = "", chair = "", teinte = "", detail = "";
-  for (const p of pieces) {
+  /* Les os cotés passent en dernier dans chaque passe : leur bout rond recouvre
+     la rotule et la calotte grise du membre voisin, au lieu d'en être mordu. */
+  const ordre = [...pieces].sort((a, b) =>
+    (avant.includes(a.id) && a.os ? 1 : 0) - (avant.includes(b.id) && b.os ? 1 : 0));
+  for (const p of ordre) {
     const vedette = avant.includes(p.id);
     const t = vedette ? 0.075 : 0.055;
     const c = vedette ? coul : "var(--sourd)";
@@ -445,7 +465,7 @@ function couche(pts, pieces, avant, coul) {
       const a = pts[p.bosse];
       contour += `<circle cx="${f(a[0])}" cy="${f(a[1])}" r="${f(p.r + t)}" fill="${c}"/>`;
       chair   += `<circle cx="${f(a[0])}" cy="${f(a[1])}" r="${p.r}" fill="${CHAIR}"/>`;
-      if (vedette) teinte += `<circle cx="${f(a[0])}" cy="${f(a[1])}" r="${p.r}" fill="${coul}" opacity="${TEINTE}"/>`;
+      if (vedette) teinte += `<circle cx="${f(a[0])}" cy="${f(a[1])}" r="${p.r}" fill="${coul}"/>`;
       continue;
     }
     if (p.os) {
@@ -454,24 +474,29 @@ function couche(pts, pieces, avant, coul) {
       const cap = p.coupe ? "butt" : "round";
       contour += `<path d="${d}" fill="none" stroke="${c}" stroke-width="${f(p.w + 2 * t)}" stroke-linecap="${cap}"/>`;
       chair   += `<path d="${d}" fill="none" stroke="${CHAIR}" stroke-width="${p.w}" stroke-linecap="${cap}"/>`;
-      if (vedette) teinte += `<path d="${d}" fill="none" stroke="${coul}" stroke-width="${p.w}" stroke-linecap="${cap}" opacity="${TEINTE}"/>`;
+      if (vedette) teinte += `<path d="${d}" fill="none" stroke="${coul}" stroke-width="${p.w}" stroke-linecap="${cap}"/>`;
     } else {
       const m = repere(pts, p).map(f).join(",");
       contour += `<path transform="matrix(${m})" d="${p.forme}" fill="${c}" stroke="${c}" stroke-width="${f(2 * t)}" stroke-linejoin="round"/>`;
       chair   += `<path transform="matrix(${m})" d="${p.forme}" fill="${CHAIR}"/>`;
-      if (vedette) teinte += `<path transform="matrix(${m})" d="${p.forme}" fill="${coul}" opacity="${TEINTE}"/>`;
-      if (p.detail)
+      if (vedette) teinte += `<path transform="matrix(${m})" d="${p.forme}" fill="${coul}"/>`;
+      /* Les plis d'une main ne se lisent qu'en grand ; en petit ils font une tache. */
+      if (p.detail && k >= 40)
         detail += `<path transform="matrix(${m})" d="${p.detail}" fill="none" stroke="var(--sourd)" stroke-width="0.05" stroke-linecap="round" opacity=".75"/>`;
     }
   }
-  return contour + chair + teinte + detail;
+  /* L'opacité est posée sur le GROUPE : elle s'applique à l'union des formes,
+     pas à leurs recouvrements. Pièce par pièce, la tête et le cou faisaient
+     un goitre sombre là où ils se superposent. */
+  return contour + chair + (teinte ? `<g opacity="${TEINTE}">${teinte}</g>` : "") + detail;
 }
 
 /** Une chaîne entière, couche par couche : le tronc d'abord, le membre
     supérieur ensuite, pour qu'il garde son contour au lieu de s'y noyer. */
-function chaine(pts, pieces, avant, coul) {
+function chaine(pts, pieces, avant, coul, inverse = false, k = KMAX) {
   const n = [...new Set(pieces.map(p => p.couche))].sort((a, b) => a - b);
-  return n.map(i => couche(pts, pieces.filter(p => p.couche === i), avant, coul)).join("");
+  if (inverse) n.reverse();
+  return n.map(i => couche(pts, pieces.filter(p => p.couche === i), avant, coul, k)).join("");
 }
 
 /** Le corps dans sa posture, le fantôme de la référence, l'arc de mesure. */
@@ -480,15 +505,21 @@ function scene(cle, methode, vb, coul) {
   const deg = pl.sens * vb;
   const pts = poser(pl, deg);
 
-  const mobile = chaine(pts, pl.mobile, pl.avant, coul);
-  const fixe = `<g opacity=".72">${chaine(poser(pl, 0), pl.fixe, [], coul)}</g>`;
+  /* En extension, le bras non coté passerait DEVANT le tronc coté et le
+     couperait en deux : on le peint derrière. */
+  const mobile = chaine(pts, pl.mobile, pl.avant, coul, pl.brasDerriere && vb < 0, c.k);
+  const fixe = `<g opacity=".72">${chaine(poser(pl, 0), pl.fixe, [], coul, false, c.k)}</g>`;
   /* Un membre parti en arrière passe DERRIÈRE le corps : l'ordre de tracé
      dépend du signe, sinon l'extension se dessine collée sur la poitrine. */
   const corps = (pl.derriere && vb < 0) ? mobile + fixe : fixe + mobile;
 
   const [px, py] = c.pv;
   const fin = [px + c.u[0] * c.lf, py + c.u[1] * c.lf];
-  const fantome = `<path d="M${f(px)},${f(py)}L${f(fin[0])},${f(fin[1])}" fill="none"
+  /* Quand le segment coïncide avec la référence, le pointillé passerait sur
+     lui — et sur le visage, pour le cou : on ne trace que le dépassement. */
+  const d0 = Math.abs(deg) < 4 ? c.lref : 0;
+  const deb = [px + c.u[0] * d0, py + c.u[1] * d0];
+  const fantome = `<path d="M${f(deb[0])},${f(deb[1])}L${f(fin[0])},${f(fin[1])}" fill="none"
       stroke="var(--texte-2)" stroke-width="0.055" stroke-dasharray="0.17 0.13" opacity=".9"/>`;
 
   /* L'arc de mesure : il part du sommet de l'angle, entre le fantôme et le
@@ -505,9 +536,12 @@ function scene(cle, methode, vb, coul) {
     const tri = [[p2[0] + tg[0] * 0.13, p2[1] + tg[1] * 0.13],
                  [p2[0] + nr[0] * 0.09, p2[1] + nr[1] * 0.09],
                  [p2[0] - nr[0] * 0.09, p2[1] - nr[1] * 0.09]];
+    /* Sous 10°, l'arc est plus court que sa pointe : elle seule resterait, posée
+       sur la poitrine comme un signe. On la garde pour les angles qui la portent. */
+    const pointe = Math.abs(deg) >= 10
+      ? `<path d="M${tri.map(q => f(q[0]) + "," + f(q[1])).join("L")}Z" fill="var(--texte)"/>` : "";
     arc = `<path d="M${f(p1[0])},${f(p1[1])}A${f(ra)},${f(ra)} 0 ${grand} ${sens} ${f(p2[0])},${f(p2[1])}"
-             fill="none" stroke="var(--texte)" stroke-width="0.07" stroke-linecap="round"/>
-           <path d="M${tri.map(q => f(q[0]) + "," + f(q[1])).join("L")}Z" fill="var(--texte)"/>`;
+             fill="none" stroke="var(--texte)" stroke-width="0.07" stroke-linecap="round"/>${pointe}`;
   }
   /* Le sol : sans lui, un corps penché à 90° a l'air de tomber. */
   const sol = pl.sol
@@ -520,11 +554,12 @@ function scene(cle, methode, vb, coul) {
   /* L'étiquette du 0° est posée hors du groupe mis à l'échelle : elle doit
      rester lisible, pas grossir avec le mannequin. Bornée à la scène, elle ne
      peut atteindre aucune autre étiquette. */
-  const ex = Math.max(16, Math.min(132, c.tx + c.k * c.e0[0]));
-  const ey = Math.max(14, Math.min(212, c.ty + c.k * c.e0[1]));
+  const e0 = vb < 0 ? c.e0m : c.e0;
+  const ex = Math.max(16, Math.min(132, c.tx + c.k * e0[0]));
+  const ey = Math.max(14, Math.min(212, c.ty + c.k * e0[1]));
 
   return `<g transform="translate(${f(c.tx)},${f(c.ty)}) scale(${f(c.k)})">
-      ${sol}${corps}${fantome}${arc}${pivot}</g>
+      ${sol}<g class="corps">${corps}</g>${fantome}${arc}${pivot}</g>
     <text x="${f(ex)}" y="${f(ey)}" text-anchor="middle" dominant-baseline="central"
           font-size="11" fill="var(--texte-2)">0°</text>`;
 }
@@ -533,7 +568,7 @@ function scene(cle, methode, vb, coul) {
    6. LA RÉGLETTE — où bascule la cote, et où tombe la mesure
    --------------------------------------------------------------------------- */
 
-function reglette(d, maxCote, valeur, vb, iActive) {
+function reglette(d, maxCote, valeur, vb, iActive, decal = 0) {
   const spans = d.b.map(([a, z]) => z - a);
   const h = hauteursBandes(spans, RY2 - RY1, HMIN);
   const bas = [];                      // y de la borne basse de chaque bande
@@ -552,7 +587,10 @@ function reglette(d, maxCote, valeur, vb, iActive) {
      n'atteint le contraste requis sur aucune des quatre teintes. */
   let bandes = "", cotes = "", active = "";
   d.b.forEach(([a, z, cote], i) => {
-    const sev = severite(cote, d.majoration ? 3 : maxCote);
+    /* Sur le maximum réel du segment — celui que la fiche emploie pour son
+       en-tête — sinon la couleur du dessin contredit celle du titre. Pour les
+       jambes, la bande dit une majoration : elle s'ajoute à la base de l'appui. */
+    const sev = severite(cote + decal, maxCote);
     const yb = bas[i], yt = bas[i] - h[i];
     bandes += `<path d="M${RX},${f(yb)}H${RX + RW}V${f(yt)}H${RX}Z" fill="${COULEURS[sev]}"/>`;
     if (i === iActive)
@@ -583,9 +621,16 @@ function reglette(d, maxCote, valeur, vb, iActive) {
   /* Le 0° quand il tombe à l'intérieur d'une bande : un cran, sans texte —
      le fantôme de la scène le nomme déjà, et deux « 0° » à 10 u l'un de
      l'autre ne se lisent pas. */
-  if (!bornes.includes(0) && d.min < 0 && d.max > 0)
+  if (!bornes.includes(0) && d.min < 0 && d.max > 0) {
     etiq += `<path d="M${RX},${f(yDe(0))}h6 M${RX + RW - 6},${f(yDe(0))}h6"
         stroke="var(--texte-2)" stroke-width="1.6" opacity=".9"/>`;
+    /* Et son nom, si la bande est assez haute pour qu'il ne touche pas ses
+       voisines : deux tirets que rien ne nomme ne disent pas « zéro ». */
+    const i0 = d.b.findIndex(([a, z]) => 0 >= a && 0 <= z);
+    if (i0 >= 0 && h[i0] >= 36)
+      etiq += `<text x="${XBORNE}" y="${f(yDe(0))}" text-anchor="end" dominant-baseline="central"
+         font-size="10.5" fill="var(--texte-2)">0°</text>`;
+  }
 
   /* Le repère de la mesure : un trait plein en travers de la bande, une
      pointe, et le cartouche au bout — dans sa colonne réservée. */
@@ -624,26 +669,44 @@ function reglette(d, maxCote, valeur, vb, iActive) {
  * référence en fantôme, et la réglette des plages de cotation avec la mesure
  * repérée dessus. Rend une chaîne SVG suivie de la légende de la vue.
  */
-export function pictogramme(cle, methode, valeur, maxCote) {
+export function pictogramme(cle, methode, valeur, maxCote, { base, cote } = {}) {
   const d = BANDES[methode]?.[cle];
   const pl = PLANCHES[cle];
   if (!d || !pl || !Number.isFinite(valeur)) return "";
 
   const vb = Math.max(d.min, Math.min(d.max, valeur));
-  /* La bande où tombe la mesure. Sur un seuil exact, la plus petite cote
-     l'emporte : « au-delà de 20° » ne commence pas à 20°, et c'est bien ce que
-     font les comparaisons strictes de reba.js et rula.js. La fiche reste
-     l'autorité sur la cote ; le pictogramme n'en montre que la bande. */
-  let iBande = d.b.reduce((meilleur, [a, z, c], i) =>
-    (vb >= a && vb <= z && (meilleur < 0 || c < d.b[meilleur][2])) ? i : meilleur, -1);
-  if (iBande < 0) iBande = vb <= d.b[0][1] ? 0 : d.b.length - 1;
-  const cote = d.b[iBande][2];
-  const coul = COULEURS[severite(cote, d.majoration ? 3 : maxCote)];
+
+  /* La fiche est l'autorité sur le score : elle passe la base que la fonction
+     de cotation a donnée, et le pictogramme cherche la bande qui la porte. Il
+     ne re-dérive rien — sur un seuil exact, les fonctions de cotation ne sont
+     pas toutes strictes du même côté (RULA donne 2 à 5° pile), et le dessin
+     contredisait la fiche à un degré près.
+     Sans base (le banc d'essai), on retient la plus petite cote des bandes qui
+     contiennent la mesure. Pour les jambes, la bande dit une majoration sur
+     la base de l'appui : c'est l'angle seul qui la choisit. */
+  const parAngle = () => {
+    let i = d.b.reduce((m, [a, z, c], k) =>
+      (vb >= a && vb <= z && (m < 0 || c < d.b[m][2])) ? k : m, -1);
+    return i < 0 ? (vb <= d.b[0][1] ? 0 : d.b.length - 1) : i;
+  };
+  let iBande;
+  if (d.majoration || !Number.isFinite(base)) iBande = parAngle();
+  else {
+    iBande = d.b.findIndex(([a, z, c]) => vb >= a && vb <= z && c === base);
+    /* Aucune bande ne porte cette base — le « tronc droit » de REBA vaut 1 en
+       un point que la feuille ne dessine pas : on n'en cercle aucune. */
+  }
+  const decal = d.majoration && Number.isFinite(base) ? base - 1 : 0;
+  /* La figure prend la couleur du score entier de la fiche — majorations
+     comprises — c'est lui que l'en-tête affiche juste au-dessus. */
+  const coteFig = Number.isFinite(cote) ? cote
+                : iBande >= 0 ? d.b[iBande][2] + decal : base;
+  const coul = COULEURS[severite(coteFig, maxCote)];
 
   return `<svg class="picto" viewBox="0 0 ${L} ${H}" role="img"
-      aria-label="Le corps dans la posture mesurée, ${Math.round(valeur)} degrés, et les plages de cotation du segment">
+      aria-label="Le corps dans la posture mesurée, ${Math.round(valeur)} degrés, et les plages de score du segment">
     ${scene(cle, methode, vb, coul)}
-    ${reglette(d, maxCote, valeur, vb, iBande)}
+    ${reglette(d, maxCote, valeur, vb, iBande, decal)}
   </svg>
   <p class="picto-vue">${pl.vue}</p>`;
 }

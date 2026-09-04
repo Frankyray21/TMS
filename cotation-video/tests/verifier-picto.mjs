@@ -19,20 +19,8 @@ const { pictogramme, BANDES } = await import(
 const MARGE = 1;          // tolérance de débordement, en unités du viewBox
 const RECOUVREMENT = 4;   // aire de recouvrement tolérée, en unités²
 
-const CAS = [];
-for (const methode of ["reba", "rula"]) {
-  for (const [cle, d] of Object.entries(BANDES[methode])) {
-    const vals = new Set([d.min, d.max, 0]);
-    for (const [a, b] of d.b) {
-      for (const s of [a, b]) { vals.add(s - 1); vals.add(s); vals.add(s + 1); }
-      vals.add(Math.round((a + b) / 2));
-    }
-    for (const v of [...vals].filter(v => v >= d.min && v <= d.max).sort((x, y) => x - y))
-      CAS.push({ methode, cle, v,
-                 max: cle === "poignet" ? 3 : cle === "cou" ? (methode === "rula" ? 6 : 3)
-                    : cle === "tronc" ? 5 : 6 });
-  }
-}
+import { casDeBandes } from "./cas-picto.mjs";
+const CAS = casDeBandes(BANDES);
 
 const b = await chromium.launch();
 const p = await b.newPage();
@@ -40,7 +28,7 @@ await p.setContent("<!doctype html><meta charset='utf-8'><div id='h'></div>");
 
 const echecs = [];
 for (const c of CAS) {
-  const svg = pictogramme(c.cle, c.methode, c.v, c.max);
+  const svg = pictogramme(c.cle, c.methode, c.v, c.max, { base: c.base, cote: c.cote });
   if (!svg) { echecs.push({ ...c, quoi: "vide", detail: "pictogramme() n'a rien rendu" }); continue; }
 
   const r = await p.evaluate(({ svg, MARGE, RECOUVREMENT }) => {
@@ -71,6 +59,28 @@ for (const c of CAS) {
       o.x1 < -MARGE || o.y1 < -MARGE || o.x2 > L + MARGE || o.y2 > H + MARGE)
       .map(o => `« ${o.t} » à [${o.x1.toFixed(0)},${o.y1.toFixed(0)}]-[${o.x2.toFixed(0)},${o.y2.toFixed(0)}] hors de ${L}×${H}`);
 
+    /* Un texte posé sur le corps : on échantillonne sa boîte et on demande à
+       chaque pièce du corps si elle contient le point, dans son propre repère. */
+    const surCorps = [];
+    const pieces = [...s.querySelectorAll(".corps path, .corps circle")];
+    const svgPt = (x, y) => { const q = s.createSVGPoint(); q.x = x; q.y = y; return q; };
+    for (const t of s.querySelectorAll("text")) {
+      const g = t.getBBox();
+      const ctmT = t.getCTM();
+      let touche = 0, total = 0;
+      for (let u = 0.1; u <= 0.9; u += 0.2) for (let w = 0.15; w <= 0.85; w += 0.35) {
+        const pt = svgPt(g.x + g.width * u, g.y + g.height * w).matrixTransform(ctmT);
+        total++;
+        for (const el of pieces) {
+          const loc = pt.matrixTransform(el.getCTM().inverse());
+          const dedans = el.isPointInFill(loc) ||
+            (el.getAttribute("stroke") && el.getAttribute("stroke") !== "none" && el.isPointInStroke(loc));
+          if (dedans) { touche++; break; }
+        }
+      }
+      if (touche) surCorps.push(`« ${(t.textContent || "").trim()} » sur le corps (${touche}/${total} points)`);
+    }
+
     const chocs = [];
     for (let i = 0; i < boites.length; i++) for (let j = i + 1; j < boites.length; j++) {
       const a = boites[i], o = boites[j];
@@ -79,11 +89,12 @@ for (const c of CAS) {
       if (w > 0 && h > 0 && w * h > RECOUVREMENT)
         chocs.push(`« ${a.t} » ∩ « ${o.t} » = ${(w * h).toFixed(0)} u²`);
     }
-    return { dehors, chocs, n: boites.length };
+    return { dehors, chocs, surCorps, n: boites.length };
   }, { svg, MARGE, RECOUVREMENT });
 
   for (const d of r.dehors) echecs.push({ ...c, quoi: "hors-cadre", detail: d });
   for (const d of r.chocs)  echecs.push({ ...c, quoi: "recouvrement", detail: d });
+  for (const d of r.surCorps) echecs.push({ ...c, quoi: "sur-le-corps", detail: d });
 }
 await b.close();
 
