@@ -175,12 +175,39 @@ p{margin:0}
 .vide span{font-size:.87rem;color:var(--texte-2)}
 
 .progres{
-  position:absolute;inset:auto 0 0 0;background:rgba(10,14,23,.94);
-  padding:.7rem .9rem;display:flex;align-items:center;gap:.8rem;border-top:1px solid var(--bord);
+  position:absolute;inset:auto 0 0 0;background:rgba(10,14,23,.96);
+  padding:.85rem .95rem;display:flex;flex-direction:column;gap:.6rem;
+  border-top:1px solid var(--bord);backdrop-filter:blur(6px);
 }
-.progres-barre{flex:1;height:5px;background:var(--carte-2);border-radius:3px;overflow:hidden}
+/* Les quatre étapes, pour que l'attente ait une carte et pas seulement une durée. */
+.etapes{display:flex;flex-wrap:wrap;gap:.3rem 1.1rem;margin:0;padding:0;list-style:none}
+.etapes li{
+  display:flex;align-items:center;gap:.4rem;font-size:.83rem;color:var(--sourd);
+  font-family:var(--disp);font-weight:600;letter-spacing:.04em;
+}
+.etapes li::before{
+  content:"";width:9px;height:9px;border-radius:50%;flex:none;
+  border:1.5px solid var(--bord-fort);
+}
+.etapes li.faite{color:var(--texte-2)}
+.etapes li.faite::before{background:var(--n-vert);border-color:var(--n-vert)}
+.etapes li.encours{color:var(--texte)}
+.etapes li.encours::before{background:var(--accent);border-color:var(--accent);animation:battement 1.1s ease-in-out infinite}
+@keyframes battement{0%,100%{opacity:1}50%{opacity:.35}}
+.etapes li small{font-family:var(--corps);font-weight:400;letter-spacing:0;color:var(--sourd)}
+
+.progres-barre{height:5px;background:var(--carte-2);border-radius:3px;overflow:hidden}
 .progres-barre i{display:block;height:100%;width:0;background:var(--accent);transition:width .12s linear}
-.progres span{font-size:.85rem;color:var(--texte-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.progres-barre.indetermine i{
+  width:35%!important;background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  animation:defile 1.3s linear infinite;
+}
+@keyframes defile{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
+
+.progres-pied{display:flex;align-items:center;gap:.8rem}
+.progres-pied span{font-size:.85rem;color:var(--texte-2);font-variant-numeric:tabular-nums}
+#progresTexte{flex:1;min-width:0}
+.progres-chiffres{color:var(--sourd);white-space:nowrap}
 
 .transport{display:flex;align-items:center;gap:.6rem}
 .temps{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--sourd);font-size:.88rem}

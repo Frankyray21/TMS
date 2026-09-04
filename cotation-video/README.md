@@ -37,6 +37,23 @@ Puis ouvrir `http://localhost:8080/`. L'outil s'ouvre sur une **démonstration**
 — un cycle de levage fabriqué — pour montrer ce qu'il produit avant même de
 charger un fichier. Les postures y sont simulées, l'interface le dit.
 
+### Ce que montre l'analyse pendant qu'elle tourne
+
+Quatre étapes affichées en permanence — moteur, modèle, analyse, cotation — avec
+la barre d'avancement de l'étape en cours. Quand l'avancement n'est pas mesurable
+(chargement du moteur, préparation du détecteur), la barre défile au lieu de
+rester à zéro : une barre figée donne l'impression d'un blocage.
+
+Le **téléchargement du modèle** est le plus long à la première utilisation,
+9 Mo. MediaPipe sait le charger depuis une URL mais sans rien rapporter ; on lit
+donc le flux nous-mêmes pour afficher les octets reçus, et on passe le résultat
+en `modelAssetBuffer`. Le fichier est ensuite **conservé dans le cache du
+navigateur** : les analyses suivantes affichent « Modèle chargé depuis le
+cache » et démarrent aussitôt.
+
+Pendant le parcours de la vidéo : position dans la vidéo, images cotées, images
+sans détection, et temps restant estimé.
+
 ### Mode hors ligne
 
 Par défaut le moteur de pose est chargé depuis un CDN public. Pour un site sans

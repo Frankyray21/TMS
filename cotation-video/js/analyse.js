@@ -53,6 +53,8 @@ export async function parcourirVideo(video, o = {}) {
   const releves = [];
   let prochain = 0;
   let dernierHorodatage = -1;
+  let sansDetection = 0;
+  const depart = performance.now();
 
   video.pause();
   video.currentTime = 0;
@@ -78,8 +80,17 @@ export async function parcourirVideo(video, o = {}) {
         try {
           const pose = detecterVideo(video, tMs);
           if (pose) releves.push({ t, ...pose });
-        } catch (e) { /* image indécodable : on continue */ }
-        o.onProgres?.(video.duration ? t / video.duration : 0, releves.length);
+          else sansDetection++;
+        } catch (e) { sansDetection++; }
+        /* Assez d'information pour que l'utilisateur sache où en est l'analyse :
+           position dans la vidéo, images retenues, images sans personne
+           détectée, et temps écoulé — dont se déduit le temps restant. */
+        o.onProgres?.({
+          part: video.duration ? t / video.duration : 0,
+          t, duree: video.duration || 0,
+          retenues: releves.length, sansDetection,
+          ecoule: (performance.now() - depart) / 1000
+        });
       }
       planifier();
     };
@@ -259,18 +270,19 @@ export function coter(releves, params = {}) {
 
 /** Chaîne complète, du fichier au résultat. */
 export async function analyserVideo(video, params = {}, o = {}) {
-  await chargerDetecteur({ mode: "VIDEO", precision: params.precision, source: params.source, onProgres: o.onEtat });
+  await chargerDetecteur({ mode: "VIDEO", precision: params.precision, source: params.source, onEtape: o.onEtape });
   const releves = await parcourirVideo(video, {
     echantillonnage: params.echantillonnage,
     vitesse: params.vitesse,
     signal: o.signal,
     onProgres: o.onProgres
   });
+  o.onEtape?.({ etape: "cotation", libelle: `Cotation de ${releves.length} images`, part: null });
   return coter(releves, params);
 }
 
 export async function analyserImage(element, params = {}, o = {}) {
-  await chargerDetecteur({ mode: "IMAGE", precision: params.precision, source: params.source, onProgres: o.onEtat });
+  await chargerDetecteur({ mode: "IMAGE", precision: params.precision, source: params.source, onEtape: o.onEtape });
   return coter(releverImage(element), params);
 }
 

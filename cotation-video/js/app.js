@@ -22,7 +22,8 @@ const el = {
   fichier: $("#fichier"), video: $("#video"), photo: $("#photo"), calque: $("#calque"),
   scene: $("#scene"), etatVide: $("#etatVide"),
   progres: $("#progres"), progresJauge: $("#progresJauge"), progresTexte: $("#progresTexte"),
-  annuler: $("#annuler"), lecture: $("#lecture"), allerPire: $("#allerPire"), tCourant: $("#tCourant"),
+  annuler: $("#annuler"), lecture: $("#lecture"), etapes: $("#etapes"),
+  progresChiffres: $("#progresChiffres"), allerPire: $("#allerPire"), tCourant: $("#tCourant"),
   chrono: $("#chrono"), chronoLegende: $("#chronoLegende"), noteChrono: $("#noteChrono"),
   jauge: $(".jauge"), niveauLibelle: $("#niveauLibelle"), niveauAction: $("#niveauAction"),
   corpsSegments: $("#corpsSegments"), calcul: $("#calcul"),
@@ -89,6 +90,85 @@ const etat = {
   horlogeDemo: null
 };
 
+/* ---------- Suivi de l'analyse ----------
+   Quatre étapes, affichées en permanence : l'attente a une carte, pas seulement
+   une durée. Le téléchargement du modèle est le plus long à la première
+   utilisation — c'est là qu'il faut des octets, pas un message figé. */
+const ETAPES = [
+  { cle: "moteur",   nom: "Moteur" },
+  { cle: "modele",   nom: "Modèle" },
+  { cle: "analyse",  nom: "Analyse" },
+  { cle: "cotation", nom: "Cotation" }
+];
+
+const mo = o => (o / 1048576).toFixed(1).replace(".", ",");
+const secondes = s => s >= 60
+  ? `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, "0")} s`
+  : `${s.toFixed(s < 10 ? 1 : 0).replace(".", ",")} s`;
+
+function reinitialiserEtapes() {
+  el.etapes.innerHTML = ETAPES.map(e => `<li data-etape="${e.cle}">${e.nom}</li>`).join("");
+  el.progresJauge.style.width = "0%";
+  el.progresChiffres.textContent = "";
+  el.progres.classList.remove("indetermine");
+  el.progresJauge.parentElement.classList.remove("indetermine");
+}
+
+/**
+ * @param {string} cle — étape courante
+ * @param {object} o — { libelle, part (0–1 ou null), detail }
+ */
+function majEtat(cle, o = {}) {
+  const rang = ETAPES.findIndex(e => e.cle === cle);
+  el.etapes.querySelectorAll("li").forEach((li, i) => {
+    li.classList.toggle("faite", i < rang);
+    li.classList.toggle("encours", i === rang);
+    const e = ETAPES[i];
+    li.innerHTML = e.nom + (i === rang && o.suffixe ? ` <small>${o.suffixe}</small>` : "");
+  });
+  if (o.libelle) el.progresTexte.textContent = o.libelle;
+  el.progresChiffres.textContent = o.detail || "";
+
+  /* Barre indéterminée tant qu'on ne sait pas mesurer : mieux vaut une barre
+     qui bouge sans promettre qu'une barre à zéro qui a l'air bloquée. */
+  const barre = el.progresJauge.parentElement;
+  if (o.part == null) {
+    barre.classList.add("indetermine");
+  } else {
+    barre.classList.remove("indetermine");
+    el.progresJauge.style.width = `${Math.round(Math.max(0, Math.min(1, o.part)) * 100)}%`;
+  }
+}
+
+/* Les rappels passés à la chaîne d'analyse. */
+function suivi() {
+  return {
+    onEtape: info => {
+      if (info.etape === "modele" && info.total) {
+        majEtat("modele", {
+          libelle: info.cache ? "Modèle chargé depuis le cache" : "Téléchargement du modèle de pose",
+          part: info.part,
+          suffixe: info.cache ? "en cache" : `${mo(info.recu)} / ${mo(info.total)} Mo`,
+          detail: info.cache ? "" : "première utilisation seulement"
+        });
+      } else {
+        majEtat(info.etape, { libelle: info.libelle, part: info.part ?? null });
+      }
+    },
+    onProgres: p => {
+      const reste = p.part > 0.02 ? p.ecoule / p.part - p.ecoule : null;
+      majEtat("analyse", {
+        libelle: "Analyse des images",
+        part: p.part,
+        suffixe: p.duree ? `${secondes(p.t)} / ${secondes(p.duree)}` : "",
+        detail: `${p.retenues} image${p.retenues > 1 ? "s" : ""} cotée${p.retenues > 1 ? "s" : ""}`
+          + (p.sansDetection ? ` · ${p.sansDetection} sans détection` : "")
+          + (reste ? ` · reste ~${secondes(reste)}` : "")
+      });
+    }
+  };
+}
+
 /* ---------- Paramètres saisis ---------- */
 function lireParams() {
   return {
@@ -150,10 +230,18 @@ function dimensionnerCalque() {
   return { ctx, largeur: l, hauteur: h };
 }
 
-/** Efface la surface de dessin sans rien y remettre. */
+/** Efface la surface de dessin et la chronologie, sans rien y remettre.
+    Tout ce qui reste à l'écran d'une analyse précédente peut passer pour une
+    mesure du fichier courant. */
 function effacerCalque() {
   const { ctx, largeur, hauteur } = dimensionnerCalque();
   ctx.clearRect(0, 0, largeur, hauteur);
+  const c = el.chrono.getContext("2d");
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  c.clearRect(0, 0, el.chrono.width, el.chrono.height);
+  el.chronoLegende.innerHTML = "";
+  el.noteChrono.textContent = "";
+  el.tCourant.textContent = "0,0";
 }
 
 function dessinerInstant(t) {
@@ -258,7 +346,8 @@ async function chargerFichier(f) {
   etat.abandon = new AbortController();
   el.etatVide.hidden = true;
   el.progres.hidden = false;
-  el.progresJauge.style.width = "0%";
+  el.annuler.textContent = "Arrêter";
+  reinitialiserEtapes();
 
   /* Abandonner l'analyse précédente AVANT d'afficher le nouveau fichier.
      Sans ça, la vidéo est lue pendant l'analyse, « timeupdate » se déclenche, et
@@ -280,19 +369,11 @@ async function chargerFichier(f) {
       etat.mode = "image";
       el.video.hidden = true; el.photo.hidden = false; el.photo.src = url;
       await el.photo.decode();
-      el.progresTexte.textContent = "Analyse de l'image…";
-      etat.analyse = await analyserImage(el.photo, params, { onEtat: t => t && (el.progresTexte.textContent = t) });
+      etat.analyse = await analyserImage(el.photo, params, suivi());
     } else {
       etat.mode = "video";
       el.photo.hidden = true; el.video.hidden = false; el.video.src = url;
-      etat.analyse = await analyserVideo(el.video, params, {
-        signal: etat.abandon.signal,
-        onEtat: t => t && (el.progresTexte.textContent = t),
-        onProgres: (p, n) => {
-          el.progresJauge.style.width = `${Math.round(p * 100)}%`;
-          el.progresTexte.textContent = `Analyse… ${Math.round(p * 100)} % · ${n} images`;
-        }
-      });
+      etat.analyse = await analyserVideo(el.video, params, { signal: etat.abandon.signal, ...suivi() });
       el.video.currentTime = 0;
       el.lecture.disabled = false;
     }
