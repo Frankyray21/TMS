@@ -868,6 +868,9 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 .foot h5{font-family:var(--font-display);font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text);margin-bottom:.8rem}
 .foot ul{list-style:none}
 .foot li{padding:.25rem 0;color:var(--muted);font-size:.9rem}
+/* Outils en developpement : signale l'etat sans attirer l'oeil. */
+.foot-labo{display:inline-block;margin-left:.3rem;padding:.02rem .34rem;border:1px solid var(--border);border-radius:3px;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);vertical-align:middle}
+.foot li.foot-desc{color:var(--dim);font-size:.82rem;line-height:1.45;padding-top:.3rem;max-width:36ch}
 .foot a{color:var(--muted);font-size:.9rem;transition:color .2s}
 .foot a:hover{color:var(--accent-l)}
 .foot p{color:var(--muted);font-size:.88rem;line-height:1.6}

@@ -97,6 +97,12 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
+  /* L'outil de cotation vidéo est une application distincte, servie sous
+     /cotation-video/. On la laisse entièrement au réseau : sans ça, ses modules
+     et surtout son modèle de pose (plusieurs mégaoctets) atterriraient dans le
+     cache du site, qu'on vient justement d'assainir. */
+  if (url.origin === self.location.origin && url.pathname.includes("/cotation-video/")) return;
+
   /* Pages : réseau d'abord (contenu frais), cache en secours */
   if (req.mode === "navigate") {
     e.respondWith((async () => {
