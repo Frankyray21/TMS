@@ -130,7 +130,10 @@ function majSorties() {
 
 function dimensionnerCalque() {
   const src = etat.mode === "image" ? el.photo : el.video;
-  const boite = el.scene.getBoundingClientRect();
+  /* clientWidth/Height, pas getBoundingClientRect : le calque est positionné
+     dans la boîte de contenu de la scène, alors que le rectangle englobant
+     inclut la bordure. L'écart d'un pixel se voit sur un trait fin. */
+  const boite = { width: el.scene.clientWidth, height: el.scene.clientHeight };
   let l = boite.width, h = boite.height;
   if (etat.mode !== "demo" && src) {
     const r = src.getBoundingClientRect();
@@ -145,6 +148,12 @@ function dimensionnerCalque() {
   const ctx = el.calque.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return { ctx, largeur: l, hauteur: h };
+}
+
+/** Efface la surface de dessin sans rien y remettre. */
+function effacerCalque() {
+  const { ctx, largeur, hauteur } = dimensionnerCalque();
+  ctx.clearRect(0, 0, largeur, hauteur);
 }
 
 function dessinerInstant(t) {
@@ -251,6 +260,20 @@ async function chargerFichier(f) {
   el.progres.hidden = false;
   el.progresJauge.style.width = "0%";
 
+  /* Abandonner l'analyse précédente AVANT d'afficher le nouveau fichier.
+     Sans ça, la vidéo est lue pendant l'analyse, « timeupdate » se déclenche, et
+     le squelette de l'analyse précédente — la démonstration, au premier
+     chargement — se dessine par-dessus les images de l'utilisateur. Un squelette
+     qui ne suit personne, et qui donne l'air d'un calque mal aligné. */
+  etat.analyse = null;
+  etat.niosh = { origine: null, destination: null };
+  etat.t = 0;
+  etat.lecture = false;
+  el.lecture.textContent = "Lecture";
+  el.lecture.disabled = true;
+  viderPanneau();
+  effacerCalque();
+
   const params = lireParams();
   try {
     if (f.type.startsWith("image/")) {
@@ -279,8 +302,7 @@ async function chargerFichier(f) {
          affichée par-dessus le fichier de l'utilisateur : un résultat simulé
          passerait pour une mesure. */
       etat.analyse = null;
-      const c = dimensionnerCalque();
-      c.ctx.clearRect(0, 0, c.largeur, c.hauteur);
+      effacerCalque();
       viderPanneau();
       el.progresTexte.textContent =
         "Aucune personne détectée. Cadrage trop serré, sujet coupé ou trop petit dans l'image ?";
@@ -300,8 +322,7 @@ async function chargerFichier(f) {
        par-dessus la photo de l'utilisateur ferait passer un résultat simulé
        pour une mesure. */
     etat.analyse = null;
-    const { ctx, largeur, hauteur } = dimensionnerCalque();
-    ctx.clearRect(0, 0, largeur, hauteur);
+    effacerCalque();
     viderPanneau();
     el.progresTexte.textContent = `Échec : ${e.message}`;
     el.annuler.textContent = "Fermer";
@@ -318,6 +339,7 @@ function viderPanneau() {
   el.niveauAction.textContent = "";
   el.corpsSegments.innerHTML = "";
   el.calcul.textContent = "";
+  $("#synoptique").innerHTML = "";
   el.lecture.disabled = true;
   majSynthese();
 }
