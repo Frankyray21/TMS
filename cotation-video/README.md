@@ -73,6 +73,29 @@ vidéo → estimation de pose ┤   (angles.js)          (reba, rula)
 | `js/demo.js` | Le cycle de levage simulé de l'écran d'accueil. |
 | `js/app.js` | Interface. Ne contient aucune règle de cotation. |
 
+### Les trois lectures ensemble — mais pas de score composite
+
+Le panneau ouvre sur les trois verdicts côte à côte, chacun sur **son** échelle,
+avec une mention de pertinence. Cliquer une ligne ouvre le détail de la méthode.
+
+Il n'y a délibérément **aucun indice combiné**, pour trois raisons :
+
+- Les échelles ne sont pas commensurables. REBA va de 1 à 15, RULA de 1 à 7, et
+  l'indice NIOSH est un *ratio* sans borne supérieure — un 2,4 signifie « 2,4 fois
+  la charge admissible », pas « 2,4 sur 10 ».
+- REBA et RULA se recouvrent : les deux notent la posture à partir des **mêmes
+  angles**. Les additionner compterait le tronc et le bras deux fois.
+- Chaque méthode est validée séparément, avec ses propres seuils d'action. Un
+  score maison perdrait ce qui fait leur valeur : la traçabilité jusqu'à une
+  publication.
+
+Le désaccord entre les trois est l'information utile. RULA qui sature dit « ce
+n'est pas ma question » ; NIOSH qui pointe la distance horizontale dit *quoi
+corriger*, ce que REBA ne dit pas.
+
+Le poids de la charge est un fait physique unique : les curseurs de REBA et de
+NIOSH sont liés, il ne se saisit pas deux fois.
+
 ### REBA et RULA sont calculées à chaque image
 
 Ce ne sont que des lectures de tables : basculer de l'une à l'autre ne relance ni

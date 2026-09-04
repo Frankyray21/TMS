@@ -155,6 +155,7 @@ function dessinerInstant(t) {
   ctx.clearRect(0, 0, largeur, hauteur);
   dessinerSquelette(ctx, image, { largeur, hauteur });
   el.tCourant.textContent = t.toFixed(1).replace(".", ",");
+  majSynoptique(image);
   if (METHODES[etat.methode].levage) {
     majPanneauNiosh();
   } else {
@@ -288,6 +289,8 @@ async function chargerFichier(f) {
     }
     el.progres.hidden = true;
     etat.t = 0;
+    etat.niosh = { origine: null, destination: null };
+    proposerLevage();
     majAvis();
     majSynthese();
     dessinerInstant(0);
@@ -325,6 +328,8 @@ function chargerDemo() {
   etat.mode = "demo";
   etat.analyse = coter(sequenceDemo(), PARAMS_DEMO);
   appliquerParamsAuFormulaire(PARAMS_DEMO);
+  synchroniserPoids("postural");
+  proposerLevage();          // pour que le synoptique montre les trois d'emblée
   majAvis();                 // les paramètres viennent de changer
   majSynthese();
   etat.t = etat.analyse.synthese.pire.t;   // on ouvre sur l'instant le plus parlant
@@ -396,10 +401,11 @@ function lireReperes() {
   return { origine: lire("o"), destination: lire("d") };
 }
 
-function majPanneauNiosh() {
-  if (!etat.analyse) return;
+/** Le calcul NIOSH courant, ou null tant que le levage n'est pas repéré. */
+function resultatNiosh() {
+  if (!etat.analyse || !etat.niosh.origine) return null;
   const r = lireReperes();
-  const res = calculerNIOSH({
+  return calculerNIOSH({
     origine: r.origine, destination: r.destination,
     controleDestination: $("#controleDestination").checked,
     poids: +$("#poidsCharge").value,
@@ -407,6 +413,13 @@ function majPanneauNiosh() {
     duree: $("#dureeTache").value,
     prise: $("#priseNiosh").value
   });
+}
+
+function majPanneauNiosh() {
+  if (!etat.analyse) return;
+  const r = lireReperes();
+  const res = resultatNiosh();
+  if (!res) return;
 
   const fini = Number.isFinite(res.il);
   const texte = fini ? res.il.toFixed(1).replace(".", ",") : "∞";
@@ -451,6 +464,71 @@ function majPanneauNiosh() {
   el.chronoLegende.innerHTML = "";
 }
 
+/* Le poids de la charge est un fait physique unique : REBA et NIOSH le
+   demandent tous les deux, il n'a pas à être saisi deux fois. Les deux curseurs
+   restent visibles là où chaque méthode l'attend, mais ils sont liés. */
+function synchroniserPoids(depuis) {
+  const source = depuis === "niosh" ? $("#poidsCharge") : $("#charge");
+  const cible = depuis === "niosh" ? $("#charge") : $("#poidsCharge");
+  const v = Math.min(+cible.max, Math.max(+cible.min, +source.value));
+  if (+cible.value !== v) cible.value = v;
+}
+
+/* ---------- Vue synoptique ----------
+   Les trois verdicts ensemble, chacun sur son échelle. Pas de score composite :
+   REBA va de 1 à 15, RULA de 1 à 7, et l'indice NIOSH est un ratio sans borne.
+   Les moyenner produirait un chiffre indéfendable — et comme REBA et RULA
+   partagent les mêmes angles, une somme compterait le tronc deux fois. */
+
+/** Cette méthode est-elle le bon instrument pour la tâche décrite ? */
+function pertinence(cle, image, niosh) {
+  const charge = +$("#charge").value;
+  const assis = image?.angles?.jambes?.assis;
+  if (cle === "reba") {
+    if (assis) return "Conçue pour le corps entier debout ; RULA est plus fine sur un poste assis.";
+    return charge > 0
+      ? "Adaptée — posture et charge, corps entier."
+      : "Adaptée à la posture. Sans charge déclarée, elle ne cote que le geste.";
+  }
+  if (cle === "rula") {
+    if (charge > 10) return "Hors de son domaine : sa cote de force plafonne à 10 kg, elle sature ici.";
+    if (assis) return "Adaptée — poste assis, membre supérieur.";
+    return "Adaptée au membre supérieur et aux gestes répétés.";
+  }
+  if (!niosh) return "Levage non repéré. Ouvrez l'onglet NIOSH pour poser la saisie et la dépose.";
+  if (niosh.horsDomaine.length) return "Hors domaine : " + niosh.horsDomaine[0].motif + ".";
+  return `Adaptée — levage. ${niosh.plr.toFixed(1).replace(".", ",")} kg admissibles.`;
+}
+
+function majSynoptique(image) {
+  if (!etat.analyse || !image) { $("#synoptique").innerHTML = ""; return; }
+  const niosh = resultatNiosh();
+
+  const lignes = [
+    { cle: "reba", nom: "REBA", sous: "corps entier",
+      cote: image.resultats.reba.reba, risque: image.resultats.reba.risque, dispo: true },
+    { cle: "rula", nom: "RULA", sous: "membre supérieur",
+      cote: image.resultats.rula.rula, risque: image.resultats.rula.risque, dispo: true },
+    { cle: "niosh", nom: "NIOSH", sous: "levage",
+      cote: niosh ? (Number.isFinite(niosh.il) ? niosh.il.toFixed(1).replace(".", ",") : "∞") : "—",
+      risque: niosh ? niosh.risque : null, dispo: !!niosh }
+  ];
+
+  $("#synoptique").innerHTML = lignes.map(l => `
+    <button type="button" class="syn-ligne ${l.cle === etat.methode ? "actif" : ""} ${l.dispo ? "" : "syn-hs"}"
+            data-methode="${l.cle}">
+      <span class="syn-cote" style="${l.risque ? `color:${COULEURS_NIVEAU[l.risque.couleur]}` : ""}">${l.cote}</span>
+      <span class="syn-corps">
+        <span class="syn-nom"><b>${l.nom}</b> <span class="discret">· ${l.sous}</span>${
+          l.risque ? ` — <span style="color:${COULEURS_NIVEAU[l.risque.couleur]}">${l.risque.libelle.toLowerCase()}</span>` : ""}</span>
+        <span class="syn-note">${pertinence(l.cle, image, niosh)}</span>
+      </span>
+    </button>`).join("");
+
+  $("#synoptique").querySelectorAll(".syn-ligne").forEach(b =>
+    b.addEventListener("click", () => choisirMethode(b.dataset.methode)));
+}
+
 /* ---------- Choix de la méthode ----------
    RULA et REBA sont calculées à chaque image : basculer ne relance rien, ça ne
    fait que réafficher. Un avis prévient quand la méthode choisie n'est pas la
@@ -480,7 +558,6 @@ function choisirMethode(m) {
 
   if (etat.analyse) {
     etat.analyse = recoter(etat.analyse, lireParams());
-    if (levage && !etat.niosh.origine) proposerLevage();
     majSynthese();
     dessinerInstant(etat.t);
   }
@@ -545,6 +622,7 @@ el.video.addEventListener("loadedmetadata", () => dimensionnerCalque());
 for (const id of ["charge", "prise", "statique", "repete", "instable", "brusque",
                   "cote", "jambesManuel", "pronosupination", "lissage"]) {
   $("#" + id).addEventListener("input", () => {
+    if (id === "charge") synchroniserPoids("postural");
     majSorties();
     majAvis();
     if (!etat.analyse) return;
@@ -609,7 +687,17 @@ for (const [bouton, cle] of [["#marquerOrigine", "origine"], ["#marquerDestinati
 }
 for (const id of ["oH", "oV", "oA", "dH", "dV", "dA", "poidsCharge", "frequence",
                   "dureeTache", "priseNiosh", "controleDestination"]) {
-  $("#" + id).addEventListener("input", () => { majSorties(); majPanneauNiosh(); });
+  $("#" + id).addEventListener("input", () => {
+    if (id === "poidsCharge") synchroniserPoids("niosh");
+    majSorties();
+    /* Le poids sert aux trois méthodes : on recote, pas seulement NIOSH. */
+    if (id === "poidsCharge" && etat.analyse) {
+      etat.analyse = recoter(etat.analyse, lireParams());
+      majSynthese();
+    }
+    if (etat.methode === "niosh") majPanneauNiosh();
+    if (etat.analyse) majSynoptique(imageALInstant(etat.analyse, etat.t));
+  });
 }
 /* La taille étalonne les distances : il faut refaire les mesures, pas seulement
    la cotation. */

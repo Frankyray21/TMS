@@ -67,6 +67,31 @@ p{margin:0}
 .methode.actif{background:var(--accent);color:#180708}
 .methode.actif span{color:rgba(24,7,8,.75)}
 
+/* Vue synoptique : les trois verdicts côte à côte, chacun sur son échelle.
+   Volontairement pas de score composite — REBA, RULA et NIOSH ne se moyennent
+   pas : échelles incommensurables, et les deux premières partagent les mêmes
+   angles, donc une somme compterait le tronc deux fois. */
+.synoptique{display:flex;flex-direction:column;gap:.4rem}
+.syn-ligne{
+  display:grid;grid-template-columns:auto 1fr;gap:.7rem;align-items:center;
+  width:100%;text-align:left;padding:.55rem .6rem;border-radius:3px;cursor:pointer;
+  background:var(--fond-2);border:1px solid var(--bord);color:inherit;font:inherit;
+  transition:border-color .15s,background .15s;
+}
+.syn-ligne:hover{background:var(--carte-2);border-color:var(--bord-fort)}
+.syn-ligne.actif{border-color:var(--accent)}
+.syn-ligne[disabled]{cursor:default;opacity:.75}
+.syn-cote{
+  font-family:var(--disp);font-weight:700;font-size:1.5rem;line-height:1;
+  min-width:2.6rem;text-align:center;font-variant-numeric:tabular-nums;
+}
+.syn-corps{min-width:0}
+.syn-corps > span{display:block}          /* sinon libellé et note se lisent d'un trait */
+.syn-nom{font-family:var(--disp);font-weight:600;font-size:.95rem;letter-spacing:.04em;margin-bottom:.1rem}
+.syn-nom b{font-weight:700}
+.syn-note{font-size:.82rem;color:var(--sourd);line-height:1.35}
+.syn-hs .syn-cote{color:var(--sourd)}
+
 /* NIOSH : le poids admissible face au poids réel, la comparaison qui parle. */
 .plr{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
 .plr > div{display:flex;flex-direction:column;min-width:0}
