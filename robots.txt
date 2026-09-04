@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /corps-3d.html
 Disallow: /formation-guidee-design.html
+Disallow: /cotation-video/
 
 Sitemap: https://preventiontmsmri.netlify.app/sitemap.xml
