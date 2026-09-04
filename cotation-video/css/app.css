@@ -152,17 +152,20 @@ p{margin:0}
   grid-template-columns:minmax(0,1fr);
   max-width:1560px;margin:0 auto;
 }
+/* Le plateau — visionneuse à gauche, panneau à droite — est une grille pour
+   lui seul. C'est ce qui borne le collant du panneau : le navigateur retient
+   le bloc conteneur, non la cellule, si bien qu'un panneau collant posé
+   directement dans .grille glisserait par-dessus la synthèse en dessous. */
+.plateau{display:grid;gap:1.1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:1080px){
-  .grille{grid-template-columns:minmax(0,1fr) 400px;align-items:start}
-  .synthese,.limites{grid-column:1 / -1}
+  .plateau{grid-template-columns:minmax(0,1fr) 400px;align-items:start}
   /* Le panneau colle sous l'en-tête et défile pour lui-même : sans ça, lire la
      décomposition fait perdre de vue la vidéo, qui est pourtant l'objet même de
      l'analyse. */
   .panneau{
     position:sticky;top:calc(var(--h-tete) + 1.1rem);
     max-height:calc(100vh - var(--h-tete) - 2.2rem);
-    overflow-y:auto;overscroll-behavior:contain;
-    padding-right:.3rem;scrollbar-width:thin;
+    overflow-y:auto;padding-right:.3rem;scrollbar-width:thin;
   }
   .panneau::-webkit-scrollbar{width:7px}
   .panneau::-webkit-scrollbar-thumb{background:var(--bord-fort);border-radius:4px}

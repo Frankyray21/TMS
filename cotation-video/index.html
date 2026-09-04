@@ -42,253 +42,259 @@
 
 <main class="grille">
 
-  <!-- ---------- Visionneuse ---------- -->
-  <section class="visionneuse">
-    <div class="scene" id="scene">
-      <video id="video" playsinline muted hidden></video>
-      <img id="photo" alt="" hidden>
-      <canvas id="calque"></canvas>
-      <div class="detail" id="detailSegment" hidden role="dialog" aria-label="Détail du segment">
-        <button class="detail-x" id="detailFermer" aria-label="Fermer">&times;</button>
-        <div id="detailCorps"></div>
-      </div>
-      <p class="astuce" id="astuce" hidden>Cliquez un segment du squelette pour voir sa cote et la règle appliquée.</p>
-      <div class="vide" id="etatVide">
-        <strong>Démonstration en cours</strong>
-        <span>Les postures ci-dessous sont <em>simulées</em>, pas mesurées : un cycle de
-        levage fabriqué pour montrer ce que produit l'outil. Chargez une vidéo pour
-        analyser un vrai poste.</span>
-      </div>
-      <div class="progres" id="progres" hidden>
-        <ol class="etapes" id="etapes"></ol>
-        <div class="progres-barre"><i id="progresJauge"></i></div>
-        <div class="progres-pied">
-          <span id="progresTexte">Analyse…</span>
-          <span class="progres-chiffres" id="progresChiffres"></span>
-          <button class="bouton mince" id="annuler">Arrêter</button>
+  <!-- La visionneuse et le panneau forment un plateau à part : c'est lui qui
+       borne le collant du panneau. Sans ce bornage, le panneau descendrait
+       par-dessus la synthèse, qui occupe toute la largeur en dessous. -->
+  <div class="plateau">
+
+    <!-- ---------- Visionneuse ---------- -->
+    <section class="visionneuse">
+      <div class="scene" id="scene">
+        <video id="video" playsinline muted hidden></video>
+        <img id="photo" alt="" hidden>
+        <canvas id="calque"></canvas>
+        <div class="detail" id="detailSegment" hidden role="dialog" aria-label="Détail du segment">
+          <button class="detail-x" id="detailFermer" aria-label="Fermer">&times;</button>
+          <div id="detailCorps"></div>
         </div>
-      </div>
-    </div>
-
-    <div class="transport">
-      <button class="bouton mince" id="lecture" disabled>Lecture</button>
-      <button class="bouton mince" id="allerPire">Aller au pire instant</button>
-      <span class="temps"><span id="tCourant">0,0</span> s</span>
-    </div>
-
-    <div class="chrono-bloc">
-      <div class="chrono-tete">
-        <span class="etiquette" id="chronoTitre">Cote REBA dans le temps</span>
-        <span class="chrono-legende" id="chronoLegende"></span>
-      </div>
-      <canvas id="chrono" class="chrono"></canvas>
-      <p class="note-chrono" id="noteChrono"></p>
-    </div>
-  </section>
-
-  <!-- ---------- Panneau ---------- -->
-  <aside class="panneau">
-
-    <details class="carte" id="carteIdentification">
-      <summary><h2>Identification du poste</h2></summary>
-      <p class="intro">Reprise en tête du rapport. Facultatif pour l'analyse.</p>
-      <label class="champ"><span>Poste ou tâche</span>
-        <input type="text" id="idPoste" placeholder="Ex. : déchargement de palettes, quai 2"></label>
-      <label class="champ"><span>Travailleur observé</span>
-        <input type="text" id="idTravailleur" placeholder="Initiales ou matricule"></label>
-      <label class="champ"><span>Observateur</span>
-        <input type="text" id="idObservateur" placeholder="Votre nom"></label>
-      <label class="champ"><span>Date d'observation</span>
-        <input type="date" id="idDate"></label>
-    </details>
-
-    <div class="carte" id="carteSynoptique">
-      <h2>Les trois lectures</h2>
-      <p class="intro">Les trois méthodes ne répondent pas à la même question. Leur
-      désaccord est une information&nbsp;: c'est lui qui dit laquelle s'applique ici.</p>
-      <div class="synoptique" id="synoptique"></div>
-    </div>
-
-    <div class="jauge-bloc">
-      <svg class="jauge" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="42" class="jauge-fond"></circle>
-        <circle cx="50" cy="50" r="42" class="jauge-arc"></circle>
-        <text x="50" y="50" class="jauge-valeur" text-anchor="middle" dominant-baseline="central">—</text>
-      </svg>
-      <div class="jauge-texte">
-        <span class="etiquette">Cote à l'instant affiché</span>
-        <strong id="niveauLibelle">—</strong>
-        <span id="niveauAction" class="discret"></span>
-      </div>
-    </div>
-
-    <!-- NIOSH : résultat du levage, pas une cote par image -->
-    <div class="carte" id="carteNiosh" hidden>
-      <h2>Poids limite recommandé</h2>
-      <div class="plr">
-        <div><span class="plr-v" id="plrValeur">—</span><span class="plr-u">kg admissibles</span></div>
-        <div class="plr-sep"></div>
-        <div><span class="plr-v" id="poidsReel">—</span><span class="plr-u">kg manipulés</span></div>
-      </div>
-      <table class="segments">
-        <thead><tr><th>Multiplicateur</th><th>Mesure</th><th>Valeur</th></tr></thead>
-        <tbody id="corpsMult"></tbody>
-      </table>
-      <p class="calcul" id="calculNiosh"></p>
-    </div>
-
-    <div class="carte accent" id="panneauNiosh" hidden>
-      <h2>Le levage à évaluer</h2>
-      <p class="intro">NIOSH ne cote pas une image mais un levage entier, entre une
-      saisie et une dépose. Les distances sont mesurées sur le squelette&nbsp;: vérifiez-les,
-      elles restent des estimations.</p>
-
-      <div class="reperes">
-        <div>
-          <div class="lab">Origine — la saisie</div>
-          <button class="bouton mince plein" id="marquerOrigine" title="Relever les distances sur l'image affichée">Marquer ici</button>
-          <div class="mesures-champs">
-            <label>H <input type="number" id="oH" min="0" max="120" step="1"> cm</label>
-            <label>V <input type="number" id="oV" min="0" max="200" step="1"> cm</label>
-            <label>A <input type="number" id="oA" min="0" max="180" step="1"> °</label>
+        <p class="astuce" id="astuce" hidden>Cliquez un segment du squelette pour voir sa cote et la règle appliquée.</p>
+        <div class="vide" id="etatVide">
+          <strong>Démonstration en cours</strong>
+          <span>Les postures ci-dessous sont <em>simulées</em>, pas mesurées : un cycle de
+          levage fabriqué pour montrer ce que produit l'outil. Chargez une vidéo pour
+          analyser un vrai poste.</span>
+        </div>
+        <div class="progres" id="progres" hidden>
+          <ol class="etapes" id="etapes"></ol>
+          <div class="progres-barre"><i id="progresJauge"></i></div>
+          <div class="progres-pied">
+            <span id="progresTexte">Analyse…</span>
+            <span class="progres-chiffres" id="progresChiffres"></span>
+            <button class="bouton mince" id="annuler">Arrêter</button>
           </div>
-          <span class="repere-t" id="oT"></span>
-        </div>
-        <div>
-          <div class="lab">Destination — la dépose</div>
-          <button class="bouton mince plein" id="marquerDestination" title="Relever les distances sur l'image affichée">Marquer ici</button>
-          <div class="mesures-champs">
-            <label>H <input type="number" id="dH" min="0" max="120" step="1"> cm</label>
-            <label>V <input type="number" id="dV" min="0" max="200" step="1"> cm</label>
-            <label>A <input type="number" id="dA" min="0" max="180" step="1"> °</label>
-          </div>
-          <span class="repere-t" id="dT"></span>
         </div>
       </div>
 
-      <label class="case"><input type="checkbox" id="controleDestination"> La dépose demande du contrôle (charge posée avec précision)</label>
+      <div class="transport">
+        <button class="bouton mince" id="lecture" disabled>Lecture</button>
+        <button class="bouton mince" id="allerPire">Aller au pire instant</button>
+        <span class="temps"><span id="tCourant">0,0</span> s</span>
+      </div>
 
-      <label class="champ">
-        <span>Poids réel de la charge</span>
-        <span class="ligne"><input type="range" id="poidsCharge" min="0" max="40" step="0.5" value="12"><output id="poidsChargeVal">12 kg</output></span>
-      </label>
-      <label class="champ">
-        <span>Fréquence des levages</span>
-        <span class="ligne"><input type="range" id="frequence" min="0" max="15" step="0.5" value="3"><output id="frequenceVal">3 /min</output></span>
-      </label>
-      <label class="champ">
-        <span>Durée de la tâche</span>
-        <select id="dureeTache">
-          <option value="courte">1 h ou moins</option>
-          <option value="moyenne">Plus de 1 h, jusqu'à 2 h</option>
-          <option value="longue" selected>Plus de 2 h, jusqu'à 8 h</option>
-        </select>
-      </label>
-      <label class="champ">
-        <span>Qualité de la prise</span>
-        <select id="priseNiosh">
-          <option value="bonne">Bonne — poignée ou prise franche</option>
-          <option value="correcte" selected>Correcte — prise acceptable</option>
-          <option value="mauvaise">Mauvaise — pas de prise adaptée</option>
-        </select>
-      </label>
-      <label class="champ">
-        <span>Taille du travailleur <span class="discret">— étalonne les distances</span></span>
-        <span class="ligne"><input type="range" id="taille" min="140" max="205" step="1" value="175"><output id="tailleVal">175 cm</output></span>
-      </label>
-    </div>
+      <div class="chrono-bloc">
+        <div class="chrono-tete">
+          <span class="etiquette" id="chronoTitre">Cote REBA dans le temps</span>
+          <span class="chrono-legende" id="chronoLegende"></span>
+        </div>
+        <canvas id="chrono" class="chrono"></canvas>
+        <p class="note-chrono" id="noteChrono"></p>
+      </div>
+    </section>
 
-    <div class="carte" id="carteSegments">
-      <h2>Décomposition</h2>
-      <table class="segments">
-        <thead><tr><th>Segment</th><th>Angle</th><th>Cote</th><th>État</th></tr></thead>
-        <tbody id="corpsSegments"></tbody>
-      </table>
-      <p class="calcul" id="calcul"></p>
-    </div>
+    <!-- ---------- Panneau ---------- -->
+    <aside class="panneau">
 
-    <div class="carte accent" id="panneauPostural">
-      <h2>Ce que la vidéo ne montre pas</h2>
-      <p class="intro" id="introParams">Ces informations, la méthode les exige et aucune
-      image ne les contient. Elles sont à vous, et elles pèsent lourd : elles peuvent à
-      elles seules faire passer la cote de faible à très élevée.</p>
+      <details class="carte" id="carteIdentification">
+        <summary><h2>Identification du poste</h2></summary>
+        <p class="intro">Reprise en tête du rapport. Facultatif pour l'analyse.</p>
+        <label class="champ"><span>Poste ou tâche</span>
+          <input type="text" id="idPoste" placeholder="Ex. : déchargement de palettes, quai 2"></label>
+        <label class="champ"><span>Travailleur observé</span>
+          <input type="text" id="idTravailleur" placeholder="Initiales ou matricule"></label>
+        <label class="champ"><span>Observateur</span>
+          <input type="text" id="idObservateur" placeholder="Votre nom"></label>
+        <label class="champ"><span>Date d'observation</span>
+          <input type="date" id="idDate"></label>
+      </details>
 
-      <label class="champ">
-        <span>Charge manipulée</span>
-        <span class="ligne">
-          <input type="range" id="charge" min="0" max="30" step="1" value="0">
-          <output id="chargeVal">0 kg</output>
-        </span>
-      </label>
+      <div class="carte" id="carteSynoptique">
+        <h2>Les trois lectures</h2>
+        <p class="intro">Les trois méthodes ne répondent pas à la même question. Leur
+        désaccord est une information&nbsp;: c'est lui qui dit laquelle s'applique ici.</p>
+        <div class="synoptique" id="synoptique"></div>
+      </div>
 
-      <label class="champ">
-        <span>Qualité de la prise</span>
-        <select id="prise">
-          <option value="0">Bonne — poignée adaptée</option>
-          <option value="1">Correcte — prise acceptable</option>
-          <option value="2">Mauvaise — possible mais non adaptée</option>
-          <option value="3">Inacceptable — pas de prise sûre</option>
-        </select>
-      </label>
+      <div class="jauge-bloc">
+        <svg class="jauge" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="42" class="jauge-fond"></circle>
+          <circle cx="50" cy="50" r="42" class="jauge-arc"></circle>
+          <text x="50" y="50" class="jauge-valeur" text-anchor="middle" dominant-baseline="central">—</text>
+        </svg>
+        <div class="jauge-texte">
+          <span class="etiquette">Cote à l'instant affiché</span>
+          <strong id="niveauLibelle">—</strong>
+          <span id="niveauAction" class="discret"></span>
+        </div>
+      </div>
 
-      <fieldset class="champ">
-        <legend>Nature de l'activité</legend>
-        <label class="case"><input type="checkbox" id="statique"> Posture tenue plus d'une minute</label>
-        <label class="case"><input type="checkbox" id="repete"> Geste répété plus de 4 fois par minute</label>
-        <label class="case"><input type="checkbox" id="instable"> Amplitude brusque ou appui instable</label>
-        <label class="case"><input type="checkbox" id="brusque"> Mise en charge brutale</label>
-        <label class="case" id="casePronosupination" hidden>
-          <input type="checkbox" id="pronosupination"> Avant-bras en fin de course de pronosupination
+      <!-- NIOSH : résultat du levage, pas une cote par image -->
+      <div class="carte" id="carteNiosh" hidden>
+        <h2>Poids limite recommandé</h2>
+        <div class="plr">
+          <div><span class="plr-v" id="plrValeur">—</span><span class="plr-u">kg admissibles</span></div>
+          <div class="plr-sep"></div>
+          <div><span class="plr-v" id="poidsReel">—</span><span class="plr-u">kg manipulés</span></div>
+        </div>
+        <table class="segments">
+          <thead><tr><th>Multiplicateur</th><th>Mesure</th><th>Valeur</th></tr></thead>
+          <tbody id="corpsMult"></tbody>
+        </table>
+        <p class="calcul" id="calculNiosh"></p>
+      </div>
+
+      <div class="carte accent" id="panneauNiosh" hidden>
+        <h2>Le levage à évaluer</h2>
+        <p class="intro">NIOSH ne cote pas une image mais un levage entier, entre une
+        saisie et une dépose. Les distances sont mesurées sur le squelette&nbsp;: vérifiez-les,
+        elles restent des estimations.</p>
+
+        <div class="reperes">
+          <div>
+            <div class="lab">Origine — la saisie</div>
+            <button class="bouton mince plein" id="marquerOrigine" title="Relever les distances sur l'image affichée">Marquer ici</button>
+            <div class="mesures-champs">
+              <label>H <input type="number" id="oH" min="0" max="120" step="1"> cm</label>
+              <label>V <input type="number" id="oV" min="0" max="200" step="1"> cm</label>
+              <label>A <input type="number" id="oA" min="0" max="180" step="1"> °</label>
+            </div>
+            <span class="repere-t" id="oT"></span>
+          </div>
+          <div>
+            <div class="lab">Destination — la dépose</div>
+            <button class="bouton mince plein" id="marquerDestination" title="Relever les distances sur l'image affichée">Marquer ici</button>
+            <div class="mesures-champs">
+              <label>H <input type="number" id="dH" min="0" max="120" step="1"> cm</label>
+              <label>V <input type="number" id="dV" min="0" max="200" step="1"> cm</label>
+              <label>A <input type="number" id="dA" min="0" max="180" step="1"> °</label>
+            </div>
+            <span class="repere-t" id="dT"></span>
+          </div>
+        </div>
+
+        <label class="case"><input type="checkbox" id="controleDestination"> La dépose demande du contrôle (charge posée avec précision)</label>
+
+        <label class="champ">
+          <span>Poids réel de la charge</span>
+          <span class="ligne"><input type="range" id="poidsCharge" min="0" max="40" step="0.5" value="12"><output id="poidsChargeVal">12 kg</output></span>
         </label>
-      </fieldset>
+        <label class="champ">
+          <span>Fréquence des levages</span>
+          <span class="ligne"><input type="range" id="frequence" min="0" max="15" step="0.5" value="3"><output id="frequenceVal">3 /min</output></span>
+        </label>
+        <label class="champ">
+          <span>Durée de la tâche</span>
+          <select id="dureeTache">
+            <option value="courte">1 h ou moins</option>
+            <option value="moyenne">Plus de 1 h, jusqu'à 2 h</option>
+            <option value="longue" selected>Plus de 2 h, jusqu'à 8 h</option>
+          </select>
+        </label>
+        <label class="champ">
+          <span>Qualité de la prise</span>
+          <select id="priseNiosh">
+            <option value="bonne">Bonne — poignée ou prise franche</option>
+            <option value="correcte" selected>Correcte — prise acceptable</option>
+            <option value="mauvaise">Mauvaise — pas de prise adaptée</option>
+          </select>
+        </label>
+        <label class="champ">
+          <span>Taille du travailleur <span class="discret">— étalonne les distances</span></span>
+          <span class="ligne"><input type="range" id="taille" min="140" max="205" step="1" value="175"><output id="tailleVal">175 cm</output></span>
+        </label>
+      </div>
 
-      <label class="champ">
-        <span>Position des jambes <span id="jambesEtat" class="discret"></span></span>
-        <select id="jambesManuel">
-          <option value="debout">Debout, appui sur les deux pieds</option>
-          <option value="unilateral">Appui sur un pied, ou instable</option>
-          <option value="flechi">Genoux fléchis (30–60°)</option>
-          <option value="accroupi">Accroupi ou à genoux</option>
-          <option value="assis">Assis</option>
-          <option value="mesure">Mesurer depuis l'image malgré tout</option>
-        </select>
-      </label>
+      <div class="carte" id="carteSegments">
+        <h2>Décomposition</h2>
+        <table class="segments">
+          <thead><tr><th>Segment</th><th>Angle</th><th>Cote</th><th>État</th></tr></thead>
+          <tbody id="corpsSegments"></tbody>
+        </table>
+        <p class="calcul" id="calcul"></p>
+      </div>
 
-      <label class="champ">
-        <span>Côté coté</span>
-        <select id="cote">
-          <option value="auto">Automatique — le bras le plus sollicité</option>
-          <option value="D">Droit</option>
-          <option value="G">Gauche</option>
-        </select>
-      </label>
-    </div>
+      <div class="carte accent" id="panneauPostural">
+        <h2>Ce que la vidéo ne montre pas</h2>
+        <p class="intro" id="introParams">Ces informations, la méthode les exige et aucune
+        image ne les contient. Elles sont à vous, et elles pèsent lourd : elles peuvent à
+        elles seules faire passer la cote de faible à très élevée.</p>
 
-    <details class="carte">
-      <summary><h2>Réglages d'analyse</h2></summary>
-      <label class="champ">
-        <span>Précision du modèle</span>
-        <select id="precision">
-          <option value="full">Standard — plus juste</option>
-          <option value="lite">Rapide — moins juste</option>
-        </select>
-      </label>
-      <label class="champ">
-        <span>Images analysées par seconde</span>
-        <span class="ligne">
-          <input type="range" id="fps" min="2" max="15" step="1" value="6">
-          <output id="fpsVal">6</output>
-        </span>
-      </label>
-      <label class="champ">
-        <span>Lissage (médiane glissante)</span>
-        <span class="ligne">
-          <input type="range" id="lissage" min="0" max="9" step="1" value="3">
-          <output id="lissageVal">3</output>
-        </span>
-      </label>
-    </details>
-  </aside>
+        <label class="champ">
+          <span>Charge manipulée</span>
+          <span class="ligne">
+            <input type="range" id="charge" min="0" max="30" step="1" value="0">
+            <output id="chargeVal">0 kg</output>
+          </span>
+        </label>
+
+        <label class="champ">
+          <span>Qualité de la prise</span>
+          <select id="prise">
+            <option value="0">Bonne — poignée adaptée</option>
+            <option value="1">Correcte — prise acceptable</option>
+            <option value="2">Mauvaise — possible mais non adaptée</option>
+            <option value="3">Inacceptable — pas de prise sûre</option>
+          </select>
+        </label>
+
+        <fieldset class="champ">
+          <legend>Nature de l'activité</legend>
+          <label class="case"><input type="checkbox" id="statique"> Posture tenue plus d'une minute</label>
+          <label class="case"><input type="checkbox" id="repete"> Geste répété plus de 4 fois par minute</label>
+          <label class="case"><input type="checkbox" id="instable"> Amplitude brusque ou appui instable</label>
+          <label class="case"><input type="checkbox" id="brusque"> Mise en charge brutale</label>
+          <label class="case" id="casePronosupination" hidden>
+            <input type="checkbox" id="pronosupination"> Avant-bras en fin de course de pronosupination
+          </label>
+        </fieldset>
+
+        <label class="champ">
+          <span>Position des jambes <span id="jambesEtat" class="discret"></span></span>
+          <select id="jambesManuel">
+            <option value="debout">Debout, appui sur les deux pieds</option>
+            <option value="unilateral">Appui sur un pied, ou instable</option>
+            <option value="flechi">Genoux fléchis (30–60°)</option>
+            <option value="accroupi">Accroupi ou à genoux</option>
+            <option value="assis">Assis</option>
+            <option value="mesure">Mesurer depuis l'image malgré tout</option>
+          </select>
+        </label>
+
+        <label class="champ">
+          <span>Côté coté</span>
+          <select id="cote">
+            <option value="auto">Automatique — le bras le plus sollicité</option>
+            <option value="D">Droit</option>
+            <option value="G">Gauche</option>
+          </select>
+        </label>
+      </div>
+
+      <details class="carte">
+        <summary><h2>Réglages d'analyse</h2></summary>
+        <label class="champ">
+          <span>Précision du modèle</span>
+          <select id="precision">
+            <option value="full">Standard — plus juste</option>
+            <option value="lite">Rapide — moins juste</option>
+          </select>
+        </label>
+        <label class="champ">
+          <span>Images analysées par seconde</span>
+          <span class="ligne">
+            <input type="range" id="fps" min="2" max="15" step="1" value="6">
+            <output id="fpsVal">6</output>
+          </span>
+        </label>
+        <label class="champ">
+          <span>Lissage (médiane glissante)</span>
+          <span class="ligne">
+            <input type="range" id="lissage" min="0" max="9" step="1" value="3">
+            <output id="lissageVal">3</output>
+          </span>
+        </label>
+      </details>
+    </aside>
+  </div>
 
   <!-- ---------- Synthèse ---------- -->
   <section class="synthese" id="synthese">
