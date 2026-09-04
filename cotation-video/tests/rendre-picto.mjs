@@ -17,19 +17,8 @@ const dossier = resolve(process.argv[3] || "/tmp/picto");
 const { pictogramme, BANDES } = await import(module_.startsWith(".")
   ? new URL(module_, import.meta.url).href : module_);
 
-/* Les valeurs choisies balaient chaque bande, ses bornes, et les cas qui
-   collent une étiquette contre une autre. */
-const CAS = [];
-for (const methode of ["reba", "rula"]) {
-  for (const [cle, d] of Object.entries(BANDES[methode])) {
-    const bornes = [...new Set(d.b.flatMap(([a, b]) => [a, b]))].sort((x, y) => x - y);
-    const valeurs = new Set([d.min, d.max, 0]);
-    for (const s of bornes) { valeurs.add(s); valeurs.add(s - 1); valeurs.add(s + 1); valeurs.add(s + 9); }
-    for (const [a, b] of d.b) valeurs.add(Math.round((a + b) / 2));
-    for (const v of [...valeurs].filter(v => v >= d.min && v <= d.max).sort((x, y) => x - y))
-      CAS.push({ methode, cle, v, max: cle === "poignet" ? 3 : cle === "cou" ? (methode === "rula" ? 6 : 3) : cle === "tronc" ? 5 : 6 });
-  }
-}
+import { casDeBandes } from "./cas-picto.mjs";
+const CAS = casDeBandes(BANDES);
 
 const css = await (await import("node:fs/promises")).readFile(
   new URL("../css/app.css", import.meta.url), "utf-8");
@@ -46,7 +35,7 @@ const b = await chromium.launch();
 const p = await b.newPage({ viewport: { width: 340, height: 300 }, deviceScaleFactor: 2 });
 const index = [];
 for (const c of CAS) {
-  const svg = pictogramme(c.cle, c.methode, c.v, c.max);
+  const svg = pictogramme(c.cle, c.methode, c.v, c.max, { base: c.base, cote: c.cote });
   if (!svg) { console.log("VIDE", c); continue; }
   const nom = `${c.methode}-${c.cle}-${String(c.v).replace("-", "m")}.png`;
   await p.setContent(page(svg, `${c.methode.toUpperCase()} · ${c.cle} · ${c.v}°`));
