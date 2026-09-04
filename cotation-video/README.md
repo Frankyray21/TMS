@@ -58,6 +58,20 @@ mesure.
 C'est là que l'outil cesse d'être une boîte noire : chaque chiffre affiché se
 remonte jusqu'à sa règle.
 
+### Le rapport
+
+Le bouton **Rapport PDF** remplit un document et lance l'impression : le
+navigateur sait produire un PDF, inutile d'embarquer une bibliothèque pour
+refaire ça moins bien. Le document contient l'identification du poste, l'image
+du pire instant avec son squelette, les trois lectures, la synthèse de la
+séquence, la décomposition segment par segment, le bloc NIOSH quand un levage
+est repéré, et un pied qui rappelle les paramètres déclarés, les limites de la
+méthode et les trois références.
+
+L'image est reconstruite en pleine résolution : on se replace sur le pire
+instant, on dessine la vidéo puis le squelette sur un canevas hors écran, et la
+lecture reprend là où elle était.
+
 ### Combien de temps dure une analyse
 
 L'outil relève une image tous les `1/échantillonnage` de seconde de vidéo, et

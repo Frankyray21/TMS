@@ -59,7 +59,7 @@ function corps({ tronc = 0, genou = 0, bras = 0, coude = 20, cou = 10 }) {
    Vue de trois quarts plutôt que de face : une flexion du tronc se fait dans le
    plan sagittal, elle serait presque invisible vue de devant — c'est d'ailleurs
    pour la même raison qu'on filme un poste de manutention de côté. */
-function versEcran(monde, { aspect = 1.6, vue = 72 } = {}) {
+function versEcran(monde, { aspect = 16 / 9, vue = 72 } = {}) {
   const a = rad(vue), c = Math.cos(a), s = Math.sin(a);
   const plan = monde.map(p => ({ u: p.x * c + p.z * s, v: p.y }));
   const vs = plan.map(p => p.v);

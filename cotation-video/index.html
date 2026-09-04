@@ -89,6 +89,19 @@
   <!-- ---------- Panneau ---------- -->
   <aside class="panneau">
 
+    <details class="carte" id="carteIdentification">
+      <summary><h2>Identification du poste</h2></summary>
+      <p class="intro">Reprise en tête du rapport. Facultatif pour l'analyse.</p>
+      <label class="champ"><span>Poste ou tâche</span>
+        <input type="text" id="idPoste" placeholder="Ex. : déchargement de palettes, quai 2"></label>
+      <label class="champ"><span>Travailleur observé</span>
+        <input type="text" id="idTravailleur" placeholder="Initiales ou matricule"></label>
+      <label class="champ"><span>Observateur</span>
+        <input type="text" id="idObservateur" placeholder="Votre nom"></label>
+      <label class="champ"><span>Date d'observation</span>
+        <input type="date" id="idDate"></label>
+    </details>
+
     <div class="carte" id="carteSynoptique">
       <h2>Les trois lectures</h2>
       <p class="intro">Les trois méthodes ne répondent pas à la même question. Leur
@@ -289,7 +302,7 @@
       <p id="conclusion" class="conclusion"></p>
       <div class="exports">
         <button class="bouton mince" id="exportJson">Exporter les données (JSON)</button>
-        <button class="bouton mince" id="imprimer">Imprimer le rapport</button>
+        <button class="bouton mince" id="imprimer">Rapport PDF</button>
       </div>
     </div>
   </section>
@@ -331,6 +344,24 @@
     </p>
   </section>
 </main>
+
+<!-- Rapport : invisible à l'écran, c'est lui qui s'imprime. -->
+<section class="rapport" id="rapport" aria-hidden="true">
+  <header class="rap-tete">
+    <div>
+      <h1 id="rapTitre">Cotation ergonomique</h1>
+      <p id="rapSousTitre"></p>
+    </div>
+    <dl class="rap-id" id="rapId"></dl>
+  </header>
+  <div class="rap-corps">
+    <figure class="rap-figure"><img id="rapImage" alt=""><figcaption id="rapLegende"></figcaption></figure>
+    <div class="rap-lectures" id="rapLectures"></div>
+  </div>
+  <div id="rapSynthese"></div>
+  <div id="rapDetail"></div>
+  <footer class="rap-pied" id="rapPied"></footer>
+</section>
 
 <script type="module" src="js/app.js"></script>
 </body>
