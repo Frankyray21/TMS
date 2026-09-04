@@ -162,7 +162,39 @@ p{margin:0}
   aspect-ratio:16/10;overflow:hidden;display:flex;align-items:center;justify-content:center;
 }
 .scene video,.scene img{max-width:100%;max-height:100%;display:block}
-#calque{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#calque{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+
+/* Détail d'un segment, ouvert au clic sur le squelette. */
+.detail{
+  position:absolute;z-index:6;max-width:20rem;min-width:14rem;
+  background:rgba(13,19,32,.97);border:1px solid var(--bord-fort);
+  border-left:3px solid var(--stripe,var(--accent));border-radius:3px;
+  padding:.75rem .85rem .8rem;box-shadow:0 10px 30px rgba(0,0,0,.5);
+  backdrop-filter:blur(8px);
+}
+.detail-x{
+  position:absolute;top:.25rem;right:.35rem;background:none;border:0;color:var(--sourd);
+  font-size:1.15rem;line-height:1;cursor:pointer;padding:.15rem .3rem;
+}
+.detail-x:hover{color:var(--texte)}
+.detail-titre{font-family:var(--disp);font-weight:700;font-size:1.05rem;padding-right:1rem}
+.detail-etat{font-family:var(--disp);font-weight:600;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;margin-top:.1rem}
+.detail-mesure{font-size:1.5rem;font-family:var(--disp);font-weight:700;margin-top:.45rem;font-variant-numeric:tabular-nums}
+.detail-mesure small{font-family:var(--corps);font-weight:400;font-size:.8rem;color:var(--sourd);letter-spacing:0}
+.detail-calc{margin-top:.5rem;font-size:.85rem;color:var(--texte-2)}
+.detail-calc b{color:var(--texte)}
+.detail-calc li{margin-left:1rem;list-style:none;position:relative}
+.detail-calc li::before{content:"+";position:absolute;left:-.85rem;color:var(--sourd)}
+.detail-calc li.moins::before{content:"−"}
+.detail-regle{
+  margin-top:.55rem;padding-top:.5rem;border-top:1px solid var(--bord);
+  font-size:.79rem;color:var(--sourd);line-height:1.4;
+}
+.astuce{
+  position:absolute;left:1rem;bottom:.7rem;z-index:5;
+  font-size:.8rem;color:var(--sourd);background:rgba(10,14,23,.75);
+  padding:.25rem .55rem;border-radius:3px;pointer-events:none;
+}
 
 .vide{
   /* En haut : le bas du cadre est occupé par les pieds du sujet. */

@@ -12,7 +12,7 @@ import { NIVEAUX as NIVEAUX_REBA, ETIQUETTES_SEVERITE, severite } from "./reba.j
 import { NIVEAUX as NIVEAUX_RULA } from "./rula.js";
 import { calculerNIOSH, NIVEAUX as NIVEAUX_NIOSH, ETIQUETTES as ETIQ_MULT } from "./niosh.js";
 import { suggererLevage } from "./mesures.js";
-import { dessinerHauteurMains } from "./rendu.js";
+import { dessinerHauteurMains, osAuPoint } from "./rendu.js";
 import { dessinerSquelette, dessinerJauge, dessinerChronologie,
          imageALInstant, COULEURS, COULEURS_NIVEAU } from "./rendu.js";
 import { sourceActive } from "./pose.js";
@@ -83,12 +83,141 @@ const etat = {
   /* Les deux repères du levage, en secondes, avec les mesures relevées à ces
      instants. L'opérateur peut corriger chaque valeur à la main. */
   niosh: { origine: null, destination: null },
+  osSelectionne: null,
   mode: "demo",            // 'demo' | 'video' | 'image'
   t: 0,
   lecture: false,
   abandon: null,
   horlogeDemo: null
 };
+
+/* ---------- Détail d'un segment ----------
+   Le squelette est la partie la plus lisible de l'analyse : on doit pouvoir
+   l'interroger directement, plutôt que d'aller chercher la ligne correspondante
+   dans le tableau. Le détail dit l'angle mesuré, la cote, la façon dont elle se
+   compose, et la règle publiée qui s'applique. */
+
+const OS_VERS_SEGMENT = {
+  tronc: "tronc", cou: "cou", jambes: "jambes",
+  brasG: "bras", brasD: "bras",
+  avantBrasG: "avantBras", avantBrasD: "avantBras",
+  poignetG: "poignet", poignetD: "poignet"
+};
+const COTE_DE_L_OS = { brasG: "G", brasD: "D", avantBrasG: "G", avantBrasD: "D", poignetG: "G", poignetD: "D" };
+
+const REGLES = {
+  reba: {
+    tronc:     "0° = 1 · flexion ou extension jusqu'à 20° = 2 · 20 à 60° = 3 · au-delà de 60° = 4. Majoré de 1 si torsion ou inclinaison latérale.",
+    cou:       "Flexion jusqu'à 20° = 1 · au-delà, ou en extension = 2. Majoré de 1 si torsion ou inclinaison.",
+    jambes:    "Appui sur les deux pieds = 1 · appui unilatéral ou instable = 2. Majoré de 1 si genou fléchi de 30 à 60°, de 2 au-delà.",
+    bras:      "De 20° d'extension à 20° d'élévation = 1 · jusqu'à 45° = 2 · jusqu'à 90° = 3 · au-delà = 4. +1 épaule haussée, +1 abduction, −1 bras soutenu.",
+    avantBras: "Coude entre 60 et 100° = 1 · en dehors de cette plage = 2.",
+    poignet:   "Flexion ou extension jusqu'à 15° = 1 · au-delà = 2. Majoré de 1 si déviation."
+  },
+  rula: {
+    tronc:     "Droit, ou assis avec appui = 1 · jusqu'à 20° = 2 · jusqu'à 60° = 3 · au-delà = 4. +1 torsion, +1 inclinaison.",
+    cou:       "Jusqu'à 10° = 1 · de 10 à 20° = 2 · au-delà de 20° = 3 · en extension = 4. +1 torsion, +1 inclinaison.",
+    jambes:    "Jambes appuyées et équilibrées = 1 · sinon 2.",
+    bras:      "De 20° d'extension à 20° d'élévation = 1 · jusqu'à 45° = 2 · jusqu'à 90° = 3 · au-delà = 4. +1 épaule haussée, +1 abduction, −1 bras soutenu.",
+    avantBras: "Coude entre 60 et 100° = 1 · en dehors = 2. Majoré de 1 si l'avant-bras travaille en travers du corps ou à l'écart.",
+    poignet:   "Neutre = 1 · jusqu'à 15° = 2 · au-delà = 3. Majoré de 1 si déviation.",
+    pronosupination: "Milieu de course = 1 · en fin de course = 2. Non observable sur l'image : déclarée par l'opérateur."
+  }
+};
+
+const NOMS_SEGMENT = {
+  tronc: "Tronc", cou: "Cou", jambes: "Jambes", bras: "Bras",
+  avantBras: "Avant-bras", poignet: "Poignet", pronosupination: "Pronosupination"
+};
+
+/** Les majorations qui se sont appliquées, avec leur cause. */
+function majorations(cle, entrees, angles) {
+  const e = entrees[cle] || {};
+  const l = [];
+  const deg = v => Number.isFinite(v) ? `${Math.round(v)}°` : "";
+  if (e.torsion)       l.push({ t: `torsion ${deg(angles[cle]?.torsionDeg)}`, n: 1 });
+  if (e.inclinaison)   l.push({ t: `inclinaison latérale ${deg(angles[cle]?.inclinaisonDeg)}`, n: 1 });
+  if (e.abduction)     l.push({ t: `abduction ${deg(angles.bras?.abductionDeg)}`, n: 1 });
+  if (e.epauleHaussee) l.push({ t: "épaule haussée (déclarée)", n: 1 });
+  if (e.brasSoutenu)   l.push({ t: "bras soutenu (déclaré)", n: -1 });
+  if (e.deviation)     l.push({ t: `déviation ${deg(angles.bras?.deviationDeg)}`, n: 1 });
+  if (e.horsAxe)       l.push({ t: "avant-bras hors de l'axe du corps", n: 1 });
+  if (cle === "jambes") {
+    if (!e.appuiBilateral) l.push({ t: "appui unilatéral ou instable", n: 0 });
+    const g = e.flexionGenou;
+    if (!e.assis && g > 60) l.push({ t: `genou fléchi ${deg(g)}`, n: 2 });
+    else if (!e.assis && g > 30) l.push({ t: `genou fléchi ${deg(g)}`, n: 1 });
+  }
+  return l;
+}
+
+const ANGLE_SEGMENT = {
+  tronc:     a => ({ v: a.tronc.flexion,       u: "de flexion du tronc" }),
+  cou:       a => ({ v: a.cou.flexion,         u: "de flexion du cou" }),
+  jambes:    a => ({ v: a.jambes.flexionGenou, u: "de flexion du genou" }),
+  bras:      a => ({ v: a.bras.flexionBras,    u: "d'élévation du bras" }),
+  avantBras: a => ({ v: a.bras.flexionCoude,   u: "de flexion du coude" }),
+  poignet:   a => ({ v: a.bras.flexionPoignet, u: "de flexion du poignet" })
+};
+
+function afficherDetail(os, x, y) {
+  const image = etat.analyse && imageALInstant(etat.analyse, etat.t);
+  if (!image) return;
+  const cle = OS_VERS_SEGMENT[os];
+  const methode = etat.methode === "niosh" ? "reba" : etat.methode;
+  const r = image.resultats[methode];
+  const seg = r.segments[cle];
+  if (!seg) return;
+
+  /* Un membre du côté non coté n'a pas de valeur : REBA et RULA s'appliquent à
+     un côté à la fois, et prétendre le contraire serait inventer une mesure. */
+  const coteOs = COTE_DE_L_OS[os];
+  const autreCote = coteOs && coteOs !== image.angles.cote;
+
+  const sev = severite(seg.cote, seg.max);
+  const mes = ANGLE_SEGMENT[cle]?.(image.angles);
+  const maj = majorations(cle, image.entrees[methode], image.angles);
+
+  $("#detailCorps").innerHTML = autreCote
+    ? `<div class="detail-titre">${NOMS_SEGMENT[cle]} ${coteOs === "G" ? "gauche" : "droit"}</div>
+       <div class="detail-etat" style="color:var(--sourd)">Côté non coté</div>
+       <div class="detail-regle">${METHODES[methode].nom} s'applique à un côté à la fois. Le côté retenu est
+       le ${image.angles.cote === "G" ? "gauche" : "droit"} — modifiable dans « Côté coté ».</div>`
+    : `<div class="detail-titre">${NOMS_SEGMENT[cle]}${coteOs ? (coteOs === "G" ? " gauche" : " droit") : ""}</div>
+       <div class="detail-etat" style="color:${COULEURS[sev]}">${ETIQUETTES_SEVERITE[sev]}</div>
+       ${mes && Number.isFinite(mes.v)
+          ? `<div class="detail-mesure">${Math.round(mes.v)}° <small>${mes.u}</small></div>` : ""}
+       <div class="detail-calc">
+         Cote <b>${seg.cote}</b> sur ${seg.max}
+         ${seg.base != null ? `<br>base ${seg.base}` : ""}
+         ${maj.length ? `<ul>${maj.map(m =>
+            `<li class="${m.n < 0 ? "moins" : ""}">${m.t}${m.n ? ` (${m.n > 0 ? "+" : "−"}${Math.abs(m.n)})` : ""}</li>`).join("")}</ul>` : ""}
+       </div>
+       <div class="detail-regle">${REGLES[methode][cle] || ""}</div>`;
+
+  const boite = el.scene.getBoundingClientRect();
+  const d = $("#detailSegment");
+  d.style.setProperty("--stripe", autreCote ? "var(--sourd)" : COULEURS[sev]);
+  d.hidden = false;
+  const l = d.offsetWidth, h = d.offsetHeight;
+  d.style.left = `${Math.max(8, Math.min(boite.width - l - 8, x + 14))}px`;
+  d.style.top = `${Math.max(8, Math.min(boite.height - h - 8, y - h / 2))}px`;
+}
+
+function fermerDetail() {
+  $("#detailSegment").hidden = true;
+  if (etat.osSelectionne) { etat.osSelectionne = null; redessinerSquelette(); }
+}
+
+/** Redessine le seul squelette, sans toucher au reste du panneau. */
+function redessinerSquelette() {
+  if (!etat.analyse) return;
+  const image = imageALInstant(etat.analyse, etat.t);
+  if (!image) return;
+  const { ctx, largeur, hauteur } = dimensionnerCalque();
+  ctx.clearRect(0, 0, largeur, hauteur);
+  dessinerSquelette(ctx, image, { largeur, hauteur, selection: etat.osSelectionne });
+}
 
 /* ---------- Suivi de l'analyse ----------
    Quatre étapes, affichées en permanence : l'attente a une carte, pas seulement
@@ -250,8 +379,12 @@ function dessinerInstant(t) {
   if (!image) return;
   const { ctx, largeur, hauteur } = dimensionnerCalque();
   ctx.clearRect(0, 0, largeur, hauteur);
-  dessinerSquelette(ctx, image, { largeur, hauteur });
+  dessinerSquelette(ctx, image, { largeur, hauteur, selection: etat.osSelectionne });
   el.tCourant.textContent = t.toFixed(1).replace(".", ",");
+  /* Changer d'image invalide la sélection : la fiche décrirait une autre pose. */
+  $("#detailSegment").hidden = true;
+  etat.osSelectionne = null;
+  $("#astuce").hidden = false;
   majSynoptique(image);
   if (METHODES[etat.methode].levage) {
     majPanneauNiosh();
@@ -362,6 +495,8 @@ async function chargerFichier(f) {
   el.lecture.disabled = true;
   viderPanneau();
   effacerCalque();
+  fermerDetail();
+  $("#astuce").hidden = true;
 
   const params = lireParams();
   try {
@@ -714,6 +849,30 @@ el.chrono.addEventListener("click", e => {
   if (etat.mode === "video") el.video.currentTime = t;
   dessinerInstant(t);
 });
+
+/* Le squelette est cliquable : chaque os ouvre le détail de son segment. */
+el.calque.addEventListener("click", e => {
+  if (!etat.analyse) return;
+  const r = el.calque.getBoundingClientRect();
+  const image = imageALInstant(etat.analyse, etat.t);
+  const os = osAuPoint(image, e.clientX - r.left, e.clientY - r.top,
+                       { largeur: r.width, hauteur: r.height });
+  const boite = el.scene.getBoundingClientRect();
+  if (os) {
+    etat.osSelectionne = os;
+    redessinerSquelette();
+    afficherDetail(os, e.clientX - boite.left, e.clientY - boite.top);
+  } else fermerDetail();
+});
+el.calque.addEventListener("mousemove", e => {
+  if (!etat.analyse) { el.calque.style.cursor = "default"; return; }
+  const r = el.calque.getBoundingClientRect();
+  const os = osAuPoint(imageALInstant(etat.analyse, etat.t), e.clientX - r.left, e.clientY - r.top,
+                       { largeur: r.width, hauteur: r.height });
+  el.calque.style.cursor = os ? "pointer" : "crosshair";
+});
+$("#detailFermer").addEventListener("click", fermerDetail);
+document.addEventListener("keydown", e => { if (e.key === "Escape") fermerDetail(); });
 
 el.video.addEventListener("timeupdate", () => {
   if (etat.mode === "video" && etat.analyse) { etat.t = el.video.currentTime; dessinerInstant(etat.t); }

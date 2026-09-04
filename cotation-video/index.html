@@ -48,6 +48,11 @@
       <video id="video" playsinline muted hidden></video>
       <img id="photo" alt="" hidden>
       <canvas id="calque"></canvas>
+      <div class="detail" id="detailSegment" hidden role="dialog" aria-label="Détail du segment">
+        <button class="detail-x" id="detailFermer" aria-label="Fermer">&times;</button>
+        <div id="detailCorps"></div>
+      </div>
+      <p class="astuce" id="astuce" hidden>Cliquez un segment du squelette pour voir sa cote et la règle appliquée.</p>
       <div class="vide" id="etatVide">
         <strong>Démonstration en cours</strong>
         <span>Les postures ci-dessous sont <em>simulées</em>, pas mesurées : un cycle de

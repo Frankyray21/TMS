@@ -37,6 +37,20 @@ Puis ouvrir `http://localhost:8080/`. L'outil s'ouvre sur une **démonstration**
 — un cycle de levage fabriqué — pour montrer ce qu'il produit avant même de
 charger un fichier. Les postures y sont simulées, l'interface le dit.
 
+### Le squelette est cliquable
+
+Cliquer un segment ouvre sa fiche : l'angle mesuré, la cote et sa décomposition
+(base, puis chaque majoration avec sa cause chiffrée — « torsion 28° (+1) »), et
+la règle publiée qui s'applique. L'os cliqué reçoit un halo, pour que la fiche
+se rattache à quelque chose plutôt que de flotter.
+
+Un membre du côté non coté le dit explicitement : REBA et RULA s'appliquent à un
+côté à la fois, et afficher une valeur pour l'autre reviendrait à inventer une
+mesure.
+
+C'est là que l'outil cesse d'être une boîte noire : chaque chiffre affiché se
+remonte jusqu'à sa règle.
+
 ### Combien de temps dure une analyse
 
 L'outil relève une image tous les `1/échantillonnage` de seconde de vidéo, et

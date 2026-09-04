@@ -280,6 +280,10 @@ export function coter(releves, params = {}) {
       fiable: a.fiabilite.fiable,
       confiance: a.fiabilite.global,
       resultats,
+      /* Les entrées exactes de chaque cotation sont conservées : le détail
+         affiché au clic peut ainsi dire quelle majoration s'est appliquée et
+         pourquoi, au lieu de la redéduire depuis les angles et les seuils. */
+      entrees: { reba: versREBA, rula: versRULA },
       resultat: resultats[methode === "niosh" ? "reba" : methode]
     };
   });

@@ -26,6 +26,49 @@ const OS = [
   [P.CHEVILLE_G, P.PIED_G, "jambes"], [P.CHEVILLE_D, P.PIED_D, "jambes"]
 ];
 
+/* Le cou n'est pas dans OS : il relie deux milieux, pas deux repères. */
+function osDuCou(pts) {
+  return {
+    a: { x: (pts[P.EPAULE_G].x + pts[P.EPAULE_D].x) / 2, y: (pts[P.EPAULE_G].y + pts[P.EPAULE_D].y) / 2 },
+    b: { x: (pts[P.OREILLE_G].x + pts[P.OREILLE_D].x) / 2, y: (pts[P.OREILLE_G].y + pts[P.OREILLE_D].y) / 2 }
+  };
+}
+
+/** Distance d'un point au segment [a,b], en coordonnées écran. */
+function distanceAuSegment(px, py, a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const long2 = dx * dx + dy * dy;
+  const k = long2 < 1e-9 ? 0 : Math.max(0, Math.min(1, ((px - a.x) * dx + (py - a.y) * dy) / long2));
+  return Math.hypot(px - (a.x + k * dx), py - (a.y + k * dy));
+}
+
+/**
+ * Quel os se trouve sous ce point ? Sert à rendre le squelette cliquable :
+ * le dessin est la partie la plus lisible de l'analyse, autant qu'on puisse
+ * l'interroger directement plutôt que de chercher la ligne correspondante
+ * dans le tableau.
+ *
+ * @returns {string|null} la clé de l'os ('tronc', 'brasD', 'cou'…)
+ */
+export function osAuPoint(image, px, py, { largeur, hauteur, tolerance = 16 } = {}) {
+  if (!image?.ecran) return null;
+  const pts = image.ecran;
+  const ecran = i => ({ x: pts[i].x * largeur, y: pts[i].y * hauteur });
+  let meilleur = null;
+
+  const cou = osDuCou(pts);
+  const dCou = distanceAuSegment(px, py, { x: cou.a.x * largeur, y: cou.a.y * hauteur },
+                                          { x: cou.b.x * largeur, y: cou.b.y * hauteur });
+  if (dCou <= tolerance) meilleur = { nom: "cou", d: dCou };
+
+  for (const [a, b, nom] of OS) {
+    if ((pts[a]?.visibility ?? 1) < 0.3 || (pts[b]?.visibility ?? 1) < 0.3) continue;
+    const d = distanceAuSegment(px, py, ecran(a), ecran(b));
+    if (d <= tolerance && (!meilleur || d < meilleur.d)) meilleur = { nom, d };
+  }
+  return meilleur?.nom ?? null;
+}
+
 /** Le segment REBA qui donne sa couleur à chaque os. */
 function severiteDesOs(image) {
   const s = image.resultat.segments;
@@ -54,7 +97,7 @@ function severiteDesOs(image) {
  * @param {CanvasRenderingContext2D} ctx
  * @param {object} image — une entrée de analyse.images
  */
-export function dessinerSquelette(ctx, image, { largeur, hauteur, epaisseur = 1 } = {}) {
+export function dessinerSquelette(ctx, image, { largeur, hauteur, epaisseur = 1, selection = null } = {}) {
   if (!image?.ecran) return;
   const pts = image.ecran;
   const sev = severiteDesOs(image);
@@ -68,11 +111,11 @@ export function dessinerSquelette(ctx, image, { largeur, hauteur, epaisseur = 1 
   /* Cou : du milieu des épaules au milieu des oreilles. */
   const mx = (X(P.EPAULE_G) + X(P.EPAULE_D)) / 2, my = (Y(P.EPAULE_G) + Y(P.EPAULE_D)) / 2;
   const tx = (X(P.OREILLE_G) + X(P.OREILLE_D)) / 2, ty = (Y(P.OREILLE_G) + Y(P.OREILLE_D)) / 2;
-  trait(ctx, mx, my, tx, ty, sev.cou, ep);
+  trait(ctx, mx, my, tx, ty, sev.cou, ep, selection === "cou");
 
   for (const [a, b, nom] of OS) {
     if ((pts[a]?.visibility ?? 1) < 0.3 || (pts[b]?.visibility ?? 1) < 0.3) continue;
-    trait(ctx, X(a), Y(a), X(b), Y(b), sev[nom], ep);
+    trait(ctx, X(a), Y(a), X(b), Y(b), sev[nom], ep, selection === nom);
   }
 
   /* Articulations : un point blanc cerclé, lisible sur n'importe quel fond. */
@@ -88,7 +131,14 @@ export function dessinerSquelette(ctx, image, { largeur, hauteur, epaisseur = 1 
   }
 }
 
-function trait(ctx, x1, y1, x2, y2, severite, ep) {
+function trait(ctx, x1, y1, x2, y2, severite, ep, choisi = false) {
+  /* Le segment sélectionné reçoit un halo clair : la fiche ouverte doit se
+     rattacher visuellement à l'os cliqué, sinon c'est juste une bulle. */
+  if (choisi) {
+    ctx.strokeStyle = "rgba(255,255,255,.9)";
+    ctx.lineWidth = ep + Math.max(6, ep * 1.4);
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  }
   /* Contour sombre : garde le trait lisible sur un fond clair comme sur un
      fond sombre, sans dépendre de la seule teinte. */
   ctx.strokeStyle = "rgba(0,0,0,.45)";
