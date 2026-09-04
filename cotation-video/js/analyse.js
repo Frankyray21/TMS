@@ -303,7 +303,7 @@ export async function analyserVideo(video, params = {}, o = {}) {
     signal: o.signal,
     onProgres: o.onProgres
   });
-  o.onEtape?.({ etape: "cotation", libelle: `Cotation de ${releves.length} images`, part: null });
+  o.onEtape?.({ etape: "cotation", libelle: `Évaluation de ${releves.length} images`, part: null });
   return coter(releves, params);
 }
 

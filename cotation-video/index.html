@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cotation ergonomique vidéo — REBA</title>
-<meta name="description" content="Cotation REBA automatique à partir d'une vidéo de poste de travail. Tout le traitement reste dans le navigateur.">
+<title>Évaluation ergonomique vidéo — REBA</title>
+<meta name="description" content="Évaluation REBA automatique à partir d'une vidéo de poste de travail. Tout le traitement reste dans le navigateur.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
@@ -14,10 +14,10 @@
 
 <header class="tete">
   <div class="tete-titre">
-    <h1>Cotation ergonomique vidéo</h1>
+    <h1>Évaluation ergonomique vidéo</h1>
     <p id="methodeRef">REBA · Hignett &amp; McAtamney (2000)</p>
   </div>
-  <div class="methodes" role="radiogroup" aria-label="Méthode de cotation">
+  <div class="methodes" role="radiogroup" aria-label="Méthode d'évaluation">
     <button type="button" class="methode actif" data-methode="reba" role="radio" aria-checked="true">
       REBA <span>corps entier</span>
     </button>
@@ -57,7 +57,7 @@
           <button class="detail-x" id="detailFermer" aria-label="Fermer">&times;</button>
           <div id="detailCorps"></div>
         </div>
-        <p class="astuce" id="astuce" hidden>Cliquez un segment du squelette pour voir sa cote et la règle appliquée.</p>
+        <p class="astuce" id="astuce" hidden>Cliquez un segment du squelette pour voir son score et la règle appliquée.</p>
         <div class="vide" id="etatVide">
           <strong>Démonstration en cours</strong>
           <span>Les postures ci-dessous sont <em>simulées</em>, pas mesurées : un cycle de
@@ -83,7 +83,7 @@
 
       <div class="chrono-bloc">
         <div class="chrono-tete">
-          <span class="etiquette" id="chronoTitre">Cote REBA dans le temps</span>
+          <span class="etiquette" id="chronoTitre">Score REBA dans le temps</span>
           <span class="chrono-legende" id="chronoLegende"></span>
         </div>
         <canvas id="chrono" class="chrono"></canvas>
@@ -121,13 +121,13 @@
           <text x="50" y="50" class="jauge-valeur" text-anchor="middle" dominant-baseline="central">—</text>
         </svg>
         <div class="jauge-texte">
-          <span class="etiquette">Cote à l'instant affiché</span>
+          <span class="etiquette">Score à l'instant affiché</span>
           <strong id="niveauLibelle">—</strong>
           <span id="niveauAction" class="discret"></span>
         </div>
       </div>
 
-      <!-- NIOSH : résultat du levage, pas une cote par image -->
+      <!-- NIOSH : résultat du levage, pas un score par image -->
       <div class="carte" id="carteNiosh" hidden>
         <h2>Poids limite recommandé</h2>
         <div class="plr">
@@ -144,7 +144,7 @@
 
       <div class="carte accent" id="panneauNiosh" hidden>
         <h2>Le levage à évaluer</h2>
-        <p class="intro">NIOSH ne cote pas une image mais un levage entier, entre une
+        <p class="intro">NIOSH n'évalue pas une image mais un levage entier, entre une
         saisie et une dépose. Les distances sont mesurées sur le squelette&nbsp;: vérifiez-les,
         elles restent des estimations.</p>
 
@@ -206,7 +206,7 @@
       <div class="carte" id="carteSegments">
         <h2>Décomposition</h2>
         <table class="segments">
-          <thead><tr><th>Segment</th><th>Angle</th><th>Cote</th><th>État</th></tr></thead>
+          <thead><tr><th>Segment</th><th>Angle</th><th>Score</th><th>État</th></tr></thead>
           <tbody id="corpsSegments"></tbody>
         </table>
         <p class="calcul" id="calcul"></p>
@@ -216,7 +216,7 @@
         <h2>Ce que la vidéo ne montre pas</h2>
         <p class="intro" id="introParams">Ces informations, la méthode les exige et aucune
         image ne les contient. Elles sont à vous, et elles pèsent lourd : elles peuvent à
-        elles seules faire passer la cote de faible à très élevée.</p>
+        elles seules faire passer le score de faible à très élevé.</p>
 
         <label class="champ">
           <span>Charge manipulée</span>
@@ -260,7 +260,7 @@
         </label>
 
         <label class="champ">
-          <span>Côté coté</span>
+          <span>Côté évalué</span>
           <select id="cote">
             <option value="auto">Automatique — le bras le plus sollicité</option>
             <option value="D">Droit</option>
@@ -314,7 +314,7 @@
   </section>
 
   <section class="limites">
-    <h2>Ce que cette cote vaut, et ce qu'elle ne vaut pas</h2>
+    <h2>Ce que ce score vaut, et ce qu'il ne vaut pas</h2>
     <div class="limites-grille">
       <div>
         <h3>Mesuré depuis l'image</h3>
@@ -342,10 +342,10 @@
       </div>
     </div>
     <p class="avertissement">
-      La cote du poignet est la moins fiable de toutes : trois repères de main ne
-      suffisent pas à mesurer une flexion au degré près. Traitez-la comme une
-      indication, et corrigez-la à l'œil quand elle compte.
-      Une cotation REBA reste un jugement professionnel : cet outil l'accélère et
+      Le score du poignet est le moins fiable de tous : trois repères de main ne
+      suffisent pas à mesurer une flexion au degré près. Traitez-le comme une
+      indication, et corrigez-le à l'œil quand il compte.
+      Une évaluation REBA reste un jugement professionnel : cet outil l'accélère et
       la rend reproductible, il ne la remplace pas.
     </p>
   </section>
@@ -355,7 +355,7 @@
 <section class="rapport" id="rapport" aria-hidden="true">
   <header class="rap-tete">
     <div>
-      <h1 id="rapTitre">Cotation ergonomique</h1>
+      <h1 id="rapTitre">Évaluation ergonomique</h1>
       <p id="rapSousTitre"></p>
     </div>
     <dl class="rap-id" id="rapId"></dl>
