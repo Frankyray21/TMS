@@ -105,23 +105,67 @@ const OS_VERS_SEGMENT = {
 };
 const COTE_DE_L_OS = { brasG: "G", brasD: "D", avantBrasG: "G", avantBrasD: "D", poignetG: "G", poignetD: "D" };
 
+/* Deux choses que l'échelle des bandes ne peut pas dire, et sans lesquelles un
+   chiffre reste incompréhensible : par rapport à quoi l'angle est mesuré, et ce
+   qui le fait monter. Le cou en donne l'exemple type — mesuré par rapport au
+   tronc, il passe en « extension » chez quelqu'un qui a pourtant la tête
+   baissée, simplement parce que son tronc est plus penché que sa tête. */
 const REGLES = {
   reba: {
-    tronc:     "0° = 1 · flexion ou extension jusqu'à 20° = 2 · 20 à 60° = 3 · au-delà de 60° = 4. Majoré de 1 si torsion ou inclinaison latérale.",
-    cou:       "Flexion jusqu'à 20° = 1 · au-delà, ou en extension = 2. Majoré de 1 si torsion ou inclinaison.",
-    jambes:    "Appui sur les deux pieds = 1 · appui unilatéral ou instable = 2. Majoré de 1 si genou fléchi de 30 à 60°, de 2 au-delà.",
-    bras:      "De 20° d'extension à 20° d'élévation = 1 · jusqu'à 45° = 2 · jusqu'à 90° = 3 · au-delà = 4. +1 épaule haussée, +1 abduction, −1 bras soutenu.",
-    avantBras: "Coude entre 60 et 100° = 1 · en dehors de cette plage = 2.",
-    poignet:   "Flexion ou extension jusqu'à 15° = 1 · au-delà = 2. Majoré de 1 si déviation."
+    tronc: {
+      repere: "Mesuré entre l'axe du tronc et la verticale. Positif = penché vers l'avant, négatif = cambré vers l'arrière.",
+      seuils: "Au-delà de 20° : cote 3. Au-delà de 60° : cote 4. Une torsion ou une inclinaison latérale ajoute 1."
+    },
+    cou: {
+      repere: "Mesuré par rapport au tronc, pas à la verticale. Penché en avant, quelqu'un qui garde la tête droite est donc en extension du cou — c'est bien ce que subit la nuque.",
+      seuils: "Au-delà de 20° de flexion, ou dès l'extension : cote 2 au lieu de 1. Une torsion ou une inclinaison ajoute 1."
+    },
+    jambes: {
+      repere: "Flexion du genou le plus fléchi. La cote de base vient de l'appui : 1 sur deux pieds, 2 sur un seul ou en équilibre instable.",
+      seuils: "Le genou ajoute par-dessus : 1 entre 30 et 60°, 2 au-delà. Sans effet en position assise."
+    },
+    bras: {
+      repere: "Élévation mesurée par rapport au tronc, bras au repos = 0°. Positif = vers l'avant, négatif = vers l'arrière.",
+      seuils: "Au-delà de 20° : cote 2. De 45 à 90° : 3. Au-delà de 90° : 4. Épaule haussée +1, abduction +1, bras soutenu −1."
+    },
+    avantBras: {
+      repere: "Angle du coude : 0° bras tendu, 90° angle droit.",
+      seuils: "Entre 60 et 100°, cote 1. En dehors de cette plage, 2 — un coude trop ouvert coûte autant qu'un coude trop fermé."
+    },
+    poignet: {
+      repere: "Flexion de la main par rapport à l'avant-bras. Mesure la moins fiable de toutes : trois repères de main ne suffisent pas à la donner au degré près.",
+      seuils: "Au-delà de 15° dans un sens ou dans l'autre : cote 2. Une déviation latérale ajoute 1."
+    }
   },
   rula: {
-    tronc:     "Droit, ou assis avec appui = 1 · jusqu'à 20° = 2 · jusqu'à 60° = 3 · au-delà = 4. +1 torsion, +1 inclinaison.",
-    cou:       "Jusqu'à 10° = 1 · de 10 à 20° = 2 · au-delà de 20° = 3 · en extension = 4. +1 torsion, +1 inclinaison.",
-    jambes:    "Jambes appuyées et équilibrées = 1 · sinon 2.",
-    bras:      "De 20° d'extension à 20° d'élévation = 1 · jusqu'à 45° = 2 · jusqu'à 90° = 3 · au-delà = 4. +1 épaule haussée, +1 abduction, −1 bras soutenu.",
-    avantBras: "Coude entre 60 et 100° = 1 · en dehors = 2. Majoré de 1 si l'avant-bras travaille en travers du corps ou à l'écart.",
-    poignet:   "Neutre = 1 · jusqu'à 15° = 2 · au-delà = 3. Majoré de 1 si déviation.",
-    pronosupination: "Milieu de course = 1 · en fin de course = 2. Non observable sur l'image : déclarée par l'opérateur."
+    tronc: {
+      repere: "Mesuré entre l'axe du tronc et la verticale. Assis avec appui et tronc droit, la cote reste à 1.",
+      seuils: "Au-delà de 20° : cote 3. Au-delà de 60° : 4. Torsion +1, inclinaison +1, cumulables."
+    },
+    cou: {
+      repere: "Mesuré par rapport au tronc, pas à la verticale. Penché en avant, quelqu'un qui garde la tête droite est donc en extension du cou.",
+      seuils: "De 10 à 20° : cote 2. Au-delà de 20° : 3. En extension : 4, la cote la plus forte. Torsion +1, inclinaison +1."
+    },
+    jambes: {
+      repere: "Jambes appuyées et équilibrées, ou non — RULA ne mesure pas l'angle du genou.",
+      seuils: "Appuyées et équilibrées : 1. Sinon : 2."
+    },
+    bras: {
+      repere: "Élévation mesurée par rapport au tronc, bras au repos = 0°. Positif = vers l'avant.",
+      seuils: "Au-delà de 20° : cote 2. De 45 à 90° : 3. Au-delà de 90° : 4. Épaule haussée +1, abduction +1, bras soutenu −1."
+    },
+    avantBras: {
+      repere: "Angle du coude : 0° bras tendu, 90° angle droit.",
+      seuils: "Entre 60 et 100°, cote 1. En dehors, 2. Travailler en travers du corps ou nettement à l'écart ajoute 1."
+    },
+    poignet: {
+      repere: "Flexion de la main par rapport à l'avant-bras. RULA la découpe plus finement que REBA. Mesure la moins fiable de toutes.",
+      seuils: "Jusqu'à 15° : cote 2. Au-delà : 3. Une déviation latérale ajoute 1."
+    },
+    pronosupination: {
+      repere: "Rotation de l'avant-bras, paume vers le haut ou vers le bas. Non observable sur l'image : c'est vous qui la déclarez.",
+      seuils: "Milieu de course : 1. En fin de course : 2."
+    }
   }
 };
 
@@ -146,45 +190,119 @@ const BANDES = {
   }
 };
 
-/**
- * L'échelle des bandes, en SVG : chaque plage colorée porte sa cote, les seuils
- * sont chiffrés, et un repère marque la valeur mesurée. La couleur ne voyage
- * jamais seule — le nombre est dans la bande.
- */
-function echelleAngles(cle, methode, valeur, maxCote) {
-  const d = BANDES[methode]?.[cle];
-  if (!d || !Number.isFinite(valeur)) return "";
-  const L = 300, H = 58, haut = 16, y = 20;
-  const x = v => ((Math.max(d.min, Math.min(d.max, v)) - d.min) / (d.max - d.min)) * L;
+/* Le pictogramme de chaque segment : le corps au repos, les zones d'angle en
+   arcs colorés depuis l'articulation, les seuils chiffrés, et l'aiguille de la
+   mesure. C'est le langage des planches d'ergonomie — mais avec la valeur
+   relevée dessus, ce qu'une planche imprimée ne peut pas faire.
 
-  const rects = d.b.map(([de, a, cote]) => {
+   pivot   : centre de rotation dans le repère du dessin
+   r       : rayon des arcs
+   base    : direction du 0°, en degrés SVG (0 = vers la droite, −90 = vers le haut)
+   signe   : sens des angles positifs
+   corps   : la silhouette, dessinée au repos */
+const PICTO = {
+  cou: { pivot: [112, 142], r1: 78, r2: 100, base: -90, signe: 1, vue: "de profil, tourné vers la droite",
+    corps: `<path d="M74 142 q38 -16 76 0 v22 h-76 z" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
+            <line x1="112" y1="142" x2="112" y2="106" stroke="var(--sourd)" stroke-width="7" stroke-linecap="round"/>
+            <circle cx="112" cy="88" r="18" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
+            <path d="M130 88 l10 5 -10 6" fill="none" stroke="var(--sourd)" stroke-width="1.5" stroke-linecap="round"/>` },
+  tronc: { pivot: [112, 158], r1: 74, r2: 96, base: -90, signe: 1, vue: "de profil, tourné vers la droite",
+    corps: `<ellipse cx="112" cy="158" rx="18" ry="11" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
+            <line x1="112" y1="158" x2="112" y2="96" stroke="var(--sourd)" stroke-width="10" stroke-linecap="round"/>
+            <circle cx="112" cy="80" r="14" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
+            <path d="M126 80 l9 4 -9 5" fill="none" stroke="var(--sourd)" stroke-width="1.4" stroke-linecap="round"/>` },
+  bras: { pivot: [112, 66], r1: 62, r2: 84, base: 90, signe: -1, vue: "de profil, tourné vers la droite",
+    corps: `<path d="M92 64 q20 -11 40 0 v60 q-20 9 -40 0 z" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
+            <circle cx="112" cy="46" r="13" fill="var(--carte-2)" stroke="var(--sourd)" stroke-width="1.5"/>
+            <path d="M125 46 l9 4 -9 5" fill="none" stroke="var(--sourd)" stroke-width="1.4" stroke-linecap="round"/>
+            <circle cx="112" cy="66" r="4.5" fill="var(--sourd)"/>` },
+  avantBras: { pivot: [112, 116], r1: 58, r2: 80, base: 90, signe: -1, vue: "angle du coude",
+    corps: `<line x1="112" y1="44" x2="112" y2="116" stroke="var(--sourd)" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="112" cy="116" r="5" fill="var(--sourd)"/>` },
+  poignet: { pivot: [130, 104], r1: 48, r2: 70, base: 0, signe: 1, vue: "main par rapport à l'avant-bras",
+    corps: `<line x1="46" y1="104" x2="130" y2="104" stroke="var(--sourd)" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="130" cy="104" r="5" fill="var(--sourd)"/>` },
+  jambes: { pivot: [112, 82], r1: 58, r2: 80, base: 90, signe: 1, vue: "flexion du genou",
+    corps: `<line x1="112" y1="20" x2="112" y2="82" stroke="var(--sourd)" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="112" cy="82" r="5" fill="var(--sourd)"/>` }
+};
+
+const pointSur = (cx, cy, r, a) =>
+  [cx + r * Math.cos(a * Math.PI / 180), cy + r * Math.sin(a * Math.PI / 180)];
+
+/**
+ * Une couronne angulaire : l'arc court à l'extérieur du corps plutôt que de
+ * partir du pivot, sinon les secteurs pleins recouvrent la silhouette qu'ils
+ * sont censés commenter.
+ */
+function couronne(cx, cy, r1, r2, a1, a2) {
+  const [xa, ya] = pointSur(cx, cy, r2, a1);
+  const [xb, yb] = pointSur(cx, cy, r2, a2);
+  const [xc, yc] = pointSur(cx, cy, r1, a2);
+  const [xd, yd] = pointSur(cx, cy, r1, a1);
+  const grand = Math.abs(a2 - a1) > 180 ? 1 : 0;
+  const sens = a2 > a1 ? 1 : 0;
+  const f = n => n.toFixed(1);
+  return `M${f(xa)},${f(ya)} A${r2},${r2} 0 ${grand} ${sens} ${f(xb)},${f(yb)} `
+       + `L${f(xc)},${f(yc)} A${r1},${r1} 0 ${grand} ${sens ? 0 : 1} ${f(xd)},${f(yd)} Z`;
+}
+
+/**
+ * Le pictogramme d'un segment : le corps au repos, les zones d'angle en arcs
+ * depuis l'articulation, les seuils chiffrés, et l'aiguille de la mesure.
+ * C'est le langage des planches d'ergonomie, avec la valeur relevée dessus —
+ * ce qu'une planche imprimée ne peut pas faire.
+ */
+function pictogramme(cle, methode, valeur, maxCote) {
+  const d = BANDES[methode]?.[cle];
+  const g = PICTO[cle];
+  if (!d || !g || !Number.isFinite(valeur)) return "";
+  const [cx, cy] = g.pivot;
+  const svgA = v => g.base + g.signe * Math.max(d.min, Math.min(d.max, v));
+
+  const zones = d.b.map(([de, a, cote]) => {
     const sev = severite(cote, d.majoration ? 3 : maxCote);
-    const l = x(a) - x(de);
-    return `<rect x="${x(de).toFixed(1)}" y="${y}" width="${l.toFixed(1)}" height="${haut}"
-                  fill="${COULEURS[sev]}" fill-opacity=".28"/>`
-      + (l > 16 ? `<text x="${(x(de) + l / 2).toFixed(1)}" y="${y + haut - 4.5}" text-anchor="middle"
-              font-size="11" font-weight="700" fill="var(--texte)">${d.majoration ? "+" + (cote - 1) : cote}</text>` : "");
+    return `<path d="${couronne(cx, cy, g.r1, g.r2, svgA(de), svgA(a))}" fill="${COULEURS[sev]}"
+                  fill-opacity=".55" stroke="var(--fond)" stroke-width="1"/>`;
   }).join("");
 
-  /* Seuils : uniquement les frontières intérieures, celles qui répondent à
-     « à partir de combien ». */
-  const seuils = d.b.slice(1).map(([de]) =>
-    `<line x1="${x(de).toFixed(1)}" y1="${y}" x2="${x(de).toFixed(1)}" y2="${y + haut + 3}"
-           stroke="var(--sourd)" stroke-width="1"/>
-     <text x="${x(de).toFixed(1)}" y="${y + haut + 15}" text-anchor="middle" font-size="10"
-           fill="var(--sourd)">${de}°</text>`).join("");
+  /* La cote de chaque zone, au milieu de son arc : la couleur ne suffit pas. */
+  const cotes = d.b.map(([de, a, cote]) => {
+    const large = Math.abs(svgA(a) - svgA(de)) > 22;
+    if (!large) return "";
+    const [tx, ty] = pointSur(cx, cy, (g.r1 + g.r2) / 2, (svgA(de) + svgA(a)) / 2);
+    return `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central"
+              font-size="13" font-weight="700" fill="#0a0e17">${d.majoration ? "+" + (cote - 1) : cote}</text>`;
+  }).join("");
 
-  const px = x(valeur);
-  return `<svg class="echelle" viewBox="0 0 ${L} ${H}" role="img"
-               aria-label="Bandes d'angle et position de la mesure">
-    ${rects}${seuils}
-    <polygon points="${px.toFixed(1)},${y - 1} ${(px - 5).toFixed(1)},${y - 9} ${(px + 5).toFixed(1)},${y - 9}"
-             fill="var(--texte)"/>
-    <line x1="${px.toFixed(1)}" y1="${y}" x2="${px.toFixed(1)}" y2="${y + haut}"
-          stroke="var(--texte)" stroke-width="2"/>
-    <text x="${Math.max(14, Math.min(L - 14, px)).toFixed(1)}" y="${y - 12}" text-anchor="middle"
-          font-size="11" font-weight="700" fill="var(--texte)">${Math.round(valeur)}°</text>
-  </svg>`;
+  /* Les seuils intérieurs : la réponse à « à partir de combien ». */
+  const seuils = d.b.slice(1).map(([de]) => {
+    const a = svgA(de);
+    const [tx, ty] = pointSur(cx, cy, g.r2 + 17, a);
+    return `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" dominant-baseline="central"
+              font-size="12" fill="var(--texte-2)">${de}°</text>`;
+  }).join("");
+
+  const [z1, z2] = pointSur(cx, cy, g.r2 + 6, g.base);
+  const aM = svgA(valeur);
+  const [mx, my] = pointSur(cx, cy, g.r2 + 2, aM);
+  const [ex, ey] = pointSur(cx, cy, g.r2 + 30, aM);
+
+  return `<svg class="picto" viewBox="0 0 264 210" role="img"
+            aria-label="Zones d'angle du segment ; mesure : ${Math.round(valeur)} degrés">
+    ${zones}${cotes}
+    <line x1="${cx}" y1="${cy}" x2="${z1.toFixed(1)}" y2="${z2.toFixed(1)}"
+          stroke="var(--sourd)" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="${z1.toFixed(1)}" y="${(z2 - 8).toFixed(1)}" text-anchor="middle"
+          font-size="12" fill="var(--sourd)">0°</text>
+    ${g.corps}${seuils}
+    <line x1="${cx}" y1="${cy}" x2="${mx.toFixed(1)}" y2="${my.toFixed(1)}"
+          stroke="var(--texte)" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="4" fill="var(--texte)"/>
+    <text x="${ex.toFixed(1)}" y="${ey.toFixed(1)}" text-anchor="middle" dominant-baseline="central"
+          font-size="14" font-weight="700" fill="var(--texte)">${Math.round(valeur)}°</text>
+  </svg>
+  <p class="picto-vue">${g.vue}</p>`;
 }
 
 const NOMS_SEGMENT = {
@@ -249,14 +367,20 @@ function afficherDetail(os, x, y) {
        <div class="detail-etat" style="color:${COULEURS[sev]}">${ETIQUETTES_SEVERITE[sev]}</div>
        ${mes && Number.isFinite(mes.v)
           ? `<div class="detail-mesure">${Math.round(mes.v)}° <small>${mes.u}</small></div>` : ""}
-       ${mes ? echelleAngles(cle, methode, mes.v, seg.max) : ""}
+       ${mes ? pictogramme(cle, methode, mes.v, seg.max) : ""}
        <div class="detail-calc">
          Cote <b>${seg.cote}</b> sur ${seg.max}
          ${seg.base != null ? `<br>base ${seg.base}` : ""}
          ${maj.length ? `<ul>${maj.map(m =>
             `<li class="${m.n < 0 ? "moins" : ""}">${m.t}${m.n ? ` (${m.n > 0 ? "+" : "−"}${Math.abs(m.n)})` : ""}</li>`).join("")}</ul>` : ""}
        </div>
-       <div class="detail-regle">${REGLES[methode][cle] || ""}</div>`;
+       ${(() => {
+         const r = REGLES[methode][cle];
+         return r ? `<div class="detail-regle">
+             <p><b>Comment c'est mesuré</b> — ${r.repere}</p>
+             <p><b>Ce qui fait monter la cote</b> — ${r.seuils}</p>
+           </div>` : "";
+       })()}`;
 
   const boite = el.scene.getBoundingClientRect();
   const d = $("#detailSegment");
@@ -394,6 +518,7 @@ function majSorties() {
   $("#poidsChargeVal").textContent = `${$("#poidsCharge").value} kg`;
   $("#frequenceVal").textContent = `${$("#frequence").value} /min`;
   $("#tailleVal").textContent = `${$("#taille").value} cm`;
+  if (!$("#idDate").value) $("#idDate").value = new Date().toISOString().slice(0, 10);
   $("#fpsVal").textContent = $("#fps").value;
   $("#lissageVal").textContent = $("#lissage").value === "0" ? "aucun" : $("#lissage").value;
 }
@@ -1036,7 +1161,157 @@ $("#taille").addEventListener("change", () => {
   dessinerInstant(etat.t);
 });
 
-el.imprimer.addEventListener("click", () => window.print());
+/* ---------- Rapport ----------
+   Le navigateur sait produire un PDF ; inutile d'embarquer une bibliothèque
+   pour refaire ça moins bien. On remplit un document caché, puis on imprime. */
+
+/** Positionne la vidéo sur un instant et attend l'image. */
+function allerA(video, t) {
+  return new Promise(resolve => {
+    let repondu = false;
+    const fini = () => { if (repondu) return; repondu = true;
+      video.removeEventListener("seeked", fini); clearTimeout(m); resolve(); };
+    video.addEventListener("seeked", fini);
+    const m = setTimeout(fini, 3000);
+    try { video.currentTime = t; } catch (e) { fini(); }
+  });
+}
+
+/** L'image du pire instant, squelette compris, en JPEG encodé. */
+async function imageDuPire() {
+  const s = etat.analyse?.synthese;
+  if (!s) return null;
+  const img = imageALInstant(etat.analyse, s.pire.t);
+  const src = etat.mode === "image" ? el.photo : el.video;
+  const l = src?.videoWidth || src?.naturalWidth || 960;
+  const h = src?.videoHeight || src?.naturalHeight || 540;
+  const c = document.createElement("canvas");
+  c.width = l; c.height = h;
+  const ctx = c.getContext("2d");
+  if (etat.mode === "video") await allerA(el.video, s.pire.t);
+  ctx.fillStyle = "#0a0e17"; ctx.fillRect(0, 0, l, h);
+  if (etat.mode !== "demo" && src) { try { ctx.drawImage(src, 0, 0, l, h); } catch (e) {} }
+  dessinerSquelette(ctx, img, { largeur: l, hauteur: h });
+  try { return c.toDataURL("image/jpeg", 0.85); } catch (e) { return null; }
+}
+
+const jourFr = v => v ? new Date(v + "T12:00:00").toLocaleDateString("fr-CA",
+  { year: "numeric", month: "long", day: "numeric" }) : "—";
+
+async function preparerRapport() {
+  const a = etat.analyse, s = a?.synthese;
+  if (!a || !s) return false;
+  const M = METHODES[etat.methode];
+  const niveaux = M.levage ? METHODES.reba.niveaux : M.niveaux;
+  const pire = imageALInstant(a, s.pire.t);
+  const niosh = resultatNiosh();
+
+  $("#rapTitre").textContent = "Cotation ergonomique du poste";
+  $("#rapSousTitre").innerHTML =
+    `Analyse vidéo · ${a.images.length} images cotées`
+    + (s.ignorees ? ` · ${s.ignorees} écartées faute de repères visibles` : "")
+    + ` · échantillonnage ${a.params.echantillonnage || 6}/s`;
+
+  const id = [
+    ["Poste", $("#idPoste").value], ["Travailleur", $("#idTravailleur").value],
+    ["Observateur", $("#idObservateur").value], ["Observation", jourFr($("#idDate").value)],
+    ["Rapport", jourFr(new Date().toISOString().slice(0, 10))]
+  ].filter(([, v]) => v && v !== "—" || true);
+  $("#rapId").innerHTML = id.map(([k, v]) =>
+    `<div><dt>${k}</dt><dd>${v || "—"}</dd></div>`).join("");
+
+  const img = await imageDuPire();
+  $("#rapImage").src = img || "";
+  $("#rapImage").style.display = img ? "" : "none";
+  $("#rapLegende").textContent =
+    `Instant le plus contraignant de la séquence, à ${s.pire.t.toFixed(1).replace(".", ",")} s. `
+    + `Squelette coloré par segment ; les cotes figurent au tableau ci-dessous.`;
+
+  /* Les trois lectures, chacune sur son échelle — jamais additionnées. */
+  const lignes = [
+    { n: "REBA", s: "corps entier", v: pire.resultats.reba.reba, r: pire.resultats.reba.risque, e: "sur 15" },
+    { n: "RULA", s: "membre supérieur", v: pire.resultats.rula.rula, r: pire.resultats.rula.risque, e: "sur 7" },
+    niosh ? { n: "NIOSH", s: "indice de levage", r: niosh.risque, e: `${niosh.plr.toFixed(1).replace(".", ",")} kg admissibles`,
+              v: Number.isFinite(niosh.il) ? niosh.il.toFixed(1).replace(".", ",") : "∞" } : null
+  ].filter(Boolean);
+  $("#rapLectures").innerHTML = lignes.map(l =>
+    `<div class="rap-lec" style="border-left-color:${COULEURS_NIVEAU[l.r.couleur]}">
+       <b>${l.v}</b> <span style="display:inline;font-size:8.5pt">${l.e}</span>
+       <span><b style="font-size:9.5pt">${l.n}</b> · ${l.s} — ${l.r.libelle.toLowerCase()}</span>
+       <span>${l.r.action}</span>
+     </div>`).join("");
+
+  const parNiveau = s.parNiveau.filter(n => n.part > 0.001);
+  $("#rapSynthese").innerHTML = `
+    <h2>Synthèse de la séquence</h2>
+    <div class="rap-stats">
+      <div><b>${s.median}</b><span>Cote médiane — la posture habituelle</span></div>
+      <div><b>${s.max}</b><span>Pire cote, à ${s.pire.t.toFixed(1).replace(".", ",")} s</span></div>
+      <div><b>${s.p90}</b><span>9<sup>e</sup> décile</span></div>
+      <div><b>${a.images.length}</b><span>Images cotées</span></div>
+    </div>
+    <div class="rap-barres">${parNiveau.map(n =>
+      `<i style="width:${(n.part * 100).toFixed(1)}%;background:${COULEURS_NIVEAU[n.couleur]}"></i>`).join("")}</div>
+    <p class="rap-legende">${parNiveau.map(n =>
+      `${n.libelle} ${Math.round(n.part * 100)} %`).join(" · ")}</p>
+    <p class="rap-legende">${el.conclusion.textContent}</p>`;
+
+  const r = pire.resultat;
+  const lignesSeg = (M.levage ? METHODES.reba : M).lignes;
+  $("#rapDetail").innerHTML = `
+    <h2>Décomposition à l'instant le plus contraignant</h2>
+    <table><thead><tr><th>Segment</th><th>Angle mesuré</th><th>Cote</th><th>État</th></tr></thead>
+    <tbody>${lignesSeg.map(l => {
+      const seg = r.segments[l.cle]; if (!seg) return "";
+      const v = l.angle(pire.angles);
+      return `<tr><td>${l.nom}</td>
+        <td>${Number.isFinite(v) ? Math.round(v) + " ° " + l.unite.replace("° ", "") : "déclaré"}</td>
+        <td>${seg.cote} / ${seg.max}</td>
+        <td>${ETIQUETTES_SEVERITE[severite(seg.cote, seg.max)]}</td></tr>`;
+    }).join("")}</tbody></table>
+    ${niosh ? `<h2>Levage — équation révisée du NIOSH</h2>
+      <table><thead><tr><th>Multiplicateur</th><th>Mesure</th><th>Valeur</th></tr></thead><tbody>
+      ${Object.entries(niosh.multiplicateurs).map(([k, m]) =>
+        `<tr><td>${ETIQ_MULT[k]}</td><td>${k === "HM" ? Math.round(lireReperes()[niosh.gouverne].H) + " cm du corps"
+          : k === "VM" ? "mains à " + Math.round(lireReperes()[niosh.gouverne].V) + " cm"
+          : k === "DM" ? Math.round(niosh.D) + " cm de montée"
+          : k === "AM" ? Math.round(lireReperes()[niosh.gouverne].A) + "° de torsion"
+          : k === "FM" ? $("#frequence").value + "/min" : $("#priseNiosh").selectedOptions[0].text.split(" — ")[0]}</td>
+        <td>${m.valeur.toFixed(2).replace(".", ",")}</td></tr>`).join("")}
+      </tbody></table>
+      <p class="rap-legende">Poids limite recommandé ${niosh.plr.toFixed(1).replace(".", ",")} kg
+      pour ${niosh.poids} kg manipulés.</p>` : ""}`;
+
+  const p = a.params;
+  $("#rapPied").innerHTML = `
+    <b>Paramètres déclarés</b> — charge ${p.chargeKg || 0} kg ·
+    prise ${["bonne", "correcte", "mauvaise", "inacceptable"][p.prise || 0]} ·
+    ${[p.statique && "posture tenue", p.repete && "geste répété", p.instable && "amplitude brusque"]
+      .filter(Boolean).join(", ") || "activité non majorée"} ·
+    côté ${p.cote === "auto" ? "automatique" : p.cote === "G" ? "gauche" : "droit"}.<br>
+    <b>Portée et limites</b> — Les angles sont mesurés sur une estimation de pose à partir d'une
+    seule caméra. La charge, la prise et la nature de l'activité sont déclarées par l'observateur, non
+    mesurées. La cote du poignet est la moins fiable. Une cotation reste un jugement professionnel :
+    cet outil l'accélère et la rend reproductible, il ne la remplace pas.<br>
+    <b>Méthodes</b> — REBA : Hignett &amp; McAtamney, Applied Ergonomics 31 (2000).
+    RULA : McAtamney &amp; Corlett, Applied Ergonomics 24 (1993).
+    NIOSH : Waters, Putz-Anderson, Garg &amp; Fine, Ergonomics 36 (1993).`;
+  return true;
+}
+
+el.imprimer.addEventListener("click", async () => {
+  if (!etat.analyse) return;
+  el.imprimer.disabled = true;
+  el.imprimer.textContent = "Préparation…";
+  try {
+    if (await preparerRapport()) window.print();
+  } finally {
+    el.imprimer.disabled = false;
+    el.imprimer.textContent = "Rapport PDF";
+    /* Remettre la vidéo là où l'utilisateur l'avait laissée. */
+    if (etat.mode === "video") { el.video.currentTime = etat.t; dessinerInstant(etat.t); }
+  }
+});
 window.addEventListener("resize", () => etat.analyse && dessinerInstant(etat.t));
 
 majSorties();

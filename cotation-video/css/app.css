@@ -8,6 +8,7 @@
    ============================================================================ */
 
 :root{
+  --h-tete:64px;
   --fond:#0a0e17; --fond-2:#0d1320; --carte:#111827; --carte-2:#1a2332;
   --bord:#1e293b; --bord-fort:#2c3a4e;
   --texte:#f1f5f9; --texte-2:#c3cddd; --sourd:#94a2b8;
@@ -45,6 +46,7 @@ p{margin:0}
 /* ---------- En-tête ---------- */
 .tete{
   display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;
+  min-height:var(--h-tete);
   padding:.9rem clamp(1rem,3vw,2rem);
   background:var(--fond-2);border-bottom:1px solid var(--bord);
   position:sticky;top:0;z-index:20;
@@ -151,15 +153,30 @@ p{margin:0}
   max-width:1560px;margin:0 auto;
 }
 @media (min-width:1080px){
-  .grille{grid-template-columns:minmax(0,1fr) 372px}
+  .grille{grid-template-columns:minmax(0,1fr) 400px;align-items:start}
   .synthese,.limites{grid-column:1 / -1}
+  /* Le panneau colle sous l'en-tête et défile pour lui-même : sans ça, lire la
+     décomposition fait perdre de vue la vidéo, qui est pourtant l'objet même de
+     l'analyse. */
+  .panneau{
+    position:sticky;top:calc(var(--h-tete) + 1.1rem);
+    max-height:calc(100vh - var(--h-tete) - 2.2rem);
+    overflow-y:auto;overscroll-behavior:contain;
+    padding-right:.3rem;scrollbar-width:thin;
+  }
+  .panneau::-webkit-scrollbar{width:7px}
+  .panneau::-webkit-scrollbar-thumb{background:var(--bord-fort);border-radius:4px}
+}
+/* Écrans peu hauts : le collant enfermerait le panneau dans une bande étroite. */
+@media (min-width:1080px) and (max-height:640px){
+  .panneau{position:static;max-height:none;overflow:visible}
 }
 
 /* ---------- Visionneuse ---------- */
 .visionneuse{display:flex;flex-direction:column;gap:.9rem;min-width:0}
 .scene{
   position:relative;background:#05070c;border:1px solid var(--bord);border-radius:4px;
-  aspect-ratio:16/10;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  aspect-ratio:16/9;overflow:hidden;display:flex;align-items:center;justify-content:center;
 }
 .scene video,.scene img{max-width:100%;max-height:100%;display:block}
 #calque{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
@@ -181,7 +198,8 @@ p{margin:0}
 .detail-etat{font-family:var(--disp);font-weight:600;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;margin-top:.1rem}
 .detail-mesure{font-size:1.5rem;font-family:var(--disp);font-weight:700;margin-top:.45rem;font-variant-numeric:tabular-nums}
 .detail-mesure small{font-family:var(--corps);font-weight:400;font-size:.8rem;color:var(--sourd);letter-spacing:0}
-.echelle{display:block;width:100%;height:auto;margin:.55rem 0 .1rem;overflow:visible}
+.picto{display:block;width:100%;max-width:16rem;height:auto;margin:.5rem auto .15rem;overflow:visible}
+.picto-vue{text-align:center;font-size:.74rem;color:var(--sourd);font-style:italic;margin-bottom:.2rem}
 .detail-calc{margin-top:.5rem;font-size:.85rem;color:var(--texte-2)}
 .detail-calc b{color:var(--texte)}
 .detail-calc li{margin-left:1rem;list-style:none;position:relative}
@@ -189,8 +207,10 @@ p{margin:0}
 .detail-calc li.moins::before{content:"−"}
 .detail-regle{
   margin-top:.55rem;padding-top:.5rem;border-top:1px solid var(--bord);
-  font-size:.79rem;color:var(--sourd);line-height:1.4;
+  font-size:.79rem;color:var(--sourd);line-height:1.45;
 }
+.detail-regle p + p{margin-top:.45rem}
+.detail-regle b{color:var(--texte-2);font-weight:600}
 .astuce{
   position:absolute;left:1rem;bottom:.7rem;z-index:5;
   font-size:.8rem;color:var(--sourd);background:rgba(10,14,23,.75);
@@ -253,7 +273,7 @@ p{margin:0}
 .note-chrono{font-size:.82rem;color:var(--sourd);margin-top:.45rem}
 
 /* ---------- Panneau ---------- */
-.panneau{display:flex;flex-direction:column;gap:1rem;min-width:0}
+.panneau{display:flex;flex-direction:column;gap:.8rem;min-width:0}
 
 .jauge-bloc{
   display:flex;gap:1rem;align-items:center;
@@ -270,7 +290,7 @@ p{margin:0}
 .jauge-texte{display:flex;flex-direction:column;gap:.15rem;min-width:0}
 .jauge-texte strong{font-family:var(--disp);font-size:1.5rem;font-weight:700}
 
-.carte{background:var(--carte);border:1px solid var(--bord);border-radius:4px;padding:1rem}
+.carte{background:var(--carte);border:1px solid var(--bord);border-radius:4px;padding:.9rem .95rem}
 .carte.accent{border-left:3px solid var(--accent)}
 .carte h2{font-size:1.12rem;font-weight:700;margin-bottom:.6rem}
 .carte .intro{font-size:.87rem;color:var(--texte-2);margin-bottom:.85rem}
@@ -299,7 +319,7 @@ details.carte summary h2{margin:0}
 }
 
 /* Champs */
-.champ{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem}
+.champ{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.7rem}
 .champ > span:first-child,.champ legend{
   font-family:var(--disp);font-weight:600;font-size:.74rem;letter-spacing:.13em;
   text-transform:uppercase;color:var(--sourd);padding:0;
@@ -354,14 +374,59 @@ select{
   font-size:.87rem;color:var(--sourd);max-width:88ch;
 }
 
+.champ input[type=text],.champ input[type=date]{
+  background:var(--carte-2);color:var(--texte);border:1px solid var(--bord-fort);
+  border-radius:3px;padding:.4rem .5rem;font-family:var(--corps);font-size:.9rem;width:100%;
+}
+
+/* ---------- Rapport imprimable ----------
+   Absent de l'écran, seul visible à l'impression. Le navigateur sait déjà
+   produire un PDF : inutile d'embarquer une bibliothèque pour refaire ça. */
+.rapport{display:none}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-/* ---------- Impression ---------- */
+/* ---------- Impression ----------
+   L'écran et le rapport n'ont pas le même travail : on n'imprime pas l'outil,
+   on imprime un document. Toute l'application est masquée et le rapport prend
+   la page. */
 @media print{
-  body{background:#fff;color:#000}
-  .tete-actions,.transport,.exports,.progres,details.carte{display:none}
-  .grille{grid-template-columns:1fr;padding:0}
-  .carte,.synthese,.limites,.chrono-bloc,.jauge-bloc{border-color:#bbb;background:#fff;break-inside:avoid}
-  .segments td,.stat .k,.conclusion,.limites ul,.discret{color:#333}
-  .jauge-valeur,.stat .v,.carte h2,.synthese h2{fill:#000;color:#000}
+  @page{size:A4;margin:14mm}
+  body{background:#fff;color:#111;font-size:10.5pt}
+  .tete,.grille,.detail,.astuce{display:none!important}
+  .rapport{display:block}
+
+  .rap-tete{display:flex;justify-content:space-between;gap:1.5rem;align-items:flex-start;
+            border-bottom:2px solid #111;padding-bottom:.6rem;margin-bottom:1rem}
+  .rap-tete h1{font-family:var(--disp);font-size:20pt;margin:0;color:#111}
+  .rap-tete p{font-size:9.5pt;color:#555;margin-top:.15rem}
+  .rap-id{margin:0;font-size:9pt;text-align:right;color:#333;min-width:38%}
+  .rap-id div{display:flex;gap:.5rem;justify-content:flex-end}
+  .rap-id dt{color:#777}
+  .rap-id dd{margin:0;font-weight:600}
+
+  .rap-corps{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1rem;break-inside:avoid}
+  .rap-figure{margin:0;flex:0 0 52%}
+  .rap-figure img{width:100%;border:1px solid #bbb;display:block}
+  .rap-figure figcaption{font-size:8.5pt;color:#666;margin-top:.25rem}
+  .rap-lectures{flex:1;display:flex;flex-direction:column;gap:.45rem}
+  .rap-lec{border:1px solid #ccc;border-left:4px solid #999;padding:.4rem .55rem}
+  .rap-lec b{font-family:var(--disp);font-size:13pt}
+  .rap-lec span{display:block;font-size:8.8pt;color:#555;margin-top:.1rem}
+
+  .rapport h2{font-family:var(--disp);font-size:12pt;margin:1rem 0 .4rem;color:#111;
+              border-bottom:1px solid #ccc;padding-bottom:.15rem}
+  .rapport table{width:100%;border-collapse:collapse;font-size:9.5pt;break-inside:avoid}
+  .rapport th{text-align:left;font-size:8pt;text-transform:uppercase;letter-spacing:.08em;
+              color:#666;border-bottom:1px solid #999;padding:.2rem .4rem .2rem 0}
+  .rapport td{padding:.22rem .4rem .22rem 0;border-bottom:1px solid #e4e4e4}
+  .rap-stats{display:flex;gap:1.2rem;margin:.3rem 0 .6rem}
+  .rap-stats div{flex:1}
+  .rap-stats b{font-family:var(--disp);font-size:17pt;display:block;line-height:1}
+  .rap-stats span{font-size:8.5pt;color:#666}
+  .rap-barres{display:flex;height:16px;border:1px solid #999;margin:.2rem 0}
+  .rap-barres i{display:block;height:100%}
+  .rap-legende{font-size:8.5pt;color:#555;margin-top:.25rem}
+  .rap-pied{margin-top:1.2rem;padding-top:.5rem;border-top:1px solid #ccc;
+            font-size:8.5pt;color:#555;line-height:1.4}
 }
