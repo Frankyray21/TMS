@@ -65,6 +65,9 @@ for (const c of CAS) {
     const pieces = [...s.querySelectorAll(".corps path, .corps circle")];
     const svgPt = (x, y) => { const q = s.createSVGPoint(); q.x = x; q.y = y; return q; };
     for (const t of s.querySelectorAll("text")) {
+      /* Une pilule a son fond : elle est faite pour se lire par-dessus le
+         corps. Elle reste soumise aux deux autres contrôles. */
+      if (t.classList.contains("pilule")) continue;
       const g = t.getBBox();
       const ctmT = t.getCTM();
       let touche = 0, total = 0;

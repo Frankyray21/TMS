@@ -423,7 +423,9 @@ function cadre(cle, methode) {
                     fin[1] + tg[1] * ecart * loin * sg + u[1] * 0.08];
   const e0p = e0(1), e0m = e0(-1);
   for (const e of [e0p, e0m]) avaler([e[0] - 0.30, e[1] - 0.26, e[0] + 0.30, e[1] + 0.26]);
-  avaler([pv[0] - ra, pv[1] - ra, pv[0] + ra, pv[1] + ra]);
+  /* La bande de mesure, sa pointe et les pilules de seuil posées au-delà. */
+  const R = ra + 0.6;
+  avaler([pv[0] - R, pv[1] - R, pv[0] + R, pv[1] + R]);
 
   const k = Math.min(SW / (x2 - x1), SH / (y2 - y1), KMAX);
   const c = { k, lref, u, pv, e0: e0p, e0m, ra, lf, boite: [x1, y1, x2, y2],
@@ -500,7 +502,7 @@ function chaine(pts, pieces, avant, coul, inverse = false, k = KMAX) {
 }
 
 /** Le corps dans sa posture, le fantôme de la référence, l'arc de mesure. */
-function scene(cle, methode, vb, coul) {
+function scene(cle, methode, vb, coul, ruban) {
   const pl = PLANCHES[cle], c = cadre(cle, methode);
   const deg = pl.sens * vb;
   const pts = poser(pl, deg);
@@ -522,26 +524,56 @@ function scene(cle, methode, vb, coul) {
   const fantome = `<path d="M${f(deb[0])},${f(deb[1])}L${f(fin[0])},${f(fin[1])}" fill="none"
       stroke="var(--texte-2)" stroke-width="0.055" stroke-dasharray="0.17 0.13" opacity=".9"/>`;
 
-  /* L'arc de mesure : il part du sommet de l'angle, entre le fantôme et le
-     segment posé. C'est le marquage d'angle des planches — plus d'aiguille
-     qui traverse le corps, le segment posé EST l'aiguille. */
-  let arc = "";
-  const a0 = Math.atan2(c.u[1], c.u[0]) * 180 / Math.PI, a1 = a0 + deg, ra = c.ra;
+  /* La flèche de mesure : une bande colorée, du 0° jusqu'à la posture, dans la
+     couleur de chaque plage de score qu'elle traverse — la réglette ramenée
+     sur l'articulation. Les seuils franchis y sont marqués d'un cran et de leur
+     valeur, dans une pilule qui reste lisible par-dessus le corps. Plus
+     d'aiguille : le segment posé EST l'aiguille ; la bande dit combien de la
+     rotation est déjà dans le rouge. */
+  let arc = "", pilules = "";
+  /* Les points de la bande et de la pointe, en unités du viewBox : ce sont les
+     obstacles que les pilules de seuil devront éviter. */
+  const obstacles = [];
+  const vbx = (x, y) => [c.tx + c.k * x, c.ty + c.k * y];
+  const a0 = Math.atan2(c.u[1], c.u[0]) * 180 / Math.PI, ra = c.ra;
+  const angle = t => a0 + pl.sens * t;
+  const pt = (r, a) => [px + r * Math.cos(rad(a)), py + r * Math.sin(rad(a))];
+  const EP = 0.095;                                   // demi-épaisseur de la bande
   if (Math.abs(deg) >= 4) {
-    const p1 = [px + ra * Math.cos(rad(a0)), py + ra * Math.sin(rad(a0))];
-    const p2 = [px + ra * Math.cos(rad(a1)), py + ra * Math.sin(rad(a1))];
-    const grand = Math.abs(deg) > 180 ? 1 : 0, sens = deg > 0 ? 1 : 0;
-    const tg = [-Math.sin(rad(a1)) * Math.sign(deg), Math.cos(rad(a1)) * Math.sign(deg)];
-    const nr = [Math.cos(rad(a1)), Math.sin(rad(a1))];
-    const tri = [[p2[0] + tg[0] * 0.13, p2[1] + tg[1] * 0.13],
-                 [p2[0] + nr[0] * 0.09, p2[1] + nr[1] * 0.09],
-                 [p2[0] - nr[0] * 0.09, p2[1] - nr[1] * 0.09]];
-    /* Sous 10°, l'arc est plus court que sa pointe : elle seule resterait, posée
-       sur la poitrine comme un signe. On la garde pour les angles qui la portent. */
-    const pointe = Math.abs(deg) >= 10
-      ? `<path d="M${tri.map(q => f(q[0]) + "," + f(q[1])).join("L")}Z" fill="var(--texte)"/>` : "";
-    arc = `<path d="M${f(p1[0])},${f(p1[1])}A${f(ra)},${f(ra)} 0 ${grand} ${sens} ${f(p2[0])},${f(p2[1])}"
-             fill="none" stroke="var(--texte)" stroke-width="0.07" stroke-linecap="round"/>${pointe}`;
+    for (const sct of ruban.sections) {
+      const A = angle(sct.de), B = angle(sct.a), sw = B > A ? 1 : 0;
+      const [x1, y1] = pt(ra + EP, A), [x2, y2] = pt(ra + EP, B);
+      const [x3, y3] = pt(ra - EP, B), [x4, y4] = pt(ra - EP, A);
+      arc += `<path d="M${f(x1)},${f(y1)}A${f(ra + EP)},${f(ra + EP)} 0 0 ${sw} ${f(x2)},${f(y2)}
+                 L${f(x3)},${f(y3)}A${f(ra - EP)},${f(ra - EP)} 0 0 ${sw ? 0 : 1} ${f(x4)},${f(y4)}Z"
+               fill="${sct.coul}" stroke="var(--fond)" stroke-width="0.03" stroke-linejoin="round"/>`;
+    }
+    for (let g = 0; g <= Math.abs(deg); g += 2)
+      obstacles.push(vbx(...pt(ra + EP, a0 + Math.sign(deg) * g)), vbx(...pt(ra - EP, a0 + Math.sign(deg) * g)));
+    for (const t of ruban.seuils) {
+      const [x1, y1] = pt(ra - EP - 0.05, angle(t)), [x2, y2] = pt(ra + EP + 0.05, angle(t));
+      arc += `<path d="M${f(x1)},${f(y1)}L${f(x2)},${f(y2)}" stroke="var(--fond)" stroke-width="0.05"/>`;
+    }
+    /* Sous 10°, la bande est plus courte que sa pointe : elle seule resterait,
+       posée sur la poitrine comme un signe. */
+    if (Math.abs(deg) >= 10) {
+      const a1 = angle(vb), p2 = pt(ra, a1);
+      const tg = [-Math.sin(rad(a1)) * Math.sign(deg), Math.cos(rad(a1)) * Math.sign(deg)];
+      const nr = [Math.cos(rad(a1)), Math.sin(rad(a1))];
+      const tri = [[p2[0] + tg[0] * 0.34, p2[1] + tg[1] * 0.34],
+                   [p2[0] + nr[0] * 0.22, p2[1] + nr[1] * 0.22],
+                   [p2[0] - nr[0] * 0.22, p2[1] - nr[1] * 0.22]];
+      for (let i = 0; i < 3; i++) {
+        const q = tri[i], r = tri[(i + 1) % 3];
+        obstacles.push(vbx(q[0], q[1]), vbx((q[0] + r[0]) / 2, (q[1] + r[1]) / 2));
+      }
+      arc += `<path d="M${tri.map(q => f(q[0]) + "," + f(q[1])).join("L")}Z"
+                fill="${ruban.sections.at(-1)?.coul || "var(--texte)"}"
+                stroke="var(--fond)" stroke-width="0.04" stroke-linejoin="round"/>`;
+    }
+    /* Les pilules : hors du groupe mis à l'échelle, pour rester lisibles. Elles
+       sont posées après l'étiquette du 0°, plus bas, qui connaît sa place. */
+    pilules = "__PILULES__";
   }
   /* Le sol : sans lui, un corps penché à 90° a l'air de tomber. */
   const sol = pl.sol
@@ -558,10 +590,42 @@ function scene(cle, methode, vb, coul) {
   const ex = Math.max(16, Math.min(132, c.tx + c.k * e0[0]));
   const ey = Math.max(14, Math.min(212, c.ty + c.k * e0[1]));
 
+  /* Les pilules de seuil. Posées au-delà de la bande, elles ne peuvent pas
+     rencontrer la pointe, qui vit au rayon de la bande. Entre elles, et avec
+     l'étiquette du 0°, c'est un vrai test de rectangles : deux rayons en
+     quinconce, et l'on prend le premier qui ne touche rien. Le seuil le plus
+     près de la mesure passe en premier — le dernier franchi, celui qui compte ;
+     un seuil qui ne trouve pas de place est tu plutôt que posé sur un autre. */
+  if (pilules) {
+    pilules = "";
+    const places = [[ex - 10, ey - 7, ex + 10, ey + 7]];
+    const libre = r =>
+      places.every(q => r[2] + 3 <= q[0] || r[0] - 3 >= q[2] || r[3] + 3 <= q[1] || r[1] - 3 >= q[3]) &&
+      obstacles.every(([x, y]) => x < r[0] - 2 || x > r[2] + 2 || y < r[1] - 2 || y > r[3] + 2);
+    /* Trois rayons : au ras de la bande, puis de plus en plus loin. Une pilule
+       posée sur la pointe ou sur la bande cacherait ce qu'elle commente. */
+    const rayons = [ra + EP + 0.30, ra + EP + 0.30 + 15 / c.k, ra + EP + 0.30 + 30 / c.k];
+    for (const t of [...ruban.seuils].sort((x, y) => Math.abs(y) - Math.abs(x))) {
+      const txt = `${t < 0 ? "−" + -t : t}°`, w = 6 + txt.length * 6.4;
+      for (const rp of rayons) {
+        const [qx, qy] = pt(rp, angle(t));
+        const X = c.tx + c.k * qx, Y = c.ty + c.k * qy;
+        const r = [X - w / 2, Y - 7, X + w / 2, Y + 7];
+        if (r[0] < 6 || r[2] > 150 || r[1] < 9 || r[3] > 214 || !libre(r)) continue;
+        places.push(r);
+        pilules += `<rect x="${f(r[0])}" y="${f(r[1])}" width="${f(w)}" height="14" rx="4"
+                      fill="var(--fond)" stroke="${ruban.couleurDe(t)}" stroke-width="1"/>
+          <text class="pilule" x="${f(X)}" y="${f(Y)}" text-anchor="middle" dominant-baseline="central"
+                font-size="10.5" font-weight="600" fill="var(--texte)">${txt}</text>`;
+        break;
+      }
+    }
+  }
+
   return `<g transform="translate(${f(c.tx)},${f(c.ty)}) scale(${f(c.k)})">
       ${sol}<g class="corps">${corps}</g>${fantome}${arc}${pivot}</g>
     <text x="${f(ex)}" y="${f(ey)}" text-anchor="middle" dominant-baseline="central"
-          font-size="11" fill="var(--texte-2)">0°</text>`;
+          font-size="11" fill="var(--texte-2)">0°</text>${pilules}`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -703,9 +767,24 @@ export function pictogramme(cle, methode, valeur, maxCote, { base, cote } = {}) 
                 : iBande >= 0 ? d.b[iBande][2] + decal : base;
   const coul = COULEURS[severite(coteFig, maxCote)];
 
+  /* Les sections de la bande de mesure : le balayage du 0° à la mesure, coupé
+     à chaque seuil franchi, chaque morceau dans la couleur de sa plage. */
+  const lo = Math.min(0, vb), hi = Math.max(0, vb);
+  const coupes = [...new Set([lo, hi, ...d.b.map(([a]) => a), d.b[d.b.length - 1][1]]
+    .filter(t => t >= lo && t <= hi))].sort((x, y) => x - y);
+  const couleurDe = t => {
+    const b = d.b.find(([x, y]) => t >= x && t <= y) || d.b[0];
+    return COULEURS[severite(b[2] + decal, maxCote)];
+  };
+  const sections = [];
+  for (let i = 0; i + 1 < coupes.length; i++)
+    sections.push({ de: coupes[i], a: coupes[i + 1], coul: couleurDe((coupes[i] + coupes[i + 1]) / 2) });
+  if (vb < 0) sections.reverse();               // du 0° vers la mesure, dans les deux sens
+  const ruban = { sections, seuils: coupes.slice(1, -1), couleurDe: t => couleurDe(t + (vb > 0 ? 0.01 : -0.01)) };
+
   return `<svg class="picto" viewBox="0 0 ${L} ${H}" role="img"
       aria-label="Le corps dans la posture mesurée, ${Math.round(valeur)} degrés, et les plages de score du segment">
-    ${scene(cle, methode, vb, coul)}
+    ${scene(cle, methode, vb, coul, ruban)}
     ${reglette(d, maxCote, valeur, vb, iBande, decal)}
   </svg>
   <p class="picto-vue">${pl.vue}</p>`;
