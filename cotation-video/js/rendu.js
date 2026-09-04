@@ -174,6 +174,42 @@ export function dessinerJauge(svg, valeur, risque, echelle = { min: 1, max: 15 }
    posture reste en zone rouge, et où se situe le pire instant du cycle.
 ---------------------------------------------------------------------------- */
 
+/**
+ * Le curseur de lecture. Il dit « vous êtes ici » : c'est le repère qu'on
+ * cherche des yeux en permanence, il doit se voir sans qu'on le cherche.
+ *
+ * Trois traits plutôt qu'un : un halo sombre pour détacher le curseur de la
+ * courbe et des bandes de niveau, qui sont claires par endroits ; le trait
+ * clair par-dessus ; une tête en haut, parce qu'un trait fin qui traverse une
+ * bande de couleur se perd, alors qu'une tête pleine reste repérable.
+ *
+ * Le décalage d'un demi-pixel est ce qui rend le trait net : sans lui, un
+ * trait de largeur impaire tombe à cheval sur deux pixels et le navigateur
+ * l'affiche deux fois plus pâle sur deux fois plus large.
+ */
+const TETE = 5;
+
+function curseurLecture(ctx, px, L, H) {
+  /* Aux deux extrémités, une tête centrée sur la position exacte serait rognée
+     par le bord du canevas et le curseur deviendrait un moignon — précisément
+     là où on le cherche, au début et à la fin de la séquence. On la rentre de
+     sa demi-largeur : l'écart vaut cinq pixels, et seulement aux extrêmes. */
+  const x = Math.round(Math.min(Math.max(px, TETE), L - TETE)) + 0.5;
+
+  ctx.strokeStyle = "rgba(10,14,23,.75)";
+  ctx.lineWidth = 3.5;
+  ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+
+  ctx.strokeStyle = "#f8fafc";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+
+  ctx.fillStyle = "#f8fafc";
+  ctx.beginPath();
+  ctx.moveTo(x - TETE, 0); ctx.lineTo(x + TETE, 0); ctx.lineTo(x, 7);
+  ctx.closePath(); ctx.fill();
+}
+
 export function dessinerChronologie(canvas, analyse, { curseur = null, niveaux = NIVEAUX } = {}) {
   const ctx = canvas.getContext("2d");
   const r = window.devicePixelRatio || 1;
@@ -229,12 +265,7 @@ export function dessinerChronologie(canvas, analyse, { curseur = null, niveaux =
     ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.stroke();
   }
 
-  /* Curseur de lecture. */
-  if (curseur != null) {
-    ctx.strokeStyle = "rgba(15,23,42,.85)";
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x(curseur), 0); ctx.lineTo(x(curseur), H); ctx.stroke();
-  }
+  if (curseur != null) curseurLecture(ctx, x(curseur), L, H);
 }
 
 /**
@@ -283,10 +314,7 @@ export function dessinerHauteurMains(canvas, analyse, { curseur = null, origine 
     ctx.fillText(libelle, Math.min(L - 60, px + 7), 13);
   }
 
-  if (curseur != null) {
-    ctx.strokeStyle = "rgba(241,245,249,.6)"; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x(curseur), 0); ctx.lineTo(x(curseur), H); ctx.stroke();
-  }
+  if (curseur != null) curseurLecture(ctx, x(curseur), L, H);
 }
 
 /** L'image analysée la plus proche d'un instant donné. */
