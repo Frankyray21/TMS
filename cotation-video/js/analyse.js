@@ -40,73 +40,96 @@ const CANAUX = [
 /**
  * Parcourt une vidéo et relève une pose tous les 1/échantillonnage de seconde.
  *
- * On lit la vidéo au lieu de la parcourir par sauts : `requestVideoFrameCallback`
- * donne l'horodatage exact de chaque image décodée, là où enchaîner des `seek`
- * est beaucoup plus lent et pas plus précis.
+ * On se déplace d'un instant à l'autre plutôt que de lire la vidéo. La lecture
+ * paraissait plus naturelle — `requestVideoFrameCallback` donne l'horodatage
+ * exact de chaque image décodée — mais elle a deux défauts rédhibitoires :
+ * ce rappel ne se déclenche que lorsqu'une image est *présentée à l'écran*, donc
+ * il se tait dans un onglet en arrière-plan ou quand rien ne compose la vidéo ;
+ * et la lecture impose un plancher de durée/vitesse, même quand la machine
+ * pourrait aller plus vite.
+ *
+ * Le déplacement, lui, est déterministe : on obtient exactement les instants
+ * demandés, l'analyse avance en arrière-plan, et sa durée ne dépend que de la
+ * vitesse d'inférence.
  *
  * @param {HTMLVideoElement} video
- * @param {object} o — { echantillonnage, vitesse, signal, onProgres }
+ * @param {object} o — { echantillonnage, signal, onProgres }
  * @returns {Promise<Array>} images relevées : { t, ecran, monde }
  */
 export async function parcourirVideo(video, o = {}) {
   const pas = 1 / (o.echantillonnage || DEFAUTS.echantillonnage);
   const releves = [];
-  let prochain = 0;
-  let dernierHorodatage = -1;
   let sansDetection = 0;
   const depart = performance.now();
 
   video.pause();
-  video.currentTime = 0;
   video.muted = true;
-  video.playbackRate = o.vitesse || 2;
-  await new Promise(r => {
-    if (video.readyState >= 2) return r();
-    video.addEventListener("loadeddata", r, { once: true });
+  await pret(video);
+
+  const duree = Number.isFinite(video.duration) && video.duration > 0
+    ? video.duration
+    : (video.seekable.length ? video.seekable.end(0) : 0);
+  if (!duree) throw new Error("Durée de la vidéo indéterminée");
+
+  let dernierHorodatage = -1;
+  for (let t = 0; t <= duree - 1e-3; t += pas) {
+    if (o.signal?.aborted) break;
+    if (!(await allerA(video, t))) break;      // déplacement impossible : on s'arrête là
+
+    /* MediaPipe exige des horodatages strictement croissants. */
+    const tMs = Math.max(dernierHorodatage + 1, Math.round(t * 1000));
+    dernierHorodatage = tMs;
+    try {
+      const pose = detecterVideo(video, tMs);
+      if (pose) releves.push({ t: video.currentTime, ...pose });
+      else sansDetection++;
+    } catch (e) { sansDetection++; }
+
+    /* Assez d'information pour que l'utilisateur sache où en est l'analyse :
+       position dans la vidéo, images retenues, images sans personne détectée,
+       et temps écoulé — dont se déduit le temps restant. */
+    o.onProgres?.({
+      part: Math.min(1, t / duree),
+      t, duree,
+      retenues: releves.length, sansDetection,
+      ecoule: (performance.now() - depart) / 1000
+    });
+    /* Rendre la main au navigateur : sans ça l'interface se fige et le bouton
+       « Arrêter » ne répond plus. */
+    await new Promise(r => setTimeout(r, 0));
+  }
+  return releves;
+}
+
+/** Attend que la vidéo ait assez de données pour être déplacée. */
+function pret(video) {
+  if (video.readyState >= 2) return Promise.resolve();
+  return new Promise(resolve => {
+    const fini = () => { video.removeEventListener("loadeddata", fini); resolve(); };
+    video.addEventListener("loadeddata", fini);
+    setTimeout(fini, 8000);
   });
+}
 
-  return new Promise((resolve, reject) => {
-    const utiliseRVFC = typeof video.requestVideoFrameCallback === "function";
-
-    const traiter = () => {
-      if (o.signal?.aborted) { video.pause(); return resolve(releves); }
-      const t = video.currentTime;
-
-      if (t + 1e-4 >= prochain) {
-        prochain = t + pas;
-        /* MediaPipe exige des horodatages strictement croissants. */
-        const tMs = Math.max(dernierHorodatage + 1, Math.round(t * 1000));
-        dernierHorodatage = tMs;
-        try {
-          const pose = detecterVideo(video, tMs);
-          if (pose) releves.push({ t, ...pose });
-          else sansDetection++;
-        } catch (e) { sansDetection++; }
-        /* Assez d'information pour que l'utilisateur sache où en est l'analyse :
-           position dans la vidéo, images retenues, images sans personne
-           détectée, et temps écoulé — dont se déduit le temps restant. */
-        o.onProgres?.({
-          part: video.duration ? t / video.duration : 0,
-          t, duree: video.duration || 0,
-          retenues: releves.length, sansDetection,
-          ecoule: (performance.now() - depart) / 1000
-        });
-      }
-      planifier();
+/**
+ * Positionne la vidéo sur un instant et attend que l'image soit disponible.
+ * @returns {Promise<boolean>} faux si le déplacement n'aboutit pas
+ */
+function allerA(video, t) {
+  return new Promise(resolve => {
+    let repondu = false;
+    const fini = ok => {
+      if (repondu) return;
+      repondu = true;
+      video.removeEventListener("seeked", surSeek);
+      clearTimeout(minuteur);
+      resolve(ok);
     };
-
-    const planifier = () => {
-      if (video.ended || (video.duration && video.currentTime >= video.duration - 1e-3)) {
-        video.pause();
-        return resolve(releves);
-      }
-      if (utiliseRVFC) video.requestVideoFrameCallback(traiter);
-      else requestAnimationFrame(traiter);
-    };
-
-    video.addEventListener("ended", () => resolve(releves), { once: true });
-    video.addEventListener("error", () => reject(new Error("Lecture de la vidéo impossible")), { once: true });
-    video.play().then(planifier).catch(reject);
+    const surSeek = () => fini(true);
+    video.addEventListener("seeked", surSeek);
+    /* Un déplacement qui n'aboutit pas ne doit pas bloquer toute l'analyse. */
+    const minuteur = setTimeout(() => fini(false), 4000);
+    try { video.currentTime = t; } catch (e) { fini(false); }
   });
 }
 
@@ -273,7 +296,6 @@ export async function analyserVideo(video, params = {}, o = {}) {
   await chargerDetecteur({ mode: "VIDEO", precision: params.precision, source: params.source, onEtape: o.onEtape });
   const releves = await parcourirVideo(video, {
     echantillonnage: params.echantillonnage,
-    vitesse: params.vitesse,
     signal: o.signal,
     onProgres: o.onProgres
   });

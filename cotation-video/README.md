@@ -37,6 +37,31 @@ Puis ouvrir `http://localhost:8080/`. L'outil s'ouvre sur une **démonstration**
 — un cycle de levage fabriqué — pour montrer ce qu'il produit avant même de
 charger un fichier. Les postures y sont simulées, l'interface le dit.
 
+### Combien de temps dure une analyse
+
+L'outil relève une image tous les `1/échantillonnage` de seconde de vidéo, et
+chaque relevé coûte un déplacement plus une inférence :
+
+    images = durée de la vidéo × échantillonnage (6/s par défaut)
+    temps  = images × coût par image
+
+Le coût par image dépend entièrement de la machine. Mesuré sur un rendu
+**logiciel, sans GPU** — le pire cas : **720 ms par image**. Sur une machine
+avec accélération graphique, comptez plutôt 60 à 150 ms.
+
+| Vidéo | Images à 6/s | Machine ordinaire (estimation) | Sans GPU (mesuré) |
+|---|---|---|---|
+| 15 s | 90 | ~10 s | ~1 min |
+| 30 s | 180 | ~20 s | ~2 min |
+| 60 s | 360 | ~40 s | ~4 min |
+
+Ajouter, à la première utilisation seulement, le téléchargement du modèle (9 Mo)
+et une à trois secondes d'initialisation.
+
+**Le levier, c'est l'échantillonnage** (réglages d'analyse, 2 à 15 images/s).
+Le diviser par deux divise le temps par deux. Six images par seconde conviennent
+à un cycle de levage ; deux suffisent pour une tâche statique.
+
 ### Ce que montre l'analyse pendant qu'elle tourne
 
 Quatre étapes affichées en permanence — moteur, modèle, analyse, cotation — avec
@@ -231,6 +256,12 @@ mais laissées à l'opérateur — et ça reste la première cause d'erreur.
   l'indique. Filmer le corps entier reste préférable de loin.
 - **Un seul sujet à la fois.** S'il y a deux personnes dans le cadre, seule la
   plus proéminente est suivie.
+- **Le parcours se fait par déplacements, pas en lecture.** La lecture semblait
+  naturelle, mais `requestVideoFrameCallback` ne se déclenche que lorsqu'une
+  image est *présentée à l'écran* : il se tait dans un onglet en arrière-plan ou
+  quand rien ne compose la vidéo, et l'analyse reste bloquée sans fin. Le
+  déplacement est déterministe, fonctionne en arrière-plan, et sa durée ne
+  dépend que de la vitesse d'inférence.
 - **Une seule caméra.** Les angles hors du plan de la caméra sont les moins
   précis. Filmer de trois quarts plutôt que de face ou de dos.
 
