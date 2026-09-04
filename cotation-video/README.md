@@ -44,6 +44,13 @@ Cliquer un segment ouvre sa fiche : l'angle mesuré, la cote et sa décompositio
 la règle publiée qui s'applique. L'os cliqué reçoit un halo, pour que la fiche
 se rattache à quelque chose plutôt que de flotter.
 
+La fiche porte aussi une **échelle des bandes d'angle** : chaque plage colorée
+avec sa cote, les seuils chiffrés, et un repère sur la valeur mesurée. Une règle
+écrite dit « au-delà de 20° » ; l'échelle montre où tombe le 28° relevé. Les
+bandes sont celles que les fonctions de cotation appliquent réellement, pas une
+paraphrase — et chaque bande porte son chiffre, la couleur ne voyageant jamais
+seule.
+
 Un membre du côté non coté le dit explicitement : REBA et RULA s'appliquent à un
 côté à la fois, et afficher une valeur pour l'autre reviendrait à inventer une
 mesure.

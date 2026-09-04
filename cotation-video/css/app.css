@@ -181,6 +181,7 @@ p{margin:0}
 .detail-etat{font-family:var(--disp);font-weight:600;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;margin-top:.1rem}
 .detail-mesure{font-size:1.5rem;font-family:var(--disp);font-weight:700;margin-top:.45rem;font-variant-numeric:tabular-nums}
 .detail-mesure small{font-family:var(--corps);font-weight:400;font-size:.8rem;color:var(--sourd);letter-spacing:0}
+.echelle{display:block;width:100%;height:auto;margin:.55rem 0 .1rem;overflow:visible}
 .detail-calc{margin-top:.5rem;font-size:.85rem;color:var(--texte-2)}
 .detail-calc b{color:var(--texte)}
 .detail-calc li{margin-left:1rem;list-style:none;position:relative}

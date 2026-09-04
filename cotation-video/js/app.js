@@ -125,6 +125,68 @@ const REGLES = {
   }
 };
 
+/* Les bandes d'angle de chaque segment, telles que les fonctions de cotation
+   les appliquent réellement. Elles répondent à la question qu'une règle écrite
+   laisse en suspens : à partir de quel angle ça bascule, et où tombe la mesure. */
+const BANDES = {
+  reba: {
+    tronc:     { min: -40, max: 90, b: [[-40,-20,3],[-20,20,2],[20,60,3],[60,90,4]] },
+    cou:       { min: -30, max: 60, b: [[-30,0,2],[0,20,1],[20,60,2]] },
+    jambes:    { min: 0, max: 120, b: [[0,30,1],[30,60,2],[60,120,3]], majoration: true },
+    bras:      { min: -45, max: 140, b: [[-45,-20,2],[-20,20,1],[20,45,2],[45,90,3],[90,140,4]] },
+    avantBras: { min: 0, max: 160, b: [[0,60,2],[60,100,1],[100,160,2]] },
+    poignet:   { min: -45, max: 45, b: [[-45,-15,2],[-15,15,1],[15,45,2]] }
+  },
+  rula: {
+    tronc:     { min: -60, max: 90, b: [[-60,-20,3],[-20,-5,2],[-5,5,1],[5,20,2],[20,60,3],[60,90,4]] },
+    cou:       { min: -30, max: 60, b: [[-30,0,4],[0,10,1],[10,20,2],[20,60,3]] },
+    bras:      { min: -45, max: 140, b: [[-45,-20,2],[-20,20,1],[20,45,2],[45,90,3],[90,140,4]] },
+    avantBras: { min: 0, max: 160, b: [[0,60,2],[60,100,1],[100,160,2]] },
+    poignet:   { min: -45, max: 45, b: [[-45,-15,3],[-15,-2,2],[-2,2,1],[2,15,2],[15,45,3]] }
+  }
+};
+
+/**
+ * L'échelle des bandes, en SVG : chaque plage colorée porte sa cote, les seuils
+ * sont chiffrés, et un repère marque la valeur mesurée. La couleur ne voyage
+ * jamais seule — le nombre est dans la bande.
+ */
+function echelleAngles(cle, methode, valeur, maxCote) {
+  const d = BANDES[methode]?.[cle];
+  if (!d || !Number.isFinite(valeur)) return "";
+  const L = 300, H = 58, haut = 16, y = 20;
+  const x = v => ((Math.max(d.min, Math.min(d.max, v)) - d.min) / (d.max - d.min)) * L;
+
+  const rects = d.b.map(([de, a, cote]) => {
+    const sev = severite(cote, d.majoration ? 3 : maxCote);
+    const l = x(a) - x(de);
+    return `<rect x="${x(de).toFixed(1)}" y="${y}" width="${l.toFixed(1)}" height="${haut}"
+                  fill="${COULEURS[sev]}" fill-opacity=".28"/>`
+      + (l > 16 ? `<text x="${(x(de) + l / 2).toFixed(1)}" y="${y + haut - 4.5}" text-anchor="middle"
+              font-size="11" font-weight="700" fill="var(--texte)">${d.majoration ? "+" + (cote - 1) : cote}</text>` : "");
+  }).join("");
+
+  /* Seuils : uniquement les frontières intérieures, celles qui répondent à
+     « à partir de combien ». */
+  const seuils = d.b.slice(1).map(([de]) =>
+    `<line x1="${x(de).toFixed(1)}" y1="${y}" x2="${x(de).toFixed(1)}" y2="${y + haut + 3}"
+           stroke="var(--sourd)" stroke-width="1"/>
+     <text x="${x(de).toFixed(1)}" y="${y + haut + 15}" text-anchor="middle" font-size="10"
+           fill="var(--sourd)">${de}°</text>`).join("");
+
+  const px = x(valeur);
+  return `<svg class="echelle" viewBox="0 0 ${L} ${H}" role="img"
+               aria-label="Bandes d'angle et position de la mesure">
+    ${rects}${seuils}
+    <polygon points="${px.toFixed(1)},${y - 1} ${(px - 5).toFixed(1)},${y - 9} ${(px + 5).toFixed(1)},${y - 9}"
+             fill="var(--texte)"/>
+    <line x1="${px.toFixed(1)}" y1="${y}" x2="${px.toFixed(1)}" y2="${y + haut}"
+          stroke="var(--texte)" stroke-width="2"/>
+    <text x="${Math.max(14, Math.min(L - 14, px)).toFixed(1)}" y="${y - 12}" text-anchor="middle"
+          font-size="11" font-weight="700" fill="var(--texte)">${Math.round(valeur)}°</text>
+  </svg>`;
+}
+
 const NOMS_SEGMENT = {
   tronc: "Tronc", cou: "Cou", jambes: "Jambes", bras: "Bras",
   avantBras: "Avant-bras", poignet: "Poignet", pronosupination: "Pronosupination"
@@ -187,6 +249,7 @@ function afficherDetail(os, x, y) {
        <div class="detail-etat" style="color:${COULEURS[sev]}">${ETIQUETTES_SEVERITE[sev]}</div>
        ${mes && Number.isFinite(mes.v)
           ? `<div class="detail-mesure">${Math.round(mes.v)}° <small>${mes.u}</small></div>` : ""}
+       ${mes ? echelleAngles(cle, methode, mes.v, seg.max) : ""}
        <div class="detail-calc">
          Cote <b>${seg.cote}</b> sur ${seg.max}
          ${seg.base != null ? `<br>base ${seg.base}` : ""}
