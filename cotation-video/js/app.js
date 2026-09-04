@@ -70,7 +70,7 @@ const METHODES = {
       { cle: "jambes",          nom: "Jambes",      angle: a => a.jambes.flexionGenou, unite: "° genou" }
     ],
     intro: "RULA croise la posture avec la force et le caractère statique ou répété "
-         + "du geste. Sa cote de force plafonne à 10 kg : c'est une méthode de poste, "
+         + "du geste. Son score de force plafonne à 10 kg : c'est une méthode de poste, "
          + "pas de manutention.",
     calcul: r => `Posture A ${r.postureA} + muscle ${r.muscle.cote} + force ${r.force.cote} = <b>C ${r.scoreC}</b> · `
                + `Posture B ${r.postureB} + muscle ${r.muscle.cote} + force ${r.force.cote} = <b>D ${r.scoreD}</b> · `
@@ -115,37 +115,37 @@ const REGLES = {
   reba: {
     tronc: {
       repere: "Mesuré entre l'axe du tronc et la verticale. Positif = penché vers l'avant, négatif = cambré vers l'arrière.",
-      seuils: "Au-delà de 20° : cote 3. Au-delà de 60° : cote 4. Une torsion ou une inclinaison latérale ajoute 1."
+      seuils: "Au-delà de 20° : score 3. Au-delà de 60° : score 4. Une torsion ou une inclinaison latérale ajoute 1."
     },
     cou: {
       repere: "Mesuré par rapport au tronc, pas à la verticale. Penché en avant, quelqu'un qui garde la tête droite est donc en extension du cou — c'est bien ce que subit la nuque.",
-      seuils: "Au-delà de 20° de flexion, ou dès l'extension : cote 2 au lieu de 1. Une torsion ou une inclinaison ajoute 1."
+      seuils: "Au-delà de 20° de flexion, ou dès l'extension : score 2 au lieu de 1. Une torsion ou une inclinaison ajoute 1."
     },
     jambes: {
-      repere: "Flexion du genou le plus fléchi. La cote de base vient de l'appui : 1 sur deux pieds, 2 sur un seul ou en équilibre instable.",
+      repere: "Flexion du genou le plus fléchi. Le score de base vient de l'appui : 1 sur deux pieds, 2 sur un seul ou en équilibre instable.",
       seuils: "Le genou ajoute par-dessus : 1 entre 30 et 60°, 2 au-delà. Sans effet en position assise."
     },
     bras: {
       repere: "Élévation mesurée par rapport au tronc, bras au repos = 0°. Positif = vers l'avant, négatif = vers l'arrière.",
-      seuils: "Au-delà de 20° : cote 2. De 45 à 90° : 3. Au-delà de 90° : 4. Épaule haussée +1, abduction +1, bras soutenu −1."
+      seuils: "Au-delà de 20° : score 2. De 45 à 90° : 3. Au-delà de 90° : 4. Épaule haussée +1, abduction +1, bras soutenu −1."
     },
     avantBras: {
       repere: "Angle du coude : 0° bras tendu, 90° angle droit.",
-      seuils: "Entre 60 et 100°, cote 1. En dehors de cette plage, 2 — un coude trop ouvert coûte autant qu'un coude trop fermé."
+      seuils: "Entre 60 et 100°, score 1. En dehors de cette plage, 2 — un coude trop ouvert coûte autant qu'un coude trop fermé."
     },
     poignet: {
       repere: "Flexion de la main par rapport à l'avant-bras. Mesure la moins fiable de toutes : trois repères de main ne suffisent pas à la donner au degré près.",
-      seuils: "Au-delà de 15° dans un sens ou dans l'autre : cote 2. Une déviation latérale ajoute 1."
+      seuils: "Au-delà de 15° dans un sens ou dans l'autre : score 2. Une déviation latérale ajoute 1."
     }
   },
   rula: {
     tronc: {
-      repere: "Mesuré entre l'axe du tronc et la verticale. Assis avec appui et tronc droit, la cote reste à 1.",
-      seuils: "Au-delà de 20° : cote 3. Au-delà de 60° : 4. Torsion +1, inclinaison +1, cumulables."
+      repere: "Mesuré entre l'axe du tronc et la verticale. Assis avec appui et tronc droit, le score reste à 1.",
+      seuils: "Au-delà de 20° : score 3. Au-delà de 60° : 4. Torsion +1, inclinaison +1, cumulables."
     },
     cou: {
       repere: "Mesuré par rapport au tronc, pas à la verticale. Penché en avant, quelqu'un qui garde la tête droite est donc en extension du cou.",
-      seuils: "De 10 à 20° : cote 2. Au-delà de 20° : 3. En extension : 4, la cote la plus forte. Torsion +1, inclinaison +1."
+      seuils: "De 10 à 20° : score 2. Au-delà de 20° : 3. En extension : 4, le score le plus fort. Torsion +1, inclinaison +1."
     },
     jambes: {
       repere: "Jambes appuyées et équilibrées, ou non — RULA ne mesure pas l'angle du genou.",
@@ -153,15 +153,15 @@ const REGLES = {
     },
     bras: {
       repere: "Élévation mesurée par rapport au tronc, bras au repos = 0°. Positif = vers l'avant.",
-      seuils: "Au-delà de 20° : cote 2. De 45 à 90° : 3. Au-delà de 90° : 4. Épaule haussée +1, abduction +1, bras soutenu −1."
+      seuils: "Au-delà de 20° : score 2. De 45 à 90° : 3. Au-delà de 90° : 4. Épaule haussée +1, abduction +1, bras soutenu −1."
     },
     avantBras: {
       repere: "Angle du coude : 0° bras tendu, 90° angle droit.",
-      seuils: "Entre 60 et 100°, cote 1. En dehors, 2. Travailler en travers du corps ou nettement à l'écart ajoute 1."
+      seuils: "Entre 60 et 100°, score 1. En dehors, 2. Travailler en travers du corps ou nettement à l'écart ajoute 1."
     },
     poignet: {
       repere: "Flexion de la main par rapport à l'avant-bras. RULA la découpe plus finement que REBA. Mesure la moins fiable de toutes.",
-      seuils: "Jusqu'à 15° : cote 2. Au-delà : 3. Une déviation latérale ajoute 1."
+      seuils: "Jusqu'à 15° : score 2. Au-delà : 3. Une déviation latérale ajoute 1."
     },
     pronosupination: {
       repere: "Rotation de l'avant-bras, paume vers le haut ou vers le bas. Non observable sur l'image : c'est vous qui la déclarez.",
@@ -225,16 +225,16 @@ function afficherDetail(os, x, y) {
 
   $("#detailCorps").innerHTML = autreCote
     ? `<div class="detail-titre">${NOMS_SEGMENT[cle]} ${coteOs === "G" ? "gauche" : "droit"}</div>
-       <div class="detail-etat" style="color:var(--sourd)">Côté non coté</div>
+       <div class="detail-etat" style="color:var(--sourd)">Côté non évalué</div>
        <div class="detail-regle">${METHODES[methode].nom} s'applique à un côté à la fois. Le côté retenu est
-       le ${image.angles.cote === "G" ? "gauche" : "droit"} — modifiable dans « Côté coté ».</div>`
+       le ${image.angles.cote === "G" ? "gauche" : "droit"} — modifiable dans « Côté évalué ».</div>`
     : `<div class="detail-titre">${NOMS_SEGMENT[cle]}${coteOs ? (coteOs === "G" ? " gauche" : " droit") : ""}</div>
        <div class="detail-etat" style="color:${COULEURS[sev]}">${ETIQUETTES_SEVERITE[sev]}</div>
        ${mes && Number.isFinite(mes.v)
           ? `<div class="detail-mesure">${Math.round(mes.v)}° <small>${mes.u}</small></div>` : ""}
        ${mes ? pictogramme(cle, methode, mes.v, seg.max) : ""}
        <div class="detail-calc">
-         Cote <b>${seg.cote}</b> sur ${seg.max}
+         Score <b>${seg.cote}</b> sur ${seg.max}
          ${seg.base != null ? `<br>base ${seg.base}` : ""}
          ${maj.length ? `<ul>${maj.map(m =>
             `<li class="${m.n < 0 ? "moins" : ""}">${m.t}${m.n ? ` (${m.n > 0 ? "+" : "−"}${Math.abs(m.n)})` : ""}</li>`).join("")}</ul>` : ""}
@@ -243,7 +243,7 @@ function afficherDetail(os, x, y) {
          const r = REGLES[methode][cle];
          return r ? `<div class="detail-regle">
              <p><b>Comment c'est mesuré</b> — ${r.repere}</p>
-             <p><b>Ce qui fait monter la cote</b> — ${r.seuils}</p>
+             <p><b>Ce qui fait monter le score</b> — ${r.seuils}</p>
            </div>` : "";
        })()}`;
 
@@ -279,7 +279,7 @@ const ETAPES = [
   { cle: "moteur",   nom: "Moteur" },
   { cle: "modele",   nom: "Modèle" },
   { cle: "analyse",  nom: "Analyse" },
-  { cle: "cotation", nom: "Cotation" }
+  { cle: "cotation", nom: "Scores" }
 ];
 
 const mo = o => (o / 1048576).toFixed(1).replace(".", ",");
@@ -342,7 +342,7 @@ function suivi() {
         libelle: "Analyse des images",
         part: p.part,
         suffixe: p.duree ? `${secondes(p.t)} / ${secondes(p.duree)}` : "",
-        detail: `${p.retenues} image${p.retenues > 1 ? "s" : ""} cotée${p.retenues > 1 ? "s" : ""}`
+        detail: `${p.retenues} image${p.retenues > 1 ? "s" : ""} évaluée${p.retenues > 1 ? "s" : ""}`
           + (p.sansDetection ? ` · ${p.sansDetection} sans détection` : "")
           + (reste ? ` · reste ~${secondes(reste)}` : "")
       });
@@ -479,7 +479,7 @@ function majPanneau(image) {
   $("#jambesManuel").disabled = !jambesSupposees;
   if (jambesSupposees) {
     el.calcul.innerHTML += `<br><span style="color:${COULEURS[1]}">Jambes hors du cadre :`
-      + ` cotées d'après la position choisie, pas mesurées.</span>`;
+      + ` évaluées d'après la position choisie, pas mesurées.</span>`;
   }
 }
 
@@ -493,10 +493,10 @@ function majSynthese() {
   const niveauMax = NIVEAUX.find(n => s.max >= n.min && s.max <= n.max);
   const niveauMed = NIVEAUX.find(n => s.median >= n.min && s.median <= n.max);
   el.stats.innerHTML = `
-    <div class="stat"><div class="v" style="color:${COULEURS_NIVEAU[niveauMed.couleur]}">${s.median}</div><div class="k">Cote médiane — la posture habituelle</div></div>
-    <div class="stat"><div class="v" style="color:${COULEURS_NIVEAU[niveauMax.couleur]}">${s.max}</div><div class="k">Pire cote, à ${s.pire.t.toFixed(1).replace(".", ",")} s</div></div>
+    <div class="stat"><div class="v" style="color:${COULEURS_NIVEAU[niveauMed.couleur]}">${s.median}</div><div class="k">Score médian — la posture habituelle</div></div>
+    <div class="stat"><div class="v" style="color:${COULEURS_NIVEAU[niveauMax.couleur]}">${s.max}</div><div class="k">Pire score, à ${s.pire.t.toFixed(1).replace(".", ",")} s</div></div>
     <div class="stat"><div class="v">${s.p90}</div><div class="k">9<sup>e</sup> décile — le haut du cycle</div></div>
-    <div class="stat"><div class="v">${s.images}</div><div class="k">Images cotées${s.ignorees ? ` · ${s.ignorees} écartées` : ""}</div></div>`;
+    <div class="stat"><div class="v">${s.images}</div><div class="k">Images évaluées${s.ignorees ? ` · ${s.ignorees} écartées` : ""}</div></div>`;
 
   const visibles = s.parNiveau.filter(n => n.part > 0.001);
   el.barres.innerHTML = visibles.map(n =>
@@ -514,7 +514,7 @@ function majSynthese() {
   el.conclusion.innerHTML =
     `La posture reste à <b>${s.median}</b> l'essentiel du temps et culmine à <b>${s.max}</b> ` +
     `(${niveauMax.libelle.toLowerCase()}) à <b>${s.pire.t.toFixed(1).replace(".", ",")} s</b>. ` +
-    (dom ? `C'est <b>${NOMS[dom.nom] || dom.nom}</b> qui pèse le plus lourd, sur ${Math.round(dom.part * 100)} % des images cotées. ` : "") +
+    (dom ? `C'est <b>${NOMS[dom.nom] || dom.nom}</b> qui pèse le plus lourd, sur ${Math.round(dom.part * 100)} % des images évaluées. ` : "") +
     `${niveauMax.action}`;
 
   el.chronoLegende.innerHTML = NIVEAUX.map(n =>
@@ -779,10 +779,10 @@ function pertinence(cle, image, niosh) {
     if (assis) return "Conçue pour le corps entier debout ; RULA est plus fine sur un poste assis.";
     return charge > 0
       ? "Adaptée — posture et charge, corps entier."
-      : "Adaptée à la posture. Sans charge déclarée, elle ne cote que le geste.";
+      : "Adaptée à la posture. Sans charge déclarée, elle n'évalue que le geste.";
   }
   if (cle === "rula") {
-    if (charge > 10) return "Hors de son domaine : sa cote de force plafonne à 10 kg, elle sature ici.";
+    if (charge > 10) return "Hors de son domaine : son score de force plafonne à 10 kg, elle sature ici.";
     if (assis) return "Adaptée — poste assis, membre supérieur.";
     return "Adaptée au membre supérieur et aux gestes répétés.";
   }
@@ -835,7 +835,7 @@ function choisirMethode(m) {
   });
   const levage = !!METHODES[m].levage;
   $("#methodeRef").innerHTML = METHODES[m].ref;
-  $("#chronoTitre").textContent = METHODES[m].titreChrono || `Cote ${METHODES[m].nom} dans le temps`;
+  $("#chronoTitre").textContent = METHODES[m].titreChrono || `Score ${METHODES[m].nom} dans le temps`;
   $("#casePronosupination").hidden = m !== "rula";
   if (!levage) $("#introParams").textContent = METHODES[m].intro;
 
@@ -859,10 +859,10 @@ function majAvis() {
   const charge = +$("#charge").value;
   let texte = "";
   if (etat.methode === "rula" && charge > 10) {
-    texte = `RULA plafonne sa cote de force au-delà de 10 kg : à ${charge} kg elle sature `
+    texte = `RULA plafonne son score de force au-delà de 10 kg : à ${charge} kg elle sature `
           + `et cesse de discriminer. Pour de la manutention de charge, REBA est l'instrument approprié.`;
   } else if (etat.methode === "reba" && charge === 0) {
-    texte = "Sans charge déclarée, REBA ne cote que la posture. Pour un poste de "
+    texte = "Sans charge déclarée, REBA n'évalue que la posture. Pour un poste de "
           + "précision ou assis, RULA est plus sensible au membre supérieur.";
   }
   let bloc = document.getElementById("avisMethode");
@@ -971,7 +971,7 @@ el.exportJson.addEventListener("click", () => {
          l'on change d'avis sur la méthode après coup. */
       reba: i.resultats.reba.reba, rula: i.resultats.rula.rula,
       fiable: i.fiable,
-      cotes: Object.fromEntries(Object.entries(i.resultat.segments).map(([k, v]) => [k, v.cote])),
+      scores: Object.fromEntries(Object.entries(i.resultat.segments).map(([k, v]) => [k, v.cote])),
       angles: {
         tronc: +i.angles.tronc.flexion.toFixed(1),
         cou: +i.angles.cou.flexion.toFixed(1),
@@ -985,7 +985,7 @@ el.exportJson.addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `cotation-${etat.methode}-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `evaluation-${etat.methode}-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
 });
@@ -1071,9 +1071,9 @@ async function preparerRapport() {
   const pire = imageALInstant(a, s.pire.t);
   const niosh = resultatNiosh();
 
-  $("#rapTitre").textContent = "Cotation ergonomique du poste";
+  $("#rapTitre").textContent = "Évaluation ergonomique du poste";
   $("#rapSousTitre").innerHTML =
-    `Analyse vidéo · ${a.images.length} images cotées`
+    `Analyse vidéo · ${a.images.length} images évaluées`
     + (s.ignorees ? ` · ${s.ignorees} écartées faute de repères visibles` : "")
     + ` · échantillonnage ${a.params.echantillonnage || 6}/s`;
 
@@ -1090,7 +1090,7 @@ async function preparerRapport() {
   $("#rapImage").style.display = img ? "" : "none";
   $("#rapLegende").textContent =
     `Instant le plus contraignant de la séquence, à ${s.pire.t.toFixed(1).replace(".", ",")} s. `
-    + `Squelette coloré par segment ; les cotes figurent au tableau ci-dessous.`;
+    + `Squelette coloré par segment ; les scores figurent au tableau ci-dessous.`;
 
   /* Les trois lectures, chacune sur son échelle — jamais additionnées. */
   const lignes = [
@@ -1110,10 +1110,10 @@ async function preparerRapport() {
   $("#rapSynthese").innerHTML = `
     <h2>Synthèse de la séquence</h2>
     <div class="rap-stats">
-      <div><b>${s.median}</b><span>Cote médiane — la posture habituelle</span></div>
-      <div><b>${s.max}</b><span>Pire cote, à ${s.pire.t.toFixed(1).replace(".", ",")} s</span></div>
+      <div><b>${s.median}</b><span>Score médian — la posture habituelle</span></div>
+      <div><b>${s.max}</b><span>Pire score, à ${s.pire.t.toFixed(1).replace(".", ",")} s</span></div>
       <div><b>${s.p90}</b><span>9<sup>e</sup> décile</span></div>
-      <div><b>${a.images.length}</b><span>Images cotées</span></div>
+      <div><b>${a.images.length}</b><span>Images évaluées</span></div>
     </div>
     <div class="rap-barres">${parNiveau.map(n =>
       `<i style="width:${(n.part * 100).toFixed(1)}%;background:${COULEURS_NIVEAU[n.couleur]}"></i>`).join("")}</div>
@@ -1125,7 +1125,7 @@ async function preparerRapport() {
   const lignesSeg = (M.levage ? METHODES.reba : M).lignes;
   $("#rapDetail").innerHTML = `
     <h2>Décomposition à l'instant le plus contraignant</h2>
-    <table><thead><tr><th>Segment</th><th>Angle mesuré</th><th>Cote</th><th>État</th></tr></thead>
+    <table><thead><tr><th>Segment</th><th>Angle mesuré</th><th>Score</th><th>État</th></tr></thead>
     <tbody>${lignesSeg.map(l => {
       const seg = r.segments[l.cle]; if (!seg) return "";
       const v = l.angle(pire.angles);
@@ -1156,7 +1156,7 @@ async function preparerRapport() {
     côté ${p.cote === "auto" ? "automatique" : p.cote === "G" ? "gauche" : "droit"}.<br>
     <b>Portée et limites</b> — Les angles sont mesurés sur une estimation de pose à partir d'une
     seule caméra. La charge, la prise et la nature de l'activité sont déclarées par l'observateur, non
-    mesurées. La cote du poignet est la moins fiable. Une cotation reste un jugement professionnel :
+    mesurées. Le score du poignet est le moins fiable. Une évaluation reste un jugement professionnel :
     cet outil l'accélère et la rend reproductible, il ne la remplace pas.<br>
     <b>Méthodes</b> — REBA : Hignett &amp; McAtamney, Applied Ergonomics 31 (2000).
     RULA : McAtamney &amp; Corlett, Applied Ergonomics 24 (1993).

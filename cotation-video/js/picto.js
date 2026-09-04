@@ -166,7 +166,7 @@ export function pictogramme(cle, methode, valeur, maxCote) {
   const [ex, ey] = pointSur(cx, cy, g.r2 + 32, aM);
 
   return `<svg class="picto" viewBox="0 0 280 224" role="img"
-            aria-label="Zones d'angle du segment ; mesure : ${Math.round(valeur)} degrés">
+            aria-label="Zones de score du segment ; mesure : ${Math.round(valeur)} degrés">
     ${zones}${cotes}
     <line x1="${cx}" y1="${cy}" x2="${z1.toFixed(1)}" y2="${z2.toFixed(1)}"
           stroke="var(--sourd)" stroke-width="1.2" stroke-dasharray="4 3"/>
