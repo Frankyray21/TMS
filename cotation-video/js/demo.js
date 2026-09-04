@@ -77,16 +77,21 @@ function versEcran(monde, { aspect = 1.6, vue = 72 } = {}) {
 
 /* Les étapes du cycle : debout, descente, saisie au sol, relevage, port, dépose.
    Les angles sont ceux d'une manutention ordinaire, pas d'un cas extrême. */
+/* Les angles sont ceux d'une manutention ordinaire : saisie d'une caisse à
+   hauteur de palette, port contre le corps, dépose. Les valeurs de `bras` sont
+   choisies pour que les mains restent à une distance plausible du corps — c'est
+   ce que NIOSH mesure, et une posture synthétique invraisemblable donnerait un
+   « hors domaine » qui n'apprendrait rien. */
 const ETAPES = [
-  { t: 0.0, tronc:  5, genou:  5, bras:  10, coude: 15, cou: 10 },
-  { t: 0.8, tronc: 40, genou: 35, bras:  25, coude: 30, cou: 20 },
-  { t: 1.6, tronc: 72, genou: 55, bras:  40, coude: 25, cou: 30 },
-  { t: 2.2, tronc: 68, genou: 50, bras:  35, coude: 45, cou: 28 },
-  { t: 3.0, tronc: 35, genou: 25, bras:  20, coude: 70, cou: 15 },
-  { t: 3.8, tronc: 10, genou:  5, bras:  15, coude: 85, cou: 12 },
-  { t: 4.6, tronc:  8, genou:  5, bras:  15, coude: 85, cou: 12 },
-  { t: 5.4, tronc: 45, genou: 30, bras:  25, coude: 60, cou: 22 },
-  { t: 6.0, tronc: 15, genou: 10, bras:  12, coude: 20, cou: 12 }
+  { t: 0.0, tronc:  5, genou:  5, bras:  8, coude: 15, cou: 10 },
+  { t: 0.8, tronc: 40, genou: 35, bras:  6, coude: 30, cou: 20 },
+  { t: 1.6, tronc: 72, genou: 55, bras: 15, coude: 25, cou: 30 },
+  { t: 2.2, tronc: 68, genou: 50, bras: 18, coude: 45, cou: 28 },
+  { t: 3.0, tronc: 35, genou: 25, bras:  6, coude: 70, cou: 15 },
+  { t: 3.8, tronc: 10, genou:  5, bras:  8, coude: 85, cou: 12 },
+  { t: 4.6, tronc:  8, genou:  5, bras:  8, coude: 85, cou: 12 },
+  { t: 5.4, tronc: 45, genou: 30, bras:  8, coude: 60, cou: 22 },
+  { t: 6.0, tronc: 15, genou: 10, bras:  5, coude: 20, cou: 12 }
 ];
 
 const interp = (a, b, k) => a + (b - a) * k;

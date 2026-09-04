@@ -103,7 +103,7 @@ function trait(ctx, x1, y1, x2, y2, severite, ep) {
 /* ---------- Jauge ---------- */
 
 /** Arc de progression + chiffre. Le chiffre est l'information ; l'arc l'illustre. */
-export function dessinerJauge(svg, valeur, risque, echelle = { min: 1, max: 15 }) {
+export function dessinerJauge(svg, valeur, risque, echelle = { min: 1, max: 15 }, texte = null) {
   const etendue = Math.max(1, echelle.max - echelle.min);
   const pct = Math.max(0, Math.min(1, (valeur - echelle.min) / etendue));
   const arc = svg.querySelector(".jauge-arc");
@@ -111,7 +111,10 @@ export function dessinerJauge(svg, valeur, risque, echelle = { min: 1, max: 15 }
   const circonference = 2 * Math.PI * 42;
   arc.style.strokeDasharray = `${pct * circonference} ${circonference}`;
   arc.style.stroke = COULEURS_NIVEAU[risque.couleur];
-  val.textContent = valeur;
+  val.textContent = texte ?? valeur;
+  /* Un indice à virgule ou un « ∞ » ne tient pas dans le corps prévu pour un
+     entier de deux chiffres : on rétrécit plutôt que de laisser déborder. */
+  val.style.fontSize = String(val.textContent).length > 2 ? "1.7rem" : "";
   val.style.fill = COULEURS_NIVEAU[risque.couleur];
 }
 
@@ -180,6 +183,58 @@ export function dessinerChronologie(canvas, analyse, { curseur = null, niveaux =
   if (curseur != null) {
     ctx.strokeStyle = "rgba(15,23,42,.85)";
     ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x(curseur), 0); ctx.lineTo(x(curseur), H); ctx.stroke();
+  }
+}
+
+/**
+ * En mode NIOSH, la chronologie ne montre pas une cote mais la hauteur des
+ * mains : c'est ce qui permet de repérer d'un coup d'œil la saisie et la dépose,
+ * les deux instants que la méthode demande.
+ */
+export function dessinerHauteurMains(canvas, analyse, { curseur = null, origine = null, destination = null } = {}) {
+  const ctx = canvas.getContext("2d");
+  const r = window.devicePixelRatio || 1;
+  const L = canvas.clientWidth, H = canvas.clientHeight;
+  canvas.width = L * r; canvas.height = H * r;
+  ctx.setTransform(r, 0, 0, r, 0, 0);
+  ctx.clearRect(0, 0, L, H);
+
+  const pts = analyse.images.filter(i => i.mesures);
+  if (!pts.length) return;
+  const tMax = Math.max(...pts.map(i => i.t)) || 1;
+  const vMax = Math.max(100, ...pts.map(i => i.mesures.V)) * 1.1;
+  const x = t => (t / tMax) * (L - 2) + 1;
+  const y = v => H - (v / vMax) * (H - 14) - 7;
+
+  /* Repère des 75 cm : la hauteur où le multiplicateur vertical vaut 1. */
+  ctx.strokeStyle = "rgba(34,197,94,.45)";
+  ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, y(75)); ctx.lineTo(L, y(75)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "rgba(148,163,184,.9)";
+  ctx.font = "11px Barlow, sans-serif";
+  ctx.fillText("75 cm · hauteur optimale", 6, y(75) - 5);
+
+  ctx.beginPath();
+  pts.forEach((i, k) => k ? ctx.lineTo(x(i.t), y(i.mesures.V)) : ctx.moveTo(x(i.t), y(i.mesures.V)));
+  ctx.strokeStyle = "#94a2b8"; ctx.lineWidth = 2; ctx.stroke();
+
+  for (const [t, libelle, couleur] of [[origine, "origine", "#f97316"], [destination, "destination", "#22c55e"]]) {
+    if (t == null) continue;
+    const proche = pts.reduce((a, b) => Math.abs(b.t - t) < Math.abs(a.t - t) ? b : a);
+    const px = x(t), py = y(proche.mesures.V);
+    ctx.strokeStyle = couleur; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, H); ctx.stroke();
+    ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2);
+    ctx.fillStyle = couleur; ctx.fill();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = couleur; ctx.font = "600 11px 'Barlow Condensed', sans-serif";
+    ctx.fillText(libelle, Math.min(L - 60, px + 7), 13);
+  }
+
+  if (curseur != null) {
+    ctx.strokeStyle = "rgba(241,245,249,.6)"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(x(curseur), 0); ctx.lineTo(x(curseur), H); ctx.stroke();
   }
 }

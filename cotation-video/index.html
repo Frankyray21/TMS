@@ -24,6 +24,9 @@
     <button type="button" class="methode" data-methode="rula" role="radio" aria-checked="false">
       RULA <span>membre supérieur</span>
     </button>
+    <button type="button" class="methode" data-methode="niosh" role="radio" aria-checked="false">
+      NIOSH <span>levage</span>
+    </button>
   </div>
   <div class="tete-actions">
     <span class="puce" id="badgeConfidentialite" title="Aucun fichier n'est téléversé : tout le traitement se fait dans ce navigateur.">
@@ -90,6 +93,82 @@
       </div>
     </div>
 
+    <!-- NIOSH : résultat du levage, pas une cote par image -->
+    <div class="carte" id="carteNiosh" hidden>
+      <h2>Poids limite recommandé</h2>
+      <div class="plr">
+        <div><span class="plr-v" id="plrValeur">—</span><span class="plr-u">kg admissibles</span></div>
+        <div class="plr-sep"></div>
+        <div><span class="plr-v" id="poidsReel">—</span><span class="plr-u">kg manipulés</span></div>
+      </div>
+      <table class="segments">
+        <thead><tr><th>Multiplicateur</th><th>Mesure</th><th>Valeur</th></tr></thead>
+        <tbody id="corpsMult"></tbody>
+      </table>
+      <p class="calcul" id="calculNiosh"></p>
+    </div>
+
+    <div class="carte accent" id="panneauNiosh" hidden>
+      <h2>Le levage à évaluer</h2>
+      <p class="intro">NIOSH ne cote pas une image mais un levage entier, entre une
+      saisie et une dépose. Les distances sont mesurées sur le squelette&nbsp;: vérifiez-les,
+      elles restent des estimations.</p>
+
+      <div class="reperes">
+        <div>
+          <div class="lab">Origine — la saisie</div>
+          <button class="bouton mince plein" id="marquerOrigine" title="Relever les distances sur l'image affichée">Marquer ici</button>
+          <div class="mesures-champs">
+            <label>H <input type="number" id="oH" min="0" max="120" step="1"> cm</label>
+            <label>V <input type="number" id="oV" min="0" max="200" step="1"> cm</label>
+            <label>A <input type="number" id="oA" min="0" max="180" step="1"> °</label>
+          </div>
+          <span class="repere-t" id="oT"></span>
+        </div>
+        <div>
+          <div class="lab">Destination — la dépose</div>
+          <button class="bouton mince plein" id="marquerDestination" title="Relever les distances sur l'image affichée">Marquer ici</button>
+          <div class="mesures-champs">
+            <label>H <input type="number" id="dH" min="0" max="120" step="1"> cm</label>
+            <label>V <input type="number" id="dV" min="0" max="200" step="1"> cm</label>
+            <label>A <input type="number" id="dA" min="0" max="180" step="1"> °</label>
+          </div>
+          <span class="repere-t" id="dT"></span>
+        </div>
+      </div>
+
+      <label class="case"><input type="checkbox" id="controleDestination"> La dépose demande du contrôle (charge posée avec précision)</label>
+
+      <label class="champ">
+        <span>Poids réel de la charge</span>
+        <span class="ligne"><input type="range" id="poidsCharge" min="0" max="40" step="0.5" value="12"><output id="poidsChargeVal">12 kg</output></span>
+      </label>
+      <label class="champ">
+        <span>Fréquence des levages</span>
+        <span class="ligne"><input type="range" id="frequence" min="0" max="15" step="0.5" value="3"><output id="frequenceVal">3 /min</output></span>
+      </label>
+      <label class="champ">
+        <span>Durée de la tâche</span>
+        <select id="dureeTache">
+          <option value="courte">1 h ou moins</option>
+          <option value="moyenne">Plus de 1 h, jusqu'à 2 h</option>
+          <option value="longue" selected>Plus de 2 h, jusqu'à 8 h</option>
+        </select>
+      </label>
+      <label class="champ">
+        <span>Qualité de la prise</span>
+        <select id="priseNiosh">
+          <option value="bonne">Bonne — poignée ou prise franche</option>
+          <option value="correcte" selected>Correcte — prise acceptable</option>
+          <option value="mauvaise">Mauvaise — pas de prise adaptée</option>
+        </select>
+      </label>
+      <label class="champ">
+        <span>Taille du travailleur <span class="discret">— étalonne les distances</span></span>
+        <span class="ligne"><input type="range" id="taille" min="140" max="205" step="1" value="175"><output id="tailleVal">175 cm</output></span>
+      </label>
+    </div>
+
     <div class="carte" id="carteSegments">
       <h2>Décomposition</h2>
       <table class="segments">
@@ -99,7 +178,7 @@
       <p class="calcul" id="calcul"></p>
     </div>
 
-    <div class="carte accent">
+    <div class="carte accent" id="panneauPostural">
       <h2>Ce que la vidéo ne montre pas</h2>
       <p class="intro" id="introParams">Ces informations, la méthode les exige et aucune
       image ne les contient. Elles sont à vous, et elles pèsent lourd : elles peuvent à

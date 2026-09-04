@@ -1,7 +1,8 @@
 # Cotation ergonomique vidéo
 
-Coter une posture de travail en **REBA** ou en **RULA** à partir d'une vidéo,
-automatiquement, sans que la vidéo quitte le poste.
+Coter une posture de travail en **REBA**, en **RULA** ou selon l'**équation
+révisée du NIOSH**, à partir d'une vidéo, automatiquement, sans que la vidéo
+quitte le poste.
 
 Une vidéo entre, une cote par image en sort, plus la synthèse de la séquence :
 posture habituelle, pire instant, temps passé dans chaque niveau de risque,
@@ -11,6 +12,7 @@ segment qui pèse le plus lourd.
 |---|---|---|---|
 | **REBA** | corps entier | 1–15, 5 niveaux | Manutention, efforts, postures debout |
 | **RULA** | membre supérieur | 1–7, 4 niveaux | Postes assis, travail de précision, gestes répétés |
+| **NIOSH** | levage | poids admissible et indice | Soulever une charge : quel poids la tâche autorise |
 
 Les deux sont calculées à chaque image : basculer de l'une à l'autre ne relance
 rien. RULA plafonne sa cote de force à 10 kg — un avis le signale quand la
@@ -52,20 +54,56 @@ requête ne sort. Le dossier n'est pas versionné : chaque poste le régénère.
 ## Ce que fait la chaîne
 
 ```
-vidéo → estimation de pose → angles articulaires → cotation REBA → synthèse
-        (MediaPipe)          (angles.js)           (reba.js)       (reba.js)
+                          ┌ angles articulaires → REBA / RULA → synthèse
+vidéo → estimation de pose ┤   (angles.js)          (reba, rula)
+        (pose.js)          └ distances du levage  → NIOSH
+                               (mesures.js)          (niosh.js)
 ```
 
 | Fichier | Rôle |
 |---|---|
 | `js/reba.js` | **Le modèle REBA.** Tables A, B, C de la méthode publiée, cotation par segment, niveaux de risque, synthèse de séquence. Aucune dépendance, aucun DOM. |
 | `js/rula.js` | **Le modèle RULA.** Même contrat, tables et majorations propres à la méthode. |
+| `js/niosh.js` | **L'équation révisée du NIOSH.** Les six multiplicateurs, la table des fréquences, le poids limite recommandé et l'indice de levage. |
+| `js/mesures.js` | Les distances du levage — hauteur des mains, éloignement de la charge, angle d'asymétrie — en centimètres, étalonnées sur la taille du travailleur. |
 | `js/angles.js` | Géométrie : des 33 repères 3D aux angles du tronc, du cou, des genoux, du bras, du coude et du poignet. |
 | `js/pose.js` | La seule dépendance à MediaPipe. Changer de détecteur ne toucherait que ce fichier. |
 | `js/analyse.js` | Parcours de la vidéo, lissage, cotation, recotation. |
 | `js/rendu.js` | Squelette coloré, jauge, chronologie. |
 | `js/demo.js` | Le cycle de levage simulé de l'écran d'accueil. |
 | `js/app.js` | Interface. Ne contient aucune règle de cotation. |
+
+### REBA et RULA sont calculées à chaque image
+
+Ce ne sont que des lectures de tables : basculer de l'une à l'autre ne relance ni
+la détection ni le calcul des angles. L'export JSON contient les deux cotes, pour
+que le fichier reste exploitable si l'on change d'avis sur la méthode après coup.
+
+Un avis prévient quand la méthode choisie ne convient pas à la tâche : RULA
+plafonne sa cote de force au-delà de 10 kg, elle sature donc sur une manutention
+de charge et cesse d'y discriminer.
+
+### NIOSH ne cote pas une image, mais un levage
+
+REBA et RULA notent une posture instantanée. NIOSH répond à une autre question :
+quel poids cette tâche autorise-t-elle ? Il porte donc sur un levage entier,
+entre une saisie et une dépose, et il a besoin de distances en centimètres — à
+quelle distance du corps la charge est prise, à quelle hauteur, de combien elle
+monte, sous quel angle de torsion.
+
+C'est précisément ce qui se mesure au galon, accroupi à côté du poste, en
+interrompant le travail. Le squelette 3D les donne sans rien interrompre :
+l'outil propose les deux instants (mains au plus bas, mains au plus haut),
+préremplit H, V et A, et laisse tout corriger à la main. La chronologie bascule
+alors sur la hauteur des mains, avec le repère des 75 cm — la hauteur où le
+multiplicateur vertical vaut 1.
+
+**Étalonnage.** Les repères « monde » de MediaPipe sont métriques mais
+approximatifs. Déclarer la taille du travailleur donne un facteur d'échelle,
+calculé sur la **somme des segments** (pied, jambe, cuisse, tronc) et non sur une
+hauteur mesurée verticalement : cette dernière s'effondre dès que le sujet se
+penche, et le facteur se mettrait à varier d'une image à l'autre sur la même
+personne.
 
 ### Le lissage porte sur les angles, jamais sur les cotes
 
@@ -81,8 +119,12 @@ inclinaison) sont réévalués ensuite.
 ```bash
 node tests/reba.test.mjs      # 69 vérifications
 node tests/rula.test.mjs      # 68 vérifications
+node tests/niosh.test.mjs     # 61 vérifications
 node tests/angles.test.mjs    # 39 vérifications
 ```
+
+`niosh.test.mjs` vérifie chaque multiplicateur **aux bornes de son domaine**, là
+où la méthode bascule à zéro, plus un levage complet calculé à la main.
 
 `reba.test.mjs` et `rula.test.mjs` vérifient chaque cotation élémentaire, des cas
 complets cotés à la main (pour RULA : un poste assis prolongé, un travail au-dessus
@@ -101,9 +143,9 @@ la caméra ne change pas ses angles**.
 **Mesuré depuis l'image** — angles du tronc, du cou, des genoux ; élévation et
 abduction du bras, flexion du coude ; torsion et inclinaison, par seuil.
 
-**Saisi par l'opérateur** — la charge, la qualité de la prise (REBA), la
+**Saisi par l'opérateur** — la charge, la qualité de la prise, la
 pronosupination de l'avant-bras (RULA), le caractère statique / répété /
-instable de l'activité. Les méthodes en ont besoin, aucune image ne les
+instable de l'activité, la fréquence et la durée de la tâche (NIOSH). Les méthodes en ont besoin, aucune image ne les
 contient. L'interface les demande explicitement plutôt que de les supposer :
 elles peuvent à elles seules faire passer une cote de 7 à 13.
 
@@ -191,6 +233,10 @@ consentement, finalité et durée de conservation se règlent en amont de l'outi
 ---
 
 ## Référence
+
+Waters, T. R., Putz-Anderson, V., Garg, A. et Fine, L. J. (1993). *Revised NIOSH
+equation for the design and evaluation of manual lifting tasks*. Ergonomics,
+36(7), 749–776.
 
 Hignett, S. et McAtamney, L. (2000). *Rapid Entire Body Assessment (REBA)*.
 Applied Ergonomics, 31(2), 201–205.

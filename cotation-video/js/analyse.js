@@ -16,6 +16,7 @@ import { chargerDetecteur, detecterImage, detecterVideo } from "./pose.js";
 import { extraireAngles } from "./angles.js";
 import { calculerREBA, synthetiser, NIVEAUX as NIVEAUX_REBA } from "./reba.js";
 import { calculerRULA, NIVEAUX as NIVEAUX_RULA } from "./rula.js";
+import { mesuresLevage } from "./mesures.js";
 import { DEFAUTS } from "./config.js";
 
 /* Hypothèses de repli quand les jambes ne sont pas dans le cadre. */
@@ -118,6 +119,17 @@ function medianeGlissante(valeurs, fenetre) {
   });
 }
 
+/** Même médiane glissante sur les distances du levage. */
+export function lisserMesures(mesures, fenetre = DEFAUTS.lissage) {
+  if (!fenetre || fenetre < 3 || mesures.length < fenetre) return mesures;
+  const copie = mesures.map(m => ({ ...m }));
+  for (const champ of ["H", "V", "A"]) {
+    const lisse = medianeGlissante(copie.map(m => m[champ]), fenetre);
+    copie.forEach((m, i) => { m[champ] = lisse[i]; });
+  }
+  return copie;
+}
+
 /** Applique le lissage sur chaque canal d'angle, en place sur une copie. */
 export function lisser(anglesParImage, fenetre = DEFAUTS.lissage) {
   if (!fenetre || fenetre < 3 || anglesParImage.length < fenetre) return anglesParImage;
@@ -153,8 +165,19 @@ export function coter(releves, params = {}) {
     seuilVisibilite: params.seuilVisibilite ?? DEFAUTS.seuilVisibilite
   };
 
-  const methode = params.methode === "rula" ? "rula" : "reba";
-  const bruts = releves.map(r => ({ releve: r, angles: extraireAngles(r.monde, opts) }));
+  const methode = ["rula", "niosh"].includes(params.methode) ? params.methode : "reba";
+  /* NIOSH ne se cote pas image par image : il porte sur un levage entier, entre
+     deux instants que l'opérateur désigne. L'affichage par image reste donc sur
+     REBA, et l'onglet NIOSH travaille sur les mesures de la séquence. */
+  const optsMesure = { tailleCm: params.tailleCm, seuilVisibilite: opts.seuilVisibilite };
+  const bruts = releves.map(r => ({
+    releve: r,
+    angles: extraireAngles(r.monde, opts),
+    mesures: mesuresLevage(r.monde, optsMesure)
+  }));
+  /* Les distances sont lissées comme les angles : mêmes tremblements, même
+     remède. On lisse la mesure, jamais la cote qui en découle. */
+  const mesuresLissees = lisserMesures(bruts.map(b => b.mesures), params.lissage ?? DEFAUTS.lissage);
   const lisses = lisser(bruts.map(b => b.angles), params.lissage ?? DEFAUTS.lissage);
 
   const images = bruts.map((b, i) => {
@@ -219,10 +242,11 @@ export function coter(releves, params = {}) {
          repasser par la détection, qui est la partie coûteuse. */
       monde: b.releve.monde,
       angles: a,
+      mesures: mesuresLissees[i],
       fiable: a.fiabilite.fiable,
       confiance: a.fiabilite.global,
       resultats,
-      resultat: resultats[methode]
+      resultat: resultats[methode === "niosh" ? "reba" : methode]
     };
   });
 

@@ -10,6 +10,9 @@ import { analyserVideo, analyserImage, coter, recoter } from "./analyse.js";
 import { sequenceDemo, PARAMS_DEMO } from "./demo.js";
 import { NIVEAUX as NIVEAUX_REBA, ETIQUETTES_SEVERITE, severite } from "./reba.js";
 import { NIVEAUX as NIVEAUX_RULA } from "./rula.js";
+import { calculerNIOSH, NIVEAUX as NIVEAUX_NIOSH, ETIQUETTES as ETIQ_MULT } from "./niosh.js";
+import { suggererLevage } from "./mesures.js";
+import { dessinerHauteurMains } from "./rendu.js";
 import { dessinerSquelette, dessinerJauge, dessinerChronologie,
          imageALInstant, COULEURS, COULEURS_NIVEAU } from "./rendu.js";
 import { sourceActive } from "./pose.js";
@@ -25,7 +28,7 @@ const el = {
   corpsSegments: $("#corpsSegments"), calcul: $("#calcul"),
   stats: $("#stats"), barres: $("#barres"), conclusion: $("#conclusion"),
   badgeMoteur: $("#badgeMoteur"),
-  exportJson: $("#exportJson"), imprimer: $("#imprimer")
+  exportJson: $("#exportJson"), imprimer: $("#imprimer"), synthese: $("#synthese")
 };
 
 /* Les deux méthodes, et ce qui change de l'une à l'autre. */
@@ -46,6 +49,11 @@ const METHODES = {
     calcul: r => `Table A ${r.tableA} + charge ${r.segments.charge.cote} = <b>A ${r.scoreA}</b> · `
                + `Table B ${r.tableB} + prise ${r.segments.prise.cote} = <b>B ${r.scoreB}</b> · `
                + `Table C <b>${r.scoreC}</b> + activité ${r.activite.cote} = <b>REBA ${r.reba}</b>`
+  },
+  niosh: {
+    nom: "NIOSH", niveaux: NIVEAUX_NIOSH, levage: true,
+    ref: "NIOSH r&eacute;vis&eacute;e · Waters et coll. (1993)",
+    titreChrono: "Hauteur des mains dans le temps"
   },
   rula: {
     nom: "RULA", niveaux: NIVEAUX_RULA,
@@ -71,6 +79,9 @@ const METHODES = {
 const etat = {
   analyse: null,
   methode: "reba",
+  /* Les deux repères du levage, en secondes, avec les mesures relevées à ces
+     instants. L'opérateur peut corriger chaque valeur à la main. */
+  niosh: { origine: null, destination: null },
   mode: "demo",            // 'demo' | 'video' | 'image'
   t: 0,
   lecture: false,
@@ -90,6 +101,7 @@ function lireParams() {
     cote: $("#cote").value,
     jambesManuel: $("#jambesManuel").value,
     pronosupination: $("#pronosupination").checked,
+    tailleCm: +$("#taille").value,
     methode: etat.methode,
     precision: $("#precision").value,
     echantillonnage: +$("#fps").value,
@@ -107,6 +119,9 @@ function appliquerParamsAuFormulaire(p) {
 
 function majSorties() {
   $("#chargeVal").textContent = `${$("#charge").value} kg`;
+  $("#poidsChargeVal").textContent = `${$("#poidsCharge").value} kg`;
+  $("#frequenceVal").textContent = `${$("#frequence").value} /min`;
+  $("#tailleVal").textContent = `${$("#taille").value} cm`;
   $("#fpsVal").textContent = $("#fps").value;
   $("#lissageVal").textContent = $("#lissage").value === "0" ? "aucun" : $("#lissage").value;
 }
@@ -139,9 +154,13 @@ function dessinerInstant(t) {
   const { ctx, largeur, hauteur } = dimensionnerCalque();
   ctx.clearRect(0, 0, largeur, hauteur);
   dessinerSquelette(ctx, image, { largeur, hauteur });
-  majPanneau(image);
   el.tCourant.textContent = t.toFixed(1).replace(".", ",");
-  dessinerChronologie(el.chrono, etat.analyse, { curseur: t, niveaux: METHODES[etat.methode].niveaux });
+  if (METHODES[etat.methode].levage) {
+    majPanneauNiosh();
+  } else {
+    majPanneau(image);
+    dessinerChronologie(el.chrono, etat.analyse, { curseur: t, niveaux: METHODES[etat.methode].niveaux });
+  }
 }
 
 function majPanneau(image) {
@@ -182,6 +201,7 @@ function majPanneau(image) {
 
 function majSynthese() {
   const M = METHODES[etat.methode];
+  if (M.levage) return;             // NIOSH a sa propre sortie
   const NIVEAUX = M.niveaux;
   const s = etat.analyse?.synthese;
   if (!s) { el.stats.innerHTML = ""; el.barres.innerHTML = ""; el.conclusion.textContent = ""; return; }
@@ -336,6 +356,101 @@ function basculerLecture() {
   }
 }
 
+/* ---------- NIOSH ----------
+   Le calcul ne porte pas sur une image mais sur un levage, entre deux repères.
+   On les propose (mains au plus bas, mains au plus haut) et on laisse corriger. */
+
+function relever(t) {
+  const img = imageALInstant(etat.analyse, t);
+  if (!img?.mesures) return null;
+  return { t: img.t, H: Math.round(img.mesures.H), V: Math.round(img.mesures.V),
+           A: Math.round(img.mesures.A), fiableA: img.mesures.fiableA, fiable: img.mesures.fiable };
+}
+
+function proposerLevage() {
+  if (!etat.analyse) return;
+  const sug = suggererLevage(etat.analyse.images);
+  if (!sug) return;
+  etat.niosh.origine = relever(sug.origine);
+  etat.niosh.destination = relever(sug.destination);
+  ecrireReperes();
+}
+
+function ecrireReperes() {
+  for (const [cle, prefixe] of [["origine", "o"], ["destination", "d"]]) {
+    const r = etat.niosh[cle];
+    $("#" + prefixe + "H").value = r ? r.H : "";
+    $("#" + prefixe + "V").value = r ? r.V : "";
+    $("#" + prefixe + "A").value = r ? r.A : "";
+    $("#" + prefixe + "T").textContent = r
+      ? `relevé à ${r.t.toFixed(1).replace(".", ",")} s${r.fiableA ? "" : " · pieds hors cadre, angle non mesuré"}`
+      : "non défini";
+  }
+}
+
+function lireReperes() {
+  const lire = p => ({
+    t: etat.niosh[p === "o" ? "origine" : "destination"]?.t ?? null,
+    H: +$("#" + p + "H").value, V: +$("#" + p + "V").value, A: +$("#" + p + "A").value
+  });
+  return { origine: lire("o"), destination: lire("d") };
+}
+
+function majPanneauNiosh() {
+  if (!etat.analyse) return;
+  const r = lireReperes();
+  const res = calculerNIOSH({
+    origine: r.origine, destination: r.destination,
+    controleDestination: $("#controleDestination").checked,
+    poids: +$("#poidsCharge").value,
+    frequence: +$("#frequence").value,
+    duree: $("#dureeTache").value,
+    prise: $("#priseNiosh").value
+  });
+
+  const fini = Number.isFinite(res.il);
+  const texte = fini ? res.il.toFixed(1).replace(".", ",") : "∞";
+  dessinerJauge(el.jauge, fini ? Math.min(3, res.il) : 3, res.risque, { min: 0, max: 3 }, texte);
+  el.niveauLibelle.textContent = res.risque.libelle;
+  el.niveauLibelle.style.color = COULEURS_NIVEAU[res.risque.couleur];
+  el.niveauAction.textContent = res.risque.action;
+
+  $("#plrValeur").textContent = res.plr > 0 ? res.plr.toFixed(1).replace(".", ",") : "0";
+  $("#plrValeur").style.color = COULEURS_NIVEAU[res.risque.couleur];
+  $("#poidsReel").textContent = String(+$("#poidsCharge").value).replace(".", ",");
+
+  const MESURE = {
+    HM: () => `${Math.round(r[res.gouverne].H)} cm du corps`,
+    VM: () => `mains à ${Math.round(r[res.gouverne].V)} cm`,
+    DM: () => `${Math.round(res.D)} cm de montée`,
+    AM: () => `${Math.round(r[res.gouverne].A)}° de torsion`,
+    FM: () => `${$("#frequence").value}/min · ${$("#dureeTache").selectedOptions[0].text.toLowerCase()}`,
+    CM: () => $("#priseNiosh").selectedOptions[0].text.split(" — ")[0]
+  };
+  $("#corpsMult").innerHTML = Object.entries(res.multiplicateurs).map(([cle, m]) => {
+    const pire = cle === res.pire.nom;
+    return `<tr class="${pire ? "mult-pire" : ""}">
+      <td>${ETIQ_MULT[cle]}</td>
+      <td class="num discret">${MESURE[cle]()}</td>
+      <td class="num" style="${pire ? `color:${COULEURS[3]}` : ""}">${m.valeur.toFixed(2).replace(".", ",")}</td>
+    </tr>`;
+  }).join("");
+
+  const horsDomaine = res.horsDomaine.length
+    ? `<br><span style="color:${COULEURS[3]}">Hors du domaine de la méthode : ${res.horsDomaine.map(x => x.motif).join(" ; ")}.</span>`
+    : "";
+  $("#calculNiosh").innerHTML =
+    `23 kg × ${Object.values(res.multiplicateurs).map(m => m.valeur.toFixed(2).replace(".", ",")).join(" × ")} `
+    + `= <b>${res.plr.toFixed(1).replace(".", ",")} kg</b> · indice ${fini ? res.il.toFixed(2).replace(".", ",") : "∞"} `
+    + `(point le plus défavorable : ${res.gouverne})` + horsDomaine;
+
+  dessinerHauteurMains(el.chrono, etat.analyse, {
+    curseur: etat.t, origine: r.origine.t, destination: r.destination.t
+  });
+  el.noteChrono.textContent = "Hauteur des mains au-dessus du sol. Placez-vous sur une image, puis marquez la saisie ou la dépose.";
+  el.chronoLegende.innerHTML = "";
+}
+
 /* ---------- Choix de la méthode ----------
    RULA et REBA sont calculées à chaque image : basculer ne relance rien, ça ne
    fait que réafficher. Un avis prévient quand la méthode choisie n'est pas la
@@ -349,12 +464,23 @@ function choisirMethode(m) {
     b.classList.toggle("actif", actif);
     b.setAttribute("aria-checked", String(actif));
   });
+  const levage = !!METHODES[m].levage;
   $("#methodeRef").innerHTML = METHODES[m].ref;
-  $("#chronoTitre").textContent = `Cote ${METHODES[m].nom} dans le temps`;
-  $("#introParams").textContent = METHODES[m].intro;
+  $("#chronoTitre").textContent = METHODES[m].titreChrono || `Cote ${METHODES[m].nom} dans le temps`;
   $("#casePronosupination").hidden = m !== "rula";
+  if (!levage) $("#introParams").textContent = METHODES[m].intro;
+
+  /* NIOSH remplace le panneau postural par le sien : ni les mêmes entrées, ni
+     la même sortie. */
+  $("#panneauNiosh").hidden = !levage;
+  $("#carteNiosh").hidden = !levage;
+  $("#panneauPostural").hidden = levage;
+  $("#carteSegments").hidden = levage;
+  el.synthese.hidden = levage;      // la synthèse par image n'a pas de sens ici
+
   if (etat.analyse) {
     etat.analyse = recoter(etat.analyse, lireParams());
+    if (levage && !etat.niosh.origine) proposerLevage();
     majSynthese();
     dessinerInstant(etat.t);
   }
@@ -469,6 +595,32 @@ el.exportJson.addEventListener("click", () => {
   a.download = `cotation-${etat.methode}-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
+});
+
+/* Repères du levage : marquage depuis l'image courante, puis recalcul immédiat. */
+for (const [bouton, cle] of [["#marquerOrigine", "origine"], ["#marquerDestination", "destination"]]) {
+  $(bouton).addEventListener("click", () => {
+    const r = relever(etat.t);
+    if (!r) return;
+    etat.niosh[cle] = r;
+    ecrireReperes();
+    majPanneauNiosh();
+  });
+}
+for (const id of ["oH", "oV", "oA", "dH", "dV", "dA", "poidsCharge", "frequence",
+                  "dureeTache", "priseNiosh", "controleDestination"]) {
+  $("#" + id).addEventListener("input", () => { majSorties(); majPanneauNiosh(); });
+}
+/* La taille étalonne les distances : il faut refaire les mesures, pas seulement
+   la cotation. */
+$("#taille").addEventListener("change", () => {
+  majSorties();
+  if (!etat.analyse) return;
+  etat.analyse = recoter(etat.analyse, lireParams());
+  if (etat.niosh.origine) etat.niosh.origine = relever(etat.niosh.origine.t);
+  if (etat.niosh.destination) etat.niosh.destination = relever(etat.niosh.destination.t);
+  ecrireReperes();
+  dessinerInstant(etat.t);
 });
 
 el.imprimer.addEventListener("click", () => window.print());
