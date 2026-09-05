@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Évaluation ergonomique vidéo — REBA</title>
-<meta name="description" content="Évaluation REBA automatique à partir d'une vidéo de poste de travail. Tout le traitement reste dans le navigateur.">
+<title>TMS — Analyse ergonomique vidéo et photo</title>
+<meta name="description" content="Explorez les postures d'un poste de travail en vidéo ou en photo avec REBA, RULA et NIOSH. Traitement local dans votre navigateur.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/parcours.css">
 </head>
 <body>
 
 <header class="tete">
+  <a class="retour-tms" href="../" aria-label="Retour à l'application TMS">TMS<span>Prévention</span></a>
   <div class="tete-titre">
-    <h1>Évaluation ergonomique vidéo</h1>
-    <p id="methodeRef">REBA · Hignett &amp; McAtamney (2000)</p>
+    <h1>Analyse ergonomique</h1>
+    <p>Vidéo &amp; photo <span class="version-beta" title="Version du site">v2.07 · Bêta</span></p>
   </div>
   <div class="methodes" role="radiogroup" aria-label="Méthode d'évaluation">
     <button type="button" class="methode actif" data-methode="reba" role="radio" aria-checked="true">
@@ -32,23 +34,59 @@
     <span class="puce" id="badgeConfidentialite" title="Aucun fichier n'est téléversé : tout le traitement se fait dans ce navigateur.">
       Traitement local
     </span>
-    <span class="puce discret" id="badgeMoteur">Moteur : non chargé</span>
-    <label class="bouton principal">
-      Choisir une vidéo ou une photo
-      <input type="file" id="fichier" accept="video/*,image/*" hidden>
-    </label>
+    <button type="button" class="bouton" data-importer>Importer un fichier</button>
+    <input type="file" id="fichier" accept="video/*,image/*" hidden>
   </div>
 </header>
 
 <main class="grille">
+  <nav class="parcours" aria-label="Étapes de l'évaluation">
+    <ol>
+      <li id="etapeImport" aria-current="step"><span>01</span> Importer</li>
+      <li id="etapeVerification"><span>02</span> Vérifier le contexte</li>
+      <li id="etapeResultats"><span>03</span> Comprendre les résultats</li>
+    </ol>
+    <span id="statutSession" role="status">Nouvelle évaluation</span>
+  </nav>
+
+  <section class="accueil" id="accueil" aria-labelledby="titreAccueil">
+    <div class="accueil-intro">
+      <p class="surtitre">OBSERVER · COMPRENDRE · PRÉVENIR</p>
+      <h2 id="titreAccueil">Un regard plus précis<br>sur les postures de travail.</h2>
+      <p>Partez d'une vidéo ou d'une photo. Explorez les angles corporels, complétez le contexte de la tâche et préparez votre évaluation.</p>
+    </div>
+    <div class="depart-grille">
+      <div class="depot" id="depot">
+        <svg class="icone-import" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></svg>
+        <h3>Votre poste de travail, en image</h3>
+        <p>Glissez une vidéo ou une photo ici</p>
+        <button type="button" class="bouton principal" data-importer>Choisir une vidéo ou une photo</button>
+        <span class="depot-formats">MP4, WebM, MOV, JPG, PNG… selon votre navigateur</span>
+        <span class="depot-prive">Votre fichier reste sur cet appareil.</span>
+      </div>
+      <aside class="avant-import" aria-labelledby="titreCadrage">
+        <p class="surtitre">UNE BONNE IMAGE, D'ABORD</p>
+        <h3 id="titreCadrage">Préparer une prise de vue utile</h3>
+        <ol class="conseils">
+          <li><b>Une seule personne</b><span>Gardez le corps entier dans le cadre, pieds et mains compris.</span></li>
+          <li><b>Une vue dégagée</b><span>Évitez les membres cachés par les outils, les charges ou le mobilier.</span></li>
+          <li><b>Une caméra stable</b><span>Pour une vidéo, filmez un cycle de travail représentatif.</span></li>
+        </ol>
+        <div class="essai-demo"><span>Envie de découvrir les résultats ?</span><button type="button" id="voirDemo" class="bouton mince">Explorer un exemple simulé →</button></div>
+      </aside>
+    </div>
+    <p class="note-locale">Le moteur de détection peut être téléchargé au premier usage. Les images sont analysées dans votre navigateur.</p>
+  </section>
+  <p class="message-session" id="messageSession" role="status" hidden></p>
 
   <!-- La visionneuse et le panneau forment un plateau à part : c'est lui qui
        borne le collant du panneau. Sans ce bornage, le panneau descendrait
        par-dessus la synthèse, qui occupe toute la largeur en dessous. -->
-  <div class="plateau">
+  <div class="plateau" id="atelier" hidden>
 
     <!-- ---------- Visionneuse ---------- -->
     <section class="visionneuse">
+      <div class="media-tete"><div><span class="surtitre" id="typeMedia">MÉDIA</span><h2 id="nomMedia">Votre poste de travail</h2></div><span class="puce" id="badgeSource"></span></div>
       <div class="scene" id="scene">
         <video id="video" playsinline muted hidden></video>
         <img id="photo" alt="" hidden>
@@ -64,11 +102,11 @@
           levage fabriqué pour montrer ce que produit l'outil. Chargez une vidéo pour
           analyser un vrai poste.</span>
         </div>
-        <div class="progres" id="progres" hidden>
+        <div class="progres" id="progres" hidden aria-label="Progression de l'analyse">
           <ol class="etapes" id="etapes"></ol>
           <div class="progres-barre"><i id="progresJauge"></i></div>
           <div class="progres-pied">
-            <span id="progresTexte">Analyse…</span>
+            <span id="progresTexte" role="status">Analyse…</span>
             <span class="progres-chiffres" id="progresChiffres"></span>
             <button class="bouton mince" id="annuler">Arrêter</button>
           </div>
@@ -77,10 +115,12 @@
 
       <div class="transport">
         <button class="bouton mince" id="lecture" disabled>Lecture</button>
-        <button class="bouton mince" id="allerPire">Aller au pire instant</button>
+        <button class="bouton mince" id="allerPire">Instant le plus contraignant</button>
         <button class="bouton mince" id="pleinEcran" hidden>Plein écran</button>
         <span class="temps"><span id="tCourant">0,0</span> s</span>
       </div>
+      <label class="navigation-temps" id="navigationTemps"><span class="sr-only">Position dans la séquence, en secondes</span><input id="positionTemps" type="range" min="0" max="1" step="0.1" value="0"><span id="dureeMedia">0 s</span></label>
+      <p class="note-photo" id="notePhoto" hidden>Une photo décrit une posture à un instant donné. La durée et la répétition du geste sont à renseigner dans le contexte.</p>
 
       <div class="chrono-bloc">
         <div class="chrono-tete">
@@ -94,6 +134,23 @@
 
     <!-- ---------- Panneau ---------- -->
     <aside class="panneau">
+      <div class="onglets-panneau" role="tablist" aria-label="Panneau d'évaluation">
+        <button type="button" id="ongletResultats" role="tab" aria-selected="true" aria-controls="vueResultats">Résultats</button>
+        <button type="button" id="ongletContexte" role="tab" aria-selected="false" aria-controls="vueContexte" tabindex="-1">Contexte de la tâche <span id="pastilleContexte">À vérifier</span></button>
+      </div>
+      <div id="vueResultats" class="vue-panneau" role="tabpanel" aria-labelledby="ongletResultats">
+        <section class="carte qualite" id="carteQualite" aria-labelledby="titreQualite">
+          <div class="qualite-tete"><h2 id="titreQualite">Visibilité des repères</h2><span id="qualiteEtat">En attente</span></div>
+          <p id="qualiteDescription">Importez un média pour examiner la détection.</p>
+          <ul id="qualiteSegments"></ul>
+          <p class="qualite-note" id="qualiteAvertissements"></p>
+        </section>
+        <button type="button" class="rappel-contexte" id="ouvrirContexte">Compléter la charge, la prise et l'activité →</button>
+        <p class="note-photo" id="noteNioshPhoto" hidden>NIOSH nécessite une saisie et une dépose. Une seule photo ne permet pas de repérer le levage entier. Utilisez une vidéo pour cette méthode.</p>
+      </div>
+      <div id="vueContexte" class="vue-panneau" role="tabpanel" aria-labelledby="ongletContexte" hidden>
+        <div class="contexte-intro"><h2>Ce que l'image ne peut pas dire</h2><p>Ces renseignements modifient les scores. Vérifiez-les pour la tâche observée.</p></div>
+      </div>
 
       <details class="carte" id="carteIdentification">
         <summary><h2>Identification du poste</h2></summary>
@@ -108,12 +165,11 @@
           <input type="date" id="idDate"></label>
       </details>
 
-      <div class="carte" id="carteSynoptique">
-        <h2>Les trois lectures</h2>
-        <p class="intro">Les trois méthodes ne répondent pas à la même question. Leur
-        désaccord est une information&nbsp;: c'est lui qui dit laquelle s'applique ici.</p>
+      <details class="carte" id="carteSynoptique">
+        <summary><h2>Comparer les méthodes</h2></summary>
+        <p class="intro">Chaque méthode a sa propre échelle et son domaine d'application. Les scores ne s'additionnent pas.</p>
         <div class="synoptique" id="synoptique"></div>
-      </div>
+      </details>
 
       <div class="jauge-bloc">
         <svg class="jauge" viewBox="0 0 100 100" aria-hidden="true">
@@ -122,7 +178,8 @@
           <text x="50" y="50" class="jauge-valeur" text-anchor="middle" dominant-baseline="central">—</text>
         </svg>
         <div class="jauge-texte">
-          <span class="etiquette">Score à l'instant affiché</span>
+          <span class="etiquette" id="libelleScore">Score à l'instant affiché</span>
+          <span id="scoreAccessible" class="sr-only"></span>
           <strong id="niveauLibelle">—</strong>
           <span id="niveauAction" class="discret"></span>
         </div>
@@ -205,7 +262,8 @@
       </div>
 
       <div class="carte" id="carteSegments">
-        <h2>Décomposition</h2>
+        <h2>Comprendre chaque segment</h2>
+        <p class="intro">Sélectionnez un segment pour voir le pictogramme et la règle appliquée.</p>
         <table class="segments">
           <thead><tr><th>Segment</th><th>Angle</th><th>Score</th><th>État</th></tr></thead>
           <tbody id="corpsSegments"></tbody>
@@ -270,7 +328,7 @@
         </label>
       </div>
 
-      <details class="carte">
+      <details class="carte" id="reglagesAnalyse">
         <summary><h2>Réglages d'analyse</h2></summary>
         <label class="champ">
           <span>Précision du modèle</span>
@@ -298,7 +356,7 @@
   </div>
 
   <!-- ---------- Synthèse ---------- -->
-  <section class="synthese" id="synthese">
+  <section class="synthese" id="synthese" hidden>
     <h2>Synthèse de la séquence</h2>
     <div class="stats" id="stats"></div>
     <div class="repartition">
@@ -307,15 +365,16 @@
     </div>
     <div class="synthese-pied">
       <p id="conclusion" class="conclusion"></p>
-      <div class="exports">
-        <button class="bouton mince" id="exportJson">Exporter les données (JSON)</button>
-        <button class="bouton mince" id="imprimer">Rapport PDF</button>
-      </div>
     </div>
   </section>
 
-  <section class="limites">
-    <h2>Ce que ce score vaut, et ce qu'il ne vaut pas</h2>
+  <section class="export-barre" id="exportBarre" hidden>
+    <div><h2>Conserver votre évaluation</h2><p id="exportNote">Vérifiez le contexte et les repères avant de partager le rapport.</p></div>
+    <div class="exports"><button class="bouton mince" id="exportJson" disabled>Exporter les données (JSON)</button><button class="bouton principal" id="imprimer" disabled>Rapport PDF</button></div>
+  </section>
+
+  <details class="limites">
+    <summary><h2>Comprendre la portée des résultats</h2></summary>
     <div class="limites-grille">
       <div>
         <h3>Mesuré depuis l'image</h3>
@@ -349,7 +408,8 @@
       Une évaluation REBA reste un jugement professionnel : cet outil l'accélère et
       la rend reproductible, il ne la remplace pas.
     </p>
-  </section>
+  </details>
+  <footer class="atelier-pied"><span id="methodeRef">REBA · Hignett &amp; McAtamney (2000)</span><span class="discret" id="badgeMoteur">Détection chargée à l'importation</span></footer>
 </main>
 
 <!-- Rapport : invisible à l'écran, c'est lui qui s'imprime. -->
