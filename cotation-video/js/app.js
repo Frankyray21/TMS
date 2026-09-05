@@ -15,10 +15,15 @@ import { suggererLevage } from "./mesures.js";
 import { dessinerHauteurMains, osAuPoint } from "./rendu.js";
 import { dessinerSquelette, dessinerJauge, dessinerChronologie,
          imageALInstant, COULEURS, COULEURS_NIVEAU } from "./rendu.js";
-import { sourceActive } from "./pose.js";
+import { sourceActive, libererDetecteur } from "./pose.js";
 import { pictogramme } from "./picto.js";
+import { decrireQualite } from "./qualite.js";
 
 const $ = s => document.querySelector(s);
+const dateDuJour = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
 const el = {
   fichier: $("#fichier"), video: $("#video"), photo: $("#photo"), calque: $("#calque"),
   scene: $("#scene"), etatVide: $("#etatVide"),
@@ -86,12 +91,152 @@ const etat = {
      instants. L'opérateur peut corriger chaque valeur à la main. */
   niosh: { origine: null, destination: null },
   osSelectionne: null,
-  mode: "demo",            // 'demo' | 'video' | 'image'
+  focusDetail: null,
+  mode: "vide",            // 'vide' | 'demo' | 'video' | 'image'
   t: 0,
   lecture: false,
   abandon: null,
-  horlogeDemo: null
+  horlogeDemo: null,
+  enCours: false,
+  rapportEnCours: false,
+  urlMedia: null,
+  contexteVerifie: false
 };
+
+/* ---------- Parcours et présentation ---------- */
+function ouvrirPanneau(nom, focus = false) {
+  for (const cle of ["Resultats", "Contexte"]) {
+    const actif = cle.toLowerCase() === nom;
+    const onglet = $("#onglet" + cle);
+    onglet.setAttribute("aria-selected", String(actif));
+    onglet.tabIndex = actif ? 0 : -1;
+    $("#vue" + cle).hidden = !actif;
+    if (actif && focus) onglet.focus();
+  }
+}
+
+function majQualite(image = null) {
+  const q = decrireQualite(image, { demo: etat.mode === "demo" });
+  $("#carteQualite").dataset.etat = q.etat;
+  $("#qualiteEtat").textContent = q.titre;
+  $("#qualiteDescription").textContent = q.description;
+  $("#qualiteSegments").replaceChildren(...q.segments.map(s => {
+    const li = document.createElement("li");
+    li.dataset.etat = s.etat;
+    const labels = { visible: "visible", declare: "déclarées", a_verifier: "à vérifier", simule: "simulé", inconnu: "non évalué" };
+    li.textContent = `${s.libelle} · ${labels[s.etat] || s.etat}`;
+    li.title = s.detail;
+    return li;
+  }));
+  $("#qualiteAvertissements").textContent = q.avertissements.join(" ");
+}
+
+function majInterface() {
+  const a = etat.analyse;
+  const dispo = !!a?.images.length;
+  const photo = etat.mode === "image";
+  const demo = etat.mode === "demo";
+  const niosh = etat.methode === "niosh";
+  const resultatDisponible = dispo && (niosh ? !!resultatNiosh() : !!a.synthese);
+  $("#accueil").hidden = etat.mode !== "vide";
+  $("#atelier").hidden = etat.mode === "vide";
+  $("#badgeSource").textContent = demo ? "Démonstration · simulée" : photo ? "Photo · locale" : "Vidéo · locale";
+  $("#badgeSource").classList.toggle("demo", demo);
+  $("#typeMedia").textContent = demo ? "EXEMPLE DE LEVAGE" : photo ? "POSTURE OBSERVÉE" : "SÉQUENCE OBSERVÉE";
+  el.etatVide.hidden = !demo;
+  $(".transport").hidden = photo || !dispo;
+  $("#navigationTemps").hidden = photo || !dispo;
+  $(".chrono-bloc").hidden = photo || !dispo;
+  $("#notePhoto").hidden = !photo;
+  $("#noteNioshPhoto").hidden = !(niosh && photo);
+  $("#panneauNiosh").hidden = !niosh || photo;
+  $("#carteNiosh").hidden = !niosh || !resultatDisponible;
+  $("#panneauPostural").hidden = niosh && !photo;
+  $("#carteSegments").hidden = niosh || !dispo;
+  $(".jauge-bloc").hidden = !resultatDisponible;
+  $("#carteSynoptique").hidden = !dispo;
+  el.synthese.hidden = niosh || photo || !a?.synthese;
+  $("#exportBarre").hidden = !dispo;
+  el.exportJson.disabled = !resultatDisponible || etat.rapportEnCours;
+  el.imprimer.disabled = !resultatDisponible || etat.rapportEnCours;
+  el.allerPire.disabled = !a?.synthese || niosh;
+  $("#libelleScore").textContent = niosh ? "Indice de levage NIOSH" : `${etat.methode.toUpperCase()} · ${photo ? "posture analysée" : "instant affiché"}`;
+  $("#pastilleContexte").textContent = etat.contexteVerifie ? "Vérifié" : "À vérifier";
+  $("#ouvrirContexte").textContent = etat.contexteVerifie ? "Contexte vérifié · consulter ou modifier →" : "Compléter la charge, la prise et l'activité →";
+  $("#contexteVerifie").checked = etat.contexteVerifie;
+  $("#exportNote").textContent = demo ? "Exemple simulé : les exports portent la mention Démonstration."
+    : etat.contexteVerifie ? "Contexte vérifié par l'observateur. Examinez aussi l'alignement du squelette."
+    : "Contexte à vérifier : les valeurs affichées reposent sur les paramètres actuels.";
+  const etape = !dispo ? "Import" : etat.contexteVerifie ? "Resultats" : "Verification";
+  for (const cle of ["Import", "Verification", "Resultats"]) {
+    const li = $("#etape" + cle);
+    if (cle === etape) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+  }
+  $("#statutSession").textContent = etat.enCours ? "Analyse en cours…" : demo ? "Exemple simulé" : dispo ? (etat.contexteVerifie ? "Contexte vérifié" : "Contexte à compléter") : "Nouvelle évaluation";
+  document.querySelectorAll("[data-importer], #voirDemo, .methode").forEach(b => { b.disabled = etat.enCours || etat.rapportEnCours; });
+  $("#vueContexte").inert = etat.enCours || etat.rapportEnCours;
+  $("#atelier").inert = etat.rapportEnCours;
+  if (dispo) {
+    const duree = a.images[a.images.length - 1].t;
+    $("#positionTemps").max = duree;
+    $("#positionTemps").value = etat.t;
+    $("#dureeMedia").textContent = secondes(duree);
+  }
+}
+
+function messageSession(texte = "") {
+  $("#messageSession").textContent = texte;
+  $("#messageSession").hidden = !texte;
+}
+
+function initialiserParcours() {
+  el.scene.before(el.etatVide);
+  const resultats = $("#vueResultats"), contexte = $("#vueContexte");
+  for (const sel of [".jauge-bloc", "#carteNiosh", "#carteSegments", "#carteSynoptique"]) resultats.append($(sel));
+  for (const sel of ["#panneauPostural", "#panneauNiosh", "#carteIdentification", "#reglagesAnalyse"]) contexte.append($(sel));
+  contexte.insertAdjacentHTML("beforeend", `<div class="contexte-validation"><label class="case"><input type="checkbox" id="contexteVerifie">J'ai vérifié les renseignements pour cette tâche.</label><button class="bouton principal" id="retourResultats" type="button">Voir les résultats →</button></div>`);
+  for (const cle of ["Resultats", "Contexte"]) {
+    $("#onglet" + cle).addEventListener("click", () => ouvrirPanneau(cle.toLowerCase()));
+    $("#onglet" + cle).addEventListener("keydown", e => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+      e.preventDefault();
+      const cible = e.key === "Home" ? "resultats" : e.key === "End" ? "contexte" : cle === "Resultats" ? "contexte" : "resultats";
+      ouvrirPanneau(cible, true);
+    });
+  }
+  $("#ouvrirContexte").addEventListener("click", () => ouvrirPanneau("contexte", true));
+  $("#retourResultats").addEventListener("click", () => ouvrirPanneau("resultats", true));
+  $("#contexteVerifie").addEventListener("change", e => { etat.contexteVerifie = e.target.checked; majInterface(); });
+  contexte.addEventListener("input", e => {
+    if (e.target.id === "contexteVerifie") return;
+    etat.contexteVerifie = false;
+    majInterface();
+  });
+  document.querySelectorAll("[data-importer]").forEach(b => b.addEventListener("click", () => { el.fichier.value = ""; el.fichier.click(); }));
+  $("#voirDemo").addEventListener("click", chargerDemo);
+  const depot = $("#depot");
+  for (const nom of ["dragenter", "dragover"]) depot.addEventListener(nom, e => { e.preventDefault(); depot.classList.add("survol"); });
+  for (const nom of ["dragleave", "drop"]) depot.addEventListener(nom, e => { e.preventDefault(); depot.classList.remove("survol"); });
+  depot.addEventListener("drop", e => chargerFichier(e.dataTransfer.files[0]));
+  $("#positionTemps").addEventListener("input", e => {
+    etat.t = +e.target.value;
+    if (etat.mode === "video") el.video.currentTime = etat.t;
+    dessinerInstant(etat.t);
+  });
+  el.corpsSegments.addEventListener("click", e => {
+    const b = e.target.closest("[data-segment]");
+    if (!b) return;
+    const cle = b.dataset.segment;
+    etat.focusDetail = b;
+    const cote = imageALInstant(etat.analyse, etat.t)?.angles.cote || "D";
+    const os = ["bras", "avantBras", "poignet"].includes(cle) ? cle + cote : cle;
+    afficherDetail(os, 10, el.scene.clientHeight / 2);
+    if (!$("#detailSegment").hidden) {
+      el.scene.scrollIntoView({ block: "center", behavior: "instant" });
+      $("#detailFermer").focus({ preventScroll: true });
+    }
+  });
+}
 
 /* ---------- Détail d'un segment ----------
    Le squelette est la partie la plus lisible de l'analyse : on doit pouvoir
@@ -221,7 +366,8 @@ function afficherDetail(os, x, y) {
   const autreCote = coteOs && coteOs !== image.angles.cote;
 
   const sev = severite(seg.cote, seg.max);
-  const mes = ANGLE_SEGMENT[cle]?.(image.angles);
+  const jambesDeclarees = cle === "jambes" && image.avertissements?.includes("jambes");
+  const mes = jambesDeclarees ? null : ANGLE_SEGMENT[cle]?.(image.angles);
   const maj = majorations(cle, image.entrees[methode], image.angles);
 
   $("#detailCorps").innerHTML = autreCote
@@ -236,6 +382,7 @@ function afficherDetail(os, x, y) {
        ${mes ? pictogramme(cle, methode, mes.v, seg.max, { base: seg.base, cote: seg.cote }) : ""}
        <div class="detail-calc">
          Score <b>${seg.cote}</b> sur ${seg.max}
+         ${jambesDeclarees ? "<p>Position déclarée dans le contexte : aucun angle du genou n'est mesuré.</p>" : ""}
          ${seg.base != null ? `<br>base ${seg.base}` : ""}
          ${maj.length ? `<ul>${maj.map(m =>
             `<li class="${m.n < 0 ? "moins" : ""}">${m.t}${m.n ? ` (${m.n > 0 ? "+" : "−"}${Math.abs(m.n)})` : ""}</li>`).join("")}</ul>` : ""}
@@ -243,7 +390,7 @@ function afficherDetail(os, x, y) {
        ${(() => {
          const r = REGLES[methode][cle];
          return r ? `<div class="detail-regle">
-             <p><b>Comment c'est mesuré</b> — ${r.repere}</p>
+             <p><b>${jambesDeclarees ? "Règle de la méthode" : "Comment c'est mesuré"}</b> — ${r.repere}</p>
              <p><b>Ce qui fait monter le score</b> — ${r.seuils}</p>
            </div>` : "";
        })()}`;
@@ -257,9 +404,11 @@ function afficherDetail(os, x, y) {
   d.style.top = `${Math.max(8, Math.min(boite.height - h - 8, y - h / 2))}px`;
 }
 
-function fermerDetail() {
+function fermerDetail(rendreFocus = false) {
   $("#detailSegment").hidden = true;
   if (etat.osSelectionne) { etat.osSelectionne = null; redessinerSquelette(); }
+  if (rendreFocus && etat.focusDetail?.isConnected) etat.focusDetail.focus({ preventScroll: true });
+  etat.focusDetail = null;
 }
 
 /** Redessine le seul squelette, sans toucher au reste du panneau. */
@@ -384,7 +533,7 @@ function majSorties() {
   $("#poidsChargeVal").textContent = `${$("#poidsCharge").value} kg`;
   $("#frequenceVal").textContent = `${$("#frequence").value} /min`;
   $("#tailleVal").textContent = `${$("#taille").value} cm`;
-  if (!$("#idDate").value) $("#idDate").value = new Date().toISOString().slice(0, 10);
+  if (!$("#idDate").value) $("#idDate").value = dateDuJour();
   $("#fpsVal").textContent = $("#fps").value;
   $("#lissageVal").textContent = $("#lissage").value === "0" ? "aucun" : $("#lissage").value;
 }
@@ -457,12 +606,14 @@ function dessinerInstant(t) {
   etat.osSelectionne = null;
   $("#astuce").hidden = false;
   majSynoptique(image);
+  majQualite(image);
   if (METHODES[etat.methode].levage) {
     majPanneauNiosh();
   } else {
     majPanneau(image);
     dessinerChronologie(el.chrono, etat.analyse, { curseur: t, niveaux: METHODES[etat.methode].niveaux });
   }
+  majInterface();
 }
 
 function majPanneau(image) {
@@ -472,14 +623,15 @@ function majPanneau(image) {
   el.niveauLibelle.textContent = `${r.risque.libelle} — niveau ${r.risque.niveau}`;
   el.niveauLibelle.style.color = COULEURS_NIVEAU[r.risque.couleur];
   el.niveauAction.textContent = r.risque.action;
+  $("#scoreAccessible").textContent = `Score ${M.nom} : ${r.score} sur ${r.echelle.max}.`;
 
   el.corpsSegments.innerHTML = M.lignes.map(l => {
     const seg = r.segments[l.cle];
     const cote = seg.cote;
     const sev = severite(cote, seg.max);
-    const val = l.angle(image.angles);
+    const val = l.cle === "jambes" && image.avertissements?.includes("jambes") ? null : l.angle(image.angles);
     return `<tr>
-      <td>${l.nom}</td>
+      <td>${l.cle === "pronosupination" ? l.nom : `<button type="button" class="segment-bouton" data-segment="${l.cle}" aria-label="Détail du segment : ${l.nom}">${l.nom}</button>`}</td>
       <td class="num">${Number.isFinite(val) ? Math.round(val) : "<span class='discret'>déclaré</span>"}${Number.isFinite(val) && l.unite ? `<span class="discret"> ${l.unite}</span>` : ""}</td>
       <td class="cote">${cote}</td>
       <td><span class="etat"><i style="background:${COULEURS[sev]}"></i>${ETIQUETTES_SEVERITE[sev]}</span></td>
@@ -507,6 +659,12 @@ function majSynthese() {
   const NIVEAUX = M.niveaux;
   const s = etat.analyse?.synthese;
   if (!s) { el.stats.innerHTML = ""; el.barres.innerHTML = ""; el.conclusion.textContent = ""; return; }
+  if (etat.mode === "image") {
+    el.stats.innerHTML = "";
+    el.barres.innerHTML = "";
+    el.conclusion.textContent = "Une photo décrit une posture, sans mesure de durée ni de répétition.";
+    return;
+  }
 
   const niveauMax = NIVEAUX.find(n => s.max >= n.min && s.max <= n.max);
   const niveauMed = NIVEAUX.find(n => s.median >= n.min && s.median <= n.max);
@@ -545,9 +703,35 @@ function majSynthese() {
 /* ---------- Chargement d'un fichier ---------- */
 
 async function chargerFichier(f) {
-  if (!f) return;
+  if (!f || etat.enCours) return;
+  if (!f.type.startsWith("image/") && !f.type.startsWith("video/")) {
+    messageSession("Ce fichier n'est pas reconnu comme une vidéo ou une photo. Essayez un fichier MP4, WebM, JPG ou PNG.");
+    return;
+  }
+  // Les paramètres de l'exemple ne deviennent jamais ceux d'un poste réel.
+  if (etat.mode === "demo") {
+    for (const champ of document.querySelectorAll("#vueContexte input, #vueContexte select")) {
+      if (["idPoste", "idTravailleur", "idObservateur", "idDate"].includes(champ.id)) continue;
+      if (champ.tagName === "SELECT") {
+        champ.selectedIndex = Math.max(0, [...champ.options].findIndex(o => o.defaultSelected));
+      } else if (champ.type === "checkbox") champ.checked = champ.defaultChecked;
+      else champ.value = champ.defaultValue;
+    }
+    majSorties();
+  }
+  etat.abandon?.abort();
+  el.video.pause();
+  cancelAnimationFrame(etat.horlogeDemo);
+  if (etat.urlMedia) URL.revokeObjectURL(etat.urlMedia);
   const url = URL.createObjectURL(f);
-  etat.abandon = new AbortController();
+  etat.urlMedia = url;
+  const controleur = new AbortController();
+  etat.abandon = controleur;
+  etat.enCours = true;
+  etat.contexteVerifie = false;
+  etat.mode = f.type.startsWith("image/") ? "image" : "video";
+  $("#nomMedia").textContent = f.name;
+  messageSession();
   el.etatVide.hidden = true;
   el.progres.hidden = false;
   el.annuler.textContent = "Arrêter";
@@ -560,6 +744,7 @@ async function chargerFichier(f) {
      qui ne suit personne, et qui donne l'air d'un calque mal aligné. */
   etat.analyse = null;
   etat.niosh = { origine: null, destination: null };
+  ecrireReperes();
   etat.t = 0;
   etat.lecture = false;
   el.lecture.textContent = "Lecture";
@@ -568,21 +753,32 @@ async function chargerFichier(f) {
   effacerCalque();
   fermerDetail();
   $("#astuce").hidden = true;
+  majInterface();
+  ouvrirPanneau("resultats");
 
   const params = lireParams();
+  const rappels = suivi();
+  const suiviActif = Object.fromEntries(Object.entries(rappels).map(([k, fn]) => [k, info => {
+    if (!controleur.signal.aborted) fn(info);
+  }]));
   try {
+    let resultat;
     if (f.type.startsWith("image/")) {
       etat.mode = "image";
       el.video.hidden = true; el.photo.hidden = false; el.photo.src = url;
       await el.photo.decode();
-      etat.analyse = await analyserImage(el.photo, params, suivi());
+      resultat = await analyserImage(el.photo, params, suiviActif);
     } else {
       etat.mode = "video";
+      // Un nouveau flux recommence à zéro et ne reprend pas le suivi du sujet précédent.
+      libererDetecteur();
       el.photo.hidden = true; el.video.hidden = false; el.video.src = url;
-      etat.analyse = await analyserVideo(el.video, params, { signal: etat.abandon.signal, ...suivi() });
+      resultat = await analyserVideo(el.video, params, { signal: controleur.signal, ...suiviActif });
       el.video.currentTime = 0;
       el.lecture.disabled = false;
     }
+    if (controleur.signal.aborted) throw new DOMException("Analyse interrompue", "AbortError");
+    etat.analyse = recoter(resultat, lireParams());
     el.badgeMoteur.textContent = `Moteur : ${sourceActive() || "chargé"}`;
     if (!etat.analyse?.images.length) {
       /* Sans cette remise à zéro, la cote de la démonstration resterait
@@ -591,9 +787,7 @@ async function chargerFichier(f) {
       etat.analyse = null;
       effacerCalque();
       viderPanneau();
-      el.progresTexte.textContent =
-        "Aucune personne détectée. Cadrage trop serré, sujet coupé ou trop petit dans l'image ?";
-      el.annuler.textContent = "Fermer";
+      messageSession("Aucune personne détectée. Essayez une vue plus dégagée, avec une personne entière et suffisamment grande dans le cadre.");
       return;
     }
     el.progres.hidden = true;
@@ -603,16 +797,22 @@ async function chargerFichier(f) {
     majAvis();
     majSynthese();
     dessinerInstant(0);
+    if (!etat.analyse.synthese) messageSession("Les repères sont trop peu visibles pour produire une synthèse. Examinez le squelette et essayez une prise de vue plus dégagée.");
   } catch (e) {
-    console.error(e);
+    if (e.name !== "AbortError") console.error(e);
     /* On efface tout : laisser le squelette et la cote de la démonstration
        par-dessus la photo de l'utilisateur ferait passer un résultat simulé
        pour une mesure. */
     etat.analyse = null;
     effacerCalque();
     viderPanneau();
-    el.progresTexte.textContent = `Échec : ${e.message}`;
-    el.annuler.textContent = "Fermer";
+    messageSession(e.name === "AbortError" ? "Analyse arrêtée. Aucun résultat partiel n'est présenté. Vous pouvez importer un fichier à nouveau."
+      : `L'analyse n'a pas abouti : ${e.message}. Vous pouvez réessayer avec un autre fichier.`);
+  } finally {
+    etat.enCours = false;
+    el.progres.hidden = true;
+    el.annuler.disabled = false;
+    majInterface();
   }
 }
 
@@ -628,15 +828,31 @@ function viderPanneau() {
   el.calcul.textContent = "";
   $("#synoptique").innerHTML = "";
   el.lecture.disabled = true;
+  $(".barres-legende")?.remove();
+  $("#corpsMult").replaceChildren();
+  for (const id of ["plrValeur", "poidsReel"]) $("#" + id).textContent = "—";
+  $("#calculNiosh").textContent = "";
+  $("#scoreAccessible").textContent = "";
+  majQualite();
   majSynthese();
 }
 
 /* ---------- Démonstration ---------- */
 
 function chargerDemo() {
+  if (etat.enCours) return;
+  el.video.pause();
+  el.video.hidden = true;
+  el.photo.hidden = true;
+  etat.lecture = false;
+  etat.contexteVerifie = false;
+  messageSession();
   etat.mode = "demo";
+  $("#nomMedia").textContent = "Cycle de levage · exemple simulé";
+  $("#atelier").hidden = false;
+  $("#accueil").hidden = true;
   ajusterScene(null);
-  etat.analyse = coter(sequenceDemo(), PARAMS_DEMO);
+  etat.analyse = coter(sequenceDemo(), { ...PARAMS_DEMO, methode: etat.methode });
   appliquerParamsAuFormulaire(PARAMS_DEMO);
   synchroniserPoids("postural");
   proposerLevage();          // pour que le synoptique montre les trois d'emblée
@@ -645,6 +861,7 @@ function chargerDemo() {
   etat.t = etat.analyse.synthese.pire.t;   // on ouvre sur l'instant le plus parlant
   dessinerInstant(etat.t);
   el.lecture.disabled = false;
+  majInterface();
 }
 
 /* ---------- Lecture ---------- */
@@ -683,7 +900,7 @@ function relever(t) {
 }
 
 function proposerLevage() {
-  if (!etat.analyse) return;
+  if (!etat.analyse || etat.mode === "image") return;
   const sug = suggererLevage(etat.analyse.images);
   if (!sug) return;
   etat.niosh.origine = relever(sug.origine);
@@ -713,7 +930,7 @@ function lireReperes() {
 
 /** Le calcul NIOSH courant, ou null tant que le levage n'est pas repéré. */
 function resultatNiosh() {
-  if (!etat.analyse || !etat.niosh.origine) return null;
+  if (!etat.analyse || etat.mode === "image" || !etat.niosh.origine) return null;
   const r = lireReperes();
   return calculerNIOSH({
     origine: r.origine, destination: r.destination,
@@ -737,6 +954,7 @@ function majPanneauNiosh() {
   el.niveauLibelle.textContent = res.risque.libelle;
   el.niveauLibelle.style.color = COULEURS_NIVEAU[res.risque.couleur];
   el.niveauAction.textContent = res.risque.action;
+  $("#scoreAccessible").textContent = `Indice de levage NIOSH : ${texte}.`;
 
   $("#plrValeur").textContent = res.plr > 0 ? res.plr.toFixed(1).replace(".", ",") : "0";
   $("#plrValeur").style.color = COULEURS_NIVEAU[res.risque.couleur];
@@ -827,7 +1045,7 @@ function majSynoptique(image) {
   $("#synoptique").innerHTML = lignes.map(l => `
     <button type="button" class="syn-ligne ${l.cle === etat.methode ? "actif" : ""} ${l.dispo ? "" : "syn-hs"}"
             data-methode="${l.cle}">
-      <span class="syn-cote" style="${l.risque ? `color:${COULEURS_NIVEAU[l.risque.couleur]}` : ""}">${l.cote}</span>
+      <span class="syn-cote" style="${l.risque ? `color:${COULEURS_NIVEAU[l.risque.couleur]}` : ""}">${l.cote}${l.cle !== "niosh" ? `<small> / ${l.cle === "reba" ? "15" : "7"}</small>` : ""}</span>
       <span class="syn-corps">
         <span class="syn-nom"><b>${l.nom}</b> <span class="discret">· ${l.sous}</span>${
           l.risque ? ` — <span style="color:${COULEURS_NIVEAU[l.risque.couleur]}">${l.risque.libelle.toLowerCase()}</span>` : ""}</span>
@@ -851,6 +1069,7 @@ function choisirMethode(m) {
     const actif = b.dataset.methode === m;
     b.classList.toggle("actif", actif);
     b.setAttribute("aria-checked", String(actif));
+    b.tabIndex = actif ? 0 : -1;
   });
   const levage = !!METHODES[m].levage;
   $("#methodeRef").innerHTML = METHODES[m].ref;
@@ -872,6 +1091,7 @@ function choisirMethode(m) {
     dessinerInstant(etat.t);
   }
   majAvis();
+  majInterface();
 }
 
 function majAvis() {
@@ -897,11 +1117,25 @@ function majAvis() {
 
 document.querySelectorAll(".methode").forEach(b =>
   b.addEventListener("click", () => choisirMethode(b.dataset.methode)));
+document.querySelectorAll(".methode").forEach(b => b.addEventListener("keydown", e => {
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+  e.preventDefault();
+  const boutons = [...document.querySelectorAll(".methode")];
+  const i = boutons.indexOf(b);
+  const prochain = e.key === "Home" ? 0 : e.key === "End" ? boutons.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + boutons.length) % boutons.length;
+  choisirMethode(boutons[prochain].dataset.methode);
+  boutons[prochain].focus();
+}));
 
 /* ---------- Branchements ---------- */
 
 el.fichier.addEventListener("change", e => chargerFichier(e.target.files[0]));
-el.annuler.addEventListener("click", () => { etat.abandon?.abort(); el.progres.hidden = true; });
+el.annuler.addEventListener("click", () => {
+  etat.abandon?.abort();
+  el.annuler.disabled = true;
+  el.progresTexte.textContent = "Arrêt demandé…";
+  el.progresChiffres.textContent = "Fin de l'opération en cours";
+});
 el.lecture.addEventListener("click", basculerLecture);
 
 el.allerPire.addEventListener("click", () => {
@@ -943,12 +1177,13 @@ el.calque.addEventListener("mousemove", e => {
                        { largeur: r.width, hauteur: r.height });
   el.calque.style.cursor = os ? "pointer" : "crosshair";
 });
-$("#detailFermer").addEventListener("click", fermerDetail);
-document.addEventListener("keydown", e => { if (e.key === "Escape") fermerDetail(); });
+$("#detailFermer").addEventListener("click", () => fermerDetail(true));
+document.addEventListener("keydown", e => { if (e.key === "Escape") fermerDetail(true); });
 
 el.video.addEventListener("timeupdate", () => {
-  if (etat.mode === "video" && etat.analyse) { etat.t = el.video.currentTime; dessinerInstant(etat.t); }
+  if (etat.mode === "video" && etat.analyse && !etat.rapportEnCours) { etat.t = el.video.currentTime; dessinerInstant(etat.t); }
 });
+el.video.addEventListener("ended", () => { etat.lecture = false; el.lecture.textContent = "Lecture"; });
 el.video.addEventListener("loadedmetadata", () => { ajusterScene(el.video); dimensionnerCalque(); });
 el.photo.addEventListener("load", () => { ajusterScene(el.photo); dimensionnerCalque(); });
 
@@ -987,18 +1222,22 @@ el.exportJson.addEventListener("click", () => {
   if (!etat.analyse) return;
   const s = etat.analyse.synthese;
   const donnees = {
-    methode: etat.methode === "rula"
-      ? "RULA — McAtamney & Corlett, Applied Ergonomics 24 (1993)"
-      : "REBA — Hignett & McAtamney, Applied Ergonomics 31 (2000)",
+    methode: METHODES[etat.methode].nom,
+    methode_posturale: etat.analyse.methode === "rula" ? "RULA" : "REBA",
     genere: new Date().toISOString(),
     source: etat.mode === "demo" ? "séquence de démonstration (postures simulées)" : etat.mode,
+    fichier: etat.mode === "demo" ? null : $("#nomMedia").textContent,
+    contexte_verifie: etat.contexteVerifie,
+    niosh: etat.methode === "niosh" ? { resultat: resultatNiosh(), reperes: lireReperes(),
+      poids: +$("#poidsCharge").value, frequence: +$("#frequence").value, duree: $("#dureeTache").value,
+      prise: $("#priseNiosh").value, controle_destination: $("#controleDestination").checked } : null,
     parametres: etat.analyse.params,
-    synthese: s && {
+    synthese: etat.mode !== "image" && s ? {
       images: s.images, ecartees: s.ignorees, duree: +s.duree.toFixed(2),
       median: s.median, p90: s.p90, max: s.max, pire_a_s: +s.pire.t.toFixed(2),
       repartition: s.parNiveau.map(n => ({ niveau: n.niveau, libelle: n.libelle, part: +n.part.toFixed(4) })),
       segment_dominant: s.dominantFrequent
-    },
+    } : null,
     images: etat.analyse.images.map(i => ({
       t: +i.t.toFixed(3),
       score: i.resultat.score, niveau: i.resultat.risque.niveau,
@@ -1006,11 +1245,13 @@ el.exportJson.addEventListener("click", () => {
          l'on change d'avis sur la méthode après coup. */
       reba: i.resultats.reba.reba, rula: i.resultats.rula.rula,
       fiable: i.fiable,
+      visibilite: i.angles.fiabilite.visibilite,
+      avertissements: i.avertissements,
       scores: Object.fromEntries(Object.entries(i.resultat.segments).map(([k, v]) => [k, v.cote])),
       angles: {
         tronc: +i.angles.tronc.flexion.toFixed(1),
         cou: +i.angles.cou.flexion.toFixed(1),
-        genou: +i.angles.jambes.flexionGenou.toFixed(1),
+        genou: i.avertissements?.includes("jambes") ? null : +i.angles.jambes.flexionGenou.toFixed(1),
         bras: +i.angles.bras.flexionBras.toFixed(1),
         coude: +i.angles.bras.flexionCoude.toFixed(1),
         poignet: +i.angles.bras.flexionPoignet.toFixed(1)
@@ -1020,7 +1261,7 @@ el.exportJson.addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `evaluation-${etat.methode}-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `evaluation-${etat.methode}-${dateDuJour()}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
 });
@@ -1028,11 +1269,15 @@ el.exportJson.addEventListener("click", () => {
 /* Repères du levage : marquage depuis l'image courante, puis recalcul immédiat. */
 for (const [bouton, cle] of [["#marquerOrigine", "origine"], ["#marquerDestination", "destination"]]) {
   $(bouton).addEventListener("click", () => {
+    if (etat.mode === "image") return;
     const r = relever(etat.t);
     if (!r) return;
     etat.niosh[cle] = r;
     ecrireReperes();
     majPanneauNiosh();
+    majSynoptique(imageALInstant(etat.analyse, etat.t));
+    etat.contexteVerifie = false;
+    majInterface();
   });
 }
 for (const id of ["oH", "oV", "oA", "dH", "dV", "dA", "poidsCharge", "frequence",
@@ -1097,6 +1342,9 @@ async function imageDuPire() {
 
 const jourFr = v => v ? new Date(v + "T12:00:00").toLocaleDateString("fr-CA",
   { year: "numeric", month: "long", day: "numeric" }) : "—";
+const texteHTML = valeur => String(valeur ?? "").replace(/[&<>"']/g, c => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[c]));
 
 async function preparerRapport() {
   const a = etat.analyse, s = a?.synthese;
@@ -1105,26 +1353,29 @@ async function preparerRapport() {
   const niveaux = M.levage ? METHODES.reba.niveaux : M.niveaux;
   const pire = imageALInstant(a, s.pire.t);
   const niosh = resultatNiosh();
+  const photo = etat.mode === "image";
+  const demo = etat.mode === "demo";
 
-  $("#rapTitre").textContent = "Évaluation ergonomique du poste";
-  $("#rapSousTitre").innerHTML =
-    `Analyse vidéo · ${a.images.length} images évaluées`
+  $("#rapTitre").textContent = demo ? "Démonstration — postures simulées" : "Évaluation ergonomique du poste";
+  $("#rapSousTitre").textContent =
+    (photo ? "Analyse photo · une posture observée" : `${demo ? "Exemple simulé" : "Analyse vidéo"} · ${a.images.length} images évaluées`)
     + (s.ignorees ? ` · ${s.ignorees} écartées faute de repères visibles` : "")
-    + ` · échantillonnage ${a.params.echantillonnage || 6}/s`;
+    + (!photo && !demo ? ` · échantillonnage ${a.params.echantillonnage || 6}/s` : "")
+    + ` · ${M.nom} · contexte ${etat.contexteVerifie ? "vérifié par l'observateur" : "à vérifier"}`;
 
   const id = [
     ["Poste", $("#idPoste").value], ["Travailleur", $("#idTravailleur").value],
     ["Observateur", $("#idObservateur").value], ["Observation", jourFr($("#idDate").value)],
-    ["Rapport", jourFr(new Date().toISOString().slice(0, 10))]
-  ].filter(([, v]) => v && v !== "—" || true);
+    ["Rapport", jourFr(dateDuJour())]
+  ];
   $("#rapId").innerHTML = id.map(([k, v]) =>
-    `<div><dt>${k}</dt><dd>${v || "—"}</dd></div>`).join("");
+    `<div><dt>${k}</dt><dd>${texteHTML(v || "—")}</dd></div>`).join("");
 
   const img = await imageDuPire();
   $("#rapImage").src = img || "";
   $("#rapImage").style.display = img ? "" : "none";
   $("#rapLegende").textContent =
-    `Instant le plus contraignant de la séquence, à ${s.pire.t.toFixed(1).replace(".", ",")} s. `
+    (photo ? "Posture observée sur la photo. " : `Instant retenu selon ${M.levage ? "REBA" : M.nom}, à ${s.pire.t.toFixed(1).replace(".", ",")} s. `)
     + `Squelette coloré par segment ; les scores figurent au tableau ci-dessous.`;
 
   /* Les trois lectures, chacune sur son échelle — jamais additionnées. */
@@ -1143,7 +1394,7 @@ async function preparerRapport() {
 
   const parNiveau = s.parNiveau.filter(n => n.part > 0.001);
   $("#rapSynthese").innerHTML = `
-    <h2>Synthèse de la séquence</h2>
+    <h2>Synthèse de la séquence · ${M.levage ? "REBA" : M.nom}</h2>
     <div class="rap-stats">
       <div><b>${s.median}</b><span>Score médian — la posture habituelle</span></div>
       <div><b>${s.max}</b><span>Pire score, à ${s.pire.t.toFixed(1).replace(".", ",")} s</span></div>
@@ -1155,15 +1406,16 @@ async function preparerRapport() {
     <p class="rap-legende">${parNiveau.map(n =>
       `${n.libelle} ${Math.round(n.part * 100)} %`).join(" · ")}</p>
     <p class="rap-legende">${el.conclusion.textContent}</p>`;
+  if (photo) $("#rapSynthese").innerHTML = `<h2>Posture analysée · ${M.nom}</h2><p>Une seule photo : aucune durée d'exposition ni répétition ne peut être déduite de cette image.</p>`;
 
   const r = pire.resultat;
   const lignesSeg = (M.levage ? METHODES.reba : M).lignes;
   $("#rapDetail").innerHTML = `
-    <h2>Décomposition à l'instant le plus contraignant</h2>
+    <h2>${photo ? "Détail de la posture analysée" : "Décomposition à l'instant retenu"}</h2>
     <table><thead><tr><th>Segment</th><th>Angle mesuré</th><th>Score</th><th>État</th></tr></thead>
     <tbody>${lignesSeg.map(l => {
       const seg = r.segments[l.cle]; if (!seg) return "";
-      const v = l.angle(pire.angles);
+      const v = l.cle === "jambes" && pire.avertissements?.includes("jambes") ? null : l.angle(pire.angles);
       return `<tr><td>${l.nom}</td>
         <td>${Number.isFinite(v) ? Math.round(v) + " ° " + l.unite.replace("° ", "") : "déclaré"}</td>
         <td>${seg.cote} / ${seg.max}</td>
@@ -1184,6 +1436,8 @@ async function preparerRapport() {
 
   const p = a.params;
   $("#rapPied").innerHTML = `
+    <b>Visibilité des repères</b> — ${texteHTML(decrireQualite(pire, { demo }).titre)}.
+    ${texteHTML(decrireQualite(pire, { demo }).avertissements.join(" "))}<br>
     <b>Paramètres déclarés</b> — charge ${p.chargeKg || 0} kg ·
     prise ${["bonne", "correcte", "mauvaise", "inacceptable"][p.prise || 0]} ·
     ${[p.statique && "posture tenue", p.repete && "geste répété", p.instable && "amplitude brusque"]
@@ -1201,19 +1455,29 @@ async function preparerRapport() {
 
 el.imprimer.addEventListener("click", async () => {
   if (!etat.analyse) return;
-  el.imprimer.disabled = true;
+  const tAvant = etat.t;
+  etat.rapportEnCours = true;
+  etat.lecture = false;
+  el.lecture.textContent = "Lecture";
+  el.video.pause();
+  cancelAnimationFrame(etat.horlogeDemo);
+  majInterface();
   el.imprimer.textContent = "Préparation…";
   try {
     if (await preparerRapport()) window.print();
   } finally {
-    el.imprimer.disabled = false;
+    etat.rapportEnCours = false;
+    etat.t = tAvant;
     el.imprimer.textContent = "Rapport PDF";
     /* Remettre la vidéo là où l'utilisateur l'avait laissée. */
     if (etat.mode === "video") { el.video.currentTime = etat.t; dessinerInstant(etat.t); }
+    majInterface();
   }
 });
 window.addEventListener("resize", () => etat.analyse && dessinerInstant(etat.t));
 
+initialiserParcours();
 majSorties();
 choisirMethode("reba");
-chargerDemo();
+majQualite();
+majInterface();
