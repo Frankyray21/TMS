@@ -315,7 +315,7 @@ document.querySelectorAll('.faccard').forEach(function(c){
   document.querySelectorAll('h3.sub-h').forEach(function(h){ITEMS.push({k:'Topic',label:h.textContent.replace(/\s+/g,' ').replace(/:.*clique.*$/i,'').trim(),sub:'',go:'#'+h.id});});
   Object.keys(MODAL_DATA).forEach(function(key){var d=MODAL_DATA[key];ITEMS.push({k:'Card',label:d.title,sub:d.tag,modal:key,kw:(d.desc+' '+d.risk.join(' ')+' '+d.prev.join(' '))});});
   ITEMS.push({k:'Section',label:'MSD prevention quiz',sub:'#quiz',go:'#quiz',kw:'quiz test questions knowledge evaluation'});
-  ITEMS.push({k:'Page',label:'Guided training: quiz and certificate',sub:'formation.en.html',go:'formation.en.html',kw:'quiz certificate attestation guided training score'});
+  ITEMS.push({k:'Page',label:'My training: quiz and certificate',sub:'formation-guidee.en.html',go:'formation-guidee.en.html',kw:'quiz certificate attestation guided training score'});
   var filtered=[],active=0;
   function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
   function render(q){q=norm((q||'').trim());filtered=ITEMS.filter(function(it){return !q||norm(it.label).indexOf(q)>-1||norm(it.kw).indexOf(q)>-1;});active=0;

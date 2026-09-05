@@ -1,0 +1,52 @@
+/* Navigation et continuité de la formation — commun aux pages FR / EN. */
+.fg-header{position:sticky;top:0;z-index:40;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:20px;padding:12px 28px;background:rgba(10,14,23,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b}
+.fg-brand{display:flex;align-items:center;gap:12px;min-width:0;min-height:44px;text-decoration:none}
+.fg-brand img{display:block;width:88px;max-width:100%;height:auto;background:#000;border-radius:6px;padding:3px 5px}
+.fg-brand span{max-width:150px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:.74rem;color:#aab6c9;line-height:1.4}
+.fg-header-nav{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;min-width:0}
+.fg-header-paths{display:flex;min-width:0;background:#0d1320;border:1px solid #1e293b;border-radius:14px;padding:3px}
+.fg-header-paths .fg-seg{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 14px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:.85rem;text-align:center;line-height:1.2;color:#aab6c9;text-decoration:none}
+.fg-header-paths [aria-current="page"]{background:linear-gradient(135deg,#e23a3c,#a81a1c);color:#fff}
+.fg-header-languages{display:flex;align-items:center;gap:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem}
+.fg-header-languages a,.fg-header-languages span{display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;border-radius:8px;color:#aab6c9;text-decoration:none}
+.fg-header-languages [aria-current]{color:#fff;background:rgba(210,35,37,.18)}
+.fg-header .sess-chip{min-width:0;min-height:44px;max-width:220px;flex-shrink:1}
+.fg-header .sess-chip-name{min-width:0;max-width:100%}
+.fg-header a:focus-visible,.fg-header button:focus-visible{outline:2px solid #ef5a5c;outline-offset:3px}
+.fg-page #app{min-width:0}
+.fg-page #attestation,.fg-page #certDoc{scroll-margin-top:90px}
+.fg-page .fg-att-summary,.fg-page .fg-att-details{min-width:0!important;max-width:100%;overflow-wrap:anywhere}
+.fg-page #attestation [data-act="getCert"]{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;flex-shrink:1!important}
+.fg-page .fg-att-details input,.fg-page .fg-att-details textarea{max-width:100%;min-width:0}
+.fg-page #certName,.fg-page .fg-receipt{overflow-wrap:anywhere}
+.fg-page .fg-receipt{max-width:100%;padding:16px;border:1px solid #334155;border-radius:12px;background:#101a28;line-height:1.5}
+.fg-page .fg-receipt button,.fg-page .fg-att-summary button,.fg-page .fg-att-details button{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.legacy-training-notice{position:relative;margin:90px auto 18px;max-width:900px;padding:18px 22px;border:1px solid #475569;border-left:4px solid #ef5a5c;border-radius:12px;background:#131d2c;color:#cbd5e1;line-height:1.5;overflow-wrap:anywhere}
+.legacy-training-notice h2{margin:0 0 6px;font-size:1.05rem;color:#fff}
+.legacy-training-notice p{margin:0 0 10px;font-size:.9rem}
+.legacy-training-notice a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border-radius:8px;background:#b92326;color:#fff;font-weight:700;text-decoration:none}
+.legacy-training-notice a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media(max-width:980px){
+  .fg-header{grid-template-columns:88px minmax(0,1fr);gap:12px;padding:10px 16px}
+  .fg-brand{flex-direction:column;gap:5px;text-align:center}
+  .fg-brand span{font-size:.64rem;letter-spacing:.04em}
+  .legacy-training-notice{margin:24px 16px 18px}
+}
+@media(max-width:640px){
+  .fg-header{grid-template-columns:76px minmax(0,1fr);gap:10px;padding:10px 12px}
+  .fg-header-nav{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}
+  .fg-header .sess-chip{grid-row:1;grid-column:1;max-width:100%;width:100%;padding:6px 8px;gap:5px}
+  .fg-header .sess-chip-dot{display:none}
+  .fg-header-languages{grid-row:1;grid-column:2}
+  .fg-header-paths{grid-row:2;grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+  .fg-header-paths .fg-seg{padding:6px;font-size:.79rem;overflow-wrap:anywhere}
+  .fg-page #attestation{padding:20px 16px!important}
+  .fg-page #attestation [data-act="getCert"]{width:100%}
+  .fg-page #attestation,.fg-page #certDoc{scroll-margin-top:140px}
+  .fg-page .fg-att-details{padding:0!important}
+  .fg-page #certDoc{padding:22px 16px!important;max-width:100%;overflow-wrap:anywhere}
+  .legacy-training-notice{padding:16px;margin:18px 12px}
+}
+@media print{
+  .fg-header,.legacy-training-notice{display:none!important}
+}

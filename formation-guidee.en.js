@@ -8,6 +8,9 @@
   var ATTEST_ENDPOINT = 'https://attestations-tms.frankyray-21.workers.dev';
   var MODEL_SRC = 'models/corps-anatomie-mobile.glb';
   var K_PROG = 'tms_form_progress', K_ANS = 'tms_form_answers', K_NAME = 'tms_form_name', K_ZONES = 'tms_form_zones', K_TIMES = 'tms_form_times', K_APPR = 'tms_fg_apprec';
+  // Shared FR/EN resume record: { version: 1, stepKey: 'module/notion' | 'module/quiz', visited: ['module/notion'] }.
+  // A visited topic is not a passed quiz; certification still requires the existing 80% score.
+  var K_RESUME = 'tms_fg_resume';
   // clés propres à la formation GUIDÉE : ne partagent plus 'tms_form_sent' avec formation.js
   // (sinon l'attestation guidée n'était jamais envoyée si la formation classique l'avait été le même jour)
   var K_SENT = 'tms_fg_sent', K_PEND = 'tms_fg_pending';
@@ -221,6 +224,7 @@
   var state = { view: 'sommaire', idx: 0, completed: [], answers: {}, certVisible: false, certName: '', appRating: 0, appComment: '', sigData: '', finished: false, borgSel: null, zonesVues: [], times: {},
     layers: { Muscles: { on: true, op: 100 }, Os: { on: false, op: 0 }, Articulations: { on: false, op: 0 }, Nerfs: { on: false, op: 0 } } };
   var app, mvInterval = null, timerInterval = null;
+  var resumeState = { version: 1, stepKey: null, visited: [] };
 
   function load() {
     try { var p = JSON.parse(localStorage.getItem(K_PROG) || '[]'); if (Array.isArray(p)) state.completed = p; } catch (e) {}
@@ -229,12 +233,56 @@
     try { var zv = JSON.parse(localStorage.getItem(K_ZONES) || '[]'); if (Array.isArray(zv)) state.zonesVues = zv; } catch (e) {}
     try { var tt = JSON.parse(localStorage.getItem(K_TIMES) || '{}'); if (tt && typeof tt === 'object') state.times = tt; } catch (e) {}
     try { var ap = JSON.parse(localStorage.getItem(K_APPR) || '{}'); if (ap && typeof ap === 'object') { state.appRating = ap.rating || 0; state.appComment = ap.comment || ''; } } catch (e) {}
+    loadResume();
   }
   function saveProg() { try { localStorage.setItem(K_PROG, JSON.stringify(state.completed)); } catch (e) {} }
   function saveAns() { try { localStorage.setItem(K_ANS, JSON.stringify(state.answers)); } catch (e) {} }
   function saveZones() { try { localStorage.setItem(K_ZONES, JSON.stringify(state.zonesVues)); } catch (e) {} }
   function saveTimes() { try { localStorage.setItem(K_TIMES, JSON.stringify(state.times)); } catch (e) {} }
   function saveAppr() { try { localStorage.setItem(K_APPR, JSON.stringify({ rating: state.appRating, comment: state.appComment })); } catch (e) {} }
+
+  function loadResume() {
+    resumeState = { version: 1, stepKey: null, visited: [] };
+    try {
+      var record = JSON.parse(localStorage.getItem(K_RESUME) || 'null'), st = steps();
+      if (!record || record.version !== 1 || Array.isArray(record)) return;
+      if (st.some(function (s) { return stepKey(s) === record.stepKey; })) resumeState.stepKey = record.stepKey;
+      if (Array.isArray(record.visited)) {
+        resumeState.visited = record.visited.filter(function (key, i, keys) {
+          return typeof key === 'string' && keys.indexOf(key) === i && st.some(function (s) { return s.kind === 'notion' && stepKey(s) === key; });
+        });
+      }
+      var idx = st.findIndex(function (s) { return stepKey(s) === resumeState.stepKey; });
+      if (idx >= 0) state.idx = idx;
+    } catch (e) {}
+  }
+  function rememberStep(s) {
+    var key = stepKey(s);
+    if (!key) return;
+    resumeState.stepKey = key;
+    if (s.kind === 'notion' && resumeState.visited.indexOf(key) < 0) resumeState.visited.push(key);
+    try { localStorage.setItem(K_RESUME, JSON.stringify(resumeState)); } catch (e) {}
+  }
+  function resetResume() {
+    resumeState = { version: 1, stepKey: null, visited: [] };
+    try { localStorage.removeItem(K_RESUME); } catch (e) {}
+  }
+  function moduleStarted(m) {
+    var prefix = m.id + '/';
+    return passed(m.id) || (resumeState.stepKey || '').indexOf(prefix) === 0
+      || resumeState.visited.some(function (key) { return key.indexOf(prefix) === 0; })
+      || Object.keys(state.times).some(function (key) { return key.indexOf(prefix) === 0 && Number(state.times[key]) > 0; })
+      || Object.keys(state.answers[m.id] || {}).length > 0;
+  }
+  function hasStarted() { return MODULES.some(moduleStarted); }
+  function resumeIndex() {
+    var st = steps(), exact = st.findIndex(function (s) { return stepKey(s) === resumeState.stepKey; });
+    if (exact >= 0) return exact;
+    // Legacy sessions have no exact position: keep their progress and use the first unpassed module.
+    var fi = MODULES.findIndex(function (m) { return !passed(m.id); });
+    var fallback = fi >= 0 ? st.findIndex(function (s) { return s.mi === fi; }) : 0;
+    return fallback < 0 ? 0 : fallback;
+  }
 
   /* ---------- suivi du temps par section ----------
      Mesure le temps réellement passé sur chaque étape (notion ou quiz). Le
@@ -319,28 +367,31 @@
     var ringDash = (pct / 100 * C).toFixed(1) + ' ' + C.toFixed(1);
     var totalNotions = MODULES.reduce(function (a, m) { return a + m.notions.length; }, 0);
     var allDone = doneCount >= total;
-    var startLabel = allDone ? 'Review the training' : (doneCount > 0 ? 'Resume' : 'Start the training');
-    var progressHint = allDone ? 'Well done, training complete!' : (doneCount > 0 ? "Keep going, you're almost there." : "You haven't started yet.");
-    var firstOpen = MODULES.findIndex(function (m) { return !passed(m.id); });
     var st = steps();
+    var started = hasStarted(), resumeStep = st[resumeIndex()];
+    var resumeLabel = 'module ' + (resumeStep.mi + 1) + (resumeStep.kind === 'quiz' ? ' · quiz' : ' · topic ' + (resumeStep.ni + 1));
+    var startLabel = allDone ? 'Review the training' : (started ? 'Resume' + (resumeState.stepKey ? ': ' + resumeLabel : '') : 'Start the training');
+    var progressHint = allDone ? 'Well done, all 5 quizzes passed!' : (started ? 'Your reading is saved. Quizzes validate the modules.' : 'Ready to start, at your own pace.');
+    var visitedCount = resumeState.visited.length;
 
     var cards = MODULES.map(function (m, mi) {
-      var isDone = passed(m.id), isCur = mi === firstOpen;
+      var isDone = passed(m.id), isStarted = moduleStarted(m), isCur = started && mi === resumeStep.mi && !isDone;
       var numGlyph = isDone ? '✓' : m.num;
       var numBg = isDone ? 'linear-gradient(135deg,#10b981,#0e9f6e)' : (isCur ? 'rgba(210,35,37,.16)' : '#1a2332');
       var numBorder = isDone ? 'transparent' : (isCur ? 'rgba(210,35,37,.5)' : '#1e293b');
       var numColor = isDone ? '#fff' : (isCur ? '#ef5a5c' : '#64748b');
       var cardBg = isDone ? 'rgba(16,185,129,.05)' : (isCur ? 'rgba(17,24,39,.8)' : 'rgba(17,24,39,.5)');
       var cardBorder = isDone ? 'rgba(16,185,129,.3)' : (isCur ? 'rgba(210,35,37,.4)' : '#1e293b');
-      var statusLabel = isDone ? 'Passed' : (isCur ? 'In progress' : 'Up next');
+      var statusLabel = isDone ? 'Quiz passed' : (isStarted ? 'In progress' : 'Not started');
       var pillBg = isDone ? 'rgba(16,185,129,.16)' : (isCur ? 'rgba(210,35,37,.16)' : '#1a2332');
       var pillColor = isDone ? '#34d399' : (isCur ? '#ef5a5c' : '#8694ad');
       var items = m.notions.map(function (n, ni) {
         var gi = st.findIndex(function (s) { return s.kind === 'notion' && s.mi === mi && s.ni === ni; });
-        return notionRow((mi + 1) + '.' + (ni + 1), n.title, gi, isDone, '#0d1320', '#1e293b');
+        var consulted = resumeState.visited.indexOf(stepKey(st[gi])) >= 0;
+        return notionRow((mi + 1) + '.' + (ni + 1), n.title, gi, consulted, '#0d1320', '#1e293b', consulted ? 'Viewed' : '');
       }).join('');
       var giq = st.findIndex(function (s) { return s.kind === 'quiz' && s.mi === mi; });
-      items += notionRow('✓', 'Module quiz', giq, isDone, 'rgba(210,35,37,.06)', 'rgba(210,35,37,.22)');
+      items += notionRow('✓', 'Module quiz', giq, isDone, 'rgba(210,35,37,.06)', 'rgba(210,35,37,.22)', isDone ? 'Passed' : 'To pass');
       return '<div style="background:' + cardBg + ';border:1px solid ' + cardBorder + ';border-radius:16px;padding:18px 20px">'
         + '<div style="display:flex;gap:16px;align-items:center;margin-bottom:12px">'
         + '<div style="flex:0 0 auto;width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.35rem;background:' + numBg + ';border:1px solid ' + numBorder + ';color:' + numColor + '">' + numGlyph + '</div>'
@@ -354,17 +405,17 @@
     var attBorder = allDone ? 'rgba(16,185,129,.4)' : '#1e293b';
     var attBg = allDone ? 'linear-gradient(120deg,rgba(16,185,129,.12),rgba(13,19,32,.6))' : '#0d1320';
     var attKick = allDone ? '#34d399' : '#8694ad';
-    var attTitle = allDone ? 'You have unlocked your certificate' : 'Finish all 5 modules to unlock';
-    var attDesc = allDone ? "Two steps: pick your name from the list, then save your training. Your completion will be sent to Machines Roger International." : "Go through the topics and pass the quiz in each module to generate your certificate.";
+    var attTitle = allDone ? attText('Formation réussie', 'Training passed') : 'Complete all 5 modules to unlock';
+    var attDesc = allDone ? attStatusDescription() : "Read the notions and pass each module quiz to generate your certificate.";
     var attBtnBg = allDone ? 'linear-gradient(135deg,#10b981,#0e9f6e)' : '#1a2332';
     var attBtnColor = allDone ? '#fff' : '#64748b';
     var att = '<div id="attestation" style="margin-top:18px;border-radius:18px;border:1px solid ' + attBorder + ';background:' + attBg + ';padding:28px">'
       + '<div style="display:flex;flex-wrap:wrap;gap:22px;align-items:center;justify-content:space-between">'
-      + '<div style="flex:1 1 360px;min-width:260px">'
+      + '<div class="fg-att-summary" style="flex:1 1 360px;min-width:260px">'
       + '<div style="display:inline-flex;align-items:center;gap:9px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:.82rem;color:' + attKick + ';margin-bottom:8px"><span>' + (allDone ? '🎓' : '🔒') + '</span> Training certificate</div>'
       + '<h3 style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.01em;font-size:1.6rem;margin:0 0 6px;color:#fff">' + attTitle + '</h3>'
       + '<p style="color:#cbd5e1;font-size:.96rem;margin:0;max-width:520px">' + attDesc + '</p></div>'
-      + '<button data-act="getCert"' + (allDone ? '' : ' disabled') + ' style="flex:0 0 auto;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1rem;color:' + attBtnColor + ';background:' + attBtnBg + ';border:none;cursor:' + (allDone ? 'pointer' : 'not-allowed') + ';padding:14px 26px;border-radius:999px">' + (allDone ? 'Get my certificate' : 'Locked') + '</button></div>'
+      + '<button data-act="getCert"' + (allDone ? '' : ' disabled') + ' style="flex:0 0 auto;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1rem;color:' + attBtnColor + ';background:' + attBtnBg + ';border:none;cursor:' + (allDone ? 'pointer' : 'not-allowed') + ';padding:14px 26px;border-radius:999px">' + (allDone ? attText('Mon attestation · ', 'My certificate · ') + attStatusLabel() : attText('Verrouillé', 'Locked')) + '</button></div>'
       + (state.certVisible && allDone ? certBlock() : '') + '</div>';
 
     return '<div><section style="position:relative;overflow:hidden;border-bottom:1px solid #1e293b;background:radial-gradient(120% 100% at 80% -10%,#16202f 0%,#0a0e17 55%)">'
@@ -376,13 +427,14 @@
       + '<p class="fg-hero-sub" style="max-width:540px;color:#cbd5e1;font-size:1.1rem;margin:0 0 24px">A training course broken into <strong style="color:#fff">short topics</strong>: one page per topic, in order. At the end of each module, a mini-quiz. Your certificate is waiting at the finish.</p>'
       + '<div class="fg-hero-actions" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">'
       + '<button class="fg-cta" data-act="start" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1.02rem;color:#fff;border:none;cursor:pointer;padding:14px 26px;border-radius:999px;background:linear-gradient(135deg,#e23a3c,#a81a1c);box-shadow:0 6px 20px rgba(210,35,37,.36)">' + startLabel + ' →</button>'
-      + '<button class="fg-ghost" data-act="reset" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.88rem;color:#8694ad;background:transparent;border:1px solid #1e293b;cursor:pointer;padding:13px 20px;border-radius:999px">↺ Start over</button></div></div>'
+      + (started ? '<button class="fg-ghost" data-act="reset" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.88rem;color:#8694ad;background:transparent;border:1px solid #1e293b;cursor:pointer;padding:13px 20px;border-radius:999px">↺ Start over</button>' : '') + '</div></div>'
       + '<div class="fg-hero-visual">'
       + '<div class="fg-hero-anatomy" aria-hidden="true"><anatomy-hero-model data-src="models/male-full-body-ecorche-hero.glb" data-poster="images/hero-anatomy.webp"></anatomy-hero-model></div>'
       + '<div class="fg-hero-card" style="position:relative;z-index:2;flex:0 0 auto;width:264px;background:rgba(13,19,32,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid #1e293b;border-radius:18px;padding:22px 24px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.55)">'
       + '<div class="fg-ring" style="position:relative;width:148px;height:148px;margin:0 auto 16px"><svg viewBox="0 0 120 120" style="width:148px;height:148px;transform:rotate(-90deg)"><circle cx="60" cy="60" r="52" fill="none" stroke="#1e293b" stroke-width="11"></circle><circle cx="60" cy="60" r="52" fill="none" stroke="#d22325" stroke-width="11" stroke-linecap="round" stroke-dasharray="' + ringDash + '" style="transition:stroke-dasharray .6s"></circle></svg>'
-      + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span class="fg-pct" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:2.6rem;line-height:1;color:#fff">' + pct + '%</span><span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:#8694ad;font-weight:700">complete</span></div></div>'
-      + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;color:#fff">' + doneCount + ' / ' + total + ' modules</div>'
+      + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span class="fg-pct" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:2.6rem;line-height:1;color:#fff">' + pct + '%</span><span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:#8694ad;font-weight:700">quizzes passed</span></div></div>'
+      + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;color:#fff">' + doneCount + ' / ' + total + ' modules passed</div>'
+      + '<div style="color:#cbd5e1;font-size:.86rem;margin-top:6px">' + visitedCount + ' / ' + totalNotions + ' topics viewed</div>'
       + '<div style="color:#8694ad;font-size:.86rem;margin-top:2px">' + progressHint + '</div></div></div></div></section>'
       + '<section style="max-width:1120px;margin:0 auto;padding:34px 28px 64px">'
       + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1.5rem;display:flex;align-items:center;gap:10px;margin-bottom:22px"><span style="width:5px;height:1.25rem;background:#d22325;border-radius:3px"></span>The path · ' + totalNotions + ' topics</div>'
@@ -392,12 +444,13 @@
       + '</section></div>';
   }
 
-  function notionRow(tag, title, gi, isDone, bg, border) {
+  function notionRow(tag, title, gi, isDone, bg, border, status) {
     var tagBg = isDone ? 'rgba(16,185,129,.16)' : 'rgba(210,35,37,.16)';
     var tagColor = isDone ? '#34d399' : '#ef5a5c';
     return '<button class="fg-not" data-open="' + gi + '" style="display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;background:' + bg + ';border:1px solid ' + border + ';border-radius:10px;padding:10px 14px;font-family:\'Barlow\',sans-serif">'
       + '<span style="flex:0 0 auto;width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:800;font-family:\'Barlow Condensed\',sans-serif;background:' + tagBg + ';color:' + tagColor + '">' + tag + '</span>'
       + '<span style="flex:1 1 auto;color:#e2e8f0;font-weight:600;font-size:.97rem">' + esc(title) + '</span>'
+      + (status ? '<span class="fg-not-status" style="flex:0 1 auto;color:' + (isDone ? '#34d399' : '#8694ad') + ';font-size:.74rem;font-weight:600">' + esc(status) + '</span>' : '')
       + '<span style="flex:0 0 auto;color:#8694ad">→</span></button>';
   }
 
@@ -410,7 +463,7 @@
   }
   function appSurveyBlock() {
     return '<div class="att-survey" style="margin:0 0 20px">'
-      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">2</span> Your opinion on the app</label>'
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px">Your opinion on the app</label>'
       + '<p style="color:#8694ad;font-size:.84rem;margin:0 0 12px">How do you find the app? <span style="opacity:.8">(optional)</span></p>'
       + '<div class="fg-stars" id="appStars" role="radiogroup" aria-label="App rating">' + starRow() + '</div>'
       + '<textarea id="appComment" rows="2" placeholder="Any remark about the app? (optional)" style="width:100%;background:#0d1320;border:1px solid #1e293b;border-radius:10px;padding:.6rem .8rem;color:#f1f5f9;font:inherit;font-size:.95rem;resize:vertical;min-height:40px;margin-top:12px">' + esc(state.appComment || '') + '</textarea>'
@@ -424,7 +477,7 @@
   /* ---------- required (drawn) signature ---------- */
   function appSignBlock() {
     return '<div class="att-sign" style="margin:0 0 20px">'
-      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">3</span> Sign your certificate</label>'
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">2</span> Sign your certificate</label>'
       + '<p style="color:#8694ad;font-size:.84rem;margin:0 0 10px">Draw your signature in the box — with your finger, stylus or mouse.</p>'
       + '<div class="fg-sig-wrap" style="position:relative;background:#fff;border:1px solid #1e293b;border-radius:10px;overflow:hidden">'
       + '<canvas id="attSig" class="fg-sig" style="display:block;width:100%;height:150px;touch-action:none;cursor:crosshair"></canvas>'
@@ -435,8 +488,10 @@
   }
 
   function certBlock() {
-    var d = new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
-    return '<div style="margin-top:24px;position:relative;max-width:560px">'
+    var receipt = attStatus(), recorded = attRecorded();
+    var certDate = /^\d{4}-\d{2}-\d{2}$/.test(receipt.date || '') ? new Date(receipt.date + 'T12:00:00') : new Date();
+    var d = certDate.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+    return '<div class="fg-att-details" style="margin-top:24px;position:relative;max-width:560px">' + attReceiptBlock()
       + '<div id="certDoc" style="background:#fff;color:#111;border-radius:14px;padding:32px 30px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.4)">'
       + '<img src="images/logo_roger.png" alt="Machines Roger International" style="height:50px;background:#000;border-radius:8px;padding:4px 6px;margin-bottom:14px">'
       + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;letter-spacing:.06em;font-size:1.4rem;color:#d22325">TRAINING CERTIFICATE</div>'
@@ -445,21 +500,23 @@
       + '<div id="certName" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.6rem;color:#111;border-bottom:2px solid #d22325;display:inline-block;margin:8px auto 12px;padding:2px 18px 4px">' + (esc(state.certName) || '—') + '</div>'
       + '<div id="certSigBox" style="' + (state.sigData ? '' : 'display:none;') + 'margin:0 auto 14px"><img id="certSig" src="' + (state.sigData || '') + '" alt="Signature" style="height:52px;object-fit:contain;display:block;margin:0 auto"><div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:#999;margin-top:2px">Signature</div></div>'
       + '<div style="display:flex;gap:26px;justify-content:center;flex-wrap:wrap;color:#333;font-size:.9rem;margin-bottom:14px"><span>5 modules passed · <b>100&nbsp;%</b></span><span>' + d + '</span></div>'
+      + (receipt.signatureConfirmed ? '<p style="font-size:.75rem;color:#555">' + attText('Signature transmise au service de formation.', 'Signature received by the training service.') + '</p>' : '')
       + '<div style="font-weight:700;color:#111;font-size:.86rem">Machines Roger International</div></div>'
-      + '<div class="att-save" style="margin-top:22px;background:#0d1320;border:1px solid #1e293b;border-radius:14px;padding:20px 22px">'
+      + (recorded ? '' : '<div class="att-save" style="margin-top:22px;background:#0d1320;border:1px solid #1e293b;border-radius:14px;padding:20px 22px">'
       + '<div style="display:inline-flex;align-items:center;gap:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:1.05rem;color:#fff;margin-bottom:4px">📋 Save your training</div>'
       + '<p style="color:#8694ad;font-size:.88rem;margin:0 0 18px">Your completion must be <strong style="color:#cbd5e1">saved</strong> to be sent to Machines Roger International.</p>'
       + '<div class="att-emp" style="position:relative;margin:0 0 18px">'
-      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">1</span> Pick your name from the list</label>'
+      + '<label for="attName" style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">1</span> Pick your name from the list</label>'
       + '<input id="attName" type="text" autocomplete="off" placeholder="First and last name" value="' + esc(state.certName) + '" style="width:100%;background:#0d1320;border:1px solid #1e293b;border-radius:10px;padding:.7rem .9rem;color:#f1f5f9;font:inherit;font-size:1rem">'
       + '<div id="empSugg" class="emp-sugg" hidden></div>'
       + '<p id="empHint" style="color:#8694ad;font-size:.82rem;margin:.5rem 0 0">Start typing your name, then pick it from the list.</p></div>'
-      + appSurveyBlock()
       + appSignBlock()
-      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">4</span> Save your training</label>'
-      + '<button class="fg-cta" data-act="save" id="attSave" disabled style="width:100%;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1.05rem;color:#fff;background:linear-gradient(135deg,#10b981,#0e9f6e);border:none;border-radius:12px;padding:15px 24px;cursor:pointer;box-shadow:0 6px 18px rgba(16,185,129,.35);opacity:.5;transition:opacity .2s">✔ Save my training</button>'
+      + '<details style="margin-bottom:20px"><summary style="cursor:pointer;padding:8px 0">' + attText('Donner un avis (facultatif)', 'Leave feedback (optional)') + '</summary>' + appSurveyBlock() + '</details>'
+      + '<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e2e8f0;margin-bottom:8px"><span style="flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:#d22325;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800">3</span> Save your training</label>'
+      + '<button class="fg-cta" data-act="save" id="attSave" disabled style="width:100%;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.03em;font-size:1.05rem;color:#fff;background:linear-gradient(135deg,#10b981,#0e9f6e);border:none;border-radius:12px;padding:15px 24px;cursor:pointer;box-shadow:0 6px 18px rgba(16,185,129,.35);opacity:.5;transition:opacity .2s">✔ Send my certificate</button>'
+      + '</div>')
       + '<div id="saveMsg" role="status" aria-live="polite" hidden style="margin-top:14px;border-radius:10px;padding:12px 14px;font-size:.92rem;font-weight:600;line-height:1.5"></div>'
-      + '</div></div>';
+      + '</div>';
   }
 
   /* ---------------- RENDU : LECTEUR ---------------- */
@@ -910,6 +967,7 @@
     bind();
     if (state.view === 'viewer') {
       var st = steps(), cur = st[state.idx];
+      rememberStep(cur);
       timeEnter(stepKey(cur));
       startTimerTick();
       if (cur && cur.kind === 'notion' && cur.notion.custom === 'cZones') initModel();
@@ -922,14 +980,12 @@
   function go(view, idx) { state.view = view; if (idx != null) state.idx = idx; state.certVisible = state.certVisible && view === 'sommaire'; render(); }
 
   function start() {
-    var st = steps();
-    var fi = MODULES.findIndex(function (m) { return !passed(m.id); });
-    var idx = fi >= 0 ? st.findIndex(function (s) { return s.mi === fi; }) : 0;
-    go('viewer', idx < 0 ? 0 : idx);
+    go('viewer', resumeIndex());
   }
   function reset() {
     if (!window.confirm('Start over from scratch? Your progress and answers will be erased on this device.')) return;
     state.completed = []; state.answers = {}; state.borgSel = null; state.certVisible = false; state.zonesVues = []; state.times = {};
+    resetResume(); resetAttestation(true);
     _tKey = null; _tT0 = 0;
     saveProg(); saveAns(); saveZones(); saveTimes();
     go('sommaire', 0);
@@ -1048,12 +1104,87 @@
   }
 
   /* ---------- ATTESTATION ---------- */
+  // Métadonnées persistantes uniquement : la signature reste dans cet onglet.
+  var ATT_EN = true, attMemory = null, attSending = false, attRevision = 0, attCaptureCancel = null, attPadReset = null, attIdentityCommit = null;
+  var attTransfer = window.TMSAttestation ? window.TMSAttestation.create({
+    endpoint: ATTEST_ENDPOINT,
+    storage: { getItem: function (k) { return localStorage.getItem(k); }, setItem: function (k, v) { localStorage.setItem(k, v); }, removeItem: function (k) { localStorage.removeItem(k); } },
+    fetch: function (url, options) { return fetch(url, options); },
+    online: function () { return navigator.onLine !== false; },
+    isCurrent: function (person) { var session = window.TMSSession && window.TMSSession.get(); return !!session && session.name === person.name && (session.empId || '') === person.employeeId; }
+  }) : null;
+  function attText(fr, en) { return ATT_EN ? en : fr; }
+  function attPerson() {
+    var input = document.getElementById('attName'), nm = (state.certName || '').trim(), employeeId = input ? input.dataset.empId || '' : '';
+    try { var session = window.TMSSession && window.TMSSession.get(); if (!employeeId && session && session.name === nm) employeeId = session.empId || ''; } catch (e) {}
+    return { name: nm, employeeId: employeeId };
+  }
+  function attStatus() {
+    var person = attPerson();
+    if (attMemory && attMemory.name === person.name && (attMemory.employeeId || '') === person.employeeId) return attMemory;
+    return attTransfer ? attTransfer.status(person) : { status: 'unsigned' };
+  }
+  function attRecorded() { return ['sent', 'incomplete', 'legacy'].indexOf(attStatus().status) !== -1; }
+  function attStatusLabel() {
+    var s = attStatus().status;
+    return s === 'sent' ? attText('Transmise', 'Sent') : s === 'incomplete' ? attText('Enregistrée — signature à vérifier', 'Recorded — check signature')
+      : s === 'legacy' ? attText('Enregistrement antérieur', 'Previous submission')
+      : s === 'waiting' ? attText('En attente de connexion', 'Waiting for a connection')
+      : s === 'uncertain' ? attText('Transmission à vérifier', 'Transmission to verify') : attText('À signer', 'To sign');
+  }
+  function attStatusDescription() {
+    var receipt = attStatus(), s = receipt.status;
+    if (s === 'sent') return attText('Ta formation et ta signature ont été reçues. Ce reçu reste sur cet appareil jusqu’au changement de travailleur.', 'Your training and signature were received. This receipt stays on this device until you switch worker.');
+    if (s === 'incomplete') return attText('La formation a été enregistrée, mais le service n’a pas confirmé la signature. Communique cette référence à ton responsable ; ne renvoie pas une deuxième attestation.', 'Your training was recorded, but the service did not confirm the signature. Give this reference to your supervisor; do not submit a second certificate.');
+    if (s === 'legacy') return attText('Cet appareil conserve une ancienne confirmation d’envoi. Le détail de la signature n’est pas disponible. Aucun nouvel envoi automatique.', 'This device has a previous submission confirmation. Signature details are unavailable. Nothing is resent automatically.');
+    if (s === 'waiting') return attText('Aucun envoi n’a été effectué hors ligne. Reconnecte-toi, puis signe à nouveau si tu as fermé la page et clique sur Transmettre.', 'Nothing was sent while offline. Reconnect, sign again if you closed the page, then select Send.');
+    if (s === 'uncertain') return attText('La réponse du service n’a pas été confirmée. Vérifie auprès de ton responsable avant de réessayer : un enregistrement peut déjà exister. Une nouvelle signature est nécessaire après fermeture de la page.', 'The service response could not be confirmed. Check with your supervisor before retrying: a record may already exist. Sign again after closing the page.');
+    return attText('Ta réussite est acquise. Vérifie ton nom, signe et transmets ton attestation. La signature n’est pas conservée sur cet appareil après fermeture.', 'You have passed the training. Check your name, sign and send your certificate. Your signature is not kept on this device after closing.');
+  }
+  function attReceiptBlock() {
+    var receipt = attStatus();
+    var date = receipt.sentAt ? new Date(receipt.sentAt) : receipt.date ? new Date(receipt.date + 'T12:00:00') : null;
+    var when = date && !isNaN(date.getTime()) ? date.toLocaleString(ATT_EN ? 'en-CA' : 'fr-CA', receipt.sentAt ? {} : { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+    return '<div class="fg-receipt" role="status" style="margin:16px 0;padding:16px;border:1px solid #334155;border-radius:12px;color:#cbd5e1;overflow-wrap:anywhere">'
+      + '<strong style="display:block;color:#fff">' + esc(attStatusLabel()) + '</strong><p style="margin:6px 0">' + esc(attStatusDescription()) + '</p>'
+      + (when ? '<p style="margin:6px 0">' + esc(when) + '</p>' : '')
+      + (receipt.recordId ? '<p style="margin:6px 0">' + attText('Référence : ', 'Reference: ') + esc(receipt.recordId) + '</p>' : '')
+      + (attRecorded() ? '<button class="fg-ghost" data-act="printCert" style="font:inherit;padding:10px 16px;border:1px solid #64748b;border-radius:8px;background:#111c2e;color:#fff;cursor:pointer">' + attText('Imprimer / enregistrer une copie', 'Print / save a copy') + '</button>' : '') + '</div>';
+  }
+  function resetAttestation(clear) {
+    attRevision++; attSending = false; attMemory = null;
+    if (attCaptureCancel) { attCaptureCancel(); attCaptureCancel = null; }
+    if (attTransfer) attTransfer.cancel(clear);
+    state.sigData = '';
+    if (attPadReset) attPadReset();
+    var canvas = document.getElementById('attSig');
+    if (canvas) { try { canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); } catch (e) {} }
+    var ph = document.getElementById('attSigPh'); if (ph) ph.style.display = 'flex';
+    reflectSig(); syncSaveBtn();
+  }
+  function initAttestationEvents() {
+    window.addEventListener('tms:session-reset', function () {
+      resetAttestation(false); _tKey = null; _tT0 = 0;
+      state.completed = []; state.answers = {}; state.times = {}; state.appRating = 0; state.appComment = ''; state.certName = '';
+    });
+    window.addEventListener('tms:identity', function (event) {
+      var next = event.detail || {};
+      // Le premier rattachement au même nom, au clic Transmettre, garde le tracé.
+      var committed = attIdentityCommit && attIdentityCommit.name === next.name && attIdentityCommit.employeeId === (next.empId || '');
+      if (!committed && (next.previous || (state.certName && state.certName !== next.name))) resetAttestation(!next.external);
+      state.certName = next.name || '';
+      if (!committed && !next.external && state.view === 'sommaire' && next.previous) render(true);
+    });
+  }
+
   function getCert() {
+    if (!allModulesDone()) return;
     state.certVisible = true;
     render(true); // keep scroll position (do not jump to top of page)
     setTimeout(function () { var el = document.getElementById('certDoc') || document.getElementById('attestation'); if (el) { try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} } }, 60);
   }
   function setCertName(v) {
+    if (v !== state.certName) resetAttestation(true);
     state.certName = v;
     try { localStorage.setItem(K_NAME, v); } catch (e) {}
     var cn = document.getElementById('certName'); if (cn) cn.textContent = v || '—';
@@ -1077,51 +1208,41 @@
   }
   /* Enable/disable the "Save" button depending on whether a name is entered. */
   function syncSaveBtn() {
-    var btn = document.getElementById('attSave');
-    if (!btn) return;
-    var ready = !!(state.certName || '').trim() && !!state.sigData && !btn.dataset.done;
-    btn.disabled = !ready;
-    btn.style.opacity = ready ? '1' : '.5';
-    btn.style.cursor = ready ? 'pointer' : 'not-allowed';
+    var btn = document.getElementById('attSave'); if (!btn) return;
+    var ready = allModulesDone() && !!(state.certName || '').trim() && !!state.sigData && !attRecorded() && !attSending && !!attTransfer;
+    btn.disabled = !ready; btn.style.opacity = ready ? '1' : '.5';
+    btn.style.cursor = attSending ? 'wait' : ready ? 'pointer' : 'not-allowed';
   }
   /* Save the training (send to Airtable), no printing, with confirmation. */
   function saveCert() {
-    var btn = document.getElementById('attSave');
-    var nm = (state.certName || '').trim();
-    if (!nm) { showSaveMsg('warn', 'Choose your name before saving.'); var _n = document.getElementById('attName'); if (_n) { try { _n.scrollIntoView({ behavior: 'smooth', block: 'center' }); _n.focus(); } catch (e1) {} } return; }
-    if (!state.sigData) { showSaveMsg('warn', 'Sign your certificate before saving.'); var _s = document.getElementById('attSig'); if (_s) { try { _s.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e2) {} } return; }
-    try { if (window.TMSSession) { var _in = document.getElementById('attName'); window.TMSSession.set({ name: nm, empId: _in ? (_in.dataset.empId || '') : '' }); } } catch (e0) {}
-    if (btn) { btn.disabled = true; btn.style.opacity = '.7'; btn.style.cursor = 'wait'; btn.textContent = 'Saving…'; }
-    showSaveMsg('pending', '⏳ Saving…');
-    sendAttestation(function (ok) {
-      if (ok) {
-        showSaveMsg('ok', '✓ Your training is saved. Your completion has been sent to Machines Roger International.');
-        if (btn) { btn.dataset.done = '1'; btn.disabled = true; btn.style.opacity = '1'; btn.style.cursor = 'default'; btn.style.background = 'linear-gradient(135deg,#0e9f6e,#0b8457)'; btn.textContent = '✓ Training saved'; }
-      } else {
-        showSaveMsg('err', '⚠ Saving failed. Check your Internet connection and try again.');
-        if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; btn.textContent = '↻ Retry saving'; }
+    if (!allModulesDone() || attSending || attRecorded()) return;
+    if (!(state.certName || '').trim() || !state.sigData) {
+      showSaveMsg('warn', attText('Vérifie ton nom et signe avant de transmettre.', 'Check your name and sign before sending.')); return;
+    }
+    if (attStatus().status === 'uncertain' && !window.confirm(attText('La réponse précédente est inconnue. Un enregistrement peut déjà exister. As-tu vérifié auprès de ton responsable avant ce nouvel envoi ?', 'The previous response is unknown. A record may already exist. Have you checked with your supervisor before sending again?'))) return;
+    var person = attPerson();
+    attIdentityCommit = person;
+    try { if (window.TMSSession) window.TMSSession.set({ name: person.name, empId: person.employeeId }); } catch (e) {}
+    finally { attIdentityCommit = null; }
+    // Une correction d'identité exige une nouvelle signature.
+    if (!state.sigData) { syncSaveBtn(); showSaveMsg('warn', attText('Le nom a changé. Signe à nouveau avant de transmettre.', 'The name changed. Sign again before sending.')); return; }
+    attSending = true; syncSaveBtn();
+    showSaveMsg('pending', attText('Transmission en cours…', 'Sending…'));
+    var token = attRevision;
+    sendAttestation(function (result) {
+      if (token !== attRevision) return;
+      attSending = false;
+      if (result.status === 'cancelled') {
+        syncSaveBtn(); showSaveMsg('warn', attText('La session a changé ou ne peut pas être conservée. Vérifie ton identité et les réglages du navigateur avant de réessayer.', 'The session changed or could not be saved. Check your identity and browser settings before retrying.')); return;
       }
+      if (result.receipt) attMemory = result.receipt;
+      render(true);
+      if (result.persisted === false && result.receipt) showSaveMsg('warn', attText('Enregistrement reçu, mais ce navigateur n’a pas conservé le reçu. Imprime une copie maintenant.', 'The submission was received, but this browser could not save the receipt. Print a copy now.'));
+      else if (result.status === 'invalid') showSaveMsg('warn', attText('Le dossier est incomplet. Vérifie les quiz, le nom et la signature.', 'The submission is incomplete. Check the quizzes, name and signature.'));
+      else if (result.persisted === false) showSaveMsg('warn', attText('Le navigateur ne peut pas sauvegarder l’état. Garde cette page ouverte pour réessayer.', 'The browser cannot save the status. Keep this page open to retry.'));
     });
   }
-  var _attBusy = false; // verrou : deux clics rapprochés ne doivent pas créer deux enregistrements Airtable
-  function postAttest(image, cb) {
-    cb = cb || function () {};
-    if (!ATTEST_ENDPOINT) { cb(false); return; }
-    var nm = (state.certName || '').trim(); if (!nm) { cb(false); return; }
-    if (_attBusy) { cb(false); return; }
-    var input = document.getElementById('attName');
-    var empId = input ? (input.dataset.empId || '') : '';
-    var sig = 'fg|EN|' + nm + '|' + new Date().toISOString().slice(0, 10);
-    try { if (localStorage.getItem(K_SENT) === sig) { cb(true); return; } } catch (e) {}
-    _attBusy = true;
-    try { localStorage.setItem(K_PEND, sig); } catch (e) {} // marqueur « envoi en cours » : re-tenté au prochain chargement s'il se perd (onglet fermé, hors ligne)
-    var payload = { name: nm, lang: 'EN', date: new Date().toISOString().slice(0, 10), score: '5/5 modules', employeeId: empId, image: image || '', timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText(), appRating: state.appRating || '', appComment: (state.appComment || '').trim(), signature: state.sigData || '' };
-    try {
-      fetch(ATTEST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-        .then(function (r) { _attBusy = false; if (r && r.ok) { try { localStorage.setItem(K_SENT, sig); localStorage.removeItem(K_PEND); } catch (e) {} cb(true); } else { cb(false); } })
-        .catch(function () { _attBusy = false; cb(false); });
-    } catch (e) { _attBusy = false; cb(false); }
-  }
+  // Le verrou réseau et le reçu sont gérés par formation-attestation.js.
   function loadShot(cb) {
     if (window.modernScreenshot && window.modernScreenshot.domToPng) { cb(); return; }
     var s = document.createElement('script'); s.src = 'vendor/modern-screenshot.umd.js';
@@ -1185,20 +1306,32 @@
      Le travailleur, lui, imprime/enregistre la version propre (#certDoc). */
   function sendAttestation(cb) {
     cb = cb || function () {};
-    if (!(state.certName || '').trim()) { cb(false); return; }
-    if (!ATTEST_ENDPOINT) { cb(false); return; }
-    var done = false, node = null;
-    function finish(image) { if (done) return; done = true; if (node) { try { node.remove(); } catch (e) {} } postAttest(image, cb); }
-    // Safety net: if the image capture stalls (fonts/network/offline), still save
-    // the training without an image rather than staying stuck.
-    setTimeout(function () { finish(''); }, 4000);
+    if (!attTransfer || !allModulesDone() || !(state.certName || '').trim() || !state.sigData) { cb({ status: 'invalid' }); return; }
+    var person = attPerson(), token = attRevision;
+    // Figer le dossier AVANT toute capture asynchrone.
+    timeLeave();
+    var payload = { name: person.name, employeeId: person.employeeId, lang: ATT_EN ? 'EN' : 'FR',
+      date: window.TMSAttestation.localDate(), score: '5/5 modules', signature: state.sigData,
+      timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText(), appRating: state.appRating || '',
+      appComment: (state.appComment || '').trim(), image: '' };
+    var done = false, node = null, timer;
+    function clean() { clearTimeout(timer); if (node) { node.remove(); node = null; } }
+    function finish(image) {
+      if (done || token !== attRevision) return;
+      done = true; clean(); attCaptureCancel = null;
+      payload.image = image || '';
+      attTransfer.send(payload).then(cb);
+    }
+    attCaptureCancel = function () { done = true; clean(); };
+    if (navigator.onLine === false) { finish(''); return; }
+    timer = setTimeout(function () { finish(''); }, 4000);
     loadShot(function () {
+      if (done || token !== attRevision) return;
       var ms = window.modernScreenshot;
       node = buildCertDetailNode();
-      if (!ms || !ms.domToPng || !node) { finish(''); return; }
-      ms.domToPng(node, { scale: 2, backgroundColor: '#ffffff' })
-        .then(function (u) { finish(u || ''); })
-        .catch(function () { finish(''); });
+      if (!ms || !ms.domToPng) { finish(''); return; }
+      try { ms.domToPng(node, { scale: 2, backgroundColor: '#ffffff' }).then(function (u) { finish(u || ''); }).catch(function () { finish(''); }); }
+      catch (e) { finish(''); }
     });
   }
   function reflectSig() {
@@ -1207,24 +1340,49 @@
     if (box) box.style.display = state.sigData ? '' : 'none';
   }
   function initSig() {
-    var c = document.getElementById('attSig'); if (!c) return;
+    var c = document.getElementById('attSig'); if (!c) { attPadReset = null; return; }
     var ph = document.getElementById('attSigPh'), ctx = c.getContext('2d');
     var ratio = window.devicePixelRatio || 1, rect = c.getBoundingClientRect();
-    var cssW = Math.max(280, Math.round(rect.width) || 280), cssH = 150;
+    var cssW = Math.max(160, Math.round(rect.width) || 280), cssH = 150;
     c.width = cssW * ratio; c.height = cssH * ratio; ctx.scale(ratio, ratio);
     ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111';
-    if (state.sigData) { var im = new Image(); im.onload = function () { try { ctx.drawImage(im, 0, 0, cssW, cssH); } catch (e) {} }; im.src = state.sigData; if (ph) ph.style.display = 'none'; }
-    var drawing = false, last = null;
-    function xy(e) { var r = c.getBoundingClientRect(); var t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e; return { x: t.clientX - r.left, y: t.clientY - r.top }; }
-    function move(e) { if (!drawing) return; if (e.cancelable) e.preventDefault(); var p = xy(e); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; }
-    function up() { if (!drawing) return; drawing = false; document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); try { state.sigData = c.toDataURL('image/png'); } catch (e) {} reflectSig(); syncSaveBtn(); }
-    function down(e) { drawing = true; last = xy(e); if (ph) ph.style.display = 'none'; if (e.cancelable) e.preventDefault(); document.addEventListener('mousemove', move); document.addEventListener('mouseup', up); }
-    c.addEventListener('mousedown', down);
-    c.addEventListener('touchstart', down, { passive: false });
-    c.addEventListener('touchmove', move, { passive: false });
-    c.addEventListener('touchend', up);
+    var drawing = false, last = null, hasInk = !!state.sigData, restoreVersion = 0, pointer = null;
+    function clearPad() {
+      drawing = false; last = null; hasInk = false; restoreVersion++;
+      if (pointer != null) { try { c.releasePointerCapture(pointer); } catch (e) {} pointer = null; }
+      ctx.clearRect(0, 0, cssW, cssH); state.sigData = '';
+      if (ph) ph.style.display = 'flex';
+    }
+    attPadReset = clearPad;
+    if (state.sigData) {
+      var im = new Image(), version = restoreVersion;
+      im.onload = function () { if (version === restoreVersion && c.isConnected && state.sigData) { try { ctx.drawImage(im, 0, 0, cssW, cssH); } catch (e) {} } };
+      im.src = state.sigData; if (ph) ph.style.display = 'none';
+    }
+    function xy(e) { var r = c.getBoundingClientRect(); return { x: (e.clientX - r.left) * cssW / r.width, y: (e.clientY - r.top) * cssH / r.height }; }
+    c.addEventListener('pointerdown', function (e) {
+      if (attSending || e.isPrimary === false || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      e.preventDefault(); drawing = true; pointer = e.pointerId; last = xy(e);
+      try { c.setPointerCapture(pointer); } catch (e2) {}
+    });
+    c.addEventListener('pointermove', function (e) {
+      if (!drawing || pointer !== e.pointerId) return;
+      var p = xy(e);
+      if (Math.abs(p.x - last.x) + Math.abs(p.y - last.y) > 1) {
+        hasInk = true; if (ph) ph.style.display = 'none';
+        ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+      }
+      last = p;
+    });
+    function up(e) {
+      if (!drawing || pointer !== e.pointerId) return;
+      drawing = false; pointer = null;
+      if (hasInk) { try { state.sigData = c.toDataURL('image/png'); } catch (err) {} }
+      reflectSig(); syncSaveBtn();
+    }
+    c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
     var clr = document.getElementById('attSigClear');
-    if (clr) clr.addEventListener('click', function () { ctx.clearRect(0, 0, c.width, c.height); state.sigData = ''; if (ph) ph.style.display = 'flex'; reflectSig(); syncSaveBtn(); });
+    if (clr) clr.addEventListener('click', function () { clearPad(); reflectSig(); syncSaveBtn(); });
   }
   function initCert() {
     var input = document.getElementById('attName');
@@ -1281,6 +1439,7 @@
         else if (a === 'goSommaire') go('sommaire');
         else if (a === 'getCert') getCert();
         else if (a === 'save') saveCert();
+        else if (a === 'printCert' && allModulesDone() && attRecorded()) window.print();
       });
     });
     app.querySelectorAll('[data-open]').forEach(function (el) {
@@ -1350,13 +1509,7 @@
     window.addEventListener('pagehide', _tFlush);
     window.addEventListener('beforeunload', _tFlush);
     render();
-    // envoi d'attestation perdu (page fermée avant la réponse, hors ligne…) : on re-tente une fois ici
-    try {
-      var pend = localStorage.getItem(K_PEND);
-      if (pend && localStorage.getItem(K_SENT) !== pend && MODULES.every(function (m) { return passed(m.id); }) && (state.certName || '').trim()) {
-        setTimeout(sendAttestation, 1500);
-      }
-    } catch (e) {}
+    initAttestationEvents(); // Aucun POST automatique : signature + action volontaire requises.
   }
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
