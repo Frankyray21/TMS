@@ -315,7 +315,7 @@ document.querySelectorAll('.faccard').forEach(function(c){
   document.querySelectorAll('h3.sub-h').forEach(function(h){ITEMS.push({k:'Sujet',label:h.textContent.replace(/\s+/g,' ').replace(/:.*clique.*$/i,'').trim(),sub:'',go:'#'+h.id});});
   Object.keys(MODAL_DATA).forEach(function(key){var d=MODAL_DATA[key];ITEMS.push({k:'Fiche',label:d.title,sub:d.tag,modal:key,kw:(d.desc+' '+d.risk.join(' ')+' '+d.prev.join(' '))});});
   ITEMS.push({k:'Section',label:'Quiz prévention TMS',sub:'#quiz',go:'#quiz',kw:'quiz test questions connaissances évaluation'});
-  ITEMS.push({k:'Page',label:'Formation guidée : quiz et attestation',sub:'formation.html',go:'formation.html',kw:'quiz attestation certificat formation guidée score'});
+  ITEMS.push({k:'Page',label:'Ma formation : quiz et attestation',sub:'formation-guidee.html',go:'formation-guidee.html',kw:'quiz attestation certificat formation guidée score'});
   var filtered=[],active=0;
   function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
   function render(q){q=norm((q||'').trim());filtered=ITEMS.filter(function(it){return !q||norm(it.label).indexOf(q)>-1||norm(it.kw).indexOf(q)>-1;});active=0;

@@ -22,6 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="formation-parcours.css">
 <!-- moteur 3D chargé à la demande par le JS (hero + carte des zones), plus de téléchargement d'office de ~1 Mo -->
 <style>
   body { background: #0a0e17; }
@@ -60,28 +61,29 @@
 </head>
 <body class="fg-page">
 <a class="skip" href="#app">Aller au contenu</a>
-<header style="position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px;background:rgba(10,14,23,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b">
-  <a href="index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none">
-    <img src="images/logo_roger.png" alt="Machines Roger International" style="height:34px;width:auto;background:#000;border-radius:6px;padding:3px 5px;display:block">
-    <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.16em;font-size:.74rem;color:#8694ad">Prévention des TMS</span>
+<header class="fg-header">
+  <a class="fg-brand" href="index.html" aria-label="Prévention des TMS — accueil">
+    <img src="images/logo_roger.png" alt="Machines Roger International">
+    <span>Prévention des TMS</span>
   </a>
-  <nav style="display:flex;align-items:center;gap:8px">
-    <div style="display:flex;background:#0d1320;border:1px solid #1e293b;border-radius:999px;padding:3px">
-      <a class="fg-seg" href="index.html?kb=1" style="text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.8rem;color:#8694ad;padding:6px 14px;border-radius:999px">Base de connaissances</a>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.8rem;color:#fff;padding:6px 14px;border-radius:999px;background:linear-gradient(135deg,#e23a3c,#a81a1c)">Formation guidée</span>
+  <nav class="fg-header-nav" aria-label="Navigation et session">
+    <div class="fg-header-paths">
+      <a class="fg-seg" href="index.html?kb=1">Comprendre les TMS</a>
+      <a class="fg-seg" href="formation-guidee.html" aria-current="page">Ma formation</a>
     </div>
-    <div style="display:flex;align-items:center;gap:2px;margin-left:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem">
-      <span style="color:#fff;padding:5px 8px;border-radius:6px;background:rgba(210,35,37,.18)">FR</span>
-      <a href="formation-guidee.en.html" style="text-decoration:none;color:#8694ad;padding:5px 8px">EN</a>
+    <div class="fg-header-languages" role="group" aria-label="Langue / Language">
+      <span lang="fr" aria-current="true" aria-label="Français — langue actuelle">FR</span>
+      <a href="formation-guidee.en.html" lang="en" hreflang="en" aria-label="Switch to English">EN</a>
     </div>
   </nav>
 </header>
 
 <div id="app"></div>
 
-<span class="foot-ver" id="footVer" title="Version du site" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#8694ad;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v2.07</span>
+<span class="foot-ver" id="footVer" title="Version du site" style="position:fixed;right:12px;bottom:10px;z-index:50;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.04em;font-size:.72rem;color:#8694ad;background:rgba(13,19,32,.72);border:1px solid #1e293b;border-radius:999px;padding:3px 9px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">v2.08</span>
 
 <script src="anatomy-hero-model.js" defer></script>
+<script src="formation-attestation.js" defer></script>
 <script src="formation-guidee.js" defer></script>
 <script src="session.js" defer></script>
 <script src="quiz-feedback.js" defer></script>

@@ -29,10 +29,13 @@
   var K_NAME = 'tms_form_name';           // miroir du nom, lu par la formation (guidée + classique)
   var K_TOUR = 'tms_tour_done';           // '1' quand la visite guidée a été vue
   var K_AFTER_SWITCH = 'tms_after_switch';// drapeau (sessionStorage) : rouvrir le panneau en mode « identifier »
+  var K_EPOCH = 'tms_session_epoch';      // identifiant de remise à zéro, partagé entre les onglets
 
   /* Progression de la formation, effacée quand on passe la main à un autre travailleur. */
   var PROGRESS_KEYS = ['tms_form_progress', 'tms_form_answers', 'tms_form_name', 'tms_form_zones',
-    'tms_form_times', 'tms_form_quiz', 'tms_form_done', 'tms_form_sent', 'tms_fg_sent', 'tms_fg_pending'];
+    'tms_form_times', 'tms_form_quiz', 'tms_form_done', 'tms_form_sent', 'tms_fg_sent', 'tms_fg_pending',
+    'tms_fg_apprec', 'tms_fg_resume', 'tms_fg_receipt'];
+  var IDENTITY_KEYS = ['tms_form_sent', 'tms_fg_sent', 'tms_fg_pending', 'tms_fg_receipt'];
 
   /* ------------------------------------------------------------------ i18n */
   var STR = {
@@ -55,15 +58,21 @@
       identify_use: function (n) { return 'Utiliser « ' + n + ' »'; },
       identify_linked_ok: 'Relié à ton dossier employé ✓',
       btn_fixname: 'Corriger mon nom',
-      btn_switch: 'Changer d’utilisateur',
+      btn_switch: 'Passer au prochain travailleur',
       btn_continue_anon: 'Continuer sans m’identifier',
       btn_myformation: 'Voir ma formation guidée',
       btn_tour: 'Revoir la visite guidée',
-      shared_note: 'Chacun garde sa progression et son attestation : change d’utilisateur quand tu passes la main.',
-      switch_title: 'Changer d’utilisateur ?',
+      shared_note: 'Cet appareil conserve une seule progression, pour la session affichée. Passer au prochain travailleur efface cette progression locale ; les attestations déjà transmises restent enregistrées.',
+      fix_title: 'Corriger le nom de cette session',
+      fix_desc: 'Cette option garde ta progression : elle sert à corriger ton identité, pas à changer de travailleur. Tu devras signer de nouveau une attestation non transmise. Une correction ne modifie pas les attestations déjà transmises.',
+      fix_cancel: 'Annuler la correction',
+      fix_pending: 'Un envoi n’a pas encore été confirmé. Corriger le nom annulera cette tentative locale ; vérifie ensuite ton attestation et signe de nouveau.',
+      switch_pending: 'Attention : un envoi d’attestation n’a pas encore été confirmé. Passer la main supprime cette tentative locale. Si tu veux la conserver, annule et retourne à ta formation.',
+      switch_title: 'Passer au prochain travailleur ?',
       switch_desc: 'La progression de la formation sur cet appareil sera effacée pour laisser la place au prochain travailleur. Les attestations déjà transmises à Machines Roger International, elles, restent enregistrées.',
       switch_yes: 'Oui, passer la main',
       switch_cancel: 'Annuler',
+      switch_failed: 'La session n’a pas pu être entièrement effacée sur cet appareil. Ne passe pas ce poste au prochain travailleur. Ferme les fenêtres de ce site, puis efface les données de ce site dans les paramètres du navigateur avant de le rouvrir. Cela ne supprime pas les attestations déjà transmises.',
       toast_reset: 'Session remise à zéro. À toi d’ouvrir la tienne.',
       /* Visite guidée */
       tour_launch: 'Visite guidée',
@@ -107,15 +116,21 @@
       identify_use: function (n) { return 'Use “' + n + '”'; },
       identify_linked_ok: 'Linked to your employee record ✓',
       btn_fixname: 'Fix my name',
-      btn_switch: 'Switch user',
+      btn_switch: 'Hand over to the next worker',
       btn_continue_anon: 'Continue without signing in',
       btn_myformation: 'Open my guided training',
       btn_tour: 'Replay the guided tour',
-      shared_note: 'Everyone keeps their own progress and certificate: switch user when you hand over.',
-      switch_title: 'Switch user?',
+      shared_note: 'This device keeps one training record for the session shown. Handing over to the next worker clears this local progress; certificates already sent stay on record.',
+      fix_title: 'Correct this session’s name',
+      fix_desc: 'This keeps your progress: use it to correct your identity, not to change workers. You will need to sign an unsent certificate again. A correction does not change certificates already sent.',
+      fix_cancel: 'Cancel the correction',
+      fix_pending: 'A certificate delivery has not been confirmed. Correcting the name cancels this local attempt; check your certificate and sign again afterwards.',
+      switch_pending: 'Warning: a certificate delivery has not been confirmed. Handing over removes this local attempt. To keep it, cancel and return to your training.',
+      switch_title: 'Hand over to the next worker?',
       switch_desc: 'Training progress on this device will be cleared for the next worker. Certificates already sent to Machines Roger International stay on record.',
       switch_yes: 'Yes, hand over',
       switch_cancel: 'Cancel',
+      switch_failed: 'This device could not fully clear the session. Do not hand it over to the next worker. Close this site’s windows, then clear this site’s data in your browser settings before reopening it. This does not delete certificates already sent.',
       toast_reset: 'Session reset. Open yours to get started.',
       tour_launch: 'Guided tour',
       tour_prev: 'Back',
@@ -170,35 +185,87 @@
     }
     function get() { return read(); }
     function notify() { var s = read(); subs.forEach(function (fn) { try { fn(s); } catch (e) {} }); }
+    function emit(type, detail) { try { window.dispatchEvent(new CustomEvent(type, { detail: detail })); } catch (e) {} }
+    function identityKey(s) { return s ? JSON.stringify([s.name || '', s.empId || '', s.since || '']) : ''; }
+    var known = read(), knownEpoch = lsGet(K_EPOCH), reloadQueued = false, resetFailed = false;
+    function remember() { known = read(); knownEpoch = lsGet(K_EPOCH); }
+    function hasExternalChange() { return reloadQueued || knownEpoch !== lsGet(K_EPOCH) || identityKey(known) !== identityKey(read()); }
+    function identityDetail(next, previous, external) {
+      return { name: next ? next.name : '', empId: next ? next.empId : '', since: next ? next.since : '',
+        previous: previous, changed: true, external: external };
+    }
     function set(o) {
+      if (resetFailed) return null;
+      /* Bloquer aussi une action arrivée avant l'évènement storage : cet onglet
+         obsolète n'a pas le droit de rétablir l'identité du travailleur précédent. */
+      if (hasExternalChange()) { syncExternal(); return read(); }
       o = o || {};
-      var name = (o.name || '').trim();
+      var name = String(o.name || '').trim();
       if (!name) { return clear(); }
       var cur = read() || {};
-      var next = { name: name, empId: (o.empId != null ? o.empId : (cur.empId || '')) || '', since: cur.since || new Date().toISOString() };
+      var next = { name: name, empId: String((o.empId != null ? o.empId : (cur.name === name ? cur.empId : '')) || ''), since: cur.since || new Date().toISOString() };
+      var changed = identityKey(next) !== identityKey(cur);
       lsSet(K_SESSION, JSON.stringify(next));
       lsSet(K_NAME, name); /* miroir pour la formation */
+      remember();
+      /* Une attestation/signature appartient à une identité précise. Les modules
+         validés restent acquis lors d'une correction, pas la preuve d'envoi. */
+      if (changed && cur.name) IDENTITY_KEYS.forEach(lsDel);
+      if (changed) emit('tms:identity', identityDetail(next, cur.name ? cur : null, false));
       notify();
-      try { window.dispatchEvent(new CustomEvent('tms:identity', { detail: next })); } catch (e) {}
       return next;
     }
     function clear() {
-      lsDel(K_SESSION);
-      notify();
+      resetAll();
       return null;
     }
     /* Efface toute la progression de la formation (passage à un autre travailleur). */
     function resetAll() {
+      if (hasExternalChange()) { syncExternal(); return false; }
+      /* D'abord annuler les opérations en mémoire : leurs callbacks ne doivent
+         jamais réécrire un reçu pour le travailleur précédent après l'effacement. */
+      emit('tms:session-reset', { reason: 'handover', external: false, previous: read() });
       PROGRESS_KEYS.forEach(lsDel);
       lsDel(K_SESSION);
+      /* Ne pas annoncer un poste vide si le navigateur a refusé l'effacement.
+         Une lecture refusée ne permet pas non plus de confirmer cette opération. */
+      var cleared = false;
+      try {
+        cleared = PROGRESS_KEYS.concat([K_SESSION]).every(function (key) { return localStorage.getItem(key) === null; });
+      } catch (e) {}
+      resetFailed = !cleared;
+      if (!cleared) { remember(); notify(); return false; }
+      lsSet(K_EPOCH, Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
+      remember();
       notify();
+      return true;
     }
+    /* Une identité modifiée dans un autre onglet ne doit pas laisser une ancienne
+       formation active en mémoire. Aucun write ici : pas de boucle entre onglets.
+       Le rechargement protège aussi le parcours classique, sans gestion d'évènement. */
+    function syncExternal() {
+      if (reloadQueued) return;
+      var next = read(), epoch = lsGet(K_EPOCH), previous = known;
+      var reset = epoch !== knownEpoch || (!!previous && (!next || previous.since !== next.since));
+      var changed = identityKey(next) !== identityKey(previous);
+      if (!reset && !changed) { notify(); return; }
+      remember();
+      reloadQueued = true;
+      if (reset) emit('tms:session-reset', { reason: 'external', external: true, previous: previous, session: next });
+      else emit('tms:identity', identityDetail(next, previous, true));
+      notify();
+      setTimeout(function () { location.reload(); }, 0);
+    }
+    window.addEventListener('storage', function (e) {
+      if (!e || e.key === null || e.key === K_SESSION || e.key === K_EPOCH) syncExternal();
+    });
+    window.addEventListener('focus', syncExternal);
     function subscribe(fn) { if (typeof fn === 'function') subs.push(fn); }
     /* Bootstrap : si aucune session mais un nom déjà saisi via la formation, on l'adopte. */
     function reconcile() {
       if (read()) return;
       var nm = (lsGet(K_NAME) || '').trim();
-      if (nm) { lsSet(K_SESSION, JSON.stringify({ name: nm, empId: '', since: new Date().toISOString() })); notify(); }
+      if (nm) { lsSet(K_SESSION, JSON.stringify({ name: nm, empId: '', since: new Date().toISOString() })); remember(); notify(); }
     }
     return { get: get, set: set, clear: clear, resetAll: resetAll, subscribe: subscribe, reconcile: reconcile };
   })();
@@ -303,6 +370,8 @@
   }
   function closePanel() {
     if (!ov || !ov.classList.contains('open')) return;
+    rosterReq++;
+    if (rosterTmr) { clearTimeout(rosterTmr); rosterTmr = null; }
     ov.classList.remove('open');
     lockScroll(false);
     if (chip) chip.setAttribute('aria-expanded', 'false');
@@ -313,11 +382,19 @@
 
   function isFormationGuidee() { return /formation-guidee(\.en)?\.html?$/.test(location.pathname) || document.body.classList.contains('fg-page'); }
   function formationHref() { return LANG === 'en' ? 'formation-guidee.en.html' : 'formation-guidee.html'; }
+  function hasUnconfirmedCertificate() {
+    if (lsGet('tms_fg_pending')) return true;
+    try { var receipt = JSON.parse(lsGet('tms_fg_receipt') || 'null'); return !!(receipt && receipt.status === 'incomplete'); }
+    catch (e) { return false; }
+  }
 
   function renderPanel(mode) {
+    rosterReq++;
+    if (rosterTmr) { clearTimeout(rosterTmr); rosterTmr = null; }
     var s = TMSSession.get();
+    var correcting = mode === 'correct' && s && s.name;
     var html = '';
-    if (mode !== 'identify' && s && s.name) {
+    if (mode !== 'identify' && !correcting && s && s.name) {
       /* ------- État A : un travailleur est identifié ------- */
       var linkedTxt = s.empId ? T.linked : T.notlinked;
       html += '<div class="sess-id">' +
@@ -334,15 +411,16 @@
       html += '<p class="sess-note">' + esc(T.shared_note) + '</p>';
     } else {
       /* ------- État B : personne n'est identifié / on (ré)identifie ------- */
-      html += '<div class="sess-empty"><h3 class="sess-empty-t">' + esc(T.who_none_title) + '</h3>' +
-        '<p class="sess-empty-d">' + esc(T.who_none_desc) + '</p></div>';
+      html += '<div class="sess-empty"><h3 class="sess-empty-t">' + esc(correcting ? T.fix_title : T.who_none_title) + '</h3>' +
+        '<p class="sess-empty-d">' + esc(correcting ? T.fix_desc : T.who_none_desc) + '</p></div>';
+      if (correcting && hasUnconfirmedCertificate()) html += '<p class="sess-note" role="status">' + esc(T.fix_pending) + '</p>';
       html += '<div class="sess-find">' +
         '<label class="sess-lbl" for="sessName">' + esc(T.identify_label) + '</label>' +
-        '<div class="sess-find-wrap"><input id="sessName" type="text" autocomplete="off" spellcheck="false" placeholder="' + esc(T.identify_ph) + '" value="">' +
+        '<div class="sess-find-wrap"><input id="sessName" type="text" autocomplete="off" spellcheck="false" placeholder="' + esc(T.identify_ph) + '" value="' + esc(correcting ? s.name : '') + '">' +
         '<div class="sess-sugg" id="sessSugg" hidden></div></div>' +
         '<p class="sess-hint" id="sessHint">' + esc(T.identify_hint) + '</p></div>';
       html += '<div class="sess-actions">';
-      html += '<button type="button" class="sess-btn sess-btn-ghost" data-act="anon">' + esc(T.btn_continue_anon) + '</button>';
+      html += '<button type="button" class="sess-btn sess-btn-ghost" data-act="' + (correcting ? 'cancel-fix' : 'anon') + '">' + esc(correcting ? T.fix_cancel : T.btn_continue_anon) + '</button>';
       html += '</div>';
     }
     /* Pied commun : relancer la visite guidée. */
@@ -356,7 +434,8 @@
     panelBody.querySelectorAll('[data-act]').forEach(function (el) {
       el.addEventListener('click', function () {
         var a = el.getAttribute('data-act');
-        if (a === 'fixname') { renderPanel('identify'); setTimeout(function () { var i = ov.querySelector('#sessName'); if (i) i.focus(); }, 20); }
+        if (a === 'fixname') { renderPanel('correct'); setTimeout(function () { var i = ov.querySelector('#sessName'); if (i) i.focus(); }, 20); }
+        else if (a === 'cancel-fix') renderPanel('view');
         else if (a === 'switch') confirmSwitch();
         else if (a === 'anon') closePanel();
         else if (a === 'tour') { closePanel(); setTimeout(function () { Tour.start(true); }, 120); }
@@ -372,7 +451,12 @@
     function db(s) { try { return s.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch (e) { return s; } }
     function setHint(t) { if (hint) hint.textContent = t; }
     function hide() { if (sugg) { sugg.hidden = true; sugg.innerHTML = ''; } }
-    function commit(name, empId) { TMSSession.set({ name: name, empId: empId || '' }); renderPanel('view'); }
+    function commit(name, empId) {
+      var current = TMSSession.get();
+      /* Valider le texte inchangé ne doit pas détacher un dossier déjà choisi. */
+      if (!empId && current && current.name === name) empId = current.empId;
+      TMSSession.set({ name: name, empId: empId || '' }); renderPanel('view');
+    }
     function hl(name, term) {
       var t = db(name.toLowerCase()), q = db((term || '').toLowerCase()), i = q ? t.indexOf(q) : -1;
       if (i < 0) return esc(name);
@@ -384,14 +468,14 @@
       list.forEach(function (it) {
         var b = document.createElement('button');
         b.type = 'button'; b.className = 'sess-opt'; b.innerHTML = hl(it.name, term);
-        b.addEventListener('mousedown', function (e) { e.preventDefault(); commit(it.name, it.id); });
+        b.addEventListener('click', function () { commit(it.name, it.id); });
         sugg.appendChild(b);
       });
       /* Toujours proposer d'utiliser le texte saisi tel quel (marche aussi hors ligne). */
       if (term && !list.some(function (it) { return it.name.toLowerCase() === term.toLowerCase(); })) {
         var use = document.createElement('button');
         use.type = 'button'; use.className = 'sess-opt sess-opt-use'; use.textContent = T.identify_use(term);
-        use.addEventListener('mousedown', function (e) { e.preventDefault(); commit(term, ''); });
+        use.addEventListener('click', function () { commit(term, ''); });
         sugg.appendChild(use);
       }
       sugg.hidden = false;
@@ -422,7 +506,13 @@
         });
     }
     input.addEventListener('input', function () { if (rosterTmr) clearTimeout(rosterTmr); rosterTmr = setTimeout(search, 220); });
-    input.addEventListener('blur', function () { setTimeout(hide, 160); });
+    input.addEventListener('blur', function () {
+      setTimeout(function () {
+        /* Les propositions sont de vrais boutons : Tab puis Entrée doit pouvoir
+           sélectionner un employé, au même titre qu'un clic ou un toucher. */
+        if (!sugg || !sugg.contains(document.activeElement)) hide();
+      }, 160);
+    });
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') { hide(); }
       else if (e.key === 'Enter') { e.preventDefault(); var v = (input.value || '').trim(); if (v) commit(v, ''); }
@@ -434,13 +524,17 @@
     panelBody.innerHTML = '<div class="sess-confirm">' +
       '<h3 class="sess-confirm-t">' + esc(T.switch_title) + '</h3>' +
       '<p class="sess-confirm-d">' + esc(T.switch_desc) + '</p>' +
+      (hasUnconfirmedCertificate() ? '<p class="sess-note" role="status">' + esc(T.switch_pending) + '</p>' : '') +
       '<div class="sess-actions">' +
       '<button type="button" class="sess-btn sess-btn-ghost" data-act="cancel">' + esc(T.switch_cancel) + '</button>' +
       '<button type="button" class="sess-btn sess-btn-danger" data-act="confirm">' + esc(T.switch_yes) + '</button>' +
       '</div></div>';
     panelBody.querySelector('[data-act="cancel"]').addEventListener('click', function () { renderPanel('view'); });
     panelBody.querySelector('[data-act="confirm"]').addEventListener('click', function () {
-      TMSSession.resetAll();
+      if (!TMSSession.resetAll()) {
+        panelBody.innerHTML = '<p class="sess-confirm-d" role="alert">' + esc(T.switch_failed) + '</p>';
+        return;
+      }
       ssSet(K_AFTER_SWITCH, '1');
       /* On recharge : la formation en mémoire (le cas échéant) repart proprement à zéro,
          puis le panneau se rouvre en mode « identifier » pour le nouvel arrivant. */
@@ -598,9 +692,8 @@
     TMSSession.subscribe(renderChip);
     renderChip();
 
-    /* Synchronisation quand on revient sur l'onglet ou depuis un autre onglet. */
-    window.addEventListener('storage', function (e) { if (!e || e.key === K_SESSION || e.key === K_NAME) renderChip(); });
-    window.addEventListener('focus', function () { renderChip(); });
+    /* Les changements inter-onglets sont traités par TMSSession : le badge et
+       la formation en mémoire restent ainsi toujours rattachés au même travailleur. */
     window.addEventListener('tms:identity', function () { renderChip(); });
 
     /* Après un « changer d'utilisateur » : rouvrir le panneau pour identifier le suivant. */

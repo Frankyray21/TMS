@@ -24,6 +24,14 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v4
 
+      - name: Préparer Node pour les tests sans dépendances
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Vérifier les parcours et les calculs avant publication
+        run: node --test tests/*.test.cjs tests/*.test.mjs cotation-video/tests/*.test.mjs
+
       - name: Versionner le cache automatiquement (hash du commit)
         run: |
           VER="tms-${GITHUB_SHA::7}"
@@ -36,6 +44,7 @@ jobs:
           rsync -a --delete \
             --exclude='.git' --exclude='.github' --exclude='.claude' \
             --exclude='worker' \
+            --exclude='tests' \
             --exclude='PLANNING_7_niveaux.md' \
             --exclude='formation-guidee-design.html' --exclude='support.js' \
             --exclude='corps-3d.html' --exclude='models/mannequin.glb' \
