@@ -26,6 +26,16 @@
 .legacy-training-notice p{margin:0 0 10px;font-size:.9rem}
 .legacy-training-notice a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border-radius:8px;background:#b92326;color:#fff;font-weight:700;text-decoration:none}
 .legacy-training-notice a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* Lien vers le portail des applications MRI : pilule dans l'en-tête (masquée sur téléphone, où le pied de page la porte). */
+.fg-portail{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;border:1px solid #1e293b;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:.82rem;line-height:1.2;color:#aab6c9;text-decoration:none;transition:color .2s,border-color .2s}
+.fg-portail svg{flex-shrink:0;color:#ef5a5c}
+.fg-portail:hover{color:#fff;border-color:#ef5a5c}
+.fg-foot{display:flex;justify-content:center;padding:28px 72px 40px 16px;border-top:1px solid #1e293b}
+.fg-foot a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 14px;border-radius:10px;font-size:.9rem;line-height:1.35;color:#9aa7bd;text-decoration:none}
+.fg-foot a svg{flex-shrink:0;color:#ef5a5c}
+.fg-foot a:hover{color:#fff}
+.fg-foot a:focus-visible{outline:2px solid #ef5a5c;outline-offset:3px}
+
 @media(max-width:980px){
   .fg-header{grid-template-columns:88px minmax(0,1fr);gap:12px;padding:10px 16px}
   .fg-brand{flex-direction:column;gap:5px;text-align:center}
@@ -33,6 +43,7 @@
   .legacy-training-notice{margin:24px 16px 18px}
 }
 @media(max-width:640px){
+  .fg-portail{display:none}
   .fg-header{grid-template-columns:76px minmax(0,1fr);gap:10px;padding:10px 12px}
   .fg-header-nav{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}
   .fg-header .sess-chip{grid-row:1;grid-column:1;max-width:100%;width:100%;padding:6px 8px;gap:5px}
@@ -49,4 +60,5 @@
 }
 @media print{
   .fg-header,.legacy-training-notice{display:none!important}
+  .fg-foot{display:none!important}
 }

@@ -44,3 +44,30 @@ for (const language of ['fr', 'en']) {
     });
   }
 }
+
+// Le lien vers le portail des applications MRI : sur chaque page à coquille, dans le
+// sommaire et dans le pied de page ; sur la formation guidée, dans l'en-tête et le pied.
+const PORTAIL = 'https://frankyray21.github.io/Portail-Applications/';
+for (const language of ['fr', 'en']) {
+  const suffix = language === 'en' ? '.en' : '';
+  for (const page of ['index', 'partie-2', 'partie-3', 'partie-4', 'partie-5', 'formation', 'formation-2', 'formation-3', 'formation-4', 'formation-5']) {
+    test(`${page}${suffix}.html: the MRI portal is reachable from the sidebar and the footer`, () => {
+      const html = read(page + suffix + '.html');
+      const sidebar = html.match(/<aside class="toc">([\s\S]*?)<\/aside>/)?.[1];
+      const footer = html.match(/<footer class="foot">([\s\S]*?)<\/footer>/)?.[1];
+      assert.ok(sidebar && footer);
+      assert.ok(sidebar.includes(`class="toc-portail" href="${PORTAIL}"`));
+      assert.ok(footer.includes(`href="${PORTAIL}"`));
+      assert.ok(html.includes(language === 'en' ? 'all MRI apps, in French' : 'toutes les applications'));
+    });
+  }
+
+  test(`${language}: the guided course keeps the MRI portal in its header and its footer`, () => {
+    const html = read('formation-guidee' + suffix + '.html');
+    const header = html.match(/<header class="fg-header">([\s\S]*?)<\/header>/)?.[1];
+    const footer = html.match(/<footer class="fg-foot">([\s\S]*?)<\/footer>/)?.[1];
+    assert.ok(header && footer);
+    assert.ok(header.includes(`class="fg-portail" href="${PORTAIL}"`));
+    assert.ok(footer.includes(`href="${PORTAIL}"`));
+  });
+}
