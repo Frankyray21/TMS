@@ -49,6 +49,11 @@ body { line-height:1.55; }
 .essai-demo span { color:var(--sourd); font-size:.84rem; }
 .essai-demo .bouton { background:transparent; }
 .note-locale { margin-top:1rem; font-size:.78rem; color:var(--sourd); }
+.hors-ligne { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5rem 1rem; margin-top:.7rem; padding:.75rem .95rem; border:1px solid var(--bord-fort); border-radius:8px; background:var(--fond-2); font-size:.82rem; color:var(--texte-2); }
+.hors-ligne span { flex:1 1 320px; }
+.hors-ligne[data-etat=pret] { border-color:#2f6b45; color:var(--texte); }
+.hors-ligne[data-etat=absent] { border-color:#78652a; }
+.hors-ligne .bouton { background:transparent; }
 .plateau { gap:1.5rem; }
 .media-tete { display:flex; align-items:center; gap:1rem; justify-content:space-between; padding:.15rem 0 .6rem; }
 .media-tete > div { min-width:0; }

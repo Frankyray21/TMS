@@ -15,7 +15,7 @@ import { suggererLevage } from "./mesures.js";
 import { dessinerHauteurMains, osAuPoint } from "./rendu.js";
 import { dessinerSquelette, dessinerJauge, dessinerChronologie,
          imageALInstant, COULEURS, COULEURS_NIVEAU } from "./rendu.js";
-import { sourceActive, libererDetecteur } from "./pose.js";
+import { sourceActive, libererDetecteur, moteurEnCache, preparerHorsLigne } from "./pose.js";
 import { pictogramme } from "./picto.js";
 import { decrireQualite } from "./qualite.js";
 
@@ -35,6 +35,7 @@ const el = {
   corpsSegments: $("#corpsSegments"), calcul: $("#calcul"),
   stats: $("#stats"), barres: $("#barres"), conclusion: $("#conclusion"),
   badgeMoteur: $("#badgeMoteur"),
+  horsLigne: $("#horsLigne"), horsLigneEtat: $("#horsLigneEtat"), preparerHorsLigne: $("#preparerHorsLigne"),
   exportJson: $("#exportJson"), imprimer: $("#imprimer"), synthese: $("#synthese"),
   pleinEcran: $("#pleinEcran")
 };
@@ -807,12 +808,16 @@ async function chargerFichier(f) {
     effacerCalque();
     viderPanneau();
     messageSession(e.name === "AbortError" ? "Analyse arrêtée. Aucun résultat partiel n'est présenté. Vous pouvez importer un fichier à nouveau."
+      /* Le moteur explique lui-même son échec (hors ligne, source injoignable) :
+         « réessayer avec un autre fichier » n'y changerait rien. */
+      : e.name === "ErreurMoteur" ? e.message
       : `L'analyse n'a pas abouti : ${e.message}. Vous pouvez réessayer avec un autre fichier.`);
   } finally {
     etat.enCours = false;
     el.progres.hidden = true;
     el.annuler.disabled = false;
     majInterface();
+    majHorsLigne();   // une analyse en ligne vient peut-être de remplir le cache
   }
 }
 
@@ -1476,8 +1481,104 @@ el.imprimer.addEventListener("click", async () => {
 });
 window.addEventListener("resize", () => etat.analyse && dessinerInstant(etat.t));
 
+/* ---------- Mode hors ligne ----------
+   Sous terre, il n'y a pas de réseau. La coquille de l'outil est mise en cache
+   par le service worker du site ; le moteur de pose et son modèle, lourds, ne
+   le sont qu'à la demande — ici, ou à la première analyse. L'outil dit donc
+   s'il pourra analyser sans réseau, et propose de s'y préparer tant qu'il y en a. */
+const TAILLE_MOTEUR_MO = { full: 22, lite: 18 };   // bundle + WebAssembly + modèle, arrondis
+
+function serviceWorkerPossible() {
+  return "serviceWorker" in navigator && location.protocol !== "file:";
+}
+
+async function majHorsLigne() {
+  if (!el.horsLigne) return;
+  const precision = $("#precision").value;
+  const modele = precision === "lite" ? "rapide" : "standard";
+  let cache = { pret: false };
+  try { cache = await moteurEnCache(precision); } catch (_) {}
+  let texte, etatHorsLigne, bouton = false;
+  if (cache.pret) {
+    texte = `Prêt hors ligne : le moteur de pose et le modèle ${modele} sont conservés dans ce navigateur.`;
+    etatHorsLigne = "pret";
+  } else if (!serviceWorkerPossible()) {
+    texte = "Le mode hors ligne n'est pas disponible dans ce contexte : ouvrez l'outil depuis le site publié.";
+    etatHorsLigne = "indisponible";
+  } else if (navigator.onLine === false) {
+    texte = "Hors ligne, et le moteur de pose n'est pas encore conservé ici : l'analyse attendra le retour du réseau. La démonstration reste consultable.";
+    etatHorsLigne = "absent";
+  } else {
+    texte = `Pour analyser sans réseau, conservez d'abord le moteur de pose et le modèle ${modele} dans ce navigateur (≈ ${TAILLE_MOTEUR_MO[precision] || 22} Mo, une seule fois).`;
+    etatHorsLigne = "a-preparer";
+    bouton = true;
+  }
+  el.horsLigneEtat.textContent = texte;
+  el.horsLigne.dataset.etat = etatHorsLigne;
+  el.horsLigne.hidden = false;
+  el.preparerHorsLigne.hidden = !bouton;
+  el.badgeMoteur.textContent = cache.pret ? `Moteur ${cache.source === "local" ? "local" : "CDN"} · prêt hors ligne`
+    : sourceActive() ? `Moteur : ${sourceActive()}`
+    : "Détection chargée à l'importation";
+}
+
+/* Le service worker doit contrôler la page pour que le moteur passe par son
+   cache. Juste après son installation, il la réclame (clients.claim) : ça peut
+   prendre un instant, on l'attend plutôt que d'échouer. */
+async function attendreControle(delaiMs = 4000) {
+  if (!serviceWorkerPossible()) return false;
+  const sw = navigator.serviceWorker;
+  if (sw.controller) return true;
+  await Promise.race([sw.ready, new Promise(r => setTimeout(r, delaiMs))]);
+  if (sw.controller) return true;
+  await new Promise(r => { sw.addEventListener("controllerchange", () => r(), { once: true }); setTimeout(r, delaiMs); });
+  return !!sw.controller;
+}
+
+async function preparerModeHorsLigne() {
+  if (etat.enCours) return;
+  el.preparerHorsLigne.disabled = true;
+  el.horsLigne.dataset.etat = "encours";
+  messageSession();
+  try {
+    if (!(await attendreControle())) {
+      throw Object.assign(new Error("Le service worker du site n'est pas encore actif : rechargez la page, puis réessayez."), { name: "ErreurMoteur" });
+    }
+    const r = await preparerHorsLigne({
+      precision: $("#precision").value,
+      onEtape: info => {
+        el.horsLigneEtat.textContent = info.etape === "modele" && info.total && !info.cache
+          ? `Téléchargement du modèle de pose : ${mo(info.recu)} / ${mo(info.total)} Mo…`
+          : `${info.libelle}…`;
+      }
+    });
+    if (!r.pret) messageSession("Le moteur a été chargé, mais il n'a pas pu être conservé pour le mode hors ligne (stockage indisponible ou navigation privée). Rechargez la page et réessayez.");
+  } catch (e) {
+    console.error(e);
+    messageSession(e.name === "ErreurMoteur" ? e.message : `La préparation du mode hors ligne n'a pas abouti : ${e.message}`);
+  } finally {
+    el.preparerHorsLigne.disabled = false;
+    majHorsLigne();
+  }
+}
+
+el.preparerHorsLigne?.addEventListener("click", preparerModeHorsLigne);
+$("#precision").addEventListener("change", majHorsLigne);
+window.addEventListener("online", majHorsLigne);
+window.addEventListener("offline", majHorsLigne);
+
+/* L'outil s'enregistre lui-même auprès du service worker du site (../sw.js,
+   même portée que depuis la page d'accueil) : un poste qui n'a ouvert que
+   l'outil doit être couvert aussi. Servi seul (serveur lancé dans
+   cotation-video/), le fichier n'existe pas et l'enregistrement échoue sans bruit. */
+if (serviceWorkerPossible()) {
+  navigator.serviceWorker.register("../sw.js").catch(() => {});
+  navigator.serviceWorker.addEventListener("controllerchange", () => majHorsLigne());
+}
+
 initialiserParcours();
 majSorties();
 choisirMethode("reba");
 majQualite();
 majInterface();
+majHorsLigne();

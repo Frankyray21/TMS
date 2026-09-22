@@ -6,12 +6,15 @@
    détecteur ne toucherait que ce fichier.
    ============================================================================ */
 
-import { SOURCES, DEFAUTS, sourceDisponible } from "./config.js";
+import { SOURCES, DEFAUTS, sourceDisponible, fichiersMoteur } from "./config.js";
 
 let detecteur = null;
 let modeCourant = null;      // 'IMAGE' | 'VIDEO'
 let sourceUtilisee = null;
 
+/* Même magasin que le service worker du site (sw.js, CACHE_MOTEUR) : lui y
+   garde le bundle et le WebAssembly au passage, ce module y garde le modèle.
+   Un seul endroit à interroger pour savoir si le mode hors ligne est prêt. */
 const CACHE_MODELES = "cotation-video-modeles-v1";
 
 /**
@@ -87,32 +90,98 @@ export async function chargerDetecteur(o = {}) {
     return detecteur;
   }
   o.onEtape?.({ etape: "moteur", libelle: `Moteur de pose (${S.nom})`, part: null });
-  const { FilesetResolver, PoseLandmarker } = await import(/* @vite-ignore */ S.bundle);
-  const fileset = await FilesetResolver.forVisionTasks(S.wasm);
-
-  const octets = await chargerModele(S.modele[precision], info => {
-    o.onEtape?.({
-      etape: "modele",
-      libelle: info.cache ? "Modèle déjà en cache" : `Modèle ${precision}`,
-      part: info.total ? info.recu / info.total : null,
-      recu: info.recu, total: info.total, cache: info.cache
+  let FilesetResolver, PoseLandmarker, fileset, octets;
+  try {
+    ({ FilesetResolver, PoseLandmarker } = await import(/* @vite-ignore */ S.bundle));
+    fileset = await FilesetResolver.forVisionTasks(S.wasm);
+    octets = await chargerModele(S.modele[precision], info => {
+      o.onEtape?.({
+        etape: "modele",
+        libelle: info.cache ? "Modèle déjà en cache" : `Modèle ${precision}`,
+        part: info.total ? info.recu / info.total : null,
+        recu: info.recu, total: info.total, cache: info.cache
+      });
     });
-  });
+  } catch (e) {
+    throw expliquerErreurMoteur(e, S);
+  }
 
   o.onEtape?.({ etape: "modele", libelle: "Préparation du détecteur", part: 1 });
   detecteur?.close?.();
-  detecteur = await PoseLandmarker.createFromOptions(fileset, {
-    baseOptions: { modelAssetBuffer: octets, delegate: "GPU" },
-    runningMode: mode,
-    numPoses: 1,
-    minPoseDetectionConfidence: 0.5,
-    minPosePresenceConfidence: 0.5,
-    minTrackingConfidence: 0.5,
-    outputSegmentationMasks: false
-  });
+  detecteur = null; modeCourant = null; sourceUtilisee = null;
+  try {
+    /* C'est ici que le WebAssembly est réellement chargé : hors ligne sans
+       cache, c'est cette étape qui échoue, pas l'import du bundle. */
+    detecteur = await PoseLandmarker.createFromOptions(fileset, {
+      baseOptions: { modelAssetBuffer: octets, delegate: "GPU" },
+      runningMode: mode,
+      numPoses: 1,
+      minPoseDetectionConfidence: 0.5,
+      minPosePresenceConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+      outputSegmentationMasks: false
+    });
+  } catch (e) {
+    throw expliquerErreurMoteur(e, S);
+  }
   modeCourant = mode;
   sourceUtilisee = `${source}:${precision}`;
   return detecteur;
+}
+
+/**
+ * Traduit un échec de chargement du moteur en une phrase qui dit quoi faire.
+ * Hors ligne, l'erreur brute du navigateur (« Failed to fetch dynamically
+ * imported module ») ne dit ni pourquoi ni comment s'en sortir.
+ * @param {Error} e — l'erreur d'origine (gardée en `cause`)
+ * @param {{nom:string}} S — la source utilisée
+ * @param {boolean} [horsLigne] — forcé dans les tests ; sinon lu sur le navigateur
+ */
+export function expliquerErreurMoteur(e, S, horsLigne = typeof navigator !== "undefined" && navigator.onLine === false) {
+  const message = horsLigne
+    ? "Le moteur de pose n'est pas disponible hors ligne : il n'a pas encore été conservé dans ce navigateur. "
+      + "Au retour du réseau, ouvrez l'outil et utilisez « Préparer le mode hors ligne » (ou lancez une analyse), "
+      + "puis réessayez sans réseau."
+    : `Le moteur de pose (${S.nom}) n'a pas pu être chargé : ${e?.message || e}`;
+  const erreur = new Error(message, { cause: e });
+  erreur.name = "ErreurMoteur";
+  return erreur;
+}
+
+/**
+ * Le moteur et le modèle sont-ils déjà conservés dans ce navigateur ?
+ * On interroge tous les caches (celui du service worker et le nôtre portent
+ * le même nom), sans aucune requête réseau : la réponse doit rester juste
+ * hors ligne. La source locale (vendor/) est regardée d'abord, puis le CDN —
+ * un poste peut avoir chargé l'une ou l'autre selon le site qui l'a servi.
+ * @returns {Promise<{pret:boolean, source?:string}>}
+ */
+export async function moteurEnCache(precision = DEFAUTS.precision) {
+  if (!globalThis.caches) return { pret: false };
+  const present = async url => !!(await globalThis.caches.match(url).catch(() => null));
+  for (const source of ["local", "distant"]) {
+    const f = fichiersMoteur(source, precision);
+    if (!(await present(f.bundle)) || !(await present(f.modele))) continue;
+    for (const v of f.wasm) {
+      if ((await present(v.script)) && (await present(v.binaire))) return { pret: true, source };
+    }
+  }
+  return { pret: false };
+}
+
+/**
+ * Prépare le mode hors ligne : charge le moteur et le modèle une fois, en
+ * ligne, exactement comme une analyse le ferait — c'est ce qui garantit que
+ * les fichiers mis en cache sont ceux que ce navigateur utilisera (variante
+ * SIMD ou non, précision choisie). On demande au passage un stockage
+ * persistant : sans lui, le navigateur peut évacuer 20 Mo de cache au moment
+ * où l'on en a besoin, sous terre.
+ * @param {object} o — { precision, onEtape }
+ */
+export async function preparerHorsLigne(o = {}) {
+  try { await navigator.storage?.persist?.(); } catch (_) {}
+  await chargerDetecteur({ mode: "IMAGE", precision: o.precision, onEtape: o.onEtape });
+  return moteurEnCache(o.precision || DEFAUTS.precision);
 }
 
 export function sourceActive() {

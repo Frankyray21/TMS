@@ -59,6 +59,20 @@ const CORE = [
   "images/hero-systems.webp",
   "videos/preserver-son-corps-affiche.jpg"
 ];
+/* Analyse ergonomique vidéo et photo (cotation-video/) : sa coquille — page,
+   styles, modules — est mise en cache avec le reste du site, pour que l'outil
+   s'ouvre sous terre. Le moteur de pose et son modèle (vendor/, ~22 Mo) ne
+   sont PAS préchargés ici : ils entrent dans un magasin distinct à la première
+   analyse, ou via « Préparer le mode hors ligne » dans l'outil (voir plus bas). */
+const OUTIL = [
+  "cotation-video/", "cotation-video/index.html",
+  "cotation-video/css/app.css", "cotation-video/css/parcours.css",
+  "cotation-video/js/analyse.js", "cotation-video/js/angles.js", "cotation-video/js/app.js",
+  "cotation-video/js/config.js", "cotation-video/js/demo.js", "cotation-video/js/mesures.js",
+  "cotation-video/js/niosh.js", "cotation-video/js/picto.js", "cotation-video/js/pose.js",
+  "cotation-video/js/qualite.js", "cotation-video/js/reba.js", "cotation-video/js/rendu.js",
+  "cotation-video/js/rula.js"
+];
 /* pages + manifeste : doivent rester frais a chaque deploiement */
 const PAGES = ["./", "index.html", "index.en.html",
   "partie-2.html", "partie-3.html", "partie-4.html", "partie-5.html",
@@ -68,7 +82,7 @@ const PAGES = ["./", "index.html", "index.en.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "formation-guidee.html", "formation-guidee.en.html",
   "interactif.html", "manifest.webmanifest", "manifest.en.webmanifest",
-  "styles.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "formation-attestation.js", "formation-parcours.css", "session.js", "quiz-feedback.js", "gsap.min.js", "hero-anim.js", "anatomy-hero-model.js"];
+  "styles.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "formation-attestation.js", "formation-parcours.css", "session.js", "quiz-feedback.js", "gsap.min.js", "hero-anim.js", "anatomy-hero-model.js"].concat(OUTIL);
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
@@ -94,16 +108,64 @@ self.addEventListener("activate", (e) => {
   })());
 });
 
+/* Moteur de pose de l'analyse ergonomique : des binaires lourds et immuables
+   (URL versionnées) — bundle MediaPipe, WebAssembly, modèles .task. Servis
+   depuis cotation-video/vendor/ en production (le déploiement les y dépose),
+   depuis le CDN public à défaut. Cache d'abord, dans un magasin distinct qui
+   survit aux versions du site : pas de retéléchargement à chaque déploiement,
+   et l'analyse reste possible sans réseau dès que le moteur a été chargé une
+   fois. cotation-video/js/pose.js lit le même magasin (même nom) pour y garder
+   le modèle et pour dire si le mode hors ligne est prêt. Son nom ne commence
+   pas par « tms- » : la purge de l'activation ne doit pas le vider. */
+const CACHE_MOTEUR = "cotation-video-modeles-v1";
+/* Mises en cache en cours, par URL : l'outil vérifie la présence du bundle
+   (GET) puis l'importe aussitôt ; sans ce registre, la seconde requête partirait
+   sur le réseau avant que la première soit rangée, et le fichier serait
+   téléchargé deux fois. Simple optimisation : le worker peut être arrêté
+   entre deux événements, le registre repart alors de zéro. */
+const MOTEUR_EN_COURS = new Map();
+function estMoteurDePose(url, sameOrigin) {
+  if (sameOrigin) return url.pathname.indexOf("/cotation-video/vendor/") !== -1;
+  return (url.hostname === "cdn.jsdelivr.net" && url.pathname.indexOf("/npm/@mediapipe/tasks-vision") === 0)
+      || (url.hostname === "storage.googleapis.com" && url.pathname.indexOf("/mediapipe-models/") === 0);
+}
+
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  const sameOrigin = url.origin === self.location.origin;
 
-  /* L'outil de cotation vidéo est une application distincte, servie sous
-     /cotation-video/. On la laisse entièrement au réseau : sans ça, ses modules
-     et surtout son modèle de pose (plusieurs mégaoctets) atterriraient dans le
-     cache du site, qu'on vient justement d'assainir. */
-  if (url.origin === self.location.origin && url.pathname.includes("/cotation-video/")) return;
+  if (estMoteurDePose(url, sameOrigin)) {
+    e.respondWith((async () => {
+      const cache = await caches.open(CACHE_MOTEUR);
+      const cached = await cache.match(req);
+      if (cached) return cached;
+      const enCours = MOTEUR_EN_COURS.get(url.href);
+      if (enCours) {
+        await enCours;
+        const range = await cache.match(req);
+        if (range) return range;
+      }
+      try {
+        const net = await fetch(req);
+        /* 200 seulement : une réponse partielle (206) ou une page d'erreur gardée
+           ici rendrait le moteur inutilisable jusqu'à la purge du magasin. Les
+           réponses opaques (script du CDN chargé sans CORS) n'ont pas de statut
+           lisible ; on les garde, sinon le repli CDN ne se rejoue jamais hors ligne.
+           La réponse part tout de suite (la page affiche l'avancement du modèle
+           en lisant le flux) ; la copie se range en parallèle. */
+        if (net && (net.status === 200 || net.type === "opaque")) {
+          const rangement = cache.put(req, net.clone()).catch(() => {}).finally(() => MOTEUR_EN_COURS.delete(url.href));
+          MOTEUR_EN_COURS.set(url.href, rangement);
+        }
+        return net;
+      } catch (_) {
+        return Response.error();
+      }
+    })());
+    return;
+  }
 
   /* Pages : réseau d'abord (contenu frais), cache en secours */
   if (req.mode === "navigate") {
@@ -124,7 +186,6 @@ self.addEventListener("fetch", (e) => {
   }
 
   /* Ressources du site et polices Google */
-  const sameOrigin = url.origin === self.location.origin;
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
   if (sameOrigin || isFont) {
     /* JS/CSS du site : réseau d'abord -> les mises à jour s'appliquent au prochain chargement

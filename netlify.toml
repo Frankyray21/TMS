@@ -13,6 +13,11 @@
     Cache-Control = "public, max-age=2592000, immutable"
 
 [[headers]]
+  for = "/cotation-video/vendor/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, immutable"
+
+[[headers]]
   for = "/videos/*"
   [headers.values]
     Cache-Control = "public, max-age=2592000"

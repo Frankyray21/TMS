@@ -46,10 +46,30 @@ export const DEFAUTS = {
   lissage: 3                // médiane glissante sur N images (0 = désactivé)
 };
 
-/** Le dossier vendor/ est-il présent et complet ? */
+/** Le dossier vendor/ est-il présent et complet ?
+    En GET, pas en HEAD : hors ligne, seul un GET peut être servi depuis le
+    cache du service worker (une requête HEAD n'y correspond jamais), et rien
+    n'est perdu — le bundle est importé juste après depuis la même URL, donc
+    depuis le même cache. */
 export async function sourceDisponible() {
   try {
-    const r = await fetch(SOURCES.local.bundle, { method: "HEAD" });
+    const r = await fetch(SOURCES.local.bundle);
     return r.ok ? "local" : "distant";
   } catch { return "distant"; }
+}
+
+/**
+ * Les fichiers qu'une analyse charge, pour une source et une précision.
+ * Les deux variantes WebAssembly sont listées : le navigateur n'en prend
+ * qu'une (SIMD si elle est prise en charge), on ne sait pas laquelle d'avance.
+ * Sert à dire si le mode hors ligne est prêt (pose.js).
+ */
+export function fichiersMoteur(source, precision = DEFAUTS.precision) {
+  const S = SOURCES[source];
+  return {
+    bundle: S.bundle,
+    wasm: ["vision_wasm_internal", "vision_wasm_nosimd_internal"]
+      .map(nom => ({ script: `${S.wasm}/${nom}.js`, binaire: `${S.wasm}/${nom}.wasm` })),
+    modele: S.modele[precision]
+  };
 }

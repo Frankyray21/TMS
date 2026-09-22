@@ -16,6 +16,11 @@ seuil de réussite, transmission explicite, absence de signature, incertitude
 réseau, reçus, annulation, identité, stockage indisponible et poste partagé.
 Les tests existants de calcul et de géométrie restent inchangés.
 
+`cotation-video/tests/hors-ligne.test.mjs` rejoue le service worker du site
+sans réseau : coquille de l'analyse ergonomique préchargée (et chaque fichier
+listé présent), moteur de pose gardé dans un magasin qui survit aux versions,
+détection locale en GET, moteur embarqué au déploiement.
+
 ## Contrôles navigateur avant publication
 
 - FR et EN à 360, 390, 768 et 1440 px, avec un nom long.
@@ -28,6 +33,12 @@ Les tests existants de calcul et de géométrie restent inchangés.
   changement de travailleur pendant un envoi.
 - Tous les POST sont interceptés par le banc d’essai ; ne jamais tester en
   soumettant des données réelles sur le site de production.
+- Analyse ergonomique hors ligne : `NODE_PATH="$(npm root -g)" node
+  cotation-video/tests/verifier-hors-ligne.mjs` (Playwright, Chromium et
+  `cotation-video/vendor/` requis — `bash cotation-video/outils/telecharger-modeles.sh`).
+  Le script coupe le serveur local et vérifie que l’outil se rouvre, analyse
+  une photo avec le moteur en cache, et explique l’attente du réseau à un poste
+  non préparé. Vingt vérifications.
 
 ## Limites explicites
 

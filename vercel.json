@@ -2,6 +2,7 @@
   "headers": [
     { "source": "/models/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, immutable" }] },
     { "source": "/vendor/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, immutable" }] },
+    { "source": "/cotation-video/vendor/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000, immutable" }] },
     { "source": "/videos/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }] },
     { "source": "/images/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }] },
     { "source": "/(.*)\\.html", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },

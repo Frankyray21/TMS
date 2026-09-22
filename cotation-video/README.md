@@ -18,9 +18,11 @@ Les deux sont calculées à chaque image : basculer de l'une à l'autre ne relan
 rien. RULA plafonne sa cote de force à 10 kg — un avis le signale quand la
 charge déclarée dépasse ce seuil.
 
-**Projet distinct du site de formation TMS.** Il vit dans ce dépôt pour ne pas
-être perdu, mais il est exclu du déploiement (voir `.github/workflows/deploy-pages.yml`)
-et n'est lié depuis aucune page du site.
+**Un module du site de formation TMS.** Il est publié avec le site
+(`.github/workflows/deploy-pages.yml`), lié depuis son pied de page
+(« Évaluation ergonomique vidéo · bêta ») et couvert par le même service
+worker : il s'ouvre et analyse sans réseau, comme le reste du site — voir
+« Mode hors ligne » plus bas.
 
 ---
 
@@ -116,15 +118,39 @@ sans détection, et temps restant estimé.
 
 ### Mode hors ligne
 
-Par défaut le moteur de pose est chargé depuis un CDN public. Pour un site sans
-réseau — ce qui est le cas courant sous terre :
+Sous terre, il n'y a pas de réseau. Trois couches font que l'outil y fonctionne :
+
+1. **La coquille de l'outil** — page, styles, modules — est mise en cache par
+   le service worker du site (`../sw.js`) dès la première visite de n'importe
+   quelle page du site. L'outil s'enregistre aussi lui-même auprès de ce
+   service worker, pour le poste qui n'a ouvert que lui.
+2. **Le moteur de pose et les modèles sont embarqués dans le site publié.** Le
+   déploiement exécute `outils/telecharger-modeles.sh` et dépose ~37 Mo dans
+   `vendor/` : moteur MediaPipe, ses deux variantes WebAssembly (SIMD ou non,
+   le navigateur choisit), modèles standard et rapide. L'outil détecte le
+   dossier au chargement et ne sort plus sur aucun CDN. Ces fichiers ne sont
+   pas préchargés avec le site — trop lourds pour qui ne fait que suivre la
+   formation — mais le service worker les garde à la première demande, dans un
+   magasin à part (`cotation-video-modeles-v1`) qui survit aux versions du
+   site : rien n'est retéléchargé à chaque publication.
+3. **« Préparer le mode hors ligne »**, sur l'accueil de l'outil, charge le
+   moteur et le modèle choisi une fois, en ligne (≈ 22 Mo en standard, 18 en
+   rapide), et demande au navigateur un stockage persistant. La ligne d'état
+   dit ensuite « Prêt hors ligne ». Une analyse faite en ligne prépare le poste
+   tout autant. Sans préparation, l'outil s'ouvre quand même hors ligne, la
+   démonstration fonctionne, et l'importation explique que l'analyse attend le
+   retour du réseau — plutôt qu'une erreur brute du navigateur.
+
+En développement, `vendor/` s'obtient de la même façon :
 
 ```bash
-bash outils/telecharger-modeles.sh        # ~18 Mo dans vendor/
+bash outils/telecharger-modeles.sh        # les deux modèles, ~37 Mo dans vendor/
+bash outils/telecharger-modeles.sh lite   # le modèle rapide seulement
 ```
 
-L'outil détecte `vendor/` au chargement et bascule tout seul. Plus aucune
-requête ne sort. Le dossier n'est pas versionné : chaque poste le régénère.
+Le dossier n'est pas versionné. Sans lui, l'outil retombe sur le CDN public
+(`js/config.js`) ; le service worker garde alors ces fichiers-là de la même
+manière, mais un poste qui ne les a jamais chargés reste tributaire du réseau.
 
 ---
 
@@ -217,11 +243,38 @@ inclinaison) sont réévalués ensuite.
 ## Les tests
 
 ```bash
-node tests/reba.test.mjs      # 69 vérifications
-node tests/rula.test.mjs      # 68 vérifications
-node tests/niosh.test.mjs     # 61 vérifications
-node tests/angles.test.mjs    # 39 vérifications
+node tests/reba.test.mjs        # 69 vérifications
+node tests/rula.test.mjs        # 68 vérifications
+node tests/niosh.test.mjs       # 61 vérifications
+node tests/angles.test.mjs      # 39 vérifications
+node tests/hors-ligne.test.mjs  # 14 vérifications
 ```
+
+`hors-ligne.test.mjs` exécute le service worker du site dans un bac à sable
+Node, sans navigateur ni réseau, et lui soumet ce qu'un poste sous terre lui
+demanderait : l'installation (chaque fichier de la coquille doit exister —
+un seul manquant ferait échouer tout le cache du site), l'ouverture de l'outil
+et de ses modules hors ligne, la mise en cache du moteur dans son magasin à
+part, la purge des versions qui l'épargne. Il vérifie aussi que le déploiement
+embarque bien `vendor/` et que la détection du dossier local passe par GET, le
+seul verbe qu'un cache sait servir.
+
+Le parcours complet dans un vrai navigateur ne tourne pas dans la CI (il lui
+faut Playwright, Chromium et `vendor/`), mais avant une publication :
+
+```bash
+NODE_PATH="$(npm root -g)" node cotation-video/tests/verifier-hors-ligne.mjs   # depuis la racine du dépôt
+```
+
+Il sert le dépôt en local, laisse le service worker s'installer, prépare le
+mode hors ligne et analyse une photo (`tests/posture-essai.jpg`, un travailleur
+de profil portant une caisse, que le modèle détecte et cote) ; puis il
+**arrête le serveur**, passe le navigateur hors ligne, et vérifie que l'outil
+se rouvre, que la même photo donne le même score avec le moteur local, et
+qu'un second poste qui n'a jamais ouvert l'outil y accède quand même, voit la
+démonstration, et reçoit l'explication attendue à l'importation. Vingt
+vérifications, code de retour 1 si l'une échoue ; `--photo` pour essayer une
+autre image.
 
 `niosh.test.mjs` vérifie chaque multiplicateur **aux bornes de son domaine**, là
 où la méthode bascule à zéro, plus un levage complet calculé à la main.
@@ -329,9 +382,11 @@ conserver si l'interface évolue.
 ## Confidentialité
 
 Rien n'est téléversé. La vidéo est lue par le navigateur depuis le disque, le
-modèle tourne en local, aucune image ne sort du poste. En mode hors ligne il
-n'y a même plus de requête réseau du tout. C'est ce qui rend l'outil utilisable
-sur des enregistrements de travailleurs identifiables.
+modèle tourne en local, aucune image ne sort du poste. Sur le site publié, le
+moteur est servi depuis la même origine que la page : hormis les polices,
+aucune requête ne part vers un tiers — et hors ligne, il n'y a plus de requête
+réseau du tout. C'est ce qui rend l'outil utilisable sur des enregistrements
+de travailleurs identifiables.
 
 Filmer un travailleur reste un traitement de renseignements personnels :
 consentement, finalité et durée de conservation se règlent en amont de l'outil.

@@ -32,6 +32,12 @@ jobs:
       - name: Vérifier les parcours et les calculs avant publication
         run: node --test tests/*.test.cjs tests/*.test.mjs cotation-video/tests/*.test.mjs
 
+      - name: Embarquer le moteur de pose (analyse ergonomique utilisable hors ligne)
+        # vendor/ n'est pas versionné : le moteur MediaPipe et les deux modèles
+        # sont déposés ici, puis servis avec le site. Sans eux, l'outil retombe sur
+        # un CDN public, hors de portée d'un poste sans réseau.
+        run: bash cotation-video/outils/telecharger-modeles.sh tous
+
       - name: Versionner le cache automatiquement (hash du commit)
         run: |
           VER="tms-${GITHUB_SHA::7}"

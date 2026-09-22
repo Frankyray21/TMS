@@ -1,22 +1,27 @@
 #!/usr/bin/env bash
-# Prépare le mode hors ligne : copie le moteur MediaPipe et le modèle de pose
+# Prépare le mode hors ligne : copie le moteur MediaPipe et les modèles de pose
 # dans vendor/, pour que l'outil fonctionne sans aucune requête sortante.
 #
-#   bash outils/telecharger-modeles.sh          # modèle standard
-#   bash outils/telecharger-modeles.sh lite     # modèle rapide, plus léger
+#   bash outils/telecharger-modeles.sh          # les deux modèles (standard et rapide)
+#   bash outils/telecharger-modeles.sh full     # modèle standard seulement
+#   bash outils/telecharger-modeles.sh lite     # modèle rapide seulement
 #
-# Environ 18 Mo au total. Le dossier vendor/ est ignoré par git : chaque poste
-# le régénère, on ne le versionne pas.
+# Environ 37 Mo au total : 23 Mo de moteur (bundle et deux variantes
+# WebAssembly, SIMD ou non — le navigateur choisit), 9 Mo pour le modèle
+# standard, 6 Mo pour le rapide. Le dossier vendor/ est ignoré par git : le
+# déploiement (.github/workflows/deploy-pages.yml) le régénère à chaque
+# publication, et chaque poste de développement fait de même.
 
 set -euo pipefail
-PRECISION="${1:-full}"
+PRECISION="${1:-tous}"
 RACINE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VENDOR="$RACINE/vendor"
 VERSION="1.0.1"
 
 case "$PRECISION" in
-  full|lite) ;;
-  *) echo "Précision inconnue : $PRECISION (attendu : full ou lite)" >&2; exit 1 ;;
+  tous) MODELES="full lite" ;;
+  full|lite) MODELES="$PRECISION" ;;
+  *) echo "Précision inconnue : $PRECISION (attendu : tous, full ou lite)" >&2; exit 1 ;;
 esac
 
 echo "→ Installation du moteur MediaPipe $VERSION"
@@ -33,11 +38,17 @@ cp "$SRC/vision_bundle.mjs" "$VENDOR/"
 cp "$SRC"/wasm/vision_wasm_internal.{js,wasm} "$VENDOR/wasm/"
 cp "$SRC"/wasm/vision_wasm_nosimd_internal.{js,wasm} "$VENDOR/wasm/"
 
-echo "→ Téléchargement du modèle de pose ($PRECISION)"
-URL="https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_${PRECISION}/float16/1/pose_landmarker_${PRECISION}.task"
-curl -fSL --progress-bar "$URL" -o "$VENDOR/pose_landmarker_${PRECISION}.task"
+for MODELE in $MODELES; do
+  echo "→ Téléchargement du modèle de pose ($MODELE)"
+  URL="https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_${MODELE}/float16/1/pose_landmarker_${MODELE}.task"
+  curl -fSL --progress-bar "$URL" -o "$VENDOR/pose_landmarker_${MODELE}.task"
+done
 
 echo
 echo "Terminé. vendor/ contient $(du -sh "$VENDOR" | cut -f1)."
-echo "L'outil détecte le dossier au chargement et bascule en mode hors ligne."
-[ "$PRECISION" = "full" ] || echo "Pensez à choisir « Rapide » dans les réglages d'analyse."
+echo "L'outil détecte le dossier au chargement et bascule en mode local : plus aucune requête ne sort."
+if [ "$PRECISION" = "lite" ]; then
+  echo "Seul le modèle rapide est installé : choisissez « Rapide » dans les réglages d'analyse."
+elif [ "$PRECISION" = "full" ]; then
+  echo "Seul le modèle standard est installé : le réglage « Rapide » restera indisponible hors ligne."
+fi
