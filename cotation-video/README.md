@@ -82,18 +82,23 @@ chaque relevé coûte un déplacement plus une inférence :
     images = durée de la vidéo × échantillonnage (6/s par défaut)
     temps  = images × coût par image
 
-Le coût par image dépend entièrement de la machine. Mesuré sur un rendu
-**logiciel, sans GPU** — le pire cas : **720 ms par image**. Sur une machine
-avec accélération graphique, comptez plutôt 60 à 150 ms.
+Le coût par image dépend de la machine, et du délégué que l'outil choisit
+(voir « Mode hors ligne ») : le GPU quand il est matériel et complet, le
+processeur sinon. Mesuré sur une machine **sans GPU** (quatre cœurs, rendu
+graphique logiciel), où l'outil calcule sur le processeur : **114 ms par
+image**, déplacement compris. Le même poste passait auparavant par un GPU
+émulé : 605 ms par image. Sur une machine avec accélération graphique,
+comptez plutôt 60 à 150 ms.
 
 | Vidéo | Images à 6/s | Machine ordinaire (estimation) | Sans GPU (mesuré) |
 |---|---|---|---|
-| 15 s | 90 | ~10 s | ~1 min |
-| 30 s | 180 | ~20 s | ~2 min |
-| 60 s | 360 | ~40 s | ~4 min |
+| 15 s | 90 | ~10 s | ~10 s |
+| 30 s | 180 | ~20 s | ~20 s |
+| 60 s | 360 | ~40 s | ~40 s |
 
-Ajouter, à la première utilisation seulement, le téléchargement du modèle (9 Mo)
-et une à trois secondes d'initialisation.
+Ajouter, à la première utilisation seulement, le téléchargement du moteur et du
+modèle (22 Mo en standard, 26 Mo avec les deux modèles) et une à trois
+secondes d'initialisation.
 
 **Le levier, c'est l'échantillonnage** (réglages d'analyse, 2 à 15 images/s).
 Le diviser par deux divise le temps par deux. Six images par seconde conviennent
@@ -118,39 +123,78 @@ sans détection, et temps restant estimé.
 
 ### Mode hors ligne
 
-Sous terre, il n'y a pas de réseau. Trois couches font que l'outil y fonctionne :
+Sous terre, il n'y a pas de réseau. Voici ce qui fait que l'outil y fonctionne,
+et ce que chaque pièce protège.
 
-1. **La coquille de l'outil** — page, styles, modules — est mise en cache par
-   le service worker du site (`../sw.js`) dès la première visite de n'importe
-   quelle page du site. L'outil s'enregistre aussi lui-même auprès de ce
-   service worker, pour le poste qui n'a ouvert que lui.
-2. **Le moteur de pose et les modèles sont embarqués dans le site publié.** Le
-   déploiement exécute `outils/telecharger-modeles.sh` et dépose ~37 Mo dans
-   `vendor/` : moteur MediaPipe, ses deux variantes WebAssembly (SIMD ou non,
-   le navigateur choisit), modèles standard et rapide. L'outil détecte le
-   dossier au chargement et ne sort plus sur aucun CDN. Ces fichiers ne sont
-   pas préchargés avec le site — trop lourds pour qui ne fait que suivre la
-   formation — mais le service worker les garde à la première demande, dans un
-   magasin à part (`cotation-video-modeles-v1`) qui survit aux versions du
-   site : rien n'est retéléchargé à chaque publication.
+1. **La coquille de l'outil** — page, styles, polices, modules — est mise en
+   cache par le service worker du site (`../sw.js`) dès la première visite de
+   n'importe quelle page du site. L'outil s'enregistre aussi lui-même auprès de
+   ce service worker, pour le poste qui n'a ouvert que lui. Les polices
+   (Barlow, Barlow Condensed, licence OFL) sont servies par l'outil
+   (`polices/`, `css/polices.css`) : plus de Google Fonts, donc le même rendu
+   hors ligne sur un poste qui n'a jamais ouvert l'outil.
+2. **Le moteur de pose et ses modèles sont embarqués dans le site publié.** Le
+   déploiement exécute `outils/telecharger-modeles.sh`, qui dépose ~37 Mo dans
+   `vendor/<version>/` : moteur MediaPipe, ses deux variantes WebAssembly (SIMD
+   ou non, le navigateur choisit), modèles standard et rapide. L'outil détecte
+   le dossier et ne sort plus sur aucun CDN. Ces fichiers ne sont pas
+   préchargés avec le site — trop lourds pour qui ne fait que suivre la
+   formation — mais le service worker les garde à la première demande, dans
+   leur propre magasin, qui survit aux versions du site.
 3. **« Préparer le mode hors ligne »**, sur l'accueil de l'outil, charge le
-   moteur et le modèle choisi une fois, en ligne (≈ 22 Mo en standard, 18 en
-   rapide), et demande au navigateur un stockage persistant. La ligne d'état
-   dit ensuite « Prêt hors ligne ». Une analyse faite en ligne prépare le poste
-   tout autant. Sans préparation, l'outil s'ouvre quand même hors ligne, la
+   moteur et garde les deux modèles, une fois, en ligne (≈ 26 Mo), et demande
+   au navigateur un stockage persistant. La ligne d'état dit ensuite « Prêt
+   hors ligne », et conseille d'installer le site comme application si le
+   navigateur n'a pas accordé ce stockage (Safari efface les données d'un site
+   non visité depuis sept jours). Une analyse faite en ligne prépare aussi le
+   poste, avec le seul modèle utilisé : l'outil le dit, et propose de compléter.
+4. **Un modèle manquant n'arrête rien.** Hors ligne, si le modèle choisi dans
+   les réglages n'est pas conservé mais l'autre l'est, l'analyse se fait avec
+   l'autre, et un message le signale. Même chose sur un réseau local sans
+   Internet, que le navigateur prend pour une connexion.
+5. **Une mise à jour du moteur ne « dé-prépare » pas un poste.** La version du
+   moteur est définie une seule fois, dans `js/config.js` (`MEDIAPIPE`,
+   `MODELE_POSE`) ; elle entre dans toutes les adresses (`vendor/<version>/`)
+   et dans le nom du magasin (`cotation-video-moteur-<version>`). `sw.js` la
+   recopie, un test vérifie qu'elles concordent. Quand elle change, le service
+   worker, à sa prochaine installation, télécharge l'équivalent de ce que le
+   poste avait gardé, puis purge l'ancien magasin. Si le réseau lâche pendant
+   ce renouvellement, l'installation échoue et l'ancien service worker reste en
+   place avec l'ancien moteur, cohérent ; le navigateur retente à la visite
+   suivante sans reprendre les fichiers déjà rangés.
+6. **Le délégué est choisi, pas imposé.** MediaPipe calcule sur le GPU ou sur
+   le processeur. L'outil prend le processeur quand le rendu graphique est
+   logiciel (poste sans carte graphique, machine virtuelle : 5 fois plus
+   rapide, voir plus haut) ou quand le GPU n'a pas de tampons de couleur
+   flottants — MediaPipe n'y lèverait aucune erreur, il ne détecterait
+   simplement plus personne. Si le GPU échoue malgré tout, à la création ou au
+   premier passage (le détecteur est amorcé sur une image vide), l'outil
+   bascule sur le processeur. WebGL 2 reste indispensable : MediaPipe y prépare
+   l'image même quand il calcule sur le processeur ; sans lui, l'outil le dit.
+   Le pied de page et l'export JSON nomment le moteur, le modèle et le délégué
+   réellement utilisés.
+7. **Sans préparation**, l'outil s'ouvre quand même hors ligne, la
    démonstration fonctionne, et l'importation explique que l'analyse attend le
    retour du réseau — plutôt qu'une erreur brute du navigateur.
 
 En développement, `vendor/` s'obtient de la même façon :
 
 ```bash
-bash outils/telecharger-modeles.sh        # les deux modèles, ~37 Mo dans vendor/
+bash outils/telecharger-modeles.sh        # les deux modèles, ~37 Mo dans vendor/<version>/
 bash outils/telecharger-modeles.sh lite   # le modèle rapide seulement
 ```
 
 Le dossier n'est pas versionné. Sans lui, l'outil retombe sur le CDN public
-(`js/config.js`) ; le service worker garde alors ces fichiers-là de la même
-manière, mais un poste qui ne les a jamais chargés reste tributaire du réseau.
+(`js/config.js`) — seulement si le serveur répond qu'il n'existe pas : une
+coupure réseau ne renvoie jamais vers un tiers. Le service worker garde alors
+ces fichiers-là de la même manière, mais un poste qui ne les a jamais chargés
+reste tributaire du réseau.
+
+**Changer de version du moteur :** modifier `MEDIAPIPE` (ou `MODELE_POSE`)
+dans `js/config.js`, recopier la nouvelle `VERSION_MOTEUR` dans `../sw.js`
+(le test `hors-ligne.test.mjs` donne la valeur attendue s'il y a un écart), et
+vérifier que l'adresse de télémétrie bloquée (`pose.js`) est toujours celle du
+nouveau bundle — le même test la contrôle quand `vendor/` est présent.
 
 ---
 
@@ -247,34 +291,47 @@ node tests/reba.test.mjs        # 69 vérifications
 node tests/rula.test.mjs        # 68 vérifications
 node tests/niosh.test.mjs       # 61 vérifications
 node tests/angles.test.mjs      # 39 vérifications
-node tests/hors-ligne.test.mjs  # 14 vérifications
+node tests/hors-ligne.test.mjs  # 24 vérifications
 ```
 
 `hors-ligne.test.mjs` exécute le service worker du site dans un bac à sable
 Node, sans navigateur ni réseau, et lui soumet ce qu'un poste sous terre lui
 demanderait : l'installation (chaque fichier de la coquille doit exister —
-un seul manquant ferait échouer tout le cache du site), l'ouverture de l'outil
-et de ses modules hors ligne, la mise en cache du moteur dans son magasin à
-part, la purge des versions qui l'épargne. Il vérifie aussi que le déploiement
-embarque bien `vendor/` et que la détection du dossier local passe par GET, le
-seul verbe qu'un cache sait servir.
+un seul manquant ferait échouer tout le cache du site), l'ouverture de l'outil,
+de ses modules et de ses polices hors ligne, la mise en cache du moteur dans
+son magasin versionné. Puis ce qu'une mise à jour du moteur lui fait subir :
+reconduire un poste préparé, ignorer un fichier disparu, échouer proprement
+sur une coupure et ne reprendre ensuite que le manquant, purger l'ancien
+magasin sans toucher aux caches des autres sites. Il vérifie aussi qu'une seule
+version du moteur circule (config.js, sw.js, script, adresses), que l'outil ne
+charge rien d'un tiers, que la télémétrie de MediaPipe est arrêtée, le choix du
+délégué sur des contextes WebGL simulés, et le repli sur le processeur avec
+une doublure de MediaPipe qui échoue à la création ou à l'amorçage.
 
-Le parcours complet dans un vrai navigateur ne tourne pas dans la CI (il lui
-faut Playwright, Chromium et `vendor/`), mais avant une publication :
+Le parcours complet dans un vrai navigateur tourne dans la CI de chaque pull
+request (job « Analyse ergonomique hors ligne ») ; en local :
 
 ```bash
 NODE_PATH="$(npm root -g)" node cotation-video/tests/verifier-hors-ligne.mjs   # depuis la racine du dépôt
 ```
 
-Il sert le dépôt en local, laisse le service worker s'installer, prépare le
-mode hors ligne et analyse une photo (`tests/posture-essai.jpg`, un travailleur
-de profil portant une caisse, que le modèle détecte et cote) ; puis il
-**arrête le serveur**, passe le navigateur hors ligne, et vérifie que l'outil
-se rouvre, que la même photo donne le même score avec le moteur local, et
-qu'un second poste qui n'a jamais ouvert l'outil y accède quand même, voit la
-démonstration, et reçoit l'explication attendue à l'importation. Vingt
-vérifications, code de retour 1 si l'une échoue ; `--photo` pour essayer une
-autre image.
+Il sert le dépôt en local, puis **arrête le serveur** et passe le navigateur
+hors ligne. Cinq postes, chacun dans son propre profil :
+
+| Poste | Situation | Ce qui est vérifié |
+|---|---|---|
+| A | Préparé, puis photo et vidéo en ligne | Hors ligne : l'outil se rouvre, photo et vidéo donnent les mêmes scores, image par image ; le modèle rapide marche ; tout vient du service worker |
+| B | N'a vu que l'accueil du site | L'outil s'ouvre avec ses polices, la démonstration marche, l'importation explique l'attente |
+| C | A seulement analysé une photo en ligne | Le réglage « rapide » bascule sur le modèle standard conservé, et le dit |
+| D | Préparé, puis le moteur change de version | Le service worker reconduit le moteur, purge l'ancien ; l'analyse hors ligne marche avec le nouveau |
+| E | GPU matériel simulé, avec et sans tampons flottants | Calcul sur le GPU dans un cas, sur le processeur dans l'autre, personne détectée dans les deux |
+
+Trente-huit vérifications, dont une sur l'absence de toute requête vers un
+tiers ; code de retour 1 si l'une échoue. Les fichiers d'essai,
+`tests/posture-essai.jpg` et `tests/levage-essai.webm` (3 s : la charge contre
+le corps, puis bras tendus, puis de nouveau contre le corps), sont tirés d'une
+image du site par `tests/fabriquer-essais.mjs` : aucun enregistrement réel.
+`--photo` et `--video` pour en essayer d'autres.
 
 `niosh.test.mjs` vérifie chaque multiplicateur **aux bornes de son domaine**, là
 où la méthode bascule à zéro, plus un levage complet calculé à la main.
@@ -383,10 +440,15 @@ conserver si l'interface évolue.
 
 Rien n'est téléversé. La vidéo est lue par le navigateur depuis le disque, le
 modèle tourne en local, aucune image ne sort du poste. Sur le site publié, le
-moteur est servi depuis la même origine que la page : hormis les polices,
-aucune requête ne part vers un tiers — et hors ligne, il n'y a plus de requête
-réseau du tout. C'est ce qui rend l'outil utilisable sur des enregistrements
-de travailleurs identifiables.
+moteur et les polices sont servis depuis la même origine que la page : aucune
+requête ne part vers un tiers — et hors ligne, il n'y a plus de requête réseau
+du tout. C'est ce qui rend l'outil utilisable sur des enregistrements de
+travailleurs identifiables.
+
+MediaPipe envoie de lui-même des statistiques d'usage à Google
+(`odml.pa.googleapis.com`), sans option pour s'en passer ; ce ne sont pas des
+images, mais c'est une requête vers un tiers. `pose.js` l'arrête avant qu'elle
+parte, et le parcours navigateur vérifie qu'aucune ne sort.
 
 Filmer un travailleur reste un traitement de renseignements personnels :
 consentement, finalité et durée de conservation se règlent en amont de l'outil.

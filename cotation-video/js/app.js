@@ -15,7 +15,7 @@ import { suggererLevage } from "./mesures.js";
 import { dessinerHauteurMains, osAuPoint } from "./rendu.js";
 import { dessinerSquelette, dessinerJauge, dessinerChronologie,
          imageALInstant, COULEURS, COULEURS_NIVEAU } from "./rendu.js";
-import { sourceActive, libererDetecteur, moteurEnCache, preparerHorsLigne } from "./pose.js";
+import { libererDetecteur, etatMoteur, infosMoteur, preparerHorsLigne } from "./pose.js";
 import { pictogramme } from "./picto.js";
 import { decrireQualite } from "./qualite.js";
 
@@ -101,7 +101,8 @@ const etat = {
   enCours: false,
   rapportEnCours: false,
   urlMedia: null,
-  contexteVerifie: false
+  contexteVerifie: false,
+  moteur: null             // le moteur réellement utilisé pour l'analyse affichée (pose.js, infosMoteur)
 };
 
 /* ---------- Parcours et présentation ---------- */
@@ -780,7 +781,9 @@ async function chargerFichier(f) {
     }
     if (controleur.signal.aborted) throw new DOMException("Analyse interrompue", "AbortError");
     etat.analyse = recoter(resultat, lireParams());
-    el.badgeMoteur.textContent = `Moteur : ${sourceActive() || "chargé"}`;
+    etat.moteur = infosMoteur();
+    majBadgeMoteur();          // tout de suite : le moteur réellement utilisé, avant même le score
+    const note = noteMoteur(etat.moteur);
     if (!etat.analyse?.images.length) {
       /* Sans cette remise à zéro, la cote de la démonstration resterait
          affichée par-dessus le fichier de l'utilisateur : un résultat simulé
@@ -788,7 +791,7 @@ async function chargerFichier(f) {
       etat.analyse = null;
       effacerCalque();
       viderPanneau();
-      messageSession("Aucune personne détectée. Essayez une vue plus dégagée, avec une personne entière et suffisamment grande dans le cadre.");
+      messageSession(joindre("Aucune personne détectée. Essayez une vue plus dégagée, avec une personne entière et suffisamment grande dans le cadre.", note));
       return;
     }
     el.progres.hidden = true;
@@ -798,7 +801,8 @@ async function chargerFichier(f) {
     majAvis();
     majSynthese();
     dessinerInstant(0);
-    if (!etat.analyse.synthese) messageSession("Les repères sont trop peu visibles pour produire une synthèse. Examinez le squelette et essayez une prise de vue plus dégagée.");
+    if (!etat.analyse.synthese) messageSession(joindre("Les repères sont trop peu visibles pour produire une synthèse. Examinez le squelette et essayez une prise de vue plus dégagée.", note));
+    else if (note) messageSession(note);
   } catch (e) {
     if (e.name !== "AbortError") console.error(e);
     /* On efface tout : laisser le squelette et la cote de la démonstration
@@ -1237,6 +1241,13 @@ el.exportJson.addEventListener("click", () => {
       poids: +$("#poidsCharge").value, frequence: +$("#frequence").value, duree: $("#dureeTache").value,
       prise: $("#priseNiosh").value, controle_destination: $("#controleDestination").checked } : null,
     parametres: etat.analyse.params,
+    /* Le moteur qui a produit les repères : GPU et processeur ne donnent pas
+       exactement les mêmes coordonnées, et le modèle a pu être remplacé hors ligne. */
+    moteur: etat.mode === "demo" || !etat.moteur ? null : {
+      version: etat.moteur.version, source: etat.moteur.source,
+      modele: etat.moteur.precision, modele_demande: etat.moteur.precisionDemandee,
+      calcul: etat.moteur.delegue === "GPU" ? "GPU" : "processeur", raison: etat.moteur.raisonDelegue
+    },
     synthese: etat.mode !== "image" && s ? {
       images: s.images, ecartees: s.ignorees, duree: +s.duree.toFixed(2),
       median: s.median, p90: s.p90, max: s.max, pire_a_s: +s.pire.t.toFixed(2),
@@ -1483,25 +1494,59 @@ window.addEventListener("resize", () => etat.analyse && dessinerInstant(etat.t))
 
 /* ---------- Mode hors ligne ----------
    Sous terre, il n'y a pas de réseau. La coquille de l'outil est mise en cache
-   par le service worker du site ; le moteur de pose et son modèle, lourds, ne
+   par le service worker du site ; le moteur de pose et ses modèles, lourds, ne
    le sont qu'à la demande — ici, ou à la première analyse. L'outil dit donc
    s'il pourra analyser sans réseau, et propose de s'y préparer tant qu'il y en a. */
-const TAILLE_MOTEUR_MO = { full: 22, lite: 18 };   // bundle + WebAssembly + modèle, arrondis
+const NOM_MODELE = { full: "standard", lite: "rapide" };
+const TAILLE_MO = { preparation: 26, full: 9, lite: 6 };   // arrondis : moteur + deux modèles, puis chaque modèle
+const joindre = (...textes) => textes.filter(Boolean).join(" ");
 
 function serviceWorkerPossible() {
   return "serviceWorker" in navigator && location.protocol !== "file:";
 }
 
+/** Ce que l'utilisateur doit savoir du moteur réellement utilisé, ou "". */
+function noteMoteur(i) {
+  if (!i || i.precision === i.precisionDemandee) return "";
+  return `Analyse faite avec le modèle ${NOM_MODELE[i.precision]} : le modèle ${NOM_MODELE[i.precisionDemandee]} `
+    + "n'a pas pu être chargé, et il n'est pas conservé dans ce navigateur.";
+}
+
+let dernierEtatCache = { moteur: false, source: null, modeles: { full: false, lite: false } };
+
+/** Le pied de page dit quel moteur a servi, sur quoi il a calculé, et si le poste est prêt hors ligne. */
+function majBadgeMoteur(cache = dernierEtatCache) {
+  const i = infosMoteur();
+  const nomSource = s => s === "local" ? "local" : "CDN";
+  const parties = [];
+  if (i) parties.push(`Moteur ${nomSource(i.source)}`, i.delegue === "GPU" ? "GPU" : "processeur", `modèle ${NOM_MODELE[i.precision]}`);
+  else if (cache.moteur) parties.push(`Moteur ${nomSource(cache.source)}`);
+  if (cache.moteur && (cache.modeles.full || cache.modeles.lite)) parties.push("prêt hors ligne");
+  el.badgeMoteur.textContent = parties.length ? parties.join(" · ") : "Détection chargée à l'importation";
+  el.badgeMoteur.title = i ? `Calcul ${i.delegue === "GPU" ? "sur le GPU" : "sur le processeur"} : ${i.raisonDelegue}. Moteur ${i.version}.` : "";
+  Object.assign(el.badgeMoteur.dataset, { source: i?.source || "", delegue: i?.delegue || "", precision: i?.precision || "" });
+}
+
 async function majHorsLigne() {
   if (!el.horsLigne) return;
-  const precision = $("#precision").value;
-  const modele = precision === "lite" ? "rapide" : "standard";
-  let cache = { pret: false };
-  try { cache = await moteurEnCache(precision); } catch (_) {}
-  let texte, etatHorsLigne, bouton = false;
-  if (cache.pret) {
-    texte = `Prêt hors ligne : le moteur de pose et le modèle ${modele} sont conservés dans ce navigateur.`;
+  const choisie = $("#precision").value;
+  const autre = choisie === "lite" ? "full" : "lite";
+  let cache = { moteur: false, source: null, modeles: { full: false, lite: false } };
+  try { cache = await etatMoteur(); } catch (_) {}
+  dernierEtatCache = cache;
+  const peutPreparer = navigator.onLine !== false && serviceWorkerPossible();
+  let texte, etatHorsLigne, bouton = "";
+  if (cache.moteur && cache.modeles.full && cache.modeles.lite) {
+    texte = "Prêt hors ligne : le moteur de pose et ses deux modèles, standard et rapide, sont conservés dans ce navigateur.";
     etatHorsLigne = "pret";
+  } else if (cache.moteur && (cache.modeles[choisie] || cache.modeles[autre])) {
+    const garde = cache.modeles[choisie] ? choisie : autre;
+    const manque = garde === choisie ? autre : choisie;
+    texte = garde === choisie
+      ? `Prêt hors ligne avec le modèle ${NOM_MODELE[garde]}. Le modèle ${NOM_MODELE[manque]} n'est pas conservé : sans réseau, les analyses se feront en ${NOM_MODELE[garde]}.`
+      : `Prêt hors ligne avec le modèle ${NOM_MODELE[garde]} seulement : sans réseau, il remplacera le modèle ${NOM_MODELE[manque]} choisi dans les réglages.`;
+    etatHorsLigne = "pret";
+    if (peutPreparer) bouton = `Conserver aussi le modèle ${NOM_MODELE[manque]} (≈ ${TAILLE_MO[manque]} Mo)`;
   } else if (!serviceWorkerPossible()) {
     texte = "Le mode hors ligne n'est pas disponible dans ce contexte : ouvrez l'outil depuis le site publié.";
     etatHorsLigne = "indisponible";
@@ -1509,17 +1554,24 @@ async function majHorsLigne() {
     texte = "Hors ligne, et le moteur de pose n'est pas encore conservé ici : l'analyse attendra le retour du réseau. La démonstration reste consultable.";
     etatHorsLigne = "absent";
   } else {
-    texte = `Pour analyser sans réseau, conservez d'abord le moteur de pose et le modèle ${modele} dans ce navigateur (≈ ${TAILLE_MOTEUR_MO[precision] || 22} Mo, une seule fois).`;
+    texte = `Pour analyser sans réseau, conservez d'abord le moteur de pose et ses deux modèles dans ce navigateur (≈ ${TAILLE_MO.preparation} Mo, une seule fois).`;
     etatHorsLigne = "a-preparer";
-    bouton = true;
+    bouton = "Préparer le mode hors ligne";
+  }
+  /* Sans stockage persistant, le navigateur peut libérer cet espace quand il
+     en manque — et Safari efface les données d'un site non visité depuis sept
+     jours. Une application installée obtient ce stockage. */
+  if (etatHorsLigne === "pret") {
+    let persistant = true;
+    try { persistant = await navigator.storage?.persisted?.() ?? true; } catch (_) {}
+    if (!persistant) texte += " Installez le site comme application pour que le navigateur garde cet espace.";
   }
   el.horsLigneEtat.textContent = texte;
   el.horsLigne.dataset.etat = etatHorsLigne;
   el.horsLigne.hidden = false;
   el.preparerHorsLigne.hidden = !bouton;
-  el.badgeMoteur.textContent = cache.pret ? `Moteur ${cache.source === "local" ? "local" : "CDN"} · prêt hors ligne`
-    : sourceActive() ? `Moteur : ${sourceActive()}`
-    : "Détection chargée à l'importation";
+  if (bouton) el.preparerHorsLigne.textContent = bouton;
+  majBadgeMoteur(cache);
 }
 
 /* Le service worker doit contrôler la page pour que le moteur passe par son
@@ -1548,11 +1600,13 @@ async function preparerModeHorsLigne() {
       precision: $("#precision").value,
       onEtape: info => {
         el.horsLigneEtat.textContent = info.etape === "modele" && info.total && !info.cache
-          ? `Téléchargement du modèle de pose : ${mo(info.recu)} / ${mo(info.total)} Mo…`
+          ? `Téléchargement du modèle ${NOM_MODELE[info.precision] || "de pose"} : ${mo(info.recu)} / ${mo(info.total)} Mo…`
           : `${info.libelle}…`;
       }
     });
-    if (!r.pret) messageSession("Le moteur a été chargé, mais il n'a pas pu être conservé pour le mode hors ligne (stockage indisponible ou navigation privée). Rechargez la page et réessayez.");
+    if (!r.moteur || !r.modeles.full || !r.modeles.lite) {
+      messageSession("Le moteur a été chargé, mais il n'a pas pu être entièrement conservé pour le mode hors ligne (stockage plein, indisponible ou navigation privée). Libérez de l'espace ou quittez la navigation privée, puis réessayez.");
+    }
   } catch (e) {
     console.error(e);
     messageSession(e.name === "ErreurMoteur" ? e.message : `La préparation du mode hors ligne n'a pas abouti : ${e.message}`);

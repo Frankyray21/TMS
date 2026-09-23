@@ -3,6 +3,7 @@ name: Tests des parcours et des calculs
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,3 +18,27 @@ jobs:
           node-version: '22'
       - name: Tester sans réseau ni données réelles
         run: node --test tests/*.test.cjs tests/*.test.mjs cotation-video/tests/*.test.mjs
+
+  # L'analyse ergonomique doit fonctionner sous terre : ce job sert le site en
+  # local, coupe le serveur et rejoue l'outil dans Chromium (photo, vidéo,
+  # modèle rapide, poste jamais préparé, mise à jour du moteur, GPU simulé).
+  # Voir cotation-video/tests/verifier-hors-ligne.mjs.
+  hors-ligne:
+    name: Analyse ergonomique hors ligne (Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Embarquer le moteur de pose, comme au déploiement
+        run: bash cotation-video/outils/telecharger-modeles.sh tous
+      - name: Installer Playwright et Chromium
+        run: |
+          npm install --silent --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/playwright" playwright@1.56.1
+          "$RUNNER_TEMP/playwright/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Couper le réseau et rejouer l'analyse
+        run: node cotation-video/tests/verifier-hors-ligne.mjs
+        env:
+          NODE_PATH: ${{ runner.temp }}/playwright/node_modules
