@@ -2038,6 +2038,29 @@ if ("serviceWorker" in navigator) {
   else { heroOut=true; }
 })();
 
+/* « Télécharger hors ligne » : le service worker met en cache tout le site (pages, images, vidéo, modèles 3D) */
+(function () {
+  var T = {unsupported:"Ce navigateur ne permet pas l'usage hors ligne.",ready:"Disponible hors ligne",readyNote:"Tout le site est enregistré sur cet appareil.",busy:"Téléchargement…",retry:"Réessayer",progress:function(a,b){return a+" / "+b+" fichiers";},failed:function(n){return n+" fichier(s) non téléchargé(s). Vérifie la connexion.";}};
+  var btn = document.getElementById("offlineDl");
+  if (!btn) return;
+  var lbl = document.getElementById("offlineLbl"), note = document.getElementById("offlineNote"), bar = document.getElementById("offlineBar");
+  if (!("serviceWorker" in navigator) || !("caches" in window)) { btn.disabled = true; note.textContent = T.unsupported; return; }
+  function send(msg){ navigator.serviceWorker.ready.then(function(reg){ if(reg.active) reg.active.postMessage(msg); }); }
+  function ready(){ btn.classList.add("ok"); btn.disabled = true; lbl.textContent = T.ready; note.textContent = T.readyNote; bar.hidden = true; }
+  navigator.serviceWorker.addEventListener("message", function (e) {
+    var d = e.data || {};
+    if (d.type === "offline-status" && d.ready) ready();
+    else if (d.type === "offline-progress") { bar.hidden = false; bar.firstChild.style.width = Math.round(100 * d.done / d.total) + "%"; note.textContent = T.progress(d.done, d.total); }
+    else if (d.type === "offline-done") { if (d.failed) { btn.disabled = false; lbl.textContent = T.retry; note.textContent = T.failed(d.failed); } else ready(); }
+  });
+  btn.addEventListener("click", function () {
+    btn.disabled = true; lbl.textContent = T.busy;
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){});
+    send({ type: "offline-download" });
+  });
+  send({ type: "offline-status" });
+})();
+
 /* ================================================================
    CARTE DU CORPS — bascule Vue 2D / Vue 3D (model-viewer, lazy)
    ================================================================ */
