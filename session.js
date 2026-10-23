@@ -57,6 +57,11 @@
       identify_nomatch: 'Aucune correspondance dans la liste.',
       identify_use: function (n) { return 'Utiliser « ' + n + ' »'; },
       identify_linked_ok: 'Relié à ton dossier employé ✓',
+      gate_title: 'Identifie-toi pour commencer la formation',
+      gate_desc: 'Choisis ton nom dans la liste des travailleurs : ta progression et ton attestation seront à ton nom.',
+      gate_nomatch: 'Aucune correspondance. Vérifie l’orthographe ou adresse-toi à ton superviseur.',
+      gate_offline: 'Liste injoignable (hors ligne ?) : tu peux utiliser ton nom tel quel.',
+      gate_cancel: 'Pas maintenant',
       btn_fixname: 'Corriger mon nom',
       btn_switch: 'Passer au prochain travailleur',
       btn_continue_anon: 'Continuer sans m’identifier',
@@ -115,6 +120,11 @@
       identify_nomatch: 'No match in the list.',
       identify_use: function (n) { return 'Use “' + n + '”'; },
       identify_linked_ok: 'Linked to your employee record ✓',
+      gate_title: 'Sign in to start the training',
+      gate_desc: 'Pick your name from the worker list: your progress and certificate will be under your name.',
+      gate_nomatch: 'No match. Check the spelling or ask your supervisor.',
+      gate_offline: 'List unreachable (offline?): you can use your name as typed.',
+      gate_cancel: 'Not now',
       btn_fixname: 'Fix my name',
       btn_switch: 'Hand over to the next worker',
       btn_continue_anon: 'Continue without signing in',
@@ -324,6 +334,7 @@
   /* ------------------------------------------------------------------ panel */
   var ov = null, panelBody = null, lastFocus = null, escBound = false;
   var rosterTmr = null, rosterReq = 0;
+  var gateCb = null; /* formation : action à reprendre une fois identifié via la liste */
 
   function lockScroll(on) { try { document.documentElement.style.overflow = on ? 'hidden' : ''; document.body.style.overflow = on ? 'hidden' : ''; } catch (e) {} }
   function trapFocus(container, e) {
@@ -370,6 +381,7 @@
   }
   function closePanel() {
     if (!ov || !ov.classList.contains('open')) return;
+    gateCb = null;
     rosterReq++;
     if (rosterTmr) { clearTimeout(rosterTmr); rosterTmr = null; }
     ov.classList.remove('open');
@@ -394,7 +406,8 @@
     var s = TMSSession.get();
     var correcting = mode === 'correct' && s && s.name;
     var html = '';
-    if (mode !== 'identify' && !correcting && s && s.name) {
+    var gate = mode === 'gate';
+    if (mode !== 'identify' && !gate && !correcting && s && s.name) {
       /* ------- État A : un travailleur est identifié ------- */
       var linkedTxt = s.empId ? T.linked : T.notlinked;
       html += '<div class="sess-id">' +
@@ -411,16 +424,16 @@
       html += '<p class="sess-note">' + esc(T.shared_note) + '</p>';
     } else {
       /* ------- État B : personne n'est identifié / on (ré)identifie ------- */
-      html += '<div class="sess-empty"><h3 class="sess-empty-t">' + esc(correcting ? T.fix_title : T.who_none_title) + '</h3>' +
-        '<p class="sess-empty-d">' + esc(correcting ? T.fix_desc : T.who_none_desc) + '</p></div>';
+      html += '<div class="sess-empty"><h3 class="sess-empty-t">' + esc(gate ? T.gate_title : correcting ? T.fix_title : T.who_none_title) + '</h3>' +
+        '<p class="sess-empty-d">' + esc(gate ? T.gate_desc : correcting ? T.fix_desc : T.who_none_desc) + '</p></div>';
       if (correcting && hasUnconfirmedCertificate()) html += '<p class="sess-note" role="status">' + esc(T.fix_pending) + '</p>';
       html += '<div class="sess-find">' +
         '<label class="sess-lbl" for="sessName">' + esc(T.identify_label) + '</label>' +
-        '<div class="sess-find-wrap"><input id="sessName" type="text" autocomplete="off" spellcheck="false" placeholder="' + esc(T.identify_ph) + '" value="' + esc(correcting ? s.name : '') + '">' +
+        '<div class="sess-find-wrap"><input id="sessName" type="text" autocomplete="off" spellcheck="false" placeholder="' + esc(T.identify_ph) + '" value="' + esc(correcting || (gate && s) ? (s.name || '') : '') + '">' +
         '<div class="sess-sugg" id="sessSugg" hidden></div></div>' +
         '<p class="sess-hint" id="sessHint">' + esc(T.identify_hint) + '</p></div>';
       html += '<div class="sess-actions">';
-      html += '<button type="button" class="sess-btn sess-btn-ghost" data-act="' + (correcting ? 'cancel-fix' : 'anon') + '">' + esc(correcting ? T.fix_cancel : T.btn_continue_anon) + '</button>';
+      html += '<button type="button" class="sess-btn sess-btn-ghost" data-act="' + (correcting ? 'cancel-fix' : 'anon') + '">' + esc(correcting ? T.fix_cancel : gate ? T.gate_cancel : T.btn_continue_anon) + '</button>';
       html += '</div>';
     }
     /* Pied commun : relancer la visite guidée. */
@@ -442,11 +455,12 @@
       });
     });
     var input = panelBody.querySelector('#sessName');
-    if (input) wireRoster(input);
+    if (input) wireRoster(input, mode === 'gate');
   }
 
   /* Recherche dans le roster (même endpoint que la formation guidée). */
-  function wireRoster(input) {
+  function wireRoster(input, gate) {
+    var rosterDown = false; /* formation : le nom tel quel n'est accepté que si la liste est injoignable */
     var sugg = panelBody.querySelector('#sessSugg'), hint = panelBody.querySelector('#sessHint');
     function db(s) { try { return s.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch (e) { return s; } }
     function setHint(t) { if (hint) hint.textContent = t; }
@@ -455,7 +469,9 @@
       var current = TMSSession.get();
       /* Valider le texte inchangé ne doit pas détacher un dossier déjà choisi. */
       if (!empId && current && current.name === name) empId = current.empId;
-      TMSSession.set({ name: name, empId: empId || '' }); renderPanel('view');
+      TMSSession.set({ name: name, empId: empId || '' });
+      if (gate) { var cb = gateCb; gateCb = null; closePanel(); if (cb) setTimeout(cb, 0); return; }
+      renderPanel('view');
     }
     function hl(name, term) {
       var t = db(name.toLowerCase()), q = db((term || '').toLowerCase()), i = q ? t.indexOf(q) : -1;
@@ -472,13 +488,13 @@
         sugg.appendChild(b);
       });
       /* Toujours proposer d'utiliser le texte saisi tel quel (marche aussi hors ligne). */
-      if (term && !list.some(function (it) { return it.name.toLowerCase() === term.toLowerCase(); })) {
+      if (term && (!gate || rosterDown) && !list.some(function (it) { return it.name.toLowerCase() === term.toLowerCase(); })) {
         var use = document.createElement('button');
         use.type = 'button'; use.className = 'sess-opt sess-opt-use'; use.textContent = T.identify_use(term);
         use.addEventListener('click', function () { commit(term, ''); });
         sugg.appendChild(use);
       }
-      sugg.hidden = false;
+      sugg.hidden = !sugg.children.length;
     }
     function search() {
       var v = (input.value || '').trim();
@@ -496,13 +512,16 @@
           if (to) clearTimeout(to);
           if (my !== rosterReq || document.activeElement !== input) return;
           var list = (d && d.results) || [];
-          setHint(list.length ? T.identify_hint : T.identify_nomatch);
+          rosterDown = false;
+          setHint(list.length ? T.identify_hint : gate ? T.gate_nomatch : T.identify_nomatch);
           render(list, v);
         })
         .catch(function () {
           if (to) clearTimeout(to);
           if (my !== rosterReq) return;
-          setHint(T.identify_nomatch); /* le repli « Utiliser … » reste affiché */
+          rosterDown = true;
+          setHint(gate ? T.gate_offline : T.identify_nomatch); /* le repli « Utiliser … » reste affiché */
+          if (gate) render([], v);
         });
     }
     input.addEventListener('input', function () { if (rosterTmr) clearTimeout(rosterTmr); rosterTmr = setTimeout(search, 220); });
@@ -515,7 +534,7 @@
     });
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') { hide(); }
-      else if (e.key === 'Enter') { e.preventDefault(); var v = (input.value || '').trim(); if (v) commit(v, ''); }
+      else if (e.key === 'Enter') { e.preventDefault(); var v = (input.value || '').trim(); if (v && (!gate || rosterDown)) commit(v, ''); }
     });
   }
 
@@ -683,6 +702,14 @@
     return { start: start, finish: finish };
   })();
   window.TMSTour = Tour;
+  /* Formation : exige un travailleur choisi dans la liste avant de commencer.
+     Déjà relié à un dossier → on continue tout de suite ; sinon panneau d'identification. */
+  window.TMSRequireIdentity = function (cb) {
+    var s = TMSSession.get();
+    if (s && s.name && (s.empId || navigator.onLine === false)) { cb(); return; } /* hors ligne : nom tel quel accepté */
+    openPanel('gate');
+    gateCb = cb;
+  };
 
   /* -------------------------------------------------------------------- init */
   function init() {
