@@ -780,7 +780,7 @@
     app.querySelectorAll('.fg-zone-chip[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('active'); });
     app.querySelectorAll('.hotspot3d[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('h3-open'); });
     if (state.zonesVues.indexOf(k) < 0) { state.zonesVues.push(k); saveZones(); }
-    app.querySelectorAll('.fg-zone-chip[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('vu'); });
+    app.querySelectorAll('.fg-zone-chip[data-zone="' + k + '"], .hotspot3d[data-zone="' + k + '"]').forEach(function (e) { e.classList.add('vu'); });
     updateZonesProgress();
     var cl = box.querySelector('.zf-close');
     if (cl) cl.addEventListener('click', closeZoneFiche);
@@ -855,7 +855,7 @@
       ['h3-r', 'ge', '0.10 0.46 0.10', '0 0 1', 'Genoux', 'Bursite du genou · Ménisque', 'genoux'],
       ['h3-r', 'ch', '0.10 0.08 0.08', '0 0 1', 'Chevilles / pieds', "Tendinite d'Achille · Fasciite plantaire", 'chevilles-pieds']
     ].map(function (h, i) {
-      return '<button class="hotspot3d ' + h[0] + '" slot="hotspot-' + i + '" data-position="' + h[2] + '" data-normal="' + h[3] + '" data-zone="' + h[6] + '"><span class="h3-card"><b>' + esc(h[4]) + '</b><i>' + esc(h[5]) + '</i></span></button>';
+      return '<button class="hotspot3d ' + h[0] + (state.zonesVues.indexOf(h[6]) >= 0 ? ' vu' : '') + '" slot="hotspot-' + i + '" data-position="' + h[2] + '" data-normal="' + h[3] + '" data-zone="' + h[6] + '"><span class="h3-card"><b>' + esc(h[4]) + '</b><i>' + esc(h[5]) + '</i></span></button>';
     }).join('');
     var layers = ['Muscles', 'Os', 'Articulations', 'Nerfs'].map(function (mat) {
       var l = state.layers[mat];
