@@ -24,6 +24,7 @@
          "image":"data:image/png;base64,… (attestation DÉTAILLÉE)",
          "timeTotal":"24 min 30 s", "timeDetail":"temps par section…",
          "appRating":4, "appComment":"(sondage d'appréciation de l'app, facultatif)",
+         "manualName":true (opt : nom absent de la liste, entré à la main → case « Nom saisi manuellement »),
          "signature":"data:image/png;base64,… (signature tracée, obligatoire côté site)" }
    • POST /feedback    → retour sur une question de quiz (pouce + commentaire),
                          table « Retours quiz TMS (web) ». Corps JSON :
@@ -107,6 +108,7 @@ export default {
     const timeDetail = clean(body.timeDetail, 4000);  // temps par section (texte)
     const appRating  = Math.max(0, Math.min(5, parseInt(body.appRating, 10) || 0)); // sondage app : 1-5 (0 = non répondu)
     const appComment = clean(body.appComment, 2000);  // commentaire libre sur l'app
+    const manualName = body.manualName === true;     // nom absent de la liste, entré à la main
 
     if (!env.AIRTABLE_TOKEN) {
       return json(
@@ -142,6 +144,8 @@ export default {
     if (timeDetail) timeFields["Détail du temps"] = timeDetail;
     if (appRating)  timeFields["Appréciation app"] = appRating;
     if (appComment) timeFields["Commentaire app"] = appComment;
+    // Nom entré à la main et non relié à un employé → case « Nom saisi manuellement ».
+    if (manualName && !empId) timeFields["Nom saisi manuellement"] = true;
 
     let at = await postRecord({ ...fields, ...timeFields }, env);
     if (at && !at.ok && Object.keys(timeFields).length) {
