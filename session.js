@@ -59,7 +59,8 @@
       identify_linked_ok: 'Relié à ton dossier employé ✓',
       gate_title: 'Identifie-toi pour commencer la formation',
       gate_desc: 'Choisis ton nom dans la liste des travailleurs : ta progression et ton attestation seront à ton nom.',
-      gate_nomatch: 'Aucune correspondance. Vérifie l’orthographe ou adresse-toi à ton superviseur.',
+      gate_nomatch: 'Aucune correspondance. Vérifie l’orthographe, ou entre ton nom manuellement ci-dessous.',
+      gate_manual: function (n) { return 'Mon nom n’est pas dans la liste : entrer « ' + n + ' » manuellement'; },
       gate_offline: 'Liste injoignable (hors ligne ?) : tu peux utiliser ton nom tel quel.',
       gate_cancel: 'Pas maintenant',
       btn_fixname: 'Corriger mon nom',
@@ -122,7 +123,8 @@
       identify_linked_ok: 'Linked to your employee record ✓',
       gate_title: 'Sign in to start the training',
       gate_desc: 'Pick your name from the worker list: your progress and certificate will be under your name.',
-      gate_nomatch: 'No match. Check the spelling or ask your supervisor.',
+      gate_nomatch: 'No match. Check the spelling, or enter your name manually below.',
+      gate_manual: function (n) { return 'My name isn’t in the list: enter “' + n + '” manually'; },
       gate_offline: 'List unreachable (offline?): you can use your name as typed.',
       gate_cancel: 'Not now',
       btn_fixname: 'Fix my name',
@@ -214,6 +216,8 @@
       if (!name) { return clear(); }
       var cur = read() || {};
       var next = { name: name, empId: String((o.empId != null ? o.empId : (cur.name === name ? cur.empId : '')) || ''), since: cur.since || new Date().toISOString() };
+      /* Nom entré à la main (absent de la liste) : signalé dans Airtable avec l'attestation. */
+      if (!next.empId && (o.manual != null ? o.manual : (cur.name === name && cur.manual))) next.manual = true;
       var changed = identityKey(next) !== identityKey(cur);
       lsSet(K_SESSION, JSON.stringify(next));
       lsSet(K_NAME, name); /* miroir pour la formation */
@@ -460,16 +464,16 @@
 
   /* Recherche dans le roster (même endpoint que la formation guidée). */
   function wireRoster(input, gate) {
-    var rosterDown = false; /* formation : le nom tel quel n'est accepté que si la liste est injoignable */
+    var rosterDown = false, searched = false; /* formation : le nom tel quel n'est accepté que si la liste est injoignable */
     var sugg = panelBody.querySelector('#sessSugg'), hint = panelBody.querySelector('#sessHint');
     function db(s) { try { return s.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch (e) { return s; } }
     function setHint(t) { if (hint) hint.textContent = t; }
     function hide() { if (sugg) { sugg.hidden = true; sugg.innerHTML = ''; } }
-    function commit(name, empId) {
+    function commit(name, empId, manual) {
       var current = TMSSession.get();
       /* Valider le texte inchangé ne doit pas détacher un dossier déjà choisi. */
       if (!empId && current && current.name === name) empId = current.empId;
-      TMSSession.set({ name: name, empId: empId || '' });
+      TMSSession.set({ name: name, empId: empId || '', manual: !empId && !!manual });
       if (gate) { var cb = gateCb; gateCb = null; closePanel(); if (cb) setTimeout(cb, 0); return; }
       renderPanel('view');
     }
@@ -488,10 +492,11 @@
         sugg.appendChild(b);
       });
       /* Toujours proposer d'utiliser le texte saisi tel quel (marche aussi hors ligne). */
-      if (term && (!gate || rosterDown) && !list.some(function (it) { return it.name.toLowerCase() === term.toLowerCase(); })) {
+      /* Formation : l'entrée manuelle n'apparaît qu'après la recherche dans la liste. */
+      if (term && (!gate || rosterDown || searched) && !list.some(function (it) { return it.name.toLowerCase() === term.toLowerCase(); })) {
         var use = document.createElement('button');
-        use.type = 'button'; use.className = 'sess-opt sess-opt-use'; use.textContent = T.identify_use(term);
-        use.addEventListener('click', function () { commit(term, ''); });
+        use.type = 'button'; use.className = 'sess-opt sess-opt-use'; use.textContent = gate && !rosterDown ? T.gate_manual(term) : T.identify_use(term);
+        use.addEventListener('click', function () { commit(term, '', true); });
         sugg.appendChild(use);
       }
       sugg.hidden = !sugg.children.length;
@@ -502,6 +507,7 @@
       /* Repli immédiat : on peut toujours s'identifier tel quel, même hors ligne
          (PWA sous terre) ou avant la réponse du Worker. Les correspondances du
          roster viennent s'ajouter au-dessus dès qu'elles arrivent. */
+      searched = false;
       render([], v);
       setHint(T.identify_searching);
       var my = ++rosterReq, ctrl = null, to = null;
@@ -512,7 +518,7 @@
           if (to) clearTimeout(to);
           if (my !== rosterReq || document.activeElement !== input) return;
           var list = (d && d.results) || [];
-          rosterDown = false;
+          rosterDown = false; searched = true;
           setHint(list.length ? T.identify_hint : gate ? T.gate_nomatch : T.identify_nomatch);
           render(list, v);
         })
@@ -534,7 +540,7 @@
     });
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') { hide(); }
-      else if (e.key === 'Enter') { e.preventDefault(); var v = (input.value || '').trim(); if (v && (!gate || rosterDown)) commit(v, ''); }
+      else if (e.key === 'Enter') { e.preventDefault(); var v = (input.value || '').trim(); if (v && (!gate || rosterDown || searched)) commit(v, '', true); }
     });
   }
 
@@ -706,7 +712,7 @@
      Déjà relié à un dossier → on continue tout de suite ; sinon panneau d'identification. */
   window.TMSRequireIdentity = function (cb) {
     var s = TMSSession.get();
-    if (s && s.name && (s.empId || navigator.onLine === false)) { cb(); return; } /* hors ligne : nom tel quel accepté */
+    if (s && s.name && (s.empId || s.manual || navigator.onLine === false)) { cb(); return; } /* hors ligne : nom tel quel accepté */
     openPanel('gate');
     gateCb = cb;
   };

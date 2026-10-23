@@ -1320,6 +1320,7 @@
       date: window.TMSAttestation.localDate(), score: '5/5 modules', signature: state.sigData,
       timeTotal: fmtDur(totalTimeMs()), timeDetail: timeDetailText(), appRating: state.appRating || '',
       appComment: (state.appComment || '').trim(), image: '' };
+    try { var sess = window.TMSSession && window.TMSSession.get(); if (!person.employeeId && sess && sess.manual && sess.name === person.name) payload.manualName = true; } catch (e) {}
     var done = false, node = null, timer;
     function clean() { clearTimeout(timer); if (node) { node.remove(); node = null; } }
     function finish(image) {
