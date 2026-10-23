@@ -977,7 +977,13 @@
     else { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } }
   }
 
-  function go(view, idx) { state.view = view; if (idx != null) state.idx = idx; state.certVisible = state.certVisible && view === 'sommaire'; render(); }
+  function go(view, idx) {
+    /* Avant la première lecture : identification obligatoire via la liste des travailleurs (session.js). */
+    if (view === 'viewer' && state.view !== 'viewer' && window.TMSRequireIdentity && !go._ok) {
+      window.TMSRequireIdentity(function () { go._ok = true; go(view, idx); go._ok = false; });
+      return;
+    }
+    state.view = view; if (idx != null) state.idx = idx; state.certVisible = state.certVisible && view === 'sommaire'; render(); }
 
   function start() {
     go('viewer', resumeIndex());
