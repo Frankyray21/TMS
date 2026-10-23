@@ -280,9 +280,14 @@ var MODAL_DATA={
 var modal=document.getElementById('modal');
 var mImg=document.getElementById('mImg'),mTag=document.getElementById('mTag'),mTitle=document.getElementById('mTitle'),mDesc=document.getElementById('mDesc'),mRisk=document.getElementById('mRisk'),mPrev=document.getElementById('mPrev');
 var modalInner=modal.querySelector('.modal');
-function openModal(k){var d=MODAL_DATA[k];if(!d)return;lastFocus=document.activeElement;modalInner.classList.remove('no-img');mImg.onload=function(){modalInner.classList.remove('no-img');};mImg.onerror=function(){modalInner.classList.add('no-img');};mImg.src=d.img;mImg.alt=d.title;mTag.textContent=d.tag;mTitle.textContent=d.title;mDesc.textContent=d.desc;mRisk.innerHTML=d.risk.map(function(x){return '<li>'+x+'</li>';}).join('');mPrev.innerHTML=d.prev.map(function(x){return '<li>'+x+'</li>';}).join('');lockScroll();bgInert(true);modal.classList.add('open');document.getElementById('mclose').focus();}
+function openModal(k){var d=MODAL_DATA[k];if(!d)return;lastFocus=document.activeElement;modalInner.classList.remove('no-img');mImg.onload=function(){modalInner.classList.remove('no-img');};mImg.onerror=function(){modalInner.classList.add('no-img');};mImg.src=d.img;mImg.alt=d.title;mTag.textContent=d.tag;mTitle.textContent=d.title;mDesc.textContent=d.desc;mRisk.innerHTML=d.risk.map(function(x){return '<li>'+x+'</li>';}).join('');mPrev.innerHTML=d.prev.map(function(x){return '<li>'+x+'</li>';}).join('');lockScroll();bgInert(true);modal.classList.add('open');document.getElementById('mclose').focus();marquerModaleVue(k);}
 function closeModal(){if(!modal.classList.contains('open'))return;modal.classList.remove('open');bgInert(false);unlockScroll();if(lastFocus)lastFocus.focus();}
 document.querySelectorAll('[data-modal]').forEach(function(el){el.addEventListener('click',function(){openModal(el.dataset.modal);});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openModal(el.dataset.modal);}});});
+// cartes deja consultees : en vert (memorise sur l'appareil)
+var modalesVues=(function(){try{return JSON.parse(localStorage.getItem('tms-modales-vues'))||[];}catch(e){return [];}})();
+function majModalesVues(){document.querySelectorAll('[data-modal]').forEach(function(el){el.classList.toggle('vu',modalesVues.indexOf(el.dataset.modal)>-1);});}
+function marquerModaleVue(k){if(modalesVues.indexOf(k)<0){modalesVues.push(k);try{localStorage.setItem('tms-modales-vues',JSON.stringify(modalesVues));}catch(e){}}majModalesVues();}
+majModalesVues();
 document.getElementById('mclose').addEventListener('click',closeModal);
 modal.addEventListener('click',function(e){if(e.target===modal)closeModal();});
 modal.querySelector('.modal').addEventListener('keydown',function(e){trap(this,e);});
@@ -1108,13 +1113,15 @@ function majProgression() {
       if ((el.classList.contains("cercle") || el.classList.contains("pastille")) && !visites.has(c)) el.classList.remove("visite");
     });
   });
+  $$(".sous-item[data-cle]").forEach(el => el.classList.toggle("visite", visites.has(el.dataset.cle)));
 }
 
 function marquerVisite(cle) {
-  if (!ORDRE_PRINCIPAL.includes(cle) || visites.has(cle)) return;
+  if (visites.has(cle)) return;
   visites.add(cle);
   ecrireStockage("tms-visites", Array.from(visites));
   majProgression();
+  if (!ORDRE_PRINCIPAL.includes(cle)) return; // sous-facteur : passe au vert, sans compter dans la progression
   const n = ORDRE_PRINCIPAL.filter(c => visites.has(c)).length;
   if (n === 1) toast("Première fiche explorée ! Continuez : " + (ORDRE_PRINCIPAL.length - 1) + " restantes.", "🚀");
   else if (n === 7) toast("Plus de la moitié du schéma exploré !", "⭐");
