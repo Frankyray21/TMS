@@ -1129,6 +1129,9 @@ if (btnRaz) btnRaz.addEventListener("click", () => {
   visites = new Set();
   ecrireStockage("tms-visites", []);
   majProgression();
+  zonesVues = new Set();
+  ecrireStockage("tms-zones-vues", []);
+  majZonesVues();
   toast("Progress reset.", "↺");
 });
 
@@ -1224,6 +1227,7 @@ function ouvrirDetails(cle, declencheur) {
 function ouvrirZone(zoneCle, declencheur) {
   const z = ZONES[zoneCle];
   if (!z) return;
+  marquerZoneVue(zoneCle);
   cleCourante = null;
   arreterLecture();
   $("#modale-picto").textContent = z.icone;
@@ -1502,6 +1506,16 @@ $$("#corps-svg .zone").forEach(g => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ouvrirZone(z, g); }
   });
 });
+/* Body areas already viewed: 2D and 3D spots turn green (remembered on the device) */
+let zonesVues = new Set(lireStockage("tms-zones-vues", []));
+function majZonesVues() {
+  $$("[data-zone]").forEach(el => el.classList.toggle("vu", zonesVues.has(el.dataset.zone)));
+}
+function marquerZoneVue(z) {
+  if (!zonesVues.has(z)) { zonesVues.add(z); ecrireStockage("tms-zones-vues", Array.from(zonesVues)); }
+  majZonesVues();
+}
+majZonesVues();
 
 /* ================================================================
    SIMULATEUR
@@ -2157,7 +2171,7 @@ if ("serviceWorker" in navigator) {
       b.classList.toggle("actif", on);
       b.setAttribute("aria-pressed", on ? "true" : "false");
     });
-    if (threeD) load();
+    if (threeD) go();
   }
 
   bar.addEventListener("click", function (e) {
@@ -2165,24 +2179,22 @@ if ("serviceWorker" in navigator) {
     if (b) show(b.getAttribute("data-vue") === "3d");
   });
 
-  wrap.hidden = false;
-  twoD.forEach(function (el) { if (el) el.style.display = "none"; });
-  mv.addEventListener("error", function () {
-    wrap.hidden = true;
-    twoD.forEach(function (el) { if (el) el.style.display = ""; });
-  });
+  // Phone: 2D map by default; the 3D engine and model only load when "3D view" is
+  // tapped (3D rendering while scrolling made it choppy).
+  var mobile2D = window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
+  if (mobile2D) bar.hidden = false;
+  else { wrap.hidden = false; twoD.forEach(function (el) { if (el) el.style.display = "none"; }); }
+  mv.addEventListener("error", function () { show(false); bar.hidden = true; });
   mv.addEventListener("load", function () { wrap.classList.add("mv-ready"); });
   var started = false;
   function go() {
     if (started) return; started = true;
     load();
     setTimeout(function () {
-      if (!window.customElements || !window.customElements.get("model-viewer")) {
-        wrap.hidden = true;
-        twoD.forEach(function (el) { if (el) el.style.display = ""; });
-      }
+      if (!window.customElements || !window.customElements.get("model-viewer")) { show(false); bar.hidden = true; }
     }, 10000);
   }
+  if (mobile2D) return;
   if ("IntersectionObserver" in window) {
     new IntersectionObserver(function (es, obs) {
       if (es[0].isIntersecting) { go(); obs.disconnect(); }
