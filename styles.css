@@ -2440,7 +2440,9 @@ html.no-js .hero h1 .hl::after{transform:none}
    jamais de prise en main du scroll (trackpad, clavier et lecteurs
    d'écran gardent leur comportement normal).
    ============================================================ */
-html:has(body.snap){scroll-snap-type:y proximity}
+/* ordinateur seulement : sur téléphone, l'aimant ramenait la page en arrière après
+   chaque geste (≈180 px de recul) et la faisait sauter à l'ouverture */
+@media(min-width:981px){html:has(body.snap){scroll-snap-type:y proximity}}
 /* NB : l'aimant natif reste en « proximity » (doux). Le « mandatory » piégeait la
    molette lente (impossible de quitter un écran) et « proximity » seul est
    imperceptible : c'est l'ASSISTANT D'AIMANT de app.js qui complète le geste —
@@ -2455,7 +2457,7 @@ body.snap .foot{scroll-snap-align:end}
 @media(min-width:981px){
   body.snap section:not(.hero){min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-top:3.5rem;padding-bottom:3.5rem}
 }
-/* mobile : hauteurs naturelles (pas d'écrans étirés) — l'aimant doux suffit */
+/* mobile : hauteurs naturelles (pas d'écrans étirés) et défilement libre, sans aimant */
 
 /* ── Écrans vivants (mode petites pages, ordinateur) ─────────────
    L'écran SE PRÉSENTE : pendant son entrée dans le viewport il glisse

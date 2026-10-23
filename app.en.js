@@ -221,7 +221,7 @@ function enterSection(target){
 }
 if('IntersectionObserver' in window){
   var spyIO=new IntersectionObserver(function(es){
-    es.forEach(function(e){if(e.isIntersecting){var id=e.target.id;if(byId[id]){links.forEach(function(l){l.classList.remove('active','justactive');l.removeAttribute('aria-current');});byId[id].classList.add('active','justactive');byId[id].setAttribute('aria-current','true');moveInd(byId[id]);var act=byId[id];if(act.scrollIntoView&&window.innerWidth<=980){act.scrollIntoView({block:'nearest',inline:'center',behavior:'auto'});}enterSection(e.target);}}});
+    es.forEach(function(e){if(e.isIntersecting){var id=e.target.id;if(byId[id]){links.forEach(function(l){l.classList.remove('active','justactive');l.removeAttribute('aria-current');});byId[id].classList.add('active','justactive');byId[id].setAttribute('aria-current','true');moveInd(byId[id]);enterSection(e.target);}}});
   },{rootMargin:'-30% 0px -55% 0px',threshold:0});
   targets.forEach(function(t){spyIO.observe(t);});
 }
