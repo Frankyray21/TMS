@@ -650,15 +650,19 @@ html.tms-loading{overflow:hidden!important}
       <div id="score-valeur">0</div>
       <div id="score-niveau">Coche des facteurs ci-dessous</div>
       <p id="sim-combo"></p>
-      <ul id="sim-conseils"></ul>
-      <button type="button" id="sim-raz">↺ Tout effacer</button>
+      <div class="sim-zones" id="sim-zones" hidden></div>
+      <div class="sim-boutons">
+        <button type="button" id="sim-voir-bilan" hidden>Voir mon bilan détaillé ↓</button>
+        <button type="button" id="sim-raz">↺ Tout effacer</button>
+      </div>
     </div>
 
-    <p class="intro">Cet exercice s'adresse à toi, travailleur : il aide à repérer les contraintes de ton poste de travail. Coche ci-dessous ce qui correspond à ta situation — la jauge ci-dessus affiche un <strong>niveau de risque indicatif</strong>. Cocher dans plusieurs familles à la fois fait grimper le score plus vite, car les facteurs se multiplient.</p>
+    <p class="intro">Cet exercice s'adresse à toi, travailleur : il aide à repérer les contraintes de ton poste de travail. Coche ci-dessous ce qui correspond à ta situation — la jauge ci-dessus affiche un <strong>niveau de risque indicatif</strong> et ton bilan détaillé s'affiche sous les cases. Cocher dans plusieurs familles à la fois fait grimper le score plus vite, car les facteurs se multiplient.</p>
 
     <div class="sim-flex">
       <form class="sim-form" id="form-sim"></form>
     </div>
+    <div class="sim-bilan" id="sim-bilan" tabindex="-1" hidden></div>
   </section>
   </div>
 </div>

@@ -397,15 +397,19 @@ html.tms-loading{overflow:hidden!important}
       <div id="score-valeur">0</div>
       <div id="score-niveau">Check off factors below</div>
       <p id="sim-combo"></p>
-      <ul id="sim-conseils"></ul>
-      <button type="button" id="sim-raz">↺ Clear all</button>
+      <div class="sim-zones" id="sim-zones" hidden></div>
+      <div class="sim-boutons">
+        <button type="button" id="sim-voir-bilan" hidden>See my detailed report ↓</button>
+        <button type="button" id="sim-raz">↺ Clear all</button>
+      </div>
     </div>
 
-    <p class="intro">This exercise is for you, the worker: it helps you spot the strains of your workstation. Check off below what matches your situation — the gauge above shows a <strong>rough risk level</strong>. Checking off several families at once drives the score up faster, because the factors multiply.</p>
+    <p class="intro">This exercise is for you, the worker: it helps you spot the strains of your workstation. Check off below what matches your situation — the gauge above shows a <strong>rough risk level</strong> and your detailed report appears below the checkboxes. Checking off several families at once drives the score up faster, because the factors multiply.</p>
 
     <div class="sim-flex">
       <form class="sim-form" id="form-sim"></form>
     </div>
+    <div class="sim-bilan" id="sim-bilan" tabindex="-1" hidden></div>
   </section>
   </div>
 </div>
