@@ -2331,6 +2331,14 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 .voile-sim.ouvert{display:block}
 /* Évaluation : sous les autres surcouches, qui s'ouvrent par-dessus depuis le bilan */
 #voile-sim{z-index:165}
+/* Sous-page de l'évaluation (evaluation-poste.html) : le même panneau, posé dans la page */
+.sim-page{max-width:none;margin:0;animation:none}
+.sim-page .sim-bilan{scroll-margin-top:1.5rem}
+@media (max-width:700px){
+  /* marges réduites : les cases gardent toute la largeur du téléphone */
+  .sim-page{padding:4px 14px 18px}
+  .sim-page .sim-form,.sim-page .sim-resultat{min-width:0}
+}
 .panneau-sim{position:relative;max-width:1150px;margin:0 auto;background:#101016;border:1px solid #2c2c2c;border-top:3px solid var(--brand,#d22325);border-radius:18px;padding:8px 26px 26px;animation:apparition .25s ease}
 .panneau-sim section.bloc{margin-top:0;padding:1.2rem 0 0}
 .panneau-sim section.bloc::before,.panneau-sim section.bloc::after{display:none}

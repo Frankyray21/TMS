@@ -133,4 +133,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://preventiontmsmri.netlify.app/formation-5.en.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://preventiontmsmri.netlify.app/formation-5.html"/>
   </url>
+  <url>
+    <loc>https://frankyray21.github.io/TMS/evaluation-poste.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://frankyray21.github.io/TMS/evaluation-poste.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://frankyray21.github.io/TMS/evaluation-poste.en.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://frankyray21.github.io/TMS/evaluation-poste.html"/>
+  </url>
+  <url>
+    <loc>https://frankyray21.github.io/TMS/evaluation-poste.en.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://frankyray21.github.io/TMS/evaluation-poste.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://frankyray21.github.io/TMS/evaluation-poste.en.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://frankyray21.github.io/TMS/evaluation-poste.html"/>
+  </url>
 </urlset>
