@@ -1069,8 +1069,7 @@ const SIM_TXT = {
   combosTexte: "Risk factors don't add up, they multiply. Tackle these combinations first.",
   conseils: "Your tips, factor by factor",
   pourquoi: "Why:",
-  suites: "Going further",
-  ouvrir: "Open"
+  suites: "Going further"
 };
 
 /* Quiz */
@@ -1608,6 +1607,9 @@ function zonesSollicitees(coches) {
   return Object.keys(ZONES).filter(z => score[z]).sort((a, b) => score[b] - score[a]).slice(0, 4);
 }
 
+/* Arrow for the "Going further" rows (same path as the Next buttons of the training track) */
+const FLECHE_SUITE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
 function puceFiche(cle) {
   const b = elem("button", "puce", DETAILS[cle].icone + " " + DETAILS[cle].titre);
   b.type = "button";
@@ -1757,7 +1759,9 @@ function rendreBilan(conteneur, e) {
   if (e.suites.length) {
     const s = elem("div", "sb-bloc sb-suites");
     s.appendChild(elem("h4", null, SIM_TXT.suites));
-    const grille = elem("div", "sb-grille");
+    /* one row per resource, like the tips just above: the text keeps the full width */
+    const liste = elem("ul", "sb-suites-liste");
+    liste.setAttribute("role", "list");
     e.suites.forEach(x => {
       let el;
       if (x.ancre) {
@@ -1775,13 +1779,21 @@ function rendreBilan(conteneur, e) {
       ico.setAttribute("aria-hidden", "true");
       el.appendChild(ico);
       const txt = elem("span", "sbs-txt");
-      txt.appendChild(elem("strong", null, x.titre));
-      txt.appendChild(elem("span", null, x.texte));
+      const titre = elem("strong", null, x.titre);
+      /* the part badge warns that you leave the page; the other rows open in place */
+      if (x.partie) { titre.appendChild(document.createTextNode(" ")); titre.appendChild(elem("span", "sbs-partie", x.partie)); }
+      txt.appendChild(titre);
+      txt.appendChild(elem("span", "sbs-desc", x.texte));
       el.appendChild(txt);
-      el.appendChild(elem("span", "sbs-go", (x.ancre ? x.partie : SIM_TXT.ouvrir) + " →"));
-      grille.appendChild(el);
+      const fleche = elem("span", "sbs-go");
+      fleche.setAttribute("aria-hidden", "true");
+      fleche.innerHTML = FLECHE_SUITE;
+      el.appendChild(fleche);
+      const li = elem("li");
+      li.appendChild(el);
+      liste.appendChild(li);
     });
-    s.appendChild(grille);
+    s.appendChild(liste);
     conteneur.appendChild(s);
   }
 }

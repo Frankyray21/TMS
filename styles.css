@@ -1788,24 +1788,38 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
   .sim-bilan .sbc-pistes li { position: relative; padding-left: 16px; color: #ddd; font-size: .88rem; line-height: 1.5; margin: 0 0 4px; }
   .sim-bilan .sbc-pistes li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--fam); }
 
-  /* Pour aller plus loin */
-  .sb-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
-  .sb-suite { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; font: inherit; text-decoration: none; color: #eee; background: #1c1c20; border: 1px solid #303036; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: border-color .15s, background .15s, transform .15s cubic-bezier(.22,.61,.36,1); }
-  .sb-suite:hover, .sb-suite:focus-visible { border-color: var(--brand, #d22325); background: #221a1c; transform: translateY(-2px); outline: none; }
-  .sbs-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 11px; background: rgba(210,35,37,.16); display: grid; place-items: center; font-size: 1.15rem; }
+  /* Pour aller plus loin : une rangée pleine largeur par ressource, dans le vocabulaire des conseils
+     et des cases (rangées empilées). Le texte garde toute la largeur ; la flèche dit « ça ouvre ». */
+  .sim-bilan .sb-suites-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .sim-bilan .sb-suites-liste li { margin: 0; }
+  .sb-suite { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 62px; text-align: left; font: inherit; text-decoration: none; color: #eee; background: #1c1c20; border: 1px solid #303036; border-radius: 12px; padding: 11px 14px; cursor: pointer; transition: border-color .15s, background .15s; }
+  .sb-suite:hover { border-color: #55555e; background: #212126; }
+  .sb-suite:active { background: #19191c; }
+  .sb-suite:focus-visible { outline: 2px solid var(--accent-l, #ef5a5c); outline-offset: 2px; }
+  .sbs-ico { flex-shrink: 0; width: 26px; text-align: center; font-size: 1.25rem; line-height: 1; }
   .sbs-txt { flex: 1; min-width: 0; }
-  .sbs-txt strong { display: block; font-size: .92rem; line-height: 1.3; color: #fff; }
-  .sbs-txt span { display: block; color: #a8a8a8; font-size: .82rem; line-height: 1.4; margin-top: 2px; }
-  .sbs-go { flex-shrink: 0; color: #ff8d94; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+  .sbs-txt strong { display: block; font-size: .95rem; font-weight: 700; line-height: 1.35; color: #fff; }
+  .sbs-desc { display: block; color: #b4b4b8; font-size: .86rem; line-height: 1.45; margin-top: 1px; text-wrap: pretty; }
+  /* pastille de partie : même dessin que les numéros du sommaire */
+  .sbs-partie { display: inline-block; vertical-align: .08em; font-family: var(--font-display); font-size: .78rem; font-weight: 800; letter-spacing: .04em; line-height: 1.3; color: #ff9aa0; background: rgba(210,35,37,.12); border: 1px solid rgba(210,35,37,.35); border-radius: 6px; padding: .05em .5em; white-space: nowrap; }
+  .sbs-go { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; border: 1px solid #3c3c44; color: #d0d0d4; display: grid; place-items: center; transition: background .15s, border-color .15s, color .15s, transform .2s cubic-bezier(.22,.61,.36,1); }
+  .sb-suite:hover .sbs-go, .sb-suite:focus-visible .sbs-go { background: var(--brand, #d22325); border-color: var(--brand, #d22325); color: #fff; transform: translateX(3px); }
   @media (max-width: 560px) {
     .sb-bloc { padding: 14px; }
     .sbc-corps { padding-left: 14px; }
-    .sb-suite { flex-wrap: wrap; }
-    .sbs-go { flex: 0 0 100%; padding-left: 52px; }
+    /* téléphone : la description passe sous le pictogramme et le titre pour reprendre toute la largeur,
+       et la flèche perd son cercle */
+    .sb-suite { display: grid; grid-template-columns: auto 1fr auto; column-gap: 10px; row-gap: 3px; padding: 12px; }
+    .sbs-txt { display: contents; }
+    .sbs-ico { grid-area: 1 / 1; width: auto; font-size: 1.1rem; }
+    .sbs-txt strong { grid-area: 1 / 2; }
+    .sbs-desc { grid-area: 2 / 1 / 3 / 3; margin-top: 0; }
+    .sbs-go { grid-area: 1 / 3 / 3 / 4; width: 20px; height: 20px; border: 0; border-radius: 0; }
+    .sb-suite:hover .sbs-go, .sb-suite:focus-visible .sbs-go { background: none; color: #ff9aa0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sb-suite, .sb-conseil summary::after { transition: none; }
-    .sb-suite:hover, .sb-suite:focus-visible { transform: none; }
+    .sb-suite, .sbs-go, .sb-conseil summary::after { transition: none; }
+    .sb-suite:hover .sbs-go, .sb-suite:focus-visible .sbs-go { transform: none; }
   }
   #sim-raz {
     display: block;
