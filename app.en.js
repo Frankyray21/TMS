@@ -1013,25 +1013,65 @@ const ZONES = {
 
 /* Simulateur */
 const SIM_ITEMS = [
-  { cle: "s-efforts", libelle: "Heavy exertion (pushing, pulling, forcing)", poids: 3, cat: "bio", conseil: "Cut down the effort with mechanical aids and proper tools." },
-  { cle: "s-repetition", libelle: "Repeated movements at a fast pace", poids: 3, cat: "bio", conseil: "Set up task rotation and micro-breaks." },
-  { cle: "s-postures", libelle: "Awkward postures (bent back, bent wrists…)", poids: 2, cat: "bio", conseil: "Set up the workstation to keep your joints in a neutral position." },
-  { cle: "s-charges", libelle: "Heavy or awkward loads to grip (rods, hoses, equipment)", poids: 3, cat: "bio", conseil: "Break loads into smaller parts and use material-handling aids." },
-  { cle: "s-bras", libelle: "Working with your arms above your shoulders", poids: 2, cat: "bio", conseil: "Lower the work or use a platform to work below shoulder height." },
-  { cle: "s-genoux", libelle: "Working on your knees, squatting or bent over (forced positions)", poids: 2, cat: "bio", conseil: "Knee pads, a low bench, and stand up regularly to move your legs." },
-  { cle: "s-fatigue", libelle: "Frequent fatigue or not enough sleep", poids: 2, cat: "ind", conseil: "Protect your sleep and take real recovery breaks." },
-  { cle: "s-quarts", libelle: "Long shifts: alertness drops near the end of the shift", poids: 2, cat: "ind", conseil: "Keep the demanding tasks for the start of the shift and take real breaks." },
-  { cle: "s-douleur", libelle: "Pain already present (discomfort, stiffness, tingling)", poids: 3, cat: "ind", conseil: "Report pain early and adjust the task without waiting." },
-  { cle: "s-experience", libelle: "Little experience on the job", poids: 1, cat: "ind", conseil: "Provide mentoring, hands-on training and a gradual ramp-up in pace." },
-  { cle: "s-condition", libelle: "Limited physical condition or return after time off", poids: 1, cat: "ind", conseil: "Ease back in gradually and adjust the workload." },
-  { cle: "s-pauses", libelle: "Breaks often cut short or skipped", poids: 2, cat: "ind", conseil: "Plan breaks as required steps of the job." },
-  { cle: "s-froid", libelle: "Cold, drafts or excessive heat", poids: 1, cat: "env", conseil: "Dress for it and plan breaks in a temperate area." },
-  { cle: "s-vibrations", libelle: "Vibrating tools used regularly", poids: 2, cat: "env", conseil: "Choose anti-vibration tools and limit how long you're exposed." },
-  { cle: "s-espace", libelle: "Cramped or cluttered work space", poids: 1, cat: "env", conseil: "Clear out and reorganize the work space." },
-  { cle: "s-sol", libelle: "Uneven, slippery or cluttered floor", poids: 1, cat: "env", conseil: "Maintain the floors and wear proper footwear." },
-  { cle: "s-outils", libelle: "Poorly suited or poorly maintained tools", poids: 2, cat: "env", conseil: "Choose ergonomic tools and maintain them regularly." }
+  { cle: "s-efforts", libelle: "Heavy exertion (pushing, pulling, forcing)", poids: 3, cat: "bio", conseil: "Cut down the effort with mechanical aids and proper tools.", fiches: ["efforts", "manutention"] },
+  { cle: "s-repetition", libelle: "Repeated movements at a fast pace", poids: 3, cat: "bio", conseil: "Set up task rotation and micro-breaks.", fiches: ["mouvements-repetes", "prise-serree"] },
+  { cle: "s-postures", libelle: "Awkward postures (bent back, bent wrists…)", poids: 2, cat: "bio", conseil: "Set up the workstation to keep your joints in a neutral position.", fiches: ["postures", "posture-statique"] },
+  { cle: "s-charges", libelle: "Heavy or awkward loads to grip (rods, hoses, equipment)", poids: 3, cat: "bio", conseil: "Break loads into smaller parts and use material-handling aids.", fiches: ["manutention", "charges", "torsion"] },
+  { cle: "s-bras", libelle: "Working with your arms above your shoulders", poids: 2, cat: "bio", conseil: "Lower the work or use a platform to work below shoulder height.", fiches: ["bras-leves", "hauteur-travail"] },
+  { cle: "s-genoux", libelle: "Working on your knees, squatting or bent over (forced positions)", poids: 2, cat: "bio", conseil: "Knee pads, a low bench, and stand up regularly to move your legs.", fiches: ["travail-genoux", "compression"] },
+  { cle: "s-fatigue", libelle: "Frequent fatigue or not enough sleep", poids: 2, cat: "ind", conseil: "Protect your sleep and take real recovery breaks.", fiches: ["sommeil", "fatigue"] },
+  { cle: "s-quarts", libelle: "Long shifts: alertness drops near the end of the shift", poids: 2, cat: "ind", conseil: "Keep the demanding tasks for the start of the shift and take real breaks.", fiches: ["fatigue", "recuperation"] },
+  { cle: "s-douleur", libelle: "Pain already present (discomfort, stiffness, tingling)", poids: 3, cat: "ind", conseil: "Report pain early and adjust the task without waiting.", fiches: ["douleur-presente", "agir-tot"] },
+  { cle: "s-experience", libelle: "Little experience on the job", poids: 1, cat: "ind", conseil: "Provide mentoring, hands-on training and a gradual ramp-up in pace.", fiches: ["experience"] },
+  { cle: "s-condition", libelle: "Limited physical condition or return after time off", poids: 1, cat: "ind", conseil: "Ease back in gradually and adjust the workload.", fiches: ["condition-physique"] },
+  { cle: "s-pauses", libelle: "Breaks often cut short or skipped", poids: 2, cat: "ind", conseil: "Plan breaks as required steps of the job.", fiches: ["recuperation"] },
+  { cle: "s-froid", libelle: "Cold, drafts or excessive heat", poids: 1, cat: "env", conseil: "Dress for it and plan breaks in a temperate area.", fiches: ["froid", "temperature"] },
+  { cle: "s-vibrations", libelle: "Vibrating tools used regularly", poids: 2, cat: "env", conseil: "Choose anti-vibration tools and limit how long you're exposed.", fiches: ["outils-vibrants", "outil-percussion"] },
+  { cle: "s-espace", libelle: "Cramped or cluttered work space", poids: 1, cat: "env", conseil: "Clear out and reorganize the work space.", fiches: ["espace-travail", "passage-etroit"] },
+  { cle: "s-sol", libelle: "Uneven, slippery or cluttered floor", poids: 1, cat: "env", conseil: "Maintain the floors and wear proper footwear.", fiches: ["sol-inegal", "surface-appui"] },
+  { cle: "s-outils", libelle: "Poorly suited or poorly maintained tools", poids: 2, cat: "env", conseil: "Choose ergonomic tools and maintain them regularly.", fiches: ["outils", "prise-serree"] }
 ];
 const SIM_CATS = { bio: "Task demands (biomechanical)", ind: "The person (individual)", env: "The workstation and surroundings (environmental)" };
+
+/* Assessment report: the content comes from the cards (DETAILS), the zones (ZONES) and the parts of the site.
+   Each SIM_ITEMS checkbox points to its cards; the first one supplies the "why" and the prevention tips. */
+/* Combinations named in the "combinaison" card: shown when every group has at least one box checked */
+const SIM_COMBOS = [
+  { tous: [["s-repetition"], ["s-efforts"]], texte: DETAILS["combinaison"].exemples[0] },
+  { tous: [["s-vibrations"], ["s-froid"]], texte: DETAILS["combinaison"].exemples[1] },
+  { tous: [["s-fatigue", "s-quarts"], ["s-repetition"]], texte: DETAILS["combinaison"].exemples[2] }
+];
+/* What to do for each level (cards "Acting early", "Combination" and the "Report it" part) */
+const SIM_ACTIONS = {
+  "faible": { etiquette: "Low risk", titre: "Watch for the first signals: discomfort, stiffness, tingling.", texte: "An MSD sets in by stages: caught early, it's easily fixed.", fiche: "agir-tot" },
+  "modere": { etiquette: "Moderate risk", titre: "Adjust your workstation or your pace quickly.", texte: "Vary your movements, rotate tasks and take real breaks before you're worn out.", ouvrir: "reflexes" },
+  "eleve": { etiquette: "High risk", titre: "Talk to your supervisor or the health and safety committee.", texte: "Your factors combine and multiply: reported early, the workstation or the task can be adjusted.", contacts: true, fiche: "agir-tot" },
+  "tres-eleve": { etiquette: "Very high risk", titre: "Don't wait for it to get worse.", texte: "Report your situation now: the workstation or the task can be adjusted, and your report protects your co-workers too.", contacts: true, fiche: "agir-tot" }
+};
+const SIM_CONTACTS = ["Your immediate supervisor", "The health and safety advisor or committee", "The on-site first-aiders if needed"];
+/* Going further: an overlay on this page (ouvrir / sommeil) or another part of the site (ancre) */
+const SIM_SUITES = [
+  { si: ["s-efforts", "s-charges"], ouvrir: "borg", icone: "📊", titre: "Rating of perceived exertion", texte: "Rate your effort from 0 to 10 and see when to slow down or recover." },
+  { si: ["s-pauses", "s-repetition", "s-douleur"], ouvrir: "micro", icone: "🔬", titre: "Micro-injuries and recovery", texte: "What happens in your tissues as soon as there's discomfort, with or without rest." },
+  { si: ["s-fatigue"], sommeil: "checklist", icone: "🌙", titre: "Sleeping well: the checklist", texte: "What to do and what to avoid for sleep that repairs." },
+  { si: ["s-quarts"], sommeil: "quarts", icone: "🕒", titre: "Tips before a shift", texte: "Routine, nap and light to recover better between shifts." },
+  { si: ["s-charges", "s-postures", "s-bras", "s-genoux", "s-froid", "s-experience"], ouvrir: "reflexes", icone: "✅", titre: "Good habits at the workstation", texte: "Load close to your body, varied postures, micro-breaks, warm-up." },
+  { si: ["s-condition"], ancre: "hygiene", partie: "Part 04", icone: "💧", titre: "Your lifestyle", texte: "Water, food, movement and habits: four everyday levers." }
+];
+const SIM_TXT = {
+  zones: "Body zones to watch",
+  bilan: "Your report",
+  bilanIntro: "Based on the factors you checked. Click a tip, a card or a zone for the details.",
+  action: "What to do now",
+  contacts: "Who to talk to",
+  douleur: "You already have pain: see where you stand",
+  combos: "Combinations spotted at your workstation",
+  combosTexte: "Risk factors don't add up, they multiply. Tackle these combinations first.",
+  conseils: "Your tips, factor by factor",
+  pourquoi: "Why:",
+  suites: "Going further",
+  ouvrir: "Open"
+};
 
 /* Quiz */
 const ORDRE_PRINCIPAL = ["biomecanique", "individuel", "environnement", "bras-leves", "mouvements-repetes", "charges", "travail-genoux", "prise-serree", "froid", "outil-percussion", "passage-etroit", "sol-inegal", "hauteur-travail"];
@@ -1548,6 +1588,204 @@ const formSim = $("#form-sim");
 
 const POIDS_MAX = SIM_ITEMS.reduce((s, i) => s + i.poids, 0);
 
+/* ---- Assessment report (below the checkboxes and in the reminder on the page) ---- */
+/* The worker's choice: tip expanded or not (kept when the report is redrawn) */
+const conseilsOuverts = {};
+
+/* Body zones most strained by the checked factors, according to the linked cards */
+function zonesSollicitees(coches) {
+  const score = {};
+  coches.forEach(i => {
+    const local = {};
+    i.fiches.forEach((f, n) => {
+      (DETAILS[f].zones || []).forEach((z, rang) => {
+        const p = i.poids * (n === 0 ? 1 : .5) * (1 - rang * .1);
+        if (!local[z] || local[z] < p) local[z] = p;
+      });
+    });
+    Object.keys(local).forEach(z => { score[z] = (score[z] || 0) + local[z]; });
+  });
+  return Object.keys(ZONES).filter(z => score[z]).sort((a, b) => score[b] - score[a]).slice(0, 4);
+}
+
+function puceFiche(cle) {
+  const b = elem("button", "puce", DETAILS[cle].icone + " " + DETAILS[cle].titre);
+  b.type = "button";
+  b.addEventListener("click", () => ouvrirDetails(cle, b));
+  return b;
+}
+
+/* "Title: explanation": the title in bold, the original punctuation kept */
+function ligneDeuxPoints(tag, texte) {
+  const el = elem(tag);
+  const i = texte.indexOf(":");
+  if (i < 0) { el.textContent = texte; return el; }
+  el.appendChild(elem("strong", null, texte.slice(0, i)));
+  el.appendChild(document.createTextNode(texte.slice(i)));
+  return el;
+}
+
+function blocContacts() {
+  const div = elem("div", "sb-contacts");
+  div.appendChild(elem("p", null, SIM_TXT.contacts));
+  const ul = elem("ul");
+  SIM_CONTACTS.forEach(c => ul.appendChild(elem("li", null, c)));
+  div.appendChild(ul);
+  return div;
+}
+
+/* Link to another part: reuse the table-of-contents address (right page, right language, right track) */
+function hrefAncre(id) {
+  const a = $$(".toc-link").find(l => (l.getAttribute("href") || "").endsWith("#" + id));
+  return a ? a.getAttribute("href") : "#" + id;
+}
+
+function rendreZones(conteneur, zones) {
+  if (!conteneur) return;
+  conteneur.innerHTML = "";
+  conteneur.hidden = !zones.length;
+  if (!zones.length) return;
+  conteneur.appendChild(elem("h4", null, SIM_TXT.zones));
+  const puces = elem("div", "puces");
+  zones.forEach(z => {
+    const b = elem("button", "puce", ZONES[z].icone + " " + ZONES[z].nom);
+    b.type = "button";
+    b.addEventListener("click", () => ouvrirZone(z, b));
+    puces.appendChild(b);
+  });
+  conteneur.appendChild(puces);
+}
+
+function rendreBilan(conteneur, e) {
+  if (!conteneur) return;
+  conteneur.innerHTML = "";
+  conteneur.hidden = !e.coches.length;
+  if (!e.coches.length) return;
+
+  conteneur.appendChild(elem("h3", "sb-titre", SIM_TXT.bilan));
+  conteneur.appendChild(elem("p", "sb-intro", SIM_TXT.bilanIntro));
+
+  /* 1. What to do for the level */
+  const a = SIM_ACTIONS[e.niveau];
+  const douleur = e.coches.some(i => i.cle === "s-douleur");
+  const action = elem("div", "sb-bloc sb-action niv-" + e.niveau);
+  const tete = elem("div", "sb-tete");
+  tete.appendChild(elem("h4", null, SIM_TXT.action));
+  const niveau = elem("span", "sb-niveau");
+  niveau.appendChild(elem("i"));
+  niveau.appendChild(document.createTextNode(a.etiquette));
+  tete.appendChild(niveau);
+  action.appendChild(tete);
+  action.appendChild(elem("p", "sb-fort", a.titre));
+  action.appendChild(elem("p", "sb-texte", a.texte));
+  if (a.contacts && !douleur) action.appendChild(blocContacts());
+  const pucesAction = elem("div", "puces");
+  if (a.ouvrir) {
+    const suite = SIM_SUITES.find(s => s.ouvrir === a.ouvrir);
+    const b = elem("button", "puce", suite.icone + " " + suite.titre);
+    b.type = "button";
+    b.setAttribute("data-ouvrir-" + a.ouvrir, "");
+    pucesAction.appendChild(b);
+  }
+  if (a.fiche && !douleur) pucesAction.appendChild(puceFiche(a.fiche));
+  if (pucesAction.children.length) action.appendChild(pucesAction);
+  if (douleur) {
+    const d = elem("div", "sb-douleur");
+    d.appendChild(elem("h5", null, SIM_TXT.douleur));
+    d.appendChild(elem("p", null, DETAILS["douleur-presente"].description));
+    const stades = elem("ul", "sb-stades");
+    DETAILS["agir-tot"].exemples.forEach(t => stades.appendChild(ligneDeuxPoints("li", t)));
+    d.appendChild(stades);
+    d.appendChild(blocContacts());
+    const p = elem("div", "puces");
+    p.appendChild(puceFiche("douleur-presente"));
+    p.appendChild(puceFiche("agir-tot"));
+    d.appendChild(p);
+    action.appendChild(d);
+  }
+  conteneur.appendChild(action);
+
+  /* 2. Named risky combinations */
+  if (e.combos.length) {
+    const c = elem("div", "sb-bloc sb-combos");
+    c.appendChild(elem("h4", null, SIM_TXT.combos));
+    c.appendChild(elem("p", "sb-texte", SIM_TXT.combosTexte));
+    const ul = elem("ul", "sb-liste");
+    e.combos.forEach(t => ul.appendChild(ligneDeuxPoints("li", t)));
+    c.appendChild(ul);
+    const p = elem("div", "puces");
+    p.appendChild(puceFiche("combinaison"));
+    c.appendChild(p);
+    conteneur.appendChild(c);
+  }
+
+  /* 3. Enriched tips: the why, the prevention tips and the cards for each checked factor */
+  const conseils = elem("div", "sb-bloc sb-conseils");
+  conseils.appendChild(elem("h4", null, SIM_TXT.conseils));
+  let premier = true;
+  ["bio", "ind", "env"].forEach(cat => {
+    const items = e.coches.filter(i => i.cat === cat).sort((x, y) => y.poids - x.poids);
+    if (!items.length) return;
+    conseils.appendChild(elem("p", "sb-groupe c-" + cat, SIM_CATS[cat]));
+    items.forEach(i => {
+      const fiche = DETAILS[i.fiches[0]];
+      const det = elem("details", "sb-conseil c-" + cat);
+      det.open = (i.cle in conseilsOuverts) ? conseilsOuverts[i.cle] : premier;
+      premier = false;
+      const sum = elem("summary");
+      sum.appendChild(elem("span", "sbc-txt", i.conseil));
+      sum.addEventListener("click", () => { conseilsOuverts[i.cle] = !det.open; });
+      det.appendChild(sum);
+      const corps = elem("div", "sbc-corps");
+      const pq = elem("p", "sbc-pourquoi");
+      pq.appendChild(elem("strong", null, SIM_TXT.pourquoi));
+      pq.appendChild(document.createTextNode(" " + fiche.description));
+      corps.appendChild(pq);
+      const pistes = elem("ul", "sbc-pistes");
+      fiche.prevention.forEach(t => pistes.appendChild(elem("li", null, t)));
+      corps.appendChild(pistes);
+      const p = elem("div", "puces");
+      i.fiches.forEach(k => p.appendChild(puceFiche(k)));
+      corps.appendChild(p);
+      det.appendChild(corps);
+      conseils.appendChild(det);
+    });
+  });
+  conteneur.appendChild(conseils);
+
+  /* 4. Going further */
+  if (e.suites.length) {
+    const s = elem("div", "sb-bloc sb-suites");
+    s.appendChild(elem("h4", null, SIM_TXT.suites));
+    const grille = elem("div", "sb-grille");
+    e.suites.forEach(x => {
+      let el;
+      if (x.ancre) {
+        el = elem("a", "sb-suite");
+        el.href = hrefAncre(x.ancre);
+        /* same page: close the assessment so the target section shows */
+        el.addEventListener("click", () => { voileSim.classList.remove("ouvert"); document.body.style.overflow = ""; });
+      } else {
+        el = elem("button", "sb-suite");
+        el.type = "button";
+        if (x.sommeil) el.setAttribute("data-sleep", x.sommeil);
+        else el.setAttribute("data-ouvrir-" + x.ouvrir, "");
+      }
+      const ico = elem("span", "sbs-ico", x.icone);
+      ico.setAttribute("aria-hidden", "true");
+      el.appendChild(ico);
+      const txt = elem("span", "sbs-txt");
+      txt.appendChild(elem("strong", null, x.titre));
+      txt.appendChild(elem("span", null, x.texte));
+      el.appendChild(txt);
+      el.appendChild(elem("span", "sbs-go", (x.ancre ? x.partie : SIM_TXT.ouvrir) + " →"));
+      grille.appendChild(el);
+    });
+    s.appendChild(grille);
+    conteneur.appendChild(s);
+  }
+}
+
 function calculerSim() {
   const coches = SIM_ITEMS.filter(i => formSim.querySelector("[data-cle='" + i.cle + "']").checked);
   const brut = coches.reduce((s, i) => s + i.poids, 0);
@@ -1594,32 +1832,41 @@ function calculerSim() {
     combo.textContent = "";
   }
 
-  const remplirConseils = (ul) => {
-    if (!ul) return;
-    ul.innerHTML = "";
-    ["bio", "ind", "env"].forEach(cat => {
-      const items = coches.filter(i => i.cat === cat).sort((a, b) => b.poids - a.poids).slice(0, 4);
-      if (!items.length) return;
-      const tete = document.createElement("li");
-      tete.className = "conseil-groupe c-" + cat;
-      tete.textContent = SIM_CATS[cat];
-      ul.appendChild(tete);
-      items.forEach(i => {
-        const li = document.createElement("li");
-        li.className = "conseil-item c-" + cat;
-        li.textContent = i.conseil;
-        ul.appendChild(li);
-      });
-    });
+  /* Report: strained zones, what to do, combinations, enriched tips, going further */
+  const cles = new Set(coches.map(i => i.cle));
+  const etat = {
+    coches: coches,
+    niveau: pct < 25 ? "faible" : pct < 50 ? "modere" : pct < 75 ? "eleve" : "tres-eleve",
+    combos: SIM_COMBOS.filter(c => c.tous.every(g => g.some(k => cles.has(k)))).map(c => c.texte),
+    suites: SIM_SUITES
+      .map((s, n) => ({ s: s, n: n, p: Math.max(0, ...coches.filter(i => s.si.includes(i.cle)).map(i => i.poids)) }))
+      .filter(x => x.p > 0)
+      .sort((a, b) => b.p - a.p || a.n - b.n)
+      .slice(0, 3)
+      .map(x => x.s)
   };
-  remplirConseils($("#sim-conseils"));
-  remplirConseils(document.getElementById("sim-conseils-page"));
+  const zones = zonesSollicitees(coches);
+  rendreZones($("#sim-zones"), zones);
+  rendreZones(document.getElementById("sim-zones-page"), zones);
+  rendreBilan($("#sim-bilan"), etat);
+  rendreBilan(document.getElementById("sim-bilan-page"), etat);
+  const voirBilan = $("#sim-voir-bilan");
+  if (voirBilan) voirBilan.hidden = !coches.length;
 }
 formSim.addEventListener("change", calculerSim);
 $("#sim-raz").addEventListener("click", () => {
   formSim.querySelectorAll("input").forEach(i => { i.checked = false; });
+  Object.keys(conseilsOuverts).forEach(k => { delete conseilsOuverts[k]; });
   calculerSim();
 });
+/* Shortcut from the gauge to the report, placed below the checkboxes */
+if ($("#sim-voir-bilan")) {
+  $("#sim-voir-bilan").addEventListener("click", () => {
+    const b = $("#sim-bilan");
+    b.scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" });
+    b.focus({ preventScroll: true });
+  });
+}
 calculerSim();
 
 /* ================================================================
@@ -1681,14 +1928,18 @@ function fermerSim() {
 $$("[data-ouvrir-sim]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); ouvrirSim(b); }));
 $("#fermer-sim").addEventListener("click", fermerSim);
 voileSim.addEventListener("click", e => { if (e.target === voileSim) fermerSim(); });
+/* Capture phase: the assessment decides before the card or another overlay opened on top of it closes,
+   otherwise a single Escape would close both. */
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && voileSim.classList.contains("ouvert") && !voile.classList.contains("ouvert")) fermerSim();
-});
+  if (e.key === "Escape" && voileSim.classList.contains("ouvert") && !voile.classList.contains("ouvert") && !document.querySelector(".voile-sim.ouvert:not(#voile-sim)")) fermerSim();
+}, true);
 
 })();
 
 (function(){
   var $=function(s){return document.querySelector(s);};
+  /* Overlay opened from the assessment report: the assessment stays open underneath */
+  function simOuvert(){var s=document.getElementById("voile-sim");return !!(s&&s.classList.contains("ouvert"));}
   /* ---- Échelle de Borg ---- */
   var BORG=[
     ["No effort","No effort at all."],
@@ -1759,8 +2010,8 @@ document.addEventListener("keydown", e => {
     $("#bdConseil").textContent=BORG_CONSEIL[n];
   }
   function ouvrirBorg(d){declB=d;majRows();if(BORG_SEL>=0)detailBorg(BORG_SEL);else{var bd=$("#borgDetail");if(bd)bd.hidden=true;}vBorg.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-borg").focus();}
-  function fermerBorg(){vBorg.classList.remove("ouvert");document.body.style.overflow="";if(declB&&declB.focus)declB.focus();}
-  document.querySelectorAll("[data-ouvrir-borg]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirBorg(b);});});
+  function fermerBorg(){vBorg.classList.remove("ouvert");document.body.style.overflow=simOuvert()?"hidden":"";if(declB&&declB.focus)declB.focus();}
+  document.addEventListener("click",function(e){var b=e.target.closest("[data-ouvrir-borg]");if(b&&vBorg){e.preventDefault();ouvrirBorg(b);}});
   if(vBorg){
     $("#fermer-borg").addEventListener("click",fermerBorg);
     vBorg.addEventListener("click",function(e){if(e.target===vBorg)fermerBorg();});
@@ -1788,8 +2039,8 @@ document.addEventListener("keydown", e => {
   /* ---- Microlésions : surcouche ---- */
   var vMicro=$("#voile-micro"),declMicro=null;
   function ouvrirMicro(d){declMicro=d;vMicro.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-micro").focus();}
-  function fermerMicro(){vMicro.classList.remove("ouvert");document.body.style.overflow="";if(declMicro&&declMicro.focus)declMicro.focus();}
-  document.querySelectorAll("[data-ouvrir-micro]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirMicro(b);});});
+  function fermerMicro(){vMicro.classList.remove("ouvert");document.body.style.overflow=simOuvert()?"hidden":"";if(declMicro&&declMicro.focus)declMicro.focus();}
+  document.addEventListener("click",function(e){var b=e.target.closest("[data-ouvrir-micro]");if(b&&vMicro){e.preventDefault();ouvrirMicro(b);}});
   if(vMicro){
     $("#fermer-micro").addEventListener("click",fermerMicro);
     vMicro.addEventListener("click",function(e){if(e.target===vMicro)fermerMicro();});
@@ -1828,8 +2079,8 @@ document.addEventListener("keydown", e => {
     $("#slTitre").textContent=m.t;$("#slBody").innerHTML=m.h;
     declSl=d;vSl.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-sommeil").focus();
   }
-  function fermerSl(){vSl.classList.remove("ouvert");document.body.style.overflow="";if(declSl&&declSl.focus)declSl.focus();}
-  document.querySelectorAll("[data-sleep]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirSl(b,b.getAttribute("data-sleep"));});});
+  function fermerSl(){vSl.classList.remove("ouvert");document.body.style.overflow=simOuvert()?"hidden":"";if(declSl&&declSl.focus)declSl.focus();}
+  document.addEventListener("click",function(e){var b=e.target.closest("[data-sleep]");if(b&&vSl){e.preventDefault();ouvrirSl(b,b.getAttribute("data-sleep"));}});
   if(vSl){
     $("#fermer-sommeil").addEventListener("click",fermerSl);
     vSl.addEventListener("click",function(e){if(e.target===vSl)fermerSl();});
@@ -1850,8 +2101,8 @@ document.addEventListener("keydown", e => {
   /* ---- Bons réflexes : surcouche ---- */
   var vRf=$("#voile-reflexes"),declRf=null;
   function ouvrirRf(d){declRf=d;vRf.classList.add("ouvert");document.body.style.overflow="hidden";$("#fermer-reflexes").focus();}
-  function fermerRf(){vRf.classList.remove("ouvert");document.body.style.overflow="";if(declRf&&declRf.focus)declRf.focus();}
-  document.querySelectorAll("[data-ouvrir-reflexes]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();ouvrirRf(b);});});
+  function fermerRf(){vRf.classList.remove("ouvert");document.body.style.overflow=simOuvert()?"hidden":"";if(declRf&&declRf.focus)declRf.focus();}
+  document.addEventListener("click",function(e){var b=e.target.closest("[data-ouvrir-reflexes]");if(b&&vRf){e.preventDefault();ouvrirRf(b);}});
   if(vRf){
     $("#fermer-reflexes").addEventListener("click",fermerRf);
     vRf.addEventListener("click",function(e){if(e.target===vRf)fermerRf();});

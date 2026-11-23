@@ -1698,39 +1698,115 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
     line-height: 1.45;
     min-height: 2.4em;
   }
-  #sim-conseils, #sim-conseils-page { list-style: none; margin-top: 14px; }
-  #sim-conseils li, #sim-conseils-page li {
-    position: relative;
-    padding-left: 24px;
-    font-size: .86rem;
-    color: #ddd;
-    line-height: 1.45;
-    margin-bottom: 8px;
-  }
-  #sim-conseils li::before, #sim-conseils-page li::before {
-    content: "✓";
-    position: absolute; left: 2px;
-    color: #6fc24a;
+  /* Zones du corps à surveiller (sous la jauge et dans le rappel sur la page) */
+  .sim-zones { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--bordure); text-align: center; }
+  .sim-zones h4 { font-size: .78rem; text-transform: uppercase; letter-spacing: 1px; color: #bbb; margin-bottom: 10px; }
+  .sim-zones .puces { justify-content: center; margin-bottom: 0; }
+  .eval-resultat-page .sim-zones { text-align: left; margin-top: 16px; }
+  .eval-resultat-page .sim-zones .puces { justify-content: flex-start; }
+  .sim-boutons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 16px; }
+  .sim-boutons #sim-raz { margin: 0; }
+  #sim-voir-bilan {
+    background: var(--brand, #d22325);
+    color: #fff;
+    border: 1px solid var(--brand, #d22325);
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-size: .85rem;
     font-weight: 700;
+    cursor: pointer;
+    transition: background .15s;
   }
-  /* En-tête de groupe de recommandations (par famille de facteurs) */
-  .conseil-groupe {
-    padding-left: 0 !important;
-    margin: 14px 0 7px !important;
-    font-size: .76rem;
+  #sim-voir-bilan:hover, #sim-voir-bilan:focus-visible { background: var(--brand-d, #a81a1c); }
+
+  /* ---------- Bilan de l'évaluation : quoi faire, combinaisons, conseils enrichis, pour aller plus loin ---------- */
+  .sim-bilan { margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--bordure); scroll-margin-top: 16px; outline: none; }
+  .sim-bilan[hidden], .sim-zones[hidden], #sim-voir-bilan[hidden] { display: none; }
+  .eval-resultat-page .sim-bilan { margin-top: 18px; padding-top: 18px; }
+  .sim-bilan .sb-titre {
+    font-family: var(--font-display);
+    font-size: 1.55rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: .02em;
+    color: #fff;
+    margin: 0;
   }
-  .conseil-groupe:first-child { margin-top: 4px !important; }
-  .conseil-groupe::before { content: none !important; }
-  /* Code couleur par famille (identique au schéma interactif des facteurs) */
-  .conseil-groupe.c-bio { color: var(--neon-bleu); }
-  .conseil-groupe.c-ind { color: var(--neon-orange); }
-  .conseil-groupe.c-env { color: var(--neon-vert); }
-  .conseil-item.c-bio::before { color: var(--neon-bleu); }
-  .conseil-item.c-ind::before { color: var(--neon-orange); }
-  .conseil-item.c-env::before { color: var(--neon-vert); }
+  .sim-bilan .sb-titre::after { content: ""; display: block; width: 46px; height: 3px; margin-top: 8px; border-radius: 2px; background: var(--g-red, linear-gradient(135deg,#e23a3c,#a81a1c)); }
+  .sim-bilan .sb-intro { color: #a8a8a8; font-size: .88rem; line-height: 1.5; margin: 10px 0 0; max-width: 62ch; }
+  .sb-bloc { background: var(--carte); border: 1px solid var(--bordure); border-radius: 14px; padding: 18px 20px; margin-top: 14px; }
+  .sim-bilan .sb-bloc h4 { font-size: .86rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #ccc; margin: 0 0 10px; }
+  .sim-bilan .sb-texte { color: #cfcfcf; font-size: .9rem; line-height: 1.5; margin: 0; }
+  .sim-bilan .puces { margin: 12px 0 0; }
+
+  /* Quoi faire selon le niveau : la couleur du niveau teinte le cadre et la pastille */
+  .sb-action { --niv: #6fc24a; border-color: color-mix(in srgb, var(--niv) 45%, var(--bordure)); }
+  .sb-action.niv-modere { --niv: #e3c54a; }
+  .sb-action.niv-eleve { --niv: #f08a2e; }
+  .sb-action.niv-tres-eleve { --niv: #e8404a; }
+  .sb-tete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-bottom: 10px; }
+  .sim-bilan .sb-tete h4 { margin: 0; }
+  .sb-niveau { display: inline-flex; align-items: center; gap: 8px; font-size: .8rem; font-weight: 800; color: var(--niv); color: color-mix(in srgb, var(--niv) 70%, #fff); background: color-mix(in srgb, var(--niv) 12%, transparent); border: 1px solid color-mix(in srgb, var(--niv) 45%, transparent); border-radius: 999px; padding: 4px 12px; }
+  .sb-niveau i { width: 9px; height: 9px; border-radius: 50%; background: var(--niv); box-shadow: 0 0 0 3px color-mix(in srgb, var(--niv) 25%, transparent); }
+  .sim-bilan .sb-fort { color: #fff; font-size: 1.12rem; font-weight: 800; line-height: 1.35; margin: 0 0 6px; }
+  .sb-contacts { margin-top: 12px; }
+  .sim-bilan .sb-contacts p { font-size: .76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #bbb; margin: 0 0 6px; }
+  .sim-bilan .sb-contacts ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 20px; }
+  .sim-bilan .sb-contacts li { position: relative; padding-left: 16px; color: #eee; font-size: .9rem; line-height: 1.45; margin: 0; }
+  .sim-bilan .sb-contacts li::before { content: ""; position: absolute; left: 0; top: .5em; width: 7px; height: 7px; border-radius: 50%; background: var(--brand, #d22325); box-shadow: 0 0 0 3px rgba(210,35,37,.2); }
+  .sb-douleur { margin-top: 16px; background: rgba(232,64,74,.07); border: 1px solid rgba(232,64,74,.38); border-radius: 12px; padding: 14px 16px; }
+  .sim-bilan .sb-douleur h5 { font-size: .84rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #ff9ea4; margin: 0 0 8px; }
+  .sim-bilan .sb-douleur > p { color: #ddd; font-size: .9rem; line-height: 1.5; margin: 0; }
+  .sim-bilan .sb-stades, .sim-bilan .sb-liste { list-style: none; margin: 10px 0 0; padding: 0; }
+  .sim-bilan .sb-stades li, .sim-bilan .sb-liste li { color: #ddd; font-size: .9rem; line-height: 1.5; margin: 0 0 5px; }
+  .sim-bilan .sb-stades strong { color: #fff; }
+  .sim-bilan .sb-liste li { position: relative; padding-left: 24px; }
+  .sim-bilan .sb-liste li::before { content: "⚠"; position: absolute; left: 0; color: #ffb3b8; }
+  .sim-bilan .sb-liste strong { color: #ffb3b8; }
+
+  /* Conseils enrichis : un conseil par facteur coché, dépliable (pourquoi, pistes, fiches) */
+  .sim-bilan .sb-groupe { font-size: .76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; }
+  .sim-bilan h4 + .sb-groupe { margin-top: 4px; }
+  .sb-groupe.c-bio { color: #7cc3e8; }
+  .sb-groupe.c-ind { color: #ffb567; }
+  .sb-groupe.c-env { color: #a4d96c; }
+  .sb-conseil { --fam: #7cc3e8; background: #1c1c20; border: 1px solid #303036; border-radius: 12px; margin-bottom: 8px; }
+  .sb-conseil.c-ind { --fam: #ffb567; }
+  .sb-conseil.c-env { --fam: #a4d96c; }
+  .sb-conseil summary { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; cursor: pointer; list-style: none; color: #eee; font-size: .92rem; font-weight: 600; line-height: 1.45; border-radius: 12px; }
+  .sb-conseil summary::-webkit-details-marker { display: none; }
+  .sb-conseil summary::before { content: "✓"; color: var(--fam); font-weight: 800; flex-shrink: 0; }
+  .sb-conseil summary::after { content: ""; flex-shrink: 0; margin: .38em 2px 0 auto; width: 8px; height: 8px; border-right: 2px solid #aaa; border-bottom: 2px solid #aaa; transform: rotate(45deg); transition: transform .2s cubic-bezier(.22,.61,.36,1); }
+  .sb-conseil[open] summary::after { transform: rotate(225deg); margin-top: .62em; }
+  .sb-conseil summary:hover { color: #fff; }
+  .sb-conseil summary:focus-visible { outline: 2px solid var(--accent-l, #ef5a5c); outline-offset: 2px; }
+  .sbc-txt { min-width: 0; }
+  .sbc-corps { padding: 0 14px 14px 36px; }
+  .sim-bilan .sbc-pourquoi { color: #cfcfcf; font-size: .88rem; line-height: 1.55; margin: 0; }
+  .sim-bilan .sbc-pourquoi strong { color: var(--fam); }
+  .sim-bilan .sbc-pistes { list-style: none; margin: 10px 0 0; padding: 0; }
+  .sim-bilan .sbc-pistes li { position: relative; padding-left: 16px; color: #ddd; font-size: .88rem; line-height: 1.5; margin: 0 0 4px; }
+  .sim-bilan .sbc-pistes li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--fam); }
+
+  /* Pour aller plus loin */
+  .sb-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+  .sb-suite { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; font: inherit; text-decoration: none; color: #eee; background: #1c1c20; border: 1px solid #303036; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: border-color .15s, background .15s, transform .15s cubic-bezier(.22,.61,.36,1); }
+  .sb-suite:hover, .sb-suite:focus-visible { border-color: var(--brand, #d22325); background: #221a1c; transform: translateY(-2px); outline: none; }
+  .sbs-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 11px; background: rgba(210,35,37,.16); display: grid; place-items: center; font-size: 1.15rem; }
+  .sbs-txt { flex: 1; min-width: 0; }
+  .sbs-txt strong { display: block; font-size: .92rem; line-height: 1.3; color: #fff; }
+  .sbs-txt span { display: block; color: #a8a8a8; font-size: .82rem; line-height: 1.4; margin-top: 2px; }
+  .sbs-go { flex-shrink: 0; color: #ff8d94; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+  @media (max-width: 560px) {
+    .sb-bloc { padding: 14px; }
+    .sbc-corps { padding-left: 14px; }
+    .sb-suite { flex-wrap: wrap; }
+    .sbs-go { flex: 0 0 100%; padding-left: 52px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sb-suite, .sb-conseil summary::after { transition: none; }
+    .sb-suite:hover, .sb-suite:focus-visible { transform: none; }
+  }
   #sim-raz {
     display: block;
     margin: 16px auto 0;
@@ -2253,6 +2329,8 @@ span.ghost{position:absolute;top:1.2rem;right:2rem;font-family:var(--font-displa
 }
 .voile-sim{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(5px);display:none;z-index:170;overflow-y:auto;padding:28px 16px}
 .voile-sim.ouvert{display:block}
+/* Évaluation : sous les autres surcouches, qui s'ouvrent par-dessus depuis le bilan */
+#voile-sim{z-index:165}
 .panneau-sim{position:relative;max-width:1150px;margin:0 auto;background:#101016;border:1px solid #2c2c2c;border-top:3px solid var(--brand,#d22325);border-radius:18px;padding:8px 26px 26px;animation:apparition .25s ease}
 .panneau-sim section.bloc{margin-top:0;padding:1.2rem 0 0}
 .panneau-sim section.bloc::before,.panneau-sim section.bloc::after{display:none}
