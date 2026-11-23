@@ -1764,7 +1764,7 @@ function rendreBilan(conteneur, e) {
         el = elem("a", "sb-suite");
         el.href = hrefAncre(x.ancre);
         /* même page : on referme l'évaluation pour laisser voir la section visée */
-        el.addEventListener("click", () => { voileSim.classList.remove("ouvert"); document.body.style.overflow = ""; });
+        el.addEventListener("click", () => { if (voileSim) { voileSim.classList.remove("ouvert"); document.body.style.overflow = ""; } });
       } else {
         el = elem("button", "sb-suite");
         el.type = "button";
@@ -1925,14 +1925,18 @@ function fermerSim() {
   document.body.style.overflow = "";
   if (declencheurSim && declencheurSim.focus) declencheurSim.focus();
 }
-$$("[data-ouvrir-sim]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); ouvrirSim(b); }));
-$("#fermer-sim").addEventListener("click", fermerSim);
-voileSim.addEventListener("click", e => { if (e.target === voileSim) fermerSim(); });
-/* En phase de capture : l'évaluation décide avant que la fiche ou une autre surcouche ouverte par-dessus se ferme,
-   sinon un seul Échap fermerait les deux. */
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && voileSim.classList.contains("ouvert") && !voile.classList.contains("ouvert") && !document.querySelector(".voile-sim.ouvert:not(#voile-sim)")) fermerSim();
-}, true);
+/* Sur la sous-page de l'évaluation (evaluation-poste.html), l'outil est dans la page :
+   il n'y a pas de surimpression à ouvrir ni à fermer. */
+if (voileSim) {
+  $$("[data-ouvrir-sim]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); ouvrirSim(b); }));
+  $("#fermer-sim").addEventListener("click", fermerSim);
+  voileSim.addEventListener("click", e => { if (e.target === voileSim) fermerSim(); });
+  /* En phase de capture : l'évaluation décide avant que la fiche ou une autre surcouche ouverte par-dessus se ferme,
+     sinon un seul Échap fermerait les deux. */
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && voileSim.classList.contains("ouvert") && !voile.classList.contains("ouvert") && !document.querySelector(".voile-sim.ouvert:not(#voile-sim)")) fermerSim();
+  }, true);
+}
 
 })();
 

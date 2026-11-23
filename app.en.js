@@ -1764,7 +1764,7 @@ function rendreBilan(conteneur, e) {
         el = elem("a", "sb-suite");
         el.href = hrefAncre(x.ancre);
         /* same page: close the assessment so the target section shows */
-        el.addEventListener("click", () => { voileSim.classList.remove("ouvert"); document.body.style.overflow = ""; });
+        el.addEventListener("click", () => { if (voileSim) { voileSim.classList.remove("ouvert"); document.body.style.overflow = ""; } });
       } else {
         el = elem("button", "sb-suite");
         el.type = "button";
@@ -1925,14 +1925,18 @@ function fermerSim() {
   document.body.style.overflow = "";
   if (declencheurSim && declencheurSim.focus) declencheurSim.focus();
 }
-$$("[data-ouvrir-sim]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); ouvrirSim(b); }));
-$("#fermer-sim").addEventListener("click", fermerSim);
-voileSim.addEventListener("click", e => { if (e.target === voileSim) fermerSim(); });
-/* Capture phase: the assessment decides before the card or another overlay opened on top of it closes,
-   otherwise a single Escape would close both. */
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && voileSim.classList.contains("ouvert") && !voile.classList.contains("ouvert") && !document.querySelector(".voile-sim.ouvert:not(#voile-sim)")) fermerSim();
-}, true);
+/* On the assessment sub-page (evaluation-poste.en.html), the tool is in the page:
+   there is no overlay to open or close. */
+if (voileSim) {
+  $$("[data-ouvrir-sim]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); ouvrirSim(b); }));
+  $("#fermer-sim").addEventListener("click", fermerSim);
+  voileSim.addEventListener("click", e => { if (e.target === voileSim) fermerSim(); });
+  /* Capture phase: the assessment decides before the card or another overlay opened on top of it closes,
+     otherwise a single Escape would close both. */
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && voileSim.classList.contains("ouvert") && !voile.classList.contains("ouvert") && !document.querySelector(".voile-sim.ouvert:not(#voile-sim)")) fermerSim();
+  }, true);
+}
 
 })();
 

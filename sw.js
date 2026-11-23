@@ -11,6 +11,8 @@ const CORE = [
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "formation-guidee.html",
   "formation-guidee.en.html",
+  "evaluation-poste.html",
+  "evaluation-poste.en.html",
   "formation-guidee.js",
   "formation-guidee.en.js",
   "formation-attestation.js",
@@ -67,6 +69,7 @@ const PAGES = ["./", "index.html", "index.en.html",
   "formation-2.html", "formation-3.html", "formation-4.html", "formation-5.html",
   "formation-2.en.html", "formation-3.en.html", "formation-4.en.html", "formation-5.en.html",
   "formation-guidee.html", "formation-guidee.en.html",
+  "evaluation-poste.html", "evaluation-poste.en.html",
   "interactif.html", "manifest.webmanifest", "manifest.en.webmanifest",
   "styles.css", "app.js", "app.en.js", "formation.js", "formation-guidee.js", "formation-guidee.en.js", "formation-attestation.js", "formation-parcours.css", "session.js", "quiz-feedback.js", "gsap.min.js", "hero-anim.js", "anatomy-hero-model.js"];
 
